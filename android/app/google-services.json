@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "126364231099",
+    "project_id": "cof-bsu",
+    "storage_bucket": "cof-bsu.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:126364231099:android:373ca20b61eff14f1f509e",
+        "android_client_info": {
+          "package_name": "br.com.inove.bsu_control"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "126364231099-gqg8k96t9j8bbq6ktok6h1vkiulgbkkh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDaNIjj3NC66yO4bBGiRvy3MJLgXM6Bex4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "126364231099-gqg8k96t9j8bbq6ktok6h1vkiulgbkkh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
