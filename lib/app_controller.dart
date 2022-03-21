@@ -10,6 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'model/car_mapa_model.dart';
 import 'model/check_list_model.dart';
+import 'model/supply_model.dart';
 
 part 'app_controller.g.dart';
 
@@ -22,6 +23,9 @@ abstract class _AppControllerBase with Store {
 
   @observable
   UserModel user = UserModel();
+
+  @observable
+  String unidade = unidades.first;
 
   @observable
   bool isLogged = false;
@@ -94,7 +98,7 @@ abstract class _AppControllerBase with Store {
   @action
   Future<bool> saveCar({required CarModel car, String? id}) async {
     loading = true;
-    final result = await repository.saveCar(car: car, id: id);
+    final result = await repository.saveCar(car: car, unidade: unidade, id: id);
     loading = false;
 
     return result;
@@ -103,7 +107,7 @@ abstract class _AppControllerBase with Store {
   @action
   Future<bool> saveCheckList({required CheckListModel checkList, required int updateCar, String? id}) async {
     loading = true;
-    final result = await repository.saveCheckList(checkList: checkList, updateCar: updateCar, id: id);
+    final result = await repository.saveCheckList(checkList: checkList, updateCar: updateCar, unidade: unidade, id: id);
     loading = false;
 
     return result;
@@ -219,6 +223,15 @@ abstract class _AppControllerBase with Store {
   Future<bool> deleteCarMapa({required String id}) async {
     loading = true;
     final result = await repository.deleteCarMapa(id: id);
+
+    loading = false;
+    return result;
+  }
+
+  @action
+  Future<bool> deleteSupply({required List<SupplyModel> supplies, required int index, required String carId}) async {
+    loading = true;
+    final result = await repository.deleteSupply(supplies: supplies, index: index, carId: carId);
 
     loading = false;
     return result;

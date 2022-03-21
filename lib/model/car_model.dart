@@ -4,10 +4,11 @@ import 'package:bsu_control/model/car_status_model.dart';
 import 'package:bsu_control/model/itens_changes_model.dart';
 
 class CarModel {
+  String id;
   String resgaste;
   String modelo;
   String placa;
-  String km;
+  int km;
   String modeloPneu;
   String ticket;
   String prime;
@@ -22,16 +23,14 @@ class CarModel {
   bool enable;
 
   String obs;
-  String proxOleo;
-  String proxArref;
-
-  String id;
+  int proxOleo;
+  int proxArref;
 
   CarModel(
       {this.resgaste = "",
       this.modelo = "",
       this.placa = "",
-      this.km = "",
+      this.km = 0,
       this.modeloPneu = "",
       this.ticket = "",
       this.prime = "",
@@ -44,14 +43,14 @@ class CarModel {
       this.enable = true,
       this.obs = "",
       this.id = "",
-      this.proxOleo = "",
-      this.proxArref = ""});
+      this.proxOleo = 0,
+      this.proxArref = 0});
 
   factory CarModel.from(Map<String, dynamic> json) => CarModel(
       resgaste: json["resgaste"],
       modelo: json["modelo"],
       placa: json["placa"],
-      km: json["km"],
+      km: int.parse(json["km"].toString()),
       modeloPneu: json["modeloPneu"],
       ticket: json["ticket"],
       prime: json["prime"],

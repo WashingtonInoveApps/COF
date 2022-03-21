@@ -48,6 +48,7 @@ class _LoginPageState extends State<LoginPage> {
         Scaffold(
           appBar: const AppBarCustom(
             menu: false,
+            page: 3,
           ),
           body: FutureBuilder<bool>(
               future: controller.getUserDBLocal(),
@@ -64,6 +65,26 @@ class _LoginPageState extends State<LoginPage> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
+                          createUser
+                              ? Row(
+                                  children: [
+                                    Text(
+                                      "Ainda não possui cadastro ?",
+                                      style: subtitleHint,
+                                    ),
+                                    TextButton(
+                                        onPressed: () async {
+                                          _controllerEmail.clear();
+                                          _controllerSenha.clear();
+                                          Navigator.of(context).push(MaterialPageRoute(builder: (context) => const UserPage()));
+                                        },
+                                        child: Text(
+                                          "Criar cadastro",
+                                          style: title.copyWith(color: Theme.of(context).primaryColor),
+                                        )),
+                                  ],
+                                )
+                              : Container(),
                           FieldText(
                             controller: _controllerEmail,
                             upper: false,
@@ -87,13 +108,6 @@ class _LoginPageState extends State<LoginPage> {
                             height: 50.0,
                             width: double.infinity,
                             child: ElevatedButton(
-                              onLongPress: createUser
-                                  ? () async {
-                                      _controllerEmail.clear();
-                                      _controllerSenha.clear();
-                                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => const UserPage()));
-                                    }
-                                  : null,
                               onPressed: () async {
                                 if (_key.currentState!.validate()) {
                                   controller.login(email: _controllerEmail.text, senha: _controllerSenha.text).then((value) async {
@@ -114,7 +128,7 @@ class _LoginPageState extends State<LoginPage> {
                                                 onPressedOK: () => Navigator.of(context).pop()));
                                       } else {
                                         await controller.saveUserDBLocal();
-                                        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const HomePage()));
+                                        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const HomePage(home: true,)));
                                       }
                                     }
                                   });

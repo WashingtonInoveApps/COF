@@ -128,87 +128,98 @@ class _CarMapaPageState extends State<CarMapaPage> {
 
                 return SingleChildScrollView(
                   padding: const EdgeInsets.all(10.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              "${widget.car.resgaste} - MAPA",
-                              style: titleHint,
+                  child: LayoutBuilder(
+                    
+                    builder: (context, constrains) {
+
+                      double width = constrains.maxWidth > 500 ? 500.0 : constrains.maxWidth;
+                      return Container(
+                        width: width,
+                        alignment: Alignment.center,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    "${widget.car.resgaste} - MAPA",
+                                    style: titleHint,
+                                  ),
+                                ),
+                                TextButton.icon(
+                                    style: TextButton.styleFrom(side: BorderSide(color: Theme.of(context).primaryColor)),
+                                    onPressed: () async {
+                                      await showDialog(
+                                          context: context,
+                                          builder: (context) => MapaWidget(
+                                                user: controller.user,
+                                                carId: widget.car.id,
+                                                onInsert: (value) async {
+                                                  await controller.insertMapaCar(mapa: value);
+                                                },
+                                              ));
+                                    },
+                                    icon: Icon(
+                                      Icons.add,
+                                      size: 20,
+                                      color: Theme.of(context).primaryColor,
+                                    ),
+                                    label: Text(
+                                      "Adicionar",
+                                      style: title.copyWith(color: Theme.of(context).primaryColor),
+                                    )),
+                              ],
                             ),
-                          ),
-                          TextButton.icon(
-                              style: TextButton.styleFrom(side: BorderSide(color: Theme.of(context).primaryColor)),
-                              onPressed: () async {
-                                await showDialog(
-                                    context: context,
-                                    builder: (context) => MapaWidget(
-                                          user: controller.user,
-                                          carId: widget.car.id,
-                                          onInsert: (value) async {
-                                            await controller.insertMapaCar(mapa: value);
-                                          },
-                                        ));
-                              },
-                              icon: Icon(
-                                Icons.add,
-                                size: 20,
-                                color: Theme.of(context).primaryColor,
-                              ),
-                              label: Text(
-                                "Adicionar",
-                                style: title.copyWith(color: Theme.of(context).primaryColor),
-                              )),
-                        ],
-                      ),
-                      const Divider(),
-                      const SizedBox(
-                        height: 5.0,
-                      ),
-                      mapas.isEmpty
-                          ? Center(
-                              child: Text(
-                                "Ops ! Nenhuma informação encontrada.",
-                                style: title,
-                              ),
-                            )
-                          : Column(
-                              children: List.generate(mapas.length, (index) {
-                                final kmPercorrido = int.parse(mapas[index].kmFinal) - int.parse(mapas[index].kmInicial);
-
-                                return GestureDetector(
-                                  onLongPress: (controller.user.id == mapas[index].user.id) || (controller.user.adm)
-                                      ? () async {
-                                          final result = await showDialog(
-                                              context: context,
-                                              builder: (context) => AlertMessage(
-                                                  title: "Atenção",
-                                                  message: "Deseja excluir esse registro ?",
-                                                  cancel: true,
-                                                  onPressedCancel: () => Navigator.of(context).pop(false),
-                                                  onPressedOK: () => Navigator.of(context).pop(true)));
-
-                                          if (result) {
-                                            controller.deleteCarMapa(id: mapas[index].id).then((value) {
-                                              if (!value) {
-                                                showDialog(
+                            const Divider(),
+                            const SizedBox(
+                              height: 5.0,
+                            ),
+                            mapas.isEmpty
+                                ? Center(
+                                    child: Text(
+                                      "Ops ! Nenhuma informação encontrada.",
+                                      style: title,
+                                    ),
+                                  )
+                                : Column(
+                                    children: List.generate(mapas.length, (index) {
+                                      final kmPercorrido = int.parse(mapas[index].kmFinal) - int.parse(mapas[index].kmInicial);
+                  
+                                      return GestureDetector(
+                                        onLongPress: (controller.user.id == mapas[index].user.id) || (controller.user.adm)
+                                            ? () async {
+                                                final result = await showDialog(
                                                     context: context,
                                                     builder: (context) => AlertMessage(
                                                         title: "Atenção",
-                                                        message: "Ops ! Falha ao excluir registro.",
-                                                        onPressedOK: () => Navigator.of(context).pop()));
+                                                        message: "Deseja excluir esse registro ?",
+                                                        cancel: true,
+                                                        onPressedCancel: () => Navigator.of(context).pop(false),
+                                                        onPressedOK: () => Navigator.of(context).pop(true)));
+                  
+                                                if (result) {
+                                                  controller.deleteCarMapa(id: mapas[index].id).then((value) {
+                                                    if (!value) {
+                                                      showDialog(
+                                                          context: context,
+                                                          builder: (context) => AlertMessage(
+                                                              title: "Atenção",
+                                                              message: "Ops ! Falha ao excluir registro.",
+                                                              onPressedOK: () => Navigator.of(context).pop()));
+                                                    }
+                                                  });
+                                                }
                                               }
-                                            });
-                                          }
-                                        }
-                                      : null,
-                                  child: cardMapa(mapas[index], kmPercorrido),
-                                );
-                              }),
-                            ),
-                    ],
+                                            : null,
+                                        child: cardMapa(mapas[index], kmPercorrido),
+                                      );
+                                    }),
+                                  ),
+                          ],
+                        ),
+                      );
+                    }
                   ),
                 );
               }),

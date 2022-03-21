@@ -1,9 +1,8 @@
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/model/car_model.dart';
 import 'package:bsu_control/src/car/car_mapa_page.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class CarCard extends StatelessWidget {
   final CarModel car;
@@ -29,6 +28,11 @@ class CarCard extends StatelessWidget {
                       "${car.resgaste} - ${car.modelo}",
                       style: title.copyWith(fontWeight: FontWeight.bold),
                     ),
+                  ),
+                  Icon(
+                    car.enable ? MdiIcons.checkCircle : MdiIcons.closeCircle,
+                    color: Theme.of(context).primaryColor,
+                    size: 20.0,
                   ),
                 ],
               ),
@@ -80,7 +84,7 @@ class CarCard extends StatelessWidget {
                     width: 5.0,
                   ),
                   Text(
-                    car.km,
+                    car.km.toString(),
                     style: title.copyWith(fontWeight: FontWeight.bold),
                   ),
                 ],

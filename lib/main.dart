@@ -5,13 +5,12 @@ import 'package:bsu_control/src/app_interface.dart';
 import 'package:bsu_control/src/firebase_repository.dart';
 import 'package:bsu_control/src/pages/login_page.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
-import 'package:responsive_framework/responsive_framework.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -69,7 +68,7 @@ class _AppWidgetState extends State<AppWidget> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'COF',
+      title: 'Controle de Frota',
       debugShowCheckedModeBanner: false,
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
@@ -79,16 +78,6 @@ class _AppWidgetState extends State<AppWidget> {
         Locale('pt'),
       ],
       theme: ThemeData(primarySwatch: Colors.red, scaffoldBackgroundColor: const Color.fromRGBO(251, 251, 251, 1)),
-      builder: (context, widget) => ResponsiveWrapper.builder(widget,
-          maxWidth: 1000,
-          minWidth: 480,
-          defaultScale: true,
-          breakpoints: const [
-            ResponsiveBreakpoint.resize(450, name: 'MOBILE'),
-            ResponsiveBreakpoint.resize(500, name: 'TABLET'),
-          ],
-          background: Container(color: const Color(0xFFF5F5F5))),
-      initialRoute: "/",
       home: const LoginPage(),
     );
   }

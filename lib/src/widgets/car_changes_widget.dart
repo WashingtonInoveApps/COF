@@ -1,6 +1,4 @@
 import 'dart:typed_data';
-import 'dart:ui';
-
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/model/car_changes_model.dart';
 import 'package:bsu_control/model/user_model.dart';
@@ -60,13 +58,14 @@ class _CarChangesWidgetState extends State<CarChangesWidget> {
       ),
       child: Stack(
         children: [
-          Container(
-            height: 250.0,
-            width: 380.0,
-            decoration: const BoxDecoration(image: DecorationImage(image: AssetImage("assets/car.jpg"), fit: BoxFit.contain)),
+          Center(
+            child: Container(
+              height: 250.0,
+              width: 380.0,
+              decoration: const BoxDecoration(image: DecorationImage(image: AssetImage("assets/car.jpg"), fit: BoxFit.contain)),
+            ),
           ),
-          Positioned(
-            top: 65.0,
+          Center(
             child: Listener(
               onPointerDown: (PointerDownEvent event) async {
                 RenderBox box = paintKey.currentContext!.findRenderObject()! as RenderBox;
@@ -185,7 +184,7 @@ class _CarChangesWidgetState extends State<CarChangesWidget> {
                 key: paintKey,
                 foregroundPainter: MyCustomPainter(changes: changes),
                 child: Container(
-                  height: 210.0,
+                  height: 250.0,
                   width: 380.0,
                   color: Colors.transparent,
                 ),
@@ -216,7 +215,7 @@ class MyCustomPainter extends CustomPainter {
     final points = changes.map((e) => Offset(e.dx, e.dy)).toList();
 
     for (int i = 0; i < points.length; i++) {
-      canvas.drawCircle(points[i], 10, changes[i].value ? paint1 : paint2);
+      canvas.drawCircle(points[i], 6, changes[i].value ? paint1 : paint2);
     }
   }
 
@@ -246,7 +245,7 @@ class _AddChangeState extends State<AddChange> {
         children: [
           GestureDetector(
               onTap: () async {
-                final result = await ImagePicker().pickImage(source: ImageSource.gallery);
+                final result = await ImagePicker().pickImage(source: ImageSource.gallery, imageQuality: 70);
 
                 if (result != null) {
                   image = await result.readAsBytes();

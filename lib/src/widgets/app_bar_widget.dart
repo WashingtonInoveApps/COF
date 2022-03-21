@@ -3,15 +3,15 @@ import 'package:bsu_control/src/car/cars_page.dart';
 import 'package:bsu_control/src/checklist/checklist_page.dart';
 import 'package:bsu_control/src/pages/home_page.dart';
 import 'package:bsu_control/src/pages/login_page.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:quds_popup_menu/quds_popup_menu.dart';
 
 class AppBarCustom extends StatelessWidget implements PreferredSizeWidget {
-  const AppBarCustom({Key? key, this.menu = true, this.onBack}) : super(key: key);
+  const AppBarCustom({Key? key, this.menu = true, this.onBack, this.page = -1}) : super(key: key);
 
   final bool menu;
+  final int page;
   final Function()? onBack;
 
   @override
@@ -28,17 +28,16 @@ class AppBarCustom extends StatelessWidget implements PreferredSizeWidget {
             child: Row(
               children: [
                 Expanded(
-                  child: Column(
+                  child: Row(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        "Controle Operacional de Frota",
+                        "COF ",
                         style: titleHead,
                       ),
                       Text(
-                        "Batalhão de Socorro e Urgência",
+                        "- Controle Operacional de Frota",
                         style: subtitleHead,
                       ),
                     ],
@@ -55,7 +54,7 @@ class AppBarCustom extends StatelessWidget implements PreferredSizeWidget {
                                 style: title,
                               ),
                               onPressed: () {
-                                Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const HomePage()));
+                                if (page != 0) Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const HomePage()));
                               }),
                           QudsPopupMenuItem(
                               leading: Icon(MdiIcons.checkboxMultipleMarked, size: 25, color: Theme.of(context).primaryColor),
@@ -64,7 +63,7 @@ class AppBarCustom extends StatelessWidget implements PreferredSizeWidget {
                                 style: title,
                               ),
                               onPressed: () {
-                                Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const CheckListPage()));
+                                if (page != 1) Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const CheckListPage()));
                               }),
                           QudsPopupMenuItem(
                               leading: Icon(MdiIcons.car, size: 25, color: Theme.of(context).primaryColor),
@@ -73,7 +72,7 @@ class AppBarCustom extends StatelessWidget implements PreferredSizeWidget {
                                 style: title,
                               ),
                               onPressed: () {
-                                Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const CarsPage()));
+                                if (page != 2) Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const CarsPage()));
                               }),
                           QudsPopupMenuDivider(),
                           QudsPopupMenuItem(
@@ -87,7 +86,9 @@ class AppBarCustom extends StatelessWidget implements PreferredSizeWidget {
                                 style: title,
                               ),
                               onPressed: () {
-                                Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const LoginPage(exit: true)));
+                                if (page != 3) {
+                                  Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const LoginPage(exit: true)));
+                                }
                               }),
                         ],
                         child: const Icon(Icons.menu, size: 25, color: Colors.white))

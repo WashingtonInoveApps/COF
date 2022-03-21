@@ -18,6 +18,11 @@
             "src": "web/icons/cof.png",
             "sizes": "512x512",
             "type": "image/png"
+        },
+        {
+            "src": "web/favicon-16x16.png",
+            "sizes": "16x16",
+            "type": "image/png"
         }
     ]
 }

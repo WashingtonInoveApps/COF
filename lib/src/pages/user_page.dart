@@ -82,7 +82,7 @@ class _UserPageState extends State<UserPage> {
                             FieldText(
                               inputType: TextInputType.number,
                               hint: "MATRÍCULA",
-                              validation: Validation.validatorNumber,
+                              validation: Validation.validatorPreenchimento,
                               onSaved: (text) {
                                 user.matricula = text!;
                               },
@@ -165,7 +165,6 @@ class _UserPageState extends State<UserPage> {
                         child: ElevatedButton(
                           onPressed: () async {
                             if (_key.currentState!.validate()) {
-                              
                               _key.currentState!.save();
                               controller.createUser(user: user, password: _controllerPassword.text).then((value) async {
                                 await showDialog(

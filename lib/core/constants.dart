@@ -2,18 +2,19 @@ import 'package:bsu_control/model/itens_changes_model.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-final title = GoogleFonts.nunitoSans(fontSize: 15.0, color: Colors.black);
+final title = GoogleFonts.nunitoSans(fontSize: 14.0, color: Colors.black);
 final titleHead = GoogleFonts.nunitoSans(fontSize: 18.0, color: Colors.white, fontWeight: FontWeight.bold);
 final titleButton = GoogleFonts.nunitoSans(fontSize: 14.0, fontWeight: FontWeight.bold, color: Colors.white);
-final titleHint = GoogleFonts.nunitoSans(fontSize: 15.0, color: Colors.grey);
+final titleHint = GoogleFonts.nunitoSans(fontSize: 14.0, color: Colors.grey);
 
-final subtitle = GoogleFonts.nunitoSans(fontSize: 14.0, color: Colors.black);
-final subtitleHead = GoogleFonts.nunitoSans(fontSize: 14.0, color: Colors.white);
-final subtitleHint = GoogleFonts.nunitoSans(fontSize: 14.0, color: Colors.grey);
+final subtitle = GoogleFonts.nunitoSans(fontSize: 12.0, color: Colors.black);
+final subtitleHead = GoogleFonts.nunitoSans(fontSize: 16.0, color: Colors.white);
+final subtitleHint = GoogleFonts.nunitoSans(fontSize: 12.0, color: Colors.grey);
 
 final alfas = ["ALFA 1", "ALFA 2", "ALFA 3", "ALFA 4", "ALFA 5", "ALFA 6"];
 final carsType = ["AMBULÂNCIA", "AUTO BOMBA TANQUE", "CAMINHÃO", "PICK UP"];
 final statusType = ["AR CONDICIONADO", "VAZAMENTO", "ÉLETRICOS", "MÊCANICOS", "PNEU", "DIREÇÃO", "FREIO"];
+final unidades = ["BSU", "1BBM"];
 
 final listItensEletric = [
   ItemModel(description: "AR CONDICIONADO"),

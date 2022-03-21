@@ -60,6 +60,21 @@ mixin _$AppController on _AppControllerBase, Store {
     });
   }
 
+  final _$unidadeAtom = Atom(name: '_AppControllerBase.unidade');
+
+  @override
+  String get unidade {
+    _$unidadeAtom.reportRead();
+    return super.unidade;
+  }
+
+  @override
+  set unidade(String value) {
+    _$unidadeAtom.reportWrite(value, super.unidade, () {
+      super.unidade = value;
+    });
+  }
+
   final _$isLoggedAtom = Atom(name: '_AppControllerBase.isLogged');
 
   @override
@@ -265,6 +280,18 @@ mixin _$AppController on _AppControllerBase, Store {
     return _$deleteCarMapaAsyncAction.run(() => super.deleteCarMapa(id: id));
   }
 
+  final _$deleteSupplyAsyncAction =
+      AsyncAction('_AppControllerBase.deleteSupply');
+
+  @override
+  Future<bool> deleteSupply(
+      {required List<SupplyModel> supplies,
+      required int index,
+      required String carId}) {
+    return _$deleteSupplyAsyncAction.run(() =>
+        super.deleteSupply(supplies: supplies, index: index, carId: carId));
+  }
+
   final _$_AppControllerBaseActionController =
       ActionController(name: '_AppControllerBase');
 
@@ -316,6 +343,7 @@ mixin _$AppController on _AppControllerBase, Store {
   String toString() {
     return '''
 user: ${user},
+unidade: ${unidade},
 isLogged: ${isLogged},
 loading: ${loading},
 date: ${date},

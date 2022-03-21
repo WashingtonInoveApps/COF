@@ -23,7 +23,9 @@ class _CarsPageState extends State<CarsPage> {
     return WillPopScope(
       onWillPop: () async => false,
       child: Scaffold(
-        appBar: const AppBarCustom(),
+        appBar: const AppBarCustom(
+          page: 2,
+        ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(10),
           child: Column(

@@ -1,8 +1,10 @@
 import 'dart:typed_data';
+
 import 'package:bsu_control/model/car_mapa_model.dart';
 import 'package:bsu_control/model/car_model.dart';
 import 'package:bsu_control/model/car_status_model.dart';
 import 'package:bsu_control/model/check_list_model.dart';
+import 'package:bsu_control/model/supply_model.dart';
 import 'package:bsu_control/model/user_model.dart';
 import 'package:bsu_control/src/app_interface.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -13,13 +15,13 @@ class FireRepository implements IAppRepository {
   final _instance = FirebaseFirestore.instance;
 
   @override
-  Future<bool> saveCar({required CarModel car, String? id}) async {
+  Future<bool> saveCar({required CarModel car, required String unidade, String? id}) async {
     try {
       var doc = _instance.collection("cars").doc(id);
       car.id = doc.id;
 
       for (var change in car.changes) {
-        if (change.fileImage != null) change.image = await _saveImage(image: change.fileImage!);
+        if (change.fileImage != null) change.image = await _saveImage(image: change.fileImage!, unidade: unidade, id: car.id);
       }
 
       (id == null) ? await doc.set(car.toJson()) : await doc.update(car.toJson());
@@ -31,7 +33,7 @@ class FireRepository implements IAppRepository {
   }
 
   @override
-  Future<bool> saveCheckList({required CheckListModel checkList, required int updateCar, String? id}) async {
+  Future<bool> saveCheckList({required CheckListModel checkList, required int updateCar, required String unidade, String? id}) async {
     try {
       var doc = _instance.collection("checklist").doc(id);
       var docCar = _instance.collection("cars").doc(checkList.checkCar.car.id);
@@ -40,12 +42,30 @@ class FireRepository implements IAppRepository {
       await _instance.runTransaction((trans) async {
         if (updateCar == 1) {
           for (var change in checkList.checkCar.car.changes) {
-            if (change.fileImage != null) change.image = await _saveImage(image: change.fileImage!);
+            if (change.fileImage != null) {
+              change.image = await _saveImage(image: change.fileImage!, unidade: unidade, id: checkList.checkCar.car.id);
+            }
           }
         }
 
+        if (checkList.supply.isNotEmpty) {
+          for (var item in checkList.supply) {
+            final docSupply = docCar.collection('supplies').doc(item.id);
+            if (item.id == null) {
+              item.idCheckList = checkList.id;
+              item.id = docSupply.id;
+              trans.set(docSupply, item.toJson());
+            }
+          }
+        }
+
+        if (id == null) {
+          trans.set(doc, checkList.toJson());
+        } else {
+          trans.update(doc, checkList.toJson());
+        }
+
         trans.update(docCar, {"changes": List<dynamic>.from(checkList.checkCar.car.changes.map((e) => e.toJson())), "km": checkList.checkCar.car.km});
-        (id == null) ? trans.set(doc, checkList.toJson()) : trans.update(doc, checkList.toJson());
       });
 
       return true;
@@ -54,9 +74,10 @@ class FireRepository implements IAppRepository {
     }
   }
 
-  Future<String> _saveImage({required Uint8List image}) async {
+  Future<String> _saveImage({required Uint8List image, required String unidade, required String id}) async {
     String _arq = "${DateTime.now().millisecondsSinceEpoch.toString()}.png";
-    TaskSnapshot upload = await FirebaseStorage.instance.ref().child('imagens').child(_arq).putData(image);
+    TaskSnapshot upload =
+        await FirebaseStorage.instance.ref().child('imagens').child(unidade.replaceAll(' ', "")).child(id).child(_arq).putData(image);
 
     return await upload.ref.getDownloadURL();
   }
@@ -188,6 +209,26 @@ class FireRepository implements IAppRepository {
   Future<bool> deleteCarMapa({required String id}) async {
     try {
       await _instance.collection("mapas").doc(id).delete();
+
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  @override
+  Future<bool> deleteSupply({required List<SupplyModel> supplies, required int index, required String carId}) async {
+    try {
+      final clone = List<SupplyModel>.from(supplies);
+
+      clone.removeAt(index);
+      await _instance.runTransaction((trans) async {
+        final docSupply = _instance.collection("cars").doc(carId).collection('supplies').doc(supplies[index].id);
+        final docCheckList = _instance.collection('checklist').doc(supplies[index].idCheckList);
+
+        trans.delete(docSupply);
+        trans.update(docCheckList, {'supply': List<dynamic>.from((clone.map((e) => e.toJson())).toList())});
+      });
 
       return true;
     } catch (e) {

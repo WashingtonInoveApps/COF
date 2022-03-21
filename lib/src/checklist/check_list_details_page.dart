@@ -3,7 +3,6 @@ import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/validation.dart';
 import 'package:bsu_control/model/check_list_model.dart';
 import 'package:bsu_control/model/itens_changes_model.dart';
-import 'package:bsu_control/src/widgets/alert_message.dart';
 import 'package:bsu_control/src/widgets/app_bar_widget.dart';
 import 'package:bsu_control/src/widgets/car_changes_widget.dart';
 import 'package:bsu_control/src/widgets/car_supply_widget.dart';
@@ -96,12 +95,12 @@ class _CheckListDetailsPageState extends State<CheckListDetailsPage> {
         children: [
           SingleChildScrollView(
             child: LayoutBuilder(builder: (context, constrains) {
-              double width = constrains.maxWidth > 500 ? constrains.maxWidth * 0.5 : constrains.maxWidth;
+              double width = constrains.maxWidth > 500 ? 500.0 : constrains.maxWidth;
 
               return Column(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.all(10.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
                     child: Column(
                       children: [
                         Row(
@@ -112,7 +111,7 @@ class _CheckListDetailsPageState extends State<CheckListDetailsPage> {
                               children: [
                                 Text(
                                   "CHECKLIST VEICULAR",
-                                  style: titleHint,
+                                  style: title.copyWith(fontWeight: FontWeight.bold),
                                 ),
                                 Text(
                                   formatDate(checkList.date),
@@ -174,272 +173,275 @@ class _CheckListDetailsPageState extends State<CheckListDetailsPage> {
                       ],
                     ),
                   ),
-                  Wrap(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(10.0),
-                        width: width,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    "${checkList.resgate} - ${checkList.alfa}",
+                  Center(
+                    child: Wrap(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10.0),
+                          width: width,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      "${checkList.resgate} - ${checkList.alfa}",
+                                      style: title.copyWith(fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                  Text(
+                                    checkList.pb,
                                     style: title.copyWith(fontWeight: FontWeight.bold),
                                   ),
-                                ),
-                                Text(
-                                  checkList.pb,
-                                  style: title.copyWith(fontWeight: FontWeight.bold),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(
-                              height: 10.0,
-                            ),
-                            Text(
-                              "Condutor",
-                              style: subtitleHint,
-                            ),
-                            const SizedBox(
-                              height: 5.0,
-                            ),
-                            Text(
-                              "${checkList.user.name} - ${checkList.user.matricula}",
-                              style: title.copyWith(fontWeight: FontWeight.bold),
-                            ),
-                            const SizedBox(
-                              height: 10.0,
-                            ),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        "KM Inicial",
-                                        style: subtitleHint,
-                                      ),
-                                      const SizedBox(
-                                        width: 10.0,
-                                      ),
-                                      Text(
-                                        checkList.kmInicial,
-                                        style: title.copyWith(fontWeight: FontWeight.bold),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(
-                                  width: 15.0,
-                                ),
-                                Expanded(
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                    children: [
-                                      Text(
-                                        "KM Final",
-                                        style: subtitleHint,
-                                      ),
-                                      const SizedBox(
-                                        width: 10.0,
-                                      ),
-                                      Text(
-                                        checkList.kmFinal.isEmpty ? "---" : checkList.kmFinal,
-                                        style: title.copyWith(fontWeight: FontWeight.bold),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(
-                              height: 20.0,
-                            ),
-                            Text(
-                              "NÍVEIS DOS FLUÍDOS",
-                              style: titleHint,
-                            ),
-                            const Divider(),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(10),
-                                  decoration: BoxDecoration(border: Border.all(color: Colors.grey), borderRadius: BorderRadius.circular(5)),
-                                  child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      RotatedBox(
-                                        quarterTurns: 3,
-                                        child: Text(
-                                          "ÓLEO DO MOTOR",
-                                          style: subtitle,
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 10.0,
+                              ),
+                              Text(
+                                "Condutor",
+                                style: subtitleHint,
+                              ),
+                              const SizedBox(
+                                height: 5.0,
+                              ),
+                              Text(
+                                "${checkList.user.name} - ${checkList.user.matricula}",
+                                style: title.copyWith(fontWeight: FontWeight.bold),
+                              ),
+                              const SizedBox(
+                                height: 10.0,
+                              ),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          "KM Inicial",
+                                          style: subtitleHint,
                                         ),
-                                      ),
-                                      SfSlider.vertical(
-                                        min: 1.0,
-                                        max: 3.0,
-                                        stepSize: 0.5,
-                                        value: checkList.checkCar.oleoMotor,
-                                        interval: 1,
-                                        showTicks: true,
-                                        activeColor: Colors.brown,
-                                        inactiveColor: Colors.brown.shade100,
-                                        minorTicksPerInterval: 1,
-                                        onChanged: (value) {},
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(
-                                  height: 10.0,
-                                ),
-                                Container(
-                                  padding: const EdgeInsets.all(10),
-                                  decoration: BoxDecoration(border: Border.all(color: Colors.grey), borderRadius: BorderRadius.circular(5)),
-                                  child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      RotatedBox(
-                                        quarterTurns: 3,
-                                        child: Text(
-                                          "ÓLEO HIDRAÚLICO",
-                                          style: subtitle,
+                                        const SizedBox(
+                                          width: 10.0,
                                         ),
-                                      ),
-                                      SfSlider.vertical(
-                                        min: 1.0,
-                                        max: 3.0,
-                                        stepSize: 0.5,
-                                        value: checkList.checkCar.oleoHidra,
-                                        interval: 1,
-                                        showTicks: true,
-                                        activeColor: Colors.red,
-                                        inactiveColor: Colors.red.shade100,
-                                        minorTicksPerInterval: 1,
-                                        onChanged: (value) {},
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(
-                                  height: 10.0,
-                                ),
-                                Container(
-                                  padding: const EdgeInsets.all(10),
-                                  decoration: BoxDecoration(border: Border.all(color: Colors.grey), borderRadius: BorderRadius.circular(5)),
-                                  child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      RotatedBox(
-                                        quarterTurns: 3,
-                                        child: Text(
-                                          "ÓLEO DE FREIO",
-                                          style: subtitle,
+                                        Text(
+                                          checkList.kmInicial,
+                                          style: title.copyWith(fontWeight: FontWeight.bold),
                                         ),
-                                      ),
-                                      SfSlider.vertical(
-                                        min: 1.0,
-                                        max: 3.0,
-                                        stepSize: 0.5,
-                                        value: checkList.checkCar.oleoFreio,
-                                        interval: 1,
-                                        showTicks: true,
-                                        activeColor: Colors.grey,
-                                        inactiveColor: Colors.grey.shade200,
-                                        minorTicksPerInterval: 1,
-                                        onChanged: (value) {},
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(
-                                  height: 10.0,
-                                ),
-                                Container(
-                                  padding: const EdgeInsets.all(10),
-                                  decoration: BoxDecoration(border: Border.all(color: Colors.grey), borderRadius: BorderRadius.circular(5)),
-                                  child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      RotatedBox(
-                                        quarterTurns: 3,
-                                        child: Text(
-                                          "ÁGUA DO RADIADOR",
-                                          style: subtitle,
+                                  const SizedBox(
+                                    width: 15.0,
+                                  ),
+                                  Expanded(
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                      children: [
+                                        Text(
+                                          "KM Final",
+                                          style: subtitleHint,
                                         ),
-                                      ),
-                                      SfSlider.vertical(
-                                        min: 1.0,
-                                        max: 3.0,
-                                        stepSize: 0.5,
-                                        value: checkList.checkCar.aguaRad,
-                                        interval: 1,
-                                        showTicks: true,
-                                        activeColor: Colors.blue,
-                                        inactiveColor: Colors.blue.shade100,
-                                        minorTicksPerInterval: 1,
-                                        onChanged: (value) {},
-                                      ),
-                                    ],
+                                        const SizedBox(
+                                          width: 10.0,
+                                        ),
+                                        Text(
+                                          checkList.kmFinal.isEmpty ? "---" : checkList.kmFinal,
+                                          style: title.copyWith(fontWeight: FontWeight.bold),
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                            Wrap(children: List.generate(itens.length, (index) => changesListWidget(itensChanges: itens[index]))),
-                          ],
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 20.0,
+                              ),
+                              Text(
+                                "NÍVEIS DOS FLUÍDOS",
+                                style: titleHint,
+                              ),
+                              const Divider(),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(10),
+                                    decoration: BoxDecoration(border: Border.all(color: Colors.grey), borderRadius: BorderRadius.circular(5)),
+                                    child: Row(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        RotatedBox(
+                                          quarterTurns: 3,
+                                          child: Text(
+                                            "ÓLEO DO MOTOR",
+                                            style: subtitle,
+                                          ),
+                                        ),
+                                        SfSlider.vertical(
+                                          min: 1.0,
+                                          max: 3.0,
+                                          stepSize: 0.5,
+                                          value: checkList.checkCar.oleoMotor,
+                                          interval: 1,
+                                          showTicks: true,
+                                          activeColor: Colors.brown,
+                                          inactiveColor: Colors.brown.shade100,
+                                          minorTicksPerInterval: 1,
+                                          onChanged: (value) {},
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    height: 10.0,
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.all(10),
+                                    decoration: BoxDecoration(border: Border.all(color: Colors.grey), borderRadius: BorderRadius.circular(5)),
+                                    child: Row(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        RotatedBox(
+                                          quarterTurns: 3,
+                                          child: Text(
+                                            "ÓLEO HIDRAÚLICO",
+                                            style: subtitle,
+                                          ),
+                                        ),
+                                        SfSlider.vertical(
+                                          min: 1.0,
+                                          max: 3.0,
+                                          stepSize: 0.5,
+                                          value: checkList.checkCar.oleoHidra,
+                                          interval: 1,
+                                          showTicks: true,
+                                          activeColor: Colors.red,
+                                          inactiveColor: Colors.red.shade100,
+                                          minorTicksPerInterval: 1,
+                                          onChanged: (value) {},
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    height: 10.0,
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.all(10),
+                                    decoration: BoxDecoration(border: Border.all(color: Colors.grey), borderRadius: BorderRadius.circular(5)),
+                                    child: Row(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        RotatedBox(
+                                          quarterTurns: 3,
+                                          child: Text(
+                                            "ÓLEO DE FREIO",
+                                            style: subtitle,
+                                          ),
+                                        ),
+                                        SfSlider.vertical(
+                                          min: 1.0,
+                                          max: 3.0,
+                                          stepSize: 0.5,
+                                          value: checkList.checkCar.oleoFreio,
+                                          interval: 1,
+                                          showTicks: true,
+                                          activeColor: Colors.grey,
+                                          inactiveColor: Colors.grey.shade200,
+                                          minorTicksPerInterval: 1,
+                                          onChanged: (value) {},
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    height: 10.0,
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.all(10),
+                                    decoration: BoxDecoration(border: Border.all(color: Colors.grey), borderRadius: BorderRadius.circular(5)),
+                                    child: Row(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        RotatedBox(
+                                          quarterTurns: 3,
+                                          child: Text(
+                                            "ÁGUA DO RADIADOR",
+                                            style: subtitle,
+                                          ),
+                                        ),
+                                        SfSlider.vertical(
+                                          min: 1.0,
+                                          max: 3.0,
+                                          stepSize: 0.5,
+                                          value: checkList.checkCar.aguaRad,
+                                          interval: 1,
+                                          showTicks: true,
+                                          activeColor: Colors.blue,
+                                          inactiveColor: Colors.blue.shade100,
+                                          minorTicksPerInterval: 1,
+                                          onChanged: (value) {},
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Wrap(children: List.generate(itens.length, (index) => changesListWidget(itensChanges: itens[index]))),
+                            ],
+                          ),
                         ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.all(10.0),
-                        width: width,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "ABASTECIMENTO",
-                              style: titleHint,
-                            ),
-                            const Divider(),
-                            const SizedBox(
-                              height: 5.0,
-                            ),
-                            (checkList.supply.isEmpty)
-                                ? Center(child: Text("------", style: title))
-                                : Column(
-                                    children: List.generate(checkList.supply.length, (index) => CardCarSupply(supply: checkList.supply[index])),
-                                  ),
-                            const SizedBox(
-                              height: 5.0,
-                            ),
-                            CarChangesWidget(
-                              add: false,
-                              user: checkList.user,
-                              initValue: checkList.checkCar.car.changes,
-                            ),
-                            const SizedBox(
-                              height: 15.0,
-                            ),
-                            Text(
-                              "OUTRAS OBSERVAÇÕES",
-                              style: subtitleHint,
-                            ),
-                            const Divider(),
-                            Text(
-                              checkList.obs,
-                              style: title,
-                            ),
-                            const SizedBox(
-                              height: 50.0,
-                            ),
-                          ],
+                        Container(
+                          padding: const EdgeInsets.all(10.0),
+                          width: width,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "ABASTECIMENTO",
+                                style: titleHint,
+                              ),
+                              const Divider(),
+                              const SizedBox(
+                                height: 5.0,
+                              ),
+                              (checkList.supply.isEmpty)
+                                  ? Center(child: Text("-", style: title))
+                                  : Column(
+                                      children: List.generate(
+                                          checkList.supply.length, (index) => CardCarSupply(details: true, supply: checkList.supply[index])),
+                                    ),
+                              const SizedBox(
+                                height: 5.0,
+                              ),
+                              CarChangesWidget(
+                                add: false,
+                                user: checkList.user,
+                                initValue: checkList.checkCar.car.changes,
+                              ),
+                              const SizedBox(
+                                height: 15.0,
+                              ),
+                              Text(
+                                "OUTRAS OBSERVAÇÕES",
+                                style: titleHint,
+                              ),
+                              const Divider(),
+                              Text(
+                                checkList.obs,
+                                style: title,
+                              ),
+                              const SizedBox(
+                                height: 50.0,
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                   (checkList.dateFinish == null)
                       ? Container()
