@@ -24,14 +24,23 @@ class CarCard extends StatelessWidget {
               Row(
                 children: [
                   Expanded(
-                    child: Text(
-                      "${car.resgaste} - ${car.modelo}",
-                      style: title.copyWith(fontWeight: FontWeight.bold),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          car.prefix,
+                          style: title.copyWith(fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          car.model,
+                          style: title.copyWith(color: Colors.grey),
+                        ),
+                      ],
                     ),
                   ),
                   Icon(
                     car.enable ? MdiIcons.checkCircle : MdiIcons.closeCircle,
-                    color: Theme.of(context).primaryColor,
+                    color: car.enable ? Colors.green : Colors.red,
                     size: 20.0,
                   ),
                 ],
@@ -42,7 +51,8 @@ class CarCard extends StatelessWidget {
                 children: [
                   car.adm
                       ? SizedBox(
-                          width: 75.0,
+                        height: 35,
+                          width: 80.0,
                           child: TextButton(
                               style: TextButton.styleFrom(side: BorderSide(color: Theme.of(context).primaryColor)),
                               onPressed: () {
@@ -70,7 +80,7 @@ class CarCard extends StatelessWidget {
                     width: 5.0,
                   ),
                   Text(
-                    car.placa,
+                    car.plate,
                     style: title.copyWith(fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(

@@ -38,7 +38,7 @@ class _CarMapaPageState extends State<CarMapaPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Text(
-                    mapa.origem,
+                    mapa.origin,
                     style: subtitle.copyWith(fontWeight: FontWeight.bold),
                   ),
                   Icon(
@@ -47,7 +47,7 @@ class _CarMapaPageState extends State<CarMapaPage> {
                     color: Theme.of(context).primaryColor,
                   ),
                   Text(
-                    mapa.destino,
+                    mapa.destiny,
                     style: subtitle.copyWith(fontWeight: FontWeight.bold),
                   ),
                 ],
@@ -67,7 +67,7 @@ class _CarMapaPageState extends State<CarMapaPage> {
                           width: 10.0,
                         ),
                         Text(
-                          mapa.kmInicial,
+                          mapa.kmStart,
                           style: title.copyWith(fontWeight: FontWeight.bold),
                         ),
                       ],
@@ -119,7 +119,7 @@ class _CarMapaPageState extends State<CarMapaPage> {
       body: Stack(
         children: [
           StreamBuilder<List<CarMapaModel>>(
-              stream: controller.listenMapas(carId: widget.car.id),
+              stream: controller.listenMapas(carId: widget.car.id!),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) return const LinearProgressIndicator();
 
@@ -128,99 +128,95 @@ class _CarMapaPageState extends State<CarMapaPage> {
 
                 return SingleChildScrollView(
                   padding: const EdgeInsets.all(10.0),
-                  child: LayoutBuilder(
-                    
-                    builder: (context, constrains) {
-
-                      double width = constrains.maxWidth > 500 ? 500.0 : constrains.maxWidth;
-                      return Container(
-                        width: width,
-                        alignment: Alignment.center,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    "${widget.car.resgaste} - MAPA",
-                                    style: titleHint,
-                                  ),
+                  child: LayoutBuilder(builder: (context, constrains) {
+                    double width = constrains.maxWidth > 500 ? 500.0 : constrains.maxWidth;
+                    return Container(
+                      width: width,
+                      alignment: Alignment.center,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  "${widget.car.prefix} - MAPA",
+                                  style: titleHint,
                                 ),
-                                TextButton.icon(
-                                    style: TextButton.styleFrom(side: BorderSide(color: Theme.of(context).primaryColor)),
-                                    onPressed: () async {
-                                      await showDialog(
-                                          context: context,
-                                          builder: (context) => MapaWidget(
-                                                user: controller.user,
-                                                carId: widget.car.id,
-                                                onInsert: (value) async {
-                                                  await controller.insertMapaCar(mapa: value);
-                                                },
-                                              ));
-                                    },
-                                    icon: Icon(
-                                      Icons.add,
-                                      size: 20,
-                                      color: Theme.of(context).primaryColor,
-                                    ),
-                                    label: Text(
-                                      "Adicionar",
-                                      style: title.copyWith(color: Theme.of(context).primaryColor),
-                                    )),
-                              ],
-                            ),
-                            const Divider(),
-                            const SizedBox(
-                              height: 5.0,
-                            ),
-                            mapas.isEmpty
-                                ? Center(
-                                    child: Text(
-                                      "Ops ! Nenhuma informação encontrada.",
-                                      style: title,
-                                    ),
-                                  )
-                                : Column(
-                                    children: List.generate(mapas.length, (index) {
-                                      final kmPercorrido = int.parse(mapas[index].kmFinal) - int.parse(mapas[index].kmInicial);
-                  
-                                      return GestureDetector(
-                                        onLongPress: (controller.user.id == mapas[index].user.id) || (controller.user.adm)
-                                            ? () async {
-                                                final result = await showDialog(
-                                                    context: context,
-                                                    builder: (context) => AlertMessage(
-                                                        title: "Atenção",
-                                                        message: "Deseja excluir esse registro ?",
-                                                        cancel: true,
-                                                        onPressedCancel: () => Navigator.of(context).pop(false),
-                                                        onPressedOK: () => Navigator.of(context).pop(true)));
-                  
-                                                if (result) {
-                                                  controller.deleteCarMapa(id: mapas[index].id).then((value) {
-                                                    if (!value) {
-                                                      showDialog(
-                                                          context: context,
-                                                          builder: (context) => AlertMessage(
-                                                              title: "Atenção",
-                                                              message: "Ops ! Falha ao excluir registro.",
-                                                              onPressedOK: () => Navigator.of(context).pop()));
-                                                    }
-                                                  });
-                                                }
-                                              }
-                                            : null,
-                                        child: cardMapa(mapas[index], kmPercorrido),
-                                      );
-                                    }),
+                              ),
+                              TextButton.icon(
+                                  style: TextButton.styleFrom(side: BorderSide(color: Theme.of(context).primaryColor)),
+                                  onPressed: () async {
+                                    await showDialog(
+                                        context: context,
+                                        builder: (context) => MapaWidget(
+                                              user: controller.user,
+                                              carId: widget.car.id!,
+                                              onInsert: (value) async {
+                                                await controller.insertMapaCar(mapa: value);
+                                              },
+                                            ));
+                                  },
+                                  icon: Icon(
+                                    Icons.add,
+                                    size: 20,
+                                    color: Theme.of(context).primaryColor,
                                   ),
-                          ],
-                        ),
-                      );
-                    }
-                  ),
+                                  label: Text(
+                                    "Adicionar",
+                                    style: title.copyWith(color: Theme.of(context).primaryColor),
+                                  )),
+                            ],
+                          ),
+                          const Divider(),
+                          const SizedBox(
+                            height: 5.0,
+                          ),
+                          mapas.isEmpty
+                              ? Center(
+                                  child: Text(
+                                    "Ops ! Nenhuma informação encontrada.",
+                                    style: title,
+                                  ),
+                                )
+                              : Column(
+                                  children: List.generate(mapas.length, (index) {
+                                    final kmPercorrido = int.parse(mapas[index].kmFinal) - int.parse(mapas[index].kmStart);
+
+                                    return GestureDetector(
+                                      onLongPress: (controller.user.id == mapas[index].user.id) || (controller.user.adm)
+                                          ? () async {
+                                              final result = await showDialog(
+                                                  context: context,
+                                                  builder: (context) => AlertMessage(
+                                                      title: "Atenção",
+                                                      message: "Deseja excluir esse registro ?",
+                                                      cancel: true,
+                                                      onPressedCancel: () => Navigator.of(context).pop(false),
+                                                      onPressedOK: () => Navigator.of(context).pop(true)));
+
+                                              if (result) {
+                                                controller.deleteCarMapa(id: mapas[index].id).then((value) {
+                                                  if (!value) {
+                                                    showDialog(
+                                                        context: context,
+                                                        builder: (context) => AlertMessage(
+                                                            title: "Atenção",
+                                                            message: "Ops ! Falha ao excluir registro.",
+                                                            onPressedOK: () => Navigator.of(context).pop()));
+                                                  }
+                                                });
+                                              }
+                                            }
+                                          : null,
+                                      child: cardMapa(mapas[index], kmPercorrido),
+                                    );
+                                  }),
+                                ),
+                        ],
+                      ),
+                    );
+                  }),
                 );
               }),
           Observer(builder: (_) {
@@ -275,7 +271,7 @@ class _MapaWidgetState extends State<MapaWidget> {
               hint: "ORIGEM",
               validation: Validation.validatorPreenchimento,
               onSaved: (value) {
-                mapa.origem = value!;
+                mapa.origin = value!;
               },
             ),
             const SizedBox(
@@ -285,7 +281,7 @@ class _MapaWidgetState extends State<MapaWidget> {
               hint: "DESTINO",
               validation: Validation.validatorPreenchimento,
               onSaved: (value) {
-                mapa.destino = value!;
+                mapa.destiny = value!;
               },
             ),
             const SizedBox(
@@ -296,7 +292,7 @@ class _MapaWidgetState extends State<MapaWidget> {
               validation: Validation.validatorNumber,
               inputType: TextInputType.number,
               onSaved: (value) {
-                mapa.kmInicial = value!;
+                mapa.kmStart = value!;
               },
             ),
             const SizedBox(

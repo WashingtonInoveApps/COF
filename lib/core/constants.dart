@@ -58,7 +58,7 @@ final listItensEquip = [
 ];
 
 String formatDate(DateTime date, {bool outher = false, bool referenceDate = false}) {
-  final week = ["","Domingo", "Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado"];
+  final week = ["", "Domingo", "Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado"];
   if (outher) {
     return "${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year} - ${week[date.weekday]}";
   }

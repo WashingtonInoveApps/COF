@@ -1,26 +1,50 @@
+import 'dart:convert';
 import 'package:bsu_control/model/user_model.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 class SupplyModel {
   String? id;
-  String? idCheckList;
+  String? checklistId;
+  String? carId;
   UserModel user;
-  String kmAbastecimento;
+  String kmSupply;
   double litros;
   double value;
   DateTime date;
 
-  SupplyModel({this.id, this.idCheckList, required this.user , this.kmAbastecimento = "", this.litros = 0.0, this.value = 0.0, required this.date});
+  SupplyModel({this.id, this.checklistId, this.carId, required this.user , this.kmSupply = "", this.litros = 0.0, this.value = 0.0, required this.date});
 
-  factory SupplyModel.from(Map<String, dynamic> json) => SupplyModel(
-      id: json['id'],
-      idCheckList: json['idCheckList'],
-      user: UserModel.fromResume(json['user']),
-      kmAbastecimento: json["kmAbastecimento"],
-      litros: json["litros"],
-      value: json["value"],
-      date: json["date"] is DateTime ? json["date"] : (json["date"] as Timestamp).toDate());
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'checklistId': checklistId,
+      'carId': carId,
+      'user': user.toMapResume(),
+      'kmSupply': kmSupply,
+      'litros': litros,
+      'value': value,
+      'date': date.millisecondsSinceEpoch,
+      'referenceMonth': "${date.month.toString().padLeft(2, '0')}/${date.year}"
+    };
+  }
 
-  Map<String, dynamic> toJson() =>
-      {'id': id, "idCheckList": idCheckList, "user": user.toJsonResume(), "date": date, "kmAbastecimento": kmAbastecimento, "litros": litros, "value": value};
+  factory SupplyModel.fromMap(Map<String, dynamic> map) {
+    return SupplyModel(
+      id: map['id'],
+      checklistId: map['checklistId'],
+      carId: map['carId'],
+      user: UserModel.fromMapResume(map['user']),
+      kmSupply: map['kmSupply'] ?? '',
+      litros: map['litros']?.toDouble() ?? 0.0,
+      value: map['value']?.toDouble() ?? 0.0,
+      date: DateTime.fromMillisecondsSinceEpoch(map['date']),
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory SupplyModel.fromJson(String source) => SupplyModel.fromMap(json.decode(source));
+
+  @override
+  String toString() {
+    return 'SupplyModel(id: $id, checklistId: $checklistId, carId: $carId, user: $user, kmSupply: $kmSupply, litros: $litros, value: $value, date: $date)';
+  }
 }

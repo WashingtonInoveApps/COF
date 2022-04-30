@@ -1,7 +1,8 @@
+import 'dart:convert';
 import 'package:bsu_control/model/user_model.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CarStatusModel {
+  String? id;
   String type;
   String description;
   DateTime date;
@@ -9,16 +10,33 @@ class CarStatusModel {
   UserModel user;
   String local;
 
-  CarStatusModel({this.type = "", this.description = "", required this.date, this.value = false, required this.user, this.local = ""});
+  CarStatusModel({this.id, this.type = "", this.description = "", required this.date, this.value = false, required this.user, this.local = ""});
 
-  factory CarStatusModel.from(Map<String, dynamic> json) => CarStatusModel(
-      date: json["date"] is DateTime ? json["date"] : (json["date"] as Timestamp).toDate(),
-      user: UserModel.fromResume(json["user"]),
-      description: json["description"],
-      value: json["value"],
-      local: json["local"],
-      type: json["type"]);
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'type': type,
+      'description': description,
+      'date': date.millisecondsSinceEpoch,
+      'value': value,
+      'user': user.toMapResume(),
+      'local': local,
+    };
+  }
 
-  Map<String, dynamic> toJson() =>
-      {"date": date, "type": type, "description": description, "value": value, "local": local, "user": user.toJsonResume()};
+  factory CarStatusModel.fromMap(Map<String, dynamic> map) {
+    return CarStatusModel(
+      id: map['id'],
+      type: map['type'] ?? '',
+      description: map['description'] ?? '',
+      date: DateTime.fromMillisecondsSinceEpoch(map['date']),
+      value: map['value'] ?? false,
+      user: UserModel.fromMapResume(map['user']),
+      local: map['local'] ?? '',
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory CarStatusModel.fromJson(String source) => CarStatusModel.fromMap(json.decode(source));
 }

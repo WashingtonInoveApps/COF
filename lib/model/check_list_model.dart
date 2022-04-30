@@ -1,17 +1,17 @@
-import 'package:bsu_control/core/constants.dart';
-import 'package:bsu_control/model/car_model.dart';
+import 'dart:convert';
+
+import 'package:bsu_control/model/car_checklist.dart';
 import 'package:bsu_control/model/supply_model.dart';
 import 'package:bsu_control/model/user_model.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CheckListModel {
   UserModel user;
   String pb;
   String alfa;
-  String resgate;
-  String kmInicial;
+  String prefix;
+  String kmStart;
   String kmFinal;
-  String id;
+  String? id;
   String obs;
   bool enable;
   DateTime date;
@@ -27,73 +27,61 @@ class CheckListModel {
       this.pb = "",
       this.dateFinish,
       this.alfa = "",
-      this.resgate = "",
-      this.kmInicial = "",
+      this.prefix = "",
+      this.kmStart = "",
       this.kmFinal = "",
-      this.id = "",
+      this.id,
       this.enable = true,
       this.obs = ""});
 
-  factory CheckListModel.from(Map<String, dynamic> json) => CheckListModel(
-      id: json["id"],
-      date: json["date"] is DateTime ? json["date"] : (json["date"] as Timestamp).toDate(),
-      dateFinish: json["dateFinish"] == null ? null : (json["dateFinish"] is DateTime ? json["date"] : (json["date"] as Timestamp).toDate()),
-      user: UserModel.fromResume(json["user"]),
-      checkCar: CarCheckList.from(json["checkCar"]),
-      supply: List<SupplyModel>.from(json["supply"].map((s) => SupplyModel.from(s))),
-      pb: json["pb"],
-      alfa: json["alfa"],
-      resgate: json["resgate"],
-      kmInicial: json["kmInicial"],
-      kmFinal: json["kmFinal"],
-      enable: json["enable"],
-      obs: json["obs"]);
+  Map<String, dynamic> toMap() {
+    return {
+      'user': user.toMapResume(),
+      'pb': pb,
+      'alfa': alfa,
+      'prefix': prefix,
+      'kmStart': kmStart,
+      'kmFinal': kmFinal,
+      'id': id,
+      'obs': obs,
+      'enable': enable,
+      'date': date.millisecondsSinceEpoch,
+      'dateFinish': dateFinish?.millisecondsSinceEpoch,
+      'checkCar': checkCar.toMap(),
+      'supply': supply.map((x) => x.toMap()).toList(),
+      'referenceDate': "${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}",
+      'referenceMonth': "${date.month.toString().padLeft(2, '0')}/${date.year}"
+    };
+  }
 
-  factory CheckListModel.copy(CheckListModel checkList) => CheckListModel.from(checkList.toJson());
+  factory CheckListModel.fromMap(Map<String, dynamic> map) {
+    return CheckListModel(
+      user: UserModel.fromMapResume(map['user']),
+      pb: map['pb'] ?? '',
+      alfa: map['alfa'] ?? '',
+      prefix: map['prefix'] ?? '',
+      kmStart: map['kmStart'] ?? '',
+      kmFinal: map['kmFinal'] ?? '',
+      id: map['id'],
+      obs: map['obs'] ?? '',
+      enable: map['enable'] ?? false,
+      date: DateTime.fromMillisecondsSinceEpoch(map['date']),
+      dateFinish: map['dateFinish'] != null ? DateTime.fromMillisecondsSinceEpoch(map['dateFinish']) : null,
+      checkCar: CarCheckList.fromMap(map['checkCar']),
+      supply: List<SupplyModel>.from(map['supply']?.map((x) => SupplyModel.fromMap(x))),
+    );
+  }
 
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "date": date,
-        "dateFinish": dateFinish,
-        "pb": pb,
-        "alfa": alfa,
-        "resgate": resgate,
-        "kmInicial": kmInicial,
-        "kmFinal": kmFinal,
-        "enable": enable,
-        "obs": obs,
-        "referenceDate": formatDate(date, referenceDate: true),
-        "user": user.toJsonResume(),
-        "checkCar": checkCar.toJson(),
-        "supply": List<dynamic>.from(supply.map((e) => e.toJson()).toList()),
-      };
+  String toJson() => json.encode(toMap());
+
+  factory CheckListModel.fromJson(String source) => CheckListModel.fromMap(json.decode(source));
+
+  factory CheckListModel.copy({required CheckListModel checklist}) => CheckListModel.fromJson(checklist.toJson());
+  
+
+  @override
+  String toString() {
+    return 'CheckListModel(user: $user, pb: $pb, alfa: $alfa, prefix: $prefix, kmStart: $kmStart, kmFinal: $kmFinal, id: $id, obs: $obs, enable: $enable, date: $date, dateFinish: $dateFinish, checkCar: $checkCar, supply: $supply)';
+  }
 }
 
-class CarCheckList {
-  CarModel car;
-  double oleoMotor;
-  double oleoHidra;
-  double oleoFreio;
-  double aguaRad;
-
-  String obs;
-
-  CarCheckList({required this.car, this.oleoMotor = 1.0, this.oleoHidra = 1.0, this.oleoFreio = 1.0, this.aguaRad = 1.0, this.obs = ""});
-
-  factory CarCheckList.from(Map<String, dynamic> json) => CarCheckList(
-      car: CarModel.fromResume(json["car"]),
-      oleoFreio: json["oleoFreio"].toDouble(),
-      oleoHidra: json["oleoHidra"].toDouble(),
-      oleoMotor: json["oleoMotor"].toDouble(),
-      aguaRad: json["aguaRad"].toDouble(),
-      obs: json["obs"]);
-
-  Map<String, dynamic> toJson() => {
-        "car": car.toJsonResume(),
-        "oleoMotor": oleoMotor,
-        "oleoHidra": oleoHidra,
-        "oleoFreio": oleoFreio,
-        "aguaRad": aguaRad,
-        "obs": obs,
-      };
-}

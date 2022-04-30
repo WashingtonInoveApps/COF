@@ -5,18 +5,26 @@ import 'package:flutter/material.dart';
 class CardCarSupply extends StatelessWidget {
   final SupplyModel supply;
   final bool details;
-  const CardCarSupply({Key? key, required this.supply, this.details = false}) : super(key: key);
+  final Function()? onTap;
+  const CardCarSupply({Key? key, required this.supply, this.details = false, this.onTap}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final body = Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(15.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            "${formatDate(supply.date)} - ${supply.user.name}",
-            style: subtitleHint,
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  "${formatDate(supply.date)} - ${supply.user.name}",
+                  style: subtitleHint,
+                ),
+              ),
+              (onTap == null) ? Container() : InkWell(onTap: onTap, child: Text('Remover', style: subtitle.copyWith(color: Theme.of(context).primaryColor)))
+            ],
           ),
           const Divider(),
           Row(
@@ -33,7 +41,7 @@ class CardCarSupply extends StatelessWidget {
                     width: 10.0,
                   ),
                   Text(
-                    supply.kmAbastecimento,
+                    supply.kmSupply,
                     style: title.copyWith(fontWeight: FontWeight.bold),
                   ),
                 ],

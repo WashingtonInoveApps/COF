@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class UserModel {
   String name;
   String matricula;
@@ -9,18 +11,44 @@ class UserModel {
 
   UserModel({this.name = "", this.matricula = "", this.adm = false, this.contato = "", this.enable = false, this.email = "", this.id = ""});
 
-  factory UserModel.from(Map<String, dynamic> json) => UserModel(
-      id: json["id"],
-      name: json["name"],
-      matricula: json["matricula"],
-      contato: json["contato"],
-      adm: json["adm"],
-      email: json["email"],
-      enable: json["enable"]);
+  Map<String, dynamic> toMap() {
+    return {
+      'name': name,
+      'matricula': matricula,
+      'contato': contato,
+      'adm': adm,
+      'enable': enable,
+      'email': email,
+      'id': id,
+    };
+  }
 
-  factory UserModel.fromResume(Map<String, dynamic> json) => UserModel(name: json["name"], matricula: json["matricula"]);
+  Map<String, dynamic> toMapResume() {
+    return {'name': name, 'matricula': matricula, 'id': id};
+  }
 
-  Map<String, dynamic> toJsonResume() => {"name": name, "matricula": matricula};
+  factory UserModel.fromMap(Map<String, dynamic> map) {
+    return UserModel(
+      name: map['name'] ?? '',
+      matricula: map['matricula'] ?? '',
+      contato: map['contato'] ?? '',
+      adm: map['adm'] ?? false,
+      enable: map['enable'] ?? false,
+      email: map['email'] ?? '',
+      id: map['id'] ?? '',
+    );
+  }
 
-  Map<String, dynamic> toJson() => {"id": id, "name": name, "matricula": matricula, "contato": contato, "adm": adm, "email": email, "enable": enable};
+  factory UserModel.fromMapResume(Map<String, dynamic> map) {
+    return UserModel(name: map['name'] ?? '', matricula: map['matricula'] ?? '', id: map['id'] ?? '');
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory UserModel.fromJson(String source) => UserModel.fromMap(json.decode(source));
+
+  @override
+  String toString() {
+    return 'UserModel(name: $name, matricula: $matricula, contato: $contato, adm: $adm, enable: $enable, email: $email, id: $id)';
+  }
 }

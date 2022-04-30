@@ -6,6 +6,8 @@ import 'package:bsu_control/src/widgets/textfield_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:cached_network_image/cached_network_image.dart';
 
 class CarChangesWidget extends StatefulWidget {
   final int region;
@@ -14,7 +16,7 @@ class CarChangesWidget extends StatefulWidget {
   final bool remove;
   final UserModel user;
   final bool update;
-  final String? id;
+  final String? checklistId;
 
   final Function(CarChangeModel change)? onAdd;
   final Function(int i)? onRemove;
@@ -25,7 +27,7 @@ class CarChangesWidget extends StatefulWidget {
       this.initValue,
       this.add = true,
       this.remove = false,
-      this.id,
+      this.checklistId,
       this.onAdd,
       this.onRemove,
       required this.user,
@@ -47,6 +49,8 @@ class _CarChangesWidgetState extends State<CarChangesWidget> {
       ..clear()
       ..addAll(widget.initValue ?? changes);
     final offs = changes.map((e) => Offset(e.dx, e.dy)).toList();
+
+    debugPrint('Chagens widget.: ${widget.initValue?.length}');
 
     return Container(
       width: double.infinity,
@@ -88,72 +92,96 @@ class _CarChangesWidgetState extends State<CarChangesWidget> {
                 }
 
                 if (index != -1) {
-                  final enable = (widget.remove || ((widget.id == changes[index].id) && (widget.id != null)));
+                  final enable = (widget.remove || ((widget.checklistId == changes[index].checklistId) && (changes[index].value == widget.update)));
+
+                  debugPrint('Enable.: $enable , checklistId.: ${changes[index].checklistId}');
                   await showDialog(
                       context: context,
                       builder: (context) => AlertDialog(
-                            contentPadding: const EdgeInsets.all(6),
+                            titlePadding: EdgeInsets.zero,
+                            contentPadding: EdgeInsets.zero,
                             content: Column(
                               mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Stack(
-                                  children: [
-                                    changes[index].fileImage != null
-                                        ? Image.memory(
-                                            changes[index].fileImage!,
-                                            height: 250,
-                                            width: 350,
-                                            fit: BoxFit.cover,
-                                          )
-                                        : Image.network(
-                                            changes[index].image,
-                                            height: 250,
-                                            width: 350,
-                                            fit: BoxFit.cover,
-                                          ),
-                                    Positioned(
-                                        top: 10.0,
-                                        right: 10.0,
-                                        child: enable
-                                            ? GestureDetector(
-                                                onTap: () {
-                                                  if (widget.onRemove != null) {
-                                                    widget.onRemove!(index);
-                                                  }
+                                Padding(
+                                  padding: const EdgeInsets.all(5.0),
+                                  child: Stack(
+                                    children: [
+                                      changes[index].fileImage != null
+                                          ? Image.memory(
+                                              changes[index].fileImage!,
+                                              height: 250,
+                                              width: 350,
+                                              fit: BoxFit.cover,
+                                            )
+                                          : kIsWeb
+                                              ? Image.network(
+                                                  changes[index].image,
+                                                  height: 250,
+                                                  width: 350,
+                                                  fit: BoxFit.cover,
+                                                )
+                                              : CachedNetworkImage(
+                                                  height: 250,
+                                                  width: 350,
+                                                  imageUrl: changes[index].image,
+                                                  fit: BoxFit.cover,
+                                                  placeholder: (context, url) =>
+                                                      const SizedBox(height: 60.0, width: 60.0, child: Center(child: CircularProgressIndicator())),
+                                                  errorWidget: (context, url, error) => const Center(
+                                                      child: Icon(
+                                                    Icons.error,
+                                                    size: 60.0,
+                                                  )),
+                                                ),
+                                      Positioned(
+                                          top: 10.0,
+                                          right: 10.0,
+                                          child: enable
+                                              ? GestureDetector(
+                                                  onTap: () {
+                                                    if (widget.onRemove != null) {
+                                                      widget.onRemove!(index);
+                                                    }
 
-                                                  changes.removeAt(index);
-                                                  Navigator.of(context).pop();
-                                                },
-                                                child: const CircleAvatar(
-                                                    radius: 20,
-                                                    backgroundColor: Colors.black45,
-                                                    child: Icon(
-                                                      MdiIcons.delete,
-                                                      size: 20,
-                                                      color: Colors.white,
-                                                    )),
-                                              )
-                                            : Container())
-                                  ],
+                                                    changes.removeAt(index);
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                  child: const CircleAvatar(
+                                                      radius: 20,
+                                                      backgroundColor: Colors.black45,
+                                                      child: Icon(
+                                                        MdiIcons.delete,
+                                                        size: 20,
+                                                        color: Colors.white,
+                                                      )),
+                                                )
+                                              : Container())
+                                    ],
+                                  ),
                                 ),
-                                const SizedBox(
-                                  height: 5,
+                                Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        formatDate(changes[index].date),
+                                        style: subtitleHint,
+                                      ),
+                                      const Divider(),
+                                      Text(
+                                        changes[index].description,
+                                        style: title,
+                                      ),
+                                      const Divider(),
+                                      Text(
+                                        "${changes[index].user.name} - ${changes[index].user.matricula}",
+                                        style: subtitleHint,
+                                      )
+                                    ],
+                                  ),
                                 ),
-                                Text(
-                                  formatDate(changes[index].date),
-                                  style: subtitleHint,
-                                ),
-                                const Divider(),
-                                Text(
-                                  changes[index].description,
-                                  style: title,
-                                ),
-                                const Divider(),
-                                Text(
-                                  "${changes[index].user.name} - ${changes[index].user.matricula}",
-                                  style: subtitleHint,
-                                )
                               ],
                             ),
                           ));
@@ -164,7 +192,7 @@ class _CarChangesWidgetState extends State<CarChangesWidget> {
                         builder: (context) => AddChange(
                               onSelect: (image, description) {
                                 final change = CarChangeModel(
-                                    id: widget.id,
+                                    checklistId: widget.checklistId,
                                     user: widget.user,
                                     value: widget.update,
                                     dx: result.dx,

@@ -3,6 +3,8 @@ import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/validation.dart';
 import 'package:bsu_control/model/check_list_model.dart';
 import 'package:bsu_control/model/itens_changes_model.dart';
+import 'package:bsu_control/model/supply_model.dart';
+import 'package:bsu_control/model/user_model.dart';
 import 'package:bsu_control/src/widgets/app_bar_widget.dart';
 import 'package:bsu_control/src/widgets/car_changes_widget.dart';
 import 'package:bsu_control/src/widgets/car_supply_widget.dart';
@@ -25,7 +27,7 @@ class CheckListDetailsPage extends StatefulWidget {
 }
 
 class _CheckListDetailsPageState extends State<CheckListDetailsPage> {
-  late CheckListModel checkList;
+  late CheckListModel checklist;
   late ReactionDisposer rec;
 
   final _controller = TextEditingController();
@@ -39,11 +41,11 @@ class _CheckListDetailsPageState extends State<CheckListDetailsPage> {
 
     rec = autorun((_) {
       setState(() {
-        checkList = controller.checkLists.firstWhere((e) => e.id == widget.checkListId);
-        checkList.enable = (checkList.enable && (checkList.user.matricula == controller.user.matricula));
+        checklist = controller.checkLists.firstWhere((e) => e.id == widget.checkListId);
+        checklist.enable = (checklist.enable && (checklist.user.matricula == controller.user.matricula));
       });
     });
-  }
+  } 
 
   @override
   void dispose() {
@@ -86,8 +88,8 @@ class _CheckListDetailsPageState extends State<CheckListDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-    var itens = List<ItensChangesModel>.from(checkList.checkCar.car.itens.where((i) => i.itens.isNotEmpty).toList());
-    final color = checkList.enable ? Theme.of(context).primaryColor : Colors.grey;
+    var itens = List<ItensChangesModel>.from(checklist.checkCar.car.itens.where((i) => i.itens.isNotEmpty).toList());
+    final color = checklist.enable ? Theme.of(context).primaryColor : Colors.grey;
 
     return Scaffold(
       appBar: AppBarCustom(onBack: () => Navigator.of(context).pop()),
@@ -99,6 +101,9 @@ class _CheckListDetailsPageState extends State<CheckListDetailsPage> {
 
               return Column(
                 children: [
+                  const SizedBox(
+                    height: 10.0,
+                  ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10.0),
                     child: Column(
@@ -110,63 +115,61 @@ class _CheckListDetailsPageState extends State<CheckListDetailsPage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  "CHECKLIST VEICULAR",
+                                  "checklist VEICULAR",
                                   style: title.copyWith(fontWeight: FontWeight.bold),
                                 ),
                                 Text(
-                                  formatDate(checkList.date),
+                                  formatDate(checklist.date),
                                   style: subtitleHint,
                                 ),
                               ],
                             )),
-                            Row(
-                              children: [
-                                TextButton.icon(
-                                    style: TextButton.styleFrom(side: BorderSide(color: color)),
-                                    onPressed: checkList.enable
-                                        ? () async {
+                            checklist.enable
+                                ? Row(
+                                    children: [
+                                      TextButton.icon(
+                                          style: TextButton.styleFrom(side: BorderSide(color: color)),
+                                          onPressed: () async {
                                             await Navigator.of(context).push(MaterialPageRoute(
                                                 builder: (context) => CheckListPage(
-                                                      checkList: checkList,
+                                                      checkList: checklist,
                                                     )));
-                                          }
-                                        : null,
-                                    icon: Icon(
-                                      MdiIcons.bookEdit,
-                                      size: 20,
-                                      color: color,
-                                    ),
-                                    label: Text(
-                                      "Editar",
-                                      style: title.copyWith(color: color),
-                                    )),
-                                const SizedBox(
-                                  width: 5.0,
-                                ),
-                                TextButton.icon(
-                                    style: TextButton.styleFrom(side: BorderSide(color: color)),
-                                    onPressed: checkList.enable
-                                        ? () async {
+                                          },
+                                          icon: Icon(
+                                            MdiIcons.bookEdit,
+                                            size: 20,
+                                            color: color,
+                                          ),
+                                          label: Text(
+                                            "Editar",
+                                            style: title.copyWith(color: color),
+                                          )),
+                                      const SizedBox(
+                                        width: 5.0,
+                                      ),
+                                      TextButton.icon(
+                                          style: TextButton.styleFrom(side: BorderSide(color: color)),
+                                          onPressed: () async {
                                             await showDialog(
                                                 context: context,
                                                 builder: (context) => finishWidget(
                                                       onFinish: (value) async {
-                                                        await controller.finishCheckList(kmFinal: value, checkList: checkList);
+                                                        await controller.finishCheckList(kmFinal: value, checkList: checklist);
                                                       },
                                                     ));
-                                          }
-                                        : null,
-                                    icon: Icon(
-                                      MdiIcons.checkAll,
-                                      size: 20,
-                                      color: color,
-                                    ),
-                                    label: Text(
-                                      "Finalizar",
-                                      style: title.copyWith(color: color),
-                                    ))
-                              ],
-                            ),
+                                          },
+                                          icon: Icon(
+                                            MdiIcons.checkAll,
+                                            size: 20,
+                                            color: color,
+                                          ),
+                                          label: Text(
+                                            "Finalizar",
+                                            style: title.copyWith(color: color),
+                                          ))
+                                    ],
+                                  )
+                                : Container(),
                           ],
                         ),
                         const Divider(),
@@ -186,12 +189,12 @@ class _CheckListDetailsPageState extends State<CheckListDetailsPage> {
                                 children: [
                                   Expanded(
                                     child: Text(
-                                      "${checkList.resgate} - ${checkList.alfa}",
+                                      "${checklist.prefix} - ${checklist.alfa}",
                                       style: title.copyWith(fontWeight: FontWeight.bold),
                                     ),
                                   ),
                                   Text(
-                                    checkList.pb,
+                                    checklist.pb,
                                     style: title.copyWith(fontWeight: FontWeight.bold),
                                   ),
                                 ],
@@ -207,7 +210,7 @@ class _CheckListDetailsPageState extends State<CheckListDetailsPage> {
                                 height: 5.0,
                               ),
                               Text(
-                                "${checkList.user.name} - ${checkList.user.matricula}",
+                                "${checklist.user.name} - ${checklist.user.matricula}",
                                 style: title.copyWith(fontWeight: FontWeight.bold),
                               ),
                               const SizedBox(
@@ -227,7 +230,7 @@ class _CheckListDetailsPageState extends State<CheckListDetailsPage> {
                                           width: 10.0,
                                         ),
                                         Text(
-                                          checkList.kmInicial,
+                                          checklist.kmStart,
                                           style: title.copyWith(fontWeight: FontWeight.bold),
                                         ),
                                       ],
@@ -248,7 +251,7 @@ class _CheckListDetailsPageState extends State<CheckListDetailsPage> {
                                           width: 10.0,
                                         ),
                                         Text(
-                                          checkList.kmFinal.isEmpty ? "---" : checkList.kmFinal,
+                                          checklist.kmFinal.isEmpty ? "---" : checklist.kmFinal,
                                           style: title.copyWith(fontWeight: FontWeight.bold),
                                         ),
                                       ],
@@ -284,7 +287,7 @@ class _CheckListDetailsPageState extends State<CheckListDetailsPage> {
                                           min: 1.0,
                                           max: 3.0,
                                           stepSize: 0.5,
-                                          value: checkList.checkCar.oleoMotor,
+                                          value: checklist.checkCar.oil,
                                           interval: 1,
                                           showTicks: true,
                                           activeColor: Colors.brown,
@@ -315,7 +318,7 @@ class _CheckListDetailsPageState extends State<CheckListDetailsPage> {
                                           min: 1.0,
                                           max: 3.0,
                                           stepSize: 0.5,
-                                          value: checkList.checkCar.oleoHidra,
+                                          value: checklist.checkCar.hidra,
                                           interval: 1,
                                           showTicks: true,
                                           activeColor: Colors.red,
@@ -346,7 +349,7 @@ class _CheckListDetailsPageState extends State<CheckListDetailsPage> {
                                           min: 1.0,
                                           max: 3.0,
                                           stepSize: 0.5,
-                                          value: checkList.checkCar.oleoFreio,
+                                          value: checklist.checkCar.fr,
                                           interval: 1,
                                           showTicks: true,
                                           activeColor: Colors.grey,
@@ -377,7 +380,7 @@ class _CheckListDetailsPageState extends State<CheckListDetailsPage> {
                                           min: 1.0,
                                           max: 3.0,
                                           stepSize: 0.5,
-                                          value: checkList.checkCar.aguaRad,
+                                          value: checklist.checkCar.arref,
                                           interval: 1,
                                           showTicks: true,
                                           activeColor: Colors.blue,
@@ -395,32 +398,73 @@ class _CheckListDetailsPageState extends State<CheckListDetailsPage> {
                           ),
                         ),
                         Container(
-                          padding: const EdgeInsets.all(10.0),
+                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
                           width: width,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                "ABASTECIMENTO",
-                                style: titleHint,
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      "ABASTECIMENTO",
+                                      style: titleHint,
+                                    ),
+                                  ),
+                                  checklist.enable
+                                      ? TextButton.icon(
+                                          style: TextButton.styleFrom(side: BorderSide(color: Theme.of(context).primaryColor)),
+                                          onPressed: () async {
+                                            await showDialog(
+                                                context: context,
+                                                builder: (context) => SupplyWidget(
+                                                      user: checklist.user,
+                                                      onInsert: checklist.enable
+                                                          ? (value) async {
+                                                              await controller.saveSupplies(supply: value, checklist: checklist);
+                                                            }
+                                                          : null,
+                                                    ));
+                                          },
+                                          icon: Icon(
+                                            Icons.add,
+                                            size: 20,
+                                            color: Theme.of(context).primaryColor,
+                                          ),
+                                          label: Text(
+                                            "Adicionar",
+                                            style: title.copyWith(color: Theme.of(context).primaryColor),
+                                          ))
+                                      : Container(),
+                                ],
                               ),
                               const Divider(),
                               const SizedBox(
                                 height: 5.0,
                               ),
-                              (checkList.supply.isEmpty)
-                                  ? Center(child: Text("-", style: title))
+                              (checklist.supply.isEmpty)
+                                  ? Center(child: Text("Ops ! Nenhum registro encontrado.", style: title))
                                   : Column(
                                       children: List.generate(
-                                          checkList.supply.length, (index) => CardCarSupply(details: true, supply: checkList.supply[index])),
+                                          checklist.supply.length,
+                                          (index) => CardCarSupply(
+                                                supply: checklist.supply[index],
+                                                onTap: checklist.enable
+                                                    ? () async {
+                                                        await controller.deleteSupply(supply: checklist.supply[index], checklist: checklist);
+                                                      }
+                                                    : null,
+                                                details: true,
+                                              )),
                                     ),
+                              const Divider(),
                               const SizedBox(
                                 height: 5.0,
                               ),
                               CarChangesWidget(
                                 add: false,
-                                user: checkList.user,
-                                initValue: checkList.checkCar.car.changes,
+                                user: checklist.user,
+                                initValue: checklist.checkCar.car.changes,
                               ),
                               const SizedBox(
                                 height: 15.0,
@@ -431,7 +475,7 @@ class _CheckListDetailsPageState extends State<CheckListDetailsPage> {
                               ),
                               const Divider(),
                               Text(
-                                checkList.obs,
+                                checklist.obs,
                                 style: title,
                               ),
                               const SizedBox(
@@ -443,10 +487,10 @@ class _CheckListDetailsPageState extends State<CheckListDetailsPage> {
                       ],
                     ),
                   ),
-                  (checkList.dateFinish == null)
+                  (checklist.dateFinish == null)
                       ? Container()
                       : Text(
-                          "Checklist finalizado em ${formatDate(checkList.dateFinish!)}",
+                          "Checklist finalizado em ${formatDate(checklist.dateFinish!)}",
                           style: subtitleHint,
                         ),
                   const SizedBox(
@@ -532,3 +576,86 @@ Widget changesListWidget({required ItensChangesModel itensChanges}) => Padding(
         ],
       ),
     );
+
+class SupplyWidget extends StatefulWidget {
+  final UserModel user;
+  final Function(SupplyModel supply)? onInsert;
+  const SupplyWidget({Key? key, this.onInsert, required this.user}) : super(key: key);
+
+  @override
+  State<SupplyWidget> createState() => _SupplyWidgetState();
+}
+
+class _SupplyWidgetState extends State<SupplyWidget> {
+  final _key = GlobalKey<FormState>();
+  late SupplyModel supply;
+
+  @override
+  void initState() {
+    super.initState();
+    supply = SupplyModel(date: DateTime.now(), user: widget.user);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Form(
+      key: _key,
+      child: AlertDialog(
+        contentPadding: const EdgeInsets.all(6),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            FieldText(
+              hint: "QUILÔMETRAGEM",
+              validation: Validation.validatorNumber,
+              inputType: TextInputType.number,
+              onSaved: (value) {
+                supply.kmSupply = value!;
+              },
+            ),
+            const SizedBox(
+              height: 10.0,
+            ),
+            FieldText(
+              hint: "LITROS",
+              validation: Validation.validatorPrice,
+              inputType: TextInputType.number,
+              onSaved: (value) {
+                supply.litros = double.parse(value!);
+              },
+            ),
+            const SizedBox(
+              height: 10.0,
+            ),
+            FieldText(
+              hint: "PREÇO",
+              validation: Validation.validatorPrice,
+              inputType: TextInputType.number,
+              onSaved: (value) {
+                supply.value = double.parse(value!);
+              },
+            ),
+            const SizedBox(
+              height: 10.0,
+            ),
+            SizedBox(
+                height: 50.0,
+                width: double.infinity,
+                child: ElevatedButton(
+                    onPressed: () {
+                      if (_key.currentState!.validate()) {
+                        _key.currentState!.save();
+
+                        Navigator.of(context).pop();
+                        if (widget.onInsert != null) {
+                          widget.onInsert!(supply);
+                        }
+                      }
+                    },
+                    child: Text("INSERIR", style: titleButton)))
+          ],
+        ),
+      ),
+    );
+  }
+}

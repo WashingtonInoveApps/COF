@@ -10,14 +10,14 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
-class UserPage extends StatefulWidget {
-  const UserPage({Key? key}) : super(key: key);
+class UserPageRegister extends StatefulWidget {
+  const UserPageRegister({Key? key}) : super(key: key);
 
   @override
-  _UserPageState createState() => _UserPageState();
+  _UserPageRegisterState createState() => _UserPageRegisterState();
 }
 
-class _UserPageState extends State<UserPage> {
+class _UserPageRegisterState extends State<UserPageRegister> {
   final _key = GlobalKey<FormState>();
   final controller = GetIt.I.get<AppController>();
 

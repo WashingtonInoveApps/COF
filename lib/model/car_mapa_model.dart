@@ -1,10 +1,11 @@
+import 'dart:convert';
+
 import 'package:bsu_control/model/user_model.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CarMapaModel {
-  String origem;
-  String destino;
-  String kmInicial;
+  String origin;
+  String destiny;
+  String kmStart;
   String kmFinal;
   DateTime date;
   UserModel user;
@@ -13,33 +14,41 @@ class CarMapaModel {
 
   CarMapaModel(
       {this.id = "",
-      this.origem = "",
-      this.destino = "",
-      this.kmInicial = "",
-      this.kmFinal = "",
+      this.origin = "",
+      this.destiny = "",
+      this.kmStart = "0",
+      this.kmFinal = "0",
       required this.date,
       required this.user,
       required this.carId});
 
-  factory CarMapaModel.from(Map<String, dynamic> json) => CarMapaModel(
-        id: json["id"],
-        carId: json["carId"],
-        date: json["date"] is DateTime ? json["date"] : (json["date"] as Timestamp).toDate(),
-        origem: json["origem"],
-        destino: json["destino"],
-        kmInicial: json["kmInicial"],
-        kmFinal: json["kmFinal"],
-        user: UserModel.fromResume(json["user"]),
-      );
+  Map<String, dynamic> toMap() {
+    return {
+      'origin': origin,
+      'destiny': destiny,
+      'kmStart': kmStart,
+      'kmFinal': kmFinal,
+      'date': date.millisecondsSinceEpoch,
+      'user': user.toMapResume(),
+      'carId': carId,
+      'id': id,
+    };
+  }
 
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "origem": origem,
-        "destino": destino,
-        "carId": carId,
-        "kmInicial": kmInicial,
-        "kmFinal": kmFinal,
-        "date": date,
-        "user": user.toJsonResume()
-      };
+  factory CarMapaModel.fromMap(Map<String, dynamic> map) {
+    return CarMapaModel(
+      origin: map['origin'] ?? '',
+      destiny: map['destiny'] ?? '',
+      kmStart: map['kmStart'] ?? '',
+      kmFinal: map['kmFinal'] ?? '',
+      date: DateTime.fromMillisecondsSinceEpoch(map['date']),
+      user: UserModel.fromMapResume(map['user']),
+      carId: map['carId'] ?? '',
+      id: map['id'],
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory CarMapaModel.fromJson(String source) => CarMapaModel.fromMap(json.decode(source));
 }

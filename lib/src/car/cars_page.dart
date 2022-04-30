@@ -35,7 +35,7 @@ class _CarsPageState extends State<CarsPage> {
                 children: [
                   Expanded(
                     child: Text(
-                      "VIATURAS",
+                      "OPERACIONAIS",
                       style: titleHint,
                     ),
                   ),
@@ -62,44 +62,60 @@ class _CarsPageState extends State<CarsPage> {
                 height: 5.0,
               ),
               Observer(builder: (_) {
-                return controller.cars.isEmpty
+                return controller.carsOPR.isEmpty
                     ? Center(
                         child: Text(
-                          "Ops ! Nenhuma informação encontrada.",
+                          "Ops ! Nenhum registro encontrado.",
                           style: title,
                         ),
                       )
                     : Column(
-                        children: [
-                          Column(
-                            children: List.generate(
-                                controller.carsOPR.length,
-                                (index) => CarCard(
-                                      car: controller.carsOPR[index],
-                                      onTap: () {
-                                        Navigator.of(context).push(MaterialPageRoute(
-                                            builder: (context) => CarDetailsPage(
-                                                  carId: controller.carsOPR[index].id,
-                                                )));
-                                      },
-                                    )),
-                          ),
-                          Column(
-                            children: List.generate(
-                                controller.carsADM.length,
-                                (index) => CarCard(
-                                      car: controller.carsADM[index],
-                                      onTap: () {
-                                        Navigator.of(context).push(MaterialPageRoute(
-                                            builder: (context) => CarDetailsPage(
-                                                  carId: controller.carsADM[index].id,
-                                                )));
-                                      },
-                                    )),
-                          ),
-                        ],
+                        children: List.generate(
+                            controller.carsOPR.length,
+                            (index) => CarCard(
+                                  car: controller.carsOPR[index],
+                                  onTap: () {
+                                    Navigator.of(context).push(MaterialPageRoute(
+                                        builder: (context) => CarDetailsPage(
+                                              carId: controller.carsOPR[index].id!,
+                                            )));
+                                  },
+                                )),
                       );
               }),
+              Text(
+                "ADMINISTRATIVO",
+                style: titleHint,
+              ),
+              const Divider(),
+              const SizedBox(
+                height: 5.0,
+              ),
+              Observer(builder: (_) {
+                return controller.carsADM.isEmpty
+                    ? Center(
+                        child: Text(
+                          "Ops ! Nenhum registro encontrado.",
+                          style: title,
+                        ),
+                      )
+                    : Column(
+                        children: List.generate(
+                            controller.carsADM.length,
+                            (index) => CarCard(
+                                  car: controller.carsADM[index],
+                                  onTap: () {
+                                    Navigator.of(context).push(MaterialPageRoute(
+                                        builder: (context) => CarDetailsPage(
+                                              carId: controller.carsADM[index].id!,
+                                            )));
+                                  },
+                                )),
+                      );
+              }),
+              const SizedBox(
+                height: 50.0,
+              ),
             ],
           ),
         ),

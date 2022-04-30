@@ -36,9 +36,9 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
   @override
   void initState() {
     super.initState();
-    car = (widget.car == null
+    car = (widget.car == null)
         ? CarModel(itens: checkListSection, changes: [], status: [], mapas: [], typeCar: carsType.first)
-        : CarModel.copy(widget.car!));
+        : CarModel.copy(widget.car!);
   }
 
   @override
@@ -78,10 +78,10 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                                 height: 10.0,
                               ),
                               FieldText(
-                                initValue: car.resgaste,
+                                initValue: car.prefix,
                                 hint: "EX.: RESGATE 32",
                                 validation: Validation.validatorPreenchimento,
-                                onSaved: (value) => car.resgaste = value ?? car.resgaste,
+                                onSaved: (value) => car.prefix = value ?? car.prefix,
                               ),
                               const SizedBox(
                                 height: 15.0,
@@ -94,10 +94,10 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                                 height: 10.0,
                               ),
                               FieldText(
-                                initValue: car.modelo,
+                                initValue: car.model,
                                 hint: "EX.: RENAULT MASTER 2.3 2010",
                                 validation: Validation.validatorPreenchimento,
-                                onSaved: (value) => car.modelo = value ?? car.modelo,
+                                onSaved: (value) => car.model = value ?? car.model,
                               ),
                               const SizedBox(
                                 height: 15.0,
@@ -110,10 +110,10 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                                 height: 10.0,
                               ),
                               FieldText(
-                                initValue: car.placa,
+                                initValue: car.plate,
                                 hint: "EX.: XXX 2345",
                                 validation: Validation.validatorPreenchimento,
-                                onSaved: (value) => car.placa = value ?? car.placa,
+                                onSaved: (value) => car.plate = value ?? car.plate,
                               ),
                               const SizedBox(
                                 height: 15.0,
@@ -143,10 +143,10 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                                 height: 10.0,
                               ),
                               FieldText(
-                                initValue: car.modeloPneu,
+                                initValue: car.modelPneu,
                                 hint: "EX.: 202/75 15",
                                 validation: Validation.validatorPreenchimento,
-                                onSaved: (value) => car.modeloPneu = value ?? car.modeloPneu,
+                                onSaved: (value) => car.modelPneu = value ?? car.modelPneu,
                               ),
                               const SizedBox(
                                 height: 15.0,

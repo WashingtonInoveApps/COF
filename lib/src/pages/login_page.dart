@@ -2,7 +2,7 @@ import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/validation.dart';
 import 'package:bsu_control/src/pages/home_page.dart';
-import 'package:bsu_control/src/pages/user_page.dart';
+import 'package:bsu_control/src/pages/user_register_page.dart';
 import 'package:bsu_control/src/widgets/alert_message.dart';
 import 'package:bsu_control/src/widgets/app_bar_widget.dart';
 import 'package:bsu_control/src/widgets/textfield_widget.dart';
@@ -50,6 +50,16 @@ class _LoginPageState extends State<LoginPage> {
             menu: false,
             page: 3,
           ),
+          bottomNavigationBar: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Observer(builder: (_) {
+              return Text(
+                'Develop by Washington, ${controller.version}',
+                style: subtitle.copyWith(color: Colors.grey),
+                textAlign: TextAlign.center,
+              );
+            }),
+          ),
           body: FutureBuilder<bool>(
               future: controller.getUserDBLocal(),
               builder: (context, snapshot) {
@@ -76,7 +86,7 @@ class _LoginPageState extends State<LoginPage> {
                                         onPressed: () async {
                                           _controllerEmail.clear();
                                           _controllerSenha.clear();
-                                          Navigator.of(context).push(MaterialPageRoute(builder: (context) => const UserPage()));
+                                          Navigator.of(context).push(MaterialPageRoute(builder: (context) => const UserPageRegister()));
                                         },
                                         child: Text(
                                           "Criar cadastro",
@@ -128,7 +138,10 @@ class _LoginPageState extends State<LoginPage> {
                                                 onPressedOK: () => Navigator.of(context).pop()));
                                       } else {
                                         await controller.saveUserDBLocal();
-                                        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const HomePage(home: true,)));
+                                        Navigator.of(context).pushReplacement(MaterialPageRoute(
+                                            builder: (context) => const HomePage(
+                                                  home: true,
+                                                )));
                                       }
                                     }
                                   });

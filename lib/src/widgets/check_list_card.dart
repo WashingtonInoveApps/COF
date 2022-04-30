@@ -23,7 +23,7 @@ class CheckListCard extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      "${checkList.resgate} - ${checkList.alfa}",
+                      "${checkList.prefix} - ${checkList.alfa}",
                       style: title.copyWith(fontWeight: FontWeight.bold),
                     ),
                   ),
@@ -64,7 +64,7 @@ class CheckListCard extends StatelessWidget {
                           width: 10.0,
                         ),
                         Text(
-                          checkList.kmInicial,
+                          checkList.kmStart,
                           style: title.copyWith(fontWeight: FontWeight.bold),
                         ),
                       ],

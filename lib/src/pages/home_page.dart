@@ -30,10 +30,10 @@ class _HomePageState extends State<HomePage> {
     rec = autorun((_) {
       if (widget.home) {
         for (var car in controller.cars) {
-          if ((car.km > car.proxOleo) && car.proxOleo > 0) {
+          if ((car.km > car.oil) && car.oil > 0) {
             Future.delayed(Duration.zero, () {
               CherryToast.warning(
-                title: "${car.resgaste} - Verifique troca de óleo",
+                title: "${car.prefix} - Verifique troca de óleo",
                 titleStyle: title,
                 toastDuration: const Duration(seconds: 2),
                 animationDuration: const Duration(milliseconds: 500),
@@ -107,7 +107,7 @@ class _HomePageState extends State<HomePage> {
                               return controller.checkLists.isEmpty
                                   ? Center(
                                       child: Text(
-                                        "Ops ! Nenhuma informação encontrada.",
+                                        "Ops ! Nenhum registro encontrado.",
                                         style: title,
                                       ),
                                     )
@@ -118,7 +118,7 @@ class _HomePageState extends State<HomePage> {
                                                 checkList: controller.checkLists[index],
                                                 onTap: () {
                                                   Navigator.of(context).push(MaterialPageRoute(
-                                                      builder: (context) => CheckListDetailsPage(checkListId: controller.checkLists[index].id)));
+                                                      builder: (context) => CheckListDetailsPage(checkListId: controller.checkLists[index].id!)));
                                                 },
                                               )),
                                     );
@@ -152,7 +152,7 @@ class _HomePageState extends State<HomePage> {
                               return controller.carsADM.isEmpty
                                   ? Center(
                                       child: Text(
-                                        "Ops ! Nenhuma informação encontrada.",
+                                        "Ops ! Nenhum registro encontrado.",
                                         style: title,
                                       ),
                                     )

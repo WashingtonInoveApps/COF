@@ -108,7 +108,7 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      car.resgaste,
+                                      car.prefix,
                                       style: title.copyWith(fontWeight: FontWeight.bold, fontSize: 16),
                                     ),
                                     Row(
@@ -120,7 +120,7 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                                         const SizedBox(
                                           width: 10.0,
                                         ),
-                                        Text(car.placa, style: title.copyWith(fontWeight: FontWeight.bold)),
+                                        Text(car.plate, style: title.copyWith(fontWeight: FontWeight.bold)),
                                         const SizedBox(
                                           width: 10.0,
                                         ),
@@ -170,7 +170,7 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                                                   context: context,
                                                   builder: (context) => kmChangeWidget(
                                                         onUpdate: (value) async {
-                                                          await controller.updateKMCar(id: car.id, data: {"proxOleo": value});
+                                                          await controller.updateKMOil(id: car.id!, value: value);
                                                           _controller.clear();
                                                         },
                                                       ));
@@ -187,7 +187,7 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                                   style: subtitleHint,
                                 )),
                                 Text(
-                                  car.proxOleo.toString(),
+                                  car.oil.toString(),
                                   style: title.copyWith(fontWeight: FontWeight.bold),
                                 ),
                               ],
@@ -207,7 +207,7 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                                                   context: context,
                                                   builder: (context) => kmChangeWidget(
                                                         onUpdate: (value) async {
-                                                          await controller.updateKMCar(id: car.id, data: {"proxArref": value});
+                                                          await controller.updateKMArref(id: car.id!, value: value);
                                                           _controller.clear();
                                                         },
                                                       ));
@@ -224,7 +224,7 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                                   style: subtitleHint,
                                 )),
                                 Text(
-                                  car.proxArref.toString(),
+                                  car.arref.toString(),
                                   style: title.copyWith(fontWeight: FontWeight.bold),
                                 ),
                               ],
@@ -259,7 +259,7 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                               height: 5.0,
                             ),
                             SelectableText(
-                              car.modelo,
+                              car.model,
                               style: title.copyWith(fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(
@@ -273,7 +273,7 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                               height: 5.0,
                             ),
                             SelectableText(
-                              car.modeloPneu,
+                              car.modelPneu,
                               style: title.copyWith(fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(
@@ -334,21 +334,19 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                                                     builder: (context) => StatusWidget(
                                                           user: controller.user,
                                                           onInsert: (value) async {
-                                                            final status = List<CarStatusModel>.from(car.status)..add(value);
-                                                            await controller.repository
-                                                                .updateStatusCar(status: status, id: car.id, enable: !car.enable);
+                                                            await controller.updateStatusCar(status: value, id: car.id!, enable: !car.enable);
                                                           },
                                                         ));
                                               } else {
-                                                final status = List<CarStatusModel>.from(car.status)
-                                                  ..add(CarStatusModel(
-                                                      date: DateTime.now(),
-                                                      user: controller.user,
-                                                      description: "RETORNOU AO FUNCIONAMENTO.",
-                                                      type: "",
-                                                      value: true));
-
-                                                await controller.repository.updateStatusCar(status: status, id: car.id, enable: !car.enable);
+                                                await controller.updateStatusCar(
+                                                    status: CarStatusModel(
+                                                        date: DateTime.now(),
+                                                        user: controller.user,
+                                                        description: "RETORNOU AO FUNCIONAMENTO.",
+                                                        type: "",
+                                                        value: true),
+                                                    id: car.id!,
+                                                    enable: !car.enable);
                                               }
                                             }
                                           : null,
@@ -365,34 +363,42 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                               ],
                             ),
                             const Divider(),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: List.generate(
-                                  car.status.length,
-                                  (index) => Container(
-                                        width: double.infinity,
-                                        padding: const EdgeInsets.all(10),
-                                        margin: const EdgeInsets.only(bottom: 10.0),
-                                        decoration: BoxDecoration(border: Border.all(color: Colors.grey), borderRadius: BorderRadius.circular(5)),
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              "${formatDate(car.status[index].date)} - ${car.status[index].user.name}",
-                                              style: subtitleHint,
-                                            ),
-                                            Text(
-                                              car.status[index].description.toUpperCase(),
-                                              style: subtitle,
-                                            ),
-                                            Text(
-                                              car.status[index].local,
-                                              style: subtitleHint,
-                                            )
-                                          ],
-                                        ),
-                                      )),
-                            ),
+                            StreamBuilder<List<CarStatusModel>>(
+                                stream: controller.listenStatus(carId: car.id!),
+                                builder: (context, snapshot) {
+                                  if (!snapshot.hasData) return const LinearProgressIndicator();
+
+                                  final status = snapshot.data ?? [];
+                                  return Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: List.generate(
+                                        status.length,
+                                        (index) => Container(
+                                              width: double.infinity,
+                                              padding: const EdgeInsets.all(10),
+                                              margin: const EdgeInsets.only(bottom: 10.0),
+                                              decoration:
+                                                  BoxDecoration(border: Border.all(color: Colors.grey), borderRadius: BorderRadius.circular(5)),
+                                              child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    "${formatDate(status[index].date)} - ${status[index].user.name}",
+                                                    style: subtitleHint,
+                                                  ),
+                                                  Text(
+                                                    status[index].description.toUpperCase(),
+                                                    style: subtitle,
+                                                  ),
+                                                  // Text(
+                                                  //   status[index].local,
+                                                  //   style: subtitleHint,
+                                                  // )
+                                                ],
+                                              ),
+                                            )),
+                                  );
+                                }),
                             const SizedBox(
                               height: 50.0,
                             ),
@@ -452,33 +458,31 @@ class _StatusWidgetState extends State<StatusWidget> {
     return Form(
       key: _key,
       child: AlertDialog(
-        contentPadding: const EdgeInsets.all(6),
+        contentPadding: const EdgeInsets.all(10),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Card(
-              margin: EdgeInsets.zero,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                child: DropdownButton<String>(
-                    value: _status,
-                    onChanged: (value) {
-                      setState(() {
-                        _status = value ?? statusType.first;
-                      });
-                    },
-                    underline: Container(),
-                    isExpanded: true,
-                    items: List.generate(
-                        statusType.length,
-                        (index) => DropdownMenuItem<String>(
-                              child: Text(
-                                statusType[index],
-                                style: subtitle,
-                              ),
-                              value: statusType[index],
-                            ))),
-              ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5),
+              decoration: BoxDecoration(border: Border.all(color: Colors.grey), borderRadius: BorderRadius.circular(5)),
+              child: DropdownButton<String>(
+                  value: _status,
+                  onChanged: (value) {
+                    setState(() {
+                      _status = value ?? statusType.first;
+                    });
+                  },
+                  underline: Container(),
+                  isExpanded: true,
+                  items: List.generate(
+                      statusType.length,
+                      (index) => DropdownMenuItem<String>(
+                            child: Text(
+                              statusType[index],
+                              style: subtitle,
+                            ),
+                            value: statusType[index],
+                          ))),
             ),
             const SizedBox(
               height: 10.0,

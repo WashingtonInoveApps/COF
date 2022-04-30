@@ -29,21 +29,28 @@ mixin _$AppController on _AppControllerBase, Store {
       (_$carsOPRComputed ??= Computed<List<CarModel>>(() => super.carsOPR,
               name: '_AppControllerBase.carsOPR'))
           .value;
-  Computed<List<String>>? _$resgatesComputed;
+  Computed<List<String>>? _$prefixsComputed;
 
   @override
-  List<String> get resgates =>
-      (_$resgatesComputed ??= Computed<List<String>>(() => super.resgates,
-              name: '_AppControllerBase.resgates'))
+  List<String> get prefixs =>
+      (_$prefixsComputed ??= Computed<List<String>>(() => super.prefixs,
+              name: '_AppControllerBase.prefixs'))
           .value;
-  Computed<Stream<List<CheckListModel>>>? _$listenCheckListComputed;
+
+  final _$versionAtom = Atom(name: '_AppControllerBase.version');
 
   @override
-  Stream<List<CheckListModel>> get listenCheckList =>
-      (_$listenCheckListComputed ??= Computed<Stream<List<CheckListModel>>>(
-              () => super.listenCheckList,
-              name: '_AppControllerBase.listenCheckList'))
-          .value;
+  String get version {
+    _$versionAtom.reportRead();
+    return super.version;
+  }
+
+  @override
+  set version(String value) {
+    _$versionAtom.reportWrite(value, super.version, () {
+      super.version = value;
+    });
+  }
 
   final _$userAtom = Atom(name: '_AppControllerBase.user');
 
@@ -120,21 +127,6 @@ mixin _$AppController on _AppControllerBase, Store {
     });
   }
 
-  final _$resgateAtom = Atom(name: '_AppControllerBase.resgate');
-
-  @override
-  String get resgate {
-    _$resgateAtom.reportRead();
-    return super.resgate;
-  }
-
-  @override
-  set resgate(String value) {
-    _$resgateAtom.reportWrite(value, super.resgate, () {
-      super.resgate = value;
-    });
-  }
-
   final _$carsAtom = Atom(name: '_AppControllerBase.cars');
 
   @override
@@ -176,10 +168,19 @@ mixin _$AppController on _AppControllerBase, Store {
       AsyncAction('_AppControllerBase.saveCheckList');
 
   @override
-  Future<bool> saveCheckList(
-      {required CheckListModel checkList, required int updateCar, String? id}) {
-    return _$saveCheckListAsyncAction.run(() => super
-        .saveCheckList(checkList: checkList, updateCar: updateCar, id: id));
+  Future<bool> saveCheckList({required CheckListModel checkList, String? id}) {
+    return _$saveCheckListAsyncAction
+        .run(() => super.saveCheckList(checkList: checkList, id: id));
+  }
+
+  final _$saveSuppliesAsyncAction =
+      AsyncAction('_AppControllerBase.saveSupplies');
+
+  @override
+  Future<bool> saveSupplies(
+      {required SupplyModel supply, required CheckListModel checklist}) {
+    return _$saveSuppliesAsyncAction
+        .run(() => super.saveSupplies(supply: supply, checklist: checklist));
   }
 
   final _$updateStatusCarAsyncAction =
@@ -187,21 +188,29 @@ mixin _$AppController on _AppControllerBase, Store {
 
   @override
   Future<bool> updateStatusCar(
-      {required List<CarStatusModel> status,
+      {required CarStatusModel status,
       required String id,
       required bool enable}) {
     return _$updateStatusCarAsyncAction.run(
         () => super.updateStatusCar(status: status, id: id, enable: enable));
   }
 
-  final _$updateKMCarAsyncAction =
-      AsyncAction('_AppControllerBase.updateKMCar');
+  final _$updateKMOilAsyncAction =
+      AsyncAction('_AppControllerBase.updateKMOil');
 
   @override
-  Future<bool> updateKMCar(
-      {required String id, required Map<String, dynamic> data}) {
-    return _$updateKMCarAsyncAction
-        .run(() => super.updateKMCar(id: id, data: data));
+  Future<bool> updateKMOil({required String id, required int value}) {
+    return _$updateKMOilAsyncAction
+        .run(() => super.updateKMOil(id: id, value: value));
+  }
+
+  final _$updateKMArrefAsyncAction =
+      AsyncAction('_AppControllerBase.updateKMArref');
+
+  @override
+  Future<bool> updateKMArref({required String id, required int value}) {
+    return _$updateKMArrefAsyncAction
+        .run(() => super.updateKMArref(id: id, value: value));
   }
 
   final _$insertMapaCarAsyncAction =
@@ -229,6 +238,13 @@ mixin _$AppController on _AppControllerBase, Store {
   Future<bool> createUser({required UserModel user, required String password}) {
     return _$createUserAsyncAction
         .run(() => super.createUser(user: user, password: password));
+  }
+
+  final _$stateUserAsyncAction = AsyncAction('_AppControllerBase.stateUser');
+
+  @override
+  Future<bool> stateUser({required UserModel user}) {
+    return _$stateUserAsyncAction.run(() => super.stateUser(user: user));
   }
 
   final _$loginAsyncAction = AsyncAction('_AppControllerBase.login');
@@ -285,22 +301,20 @@ mixin _$AppController on _AppControllerBase, Store {
 
   @override
   Future<bool> deleteSupply(
-      {required List<SupplyModel> supplies,
-      required int index,
-      required String carId}) {
-    return _$deleteSupplyAsyncAction.run(() =>
-        super.deleteSupply(supplies: supplies, index: index, carId: carId));
+      {required SupplyModel supply, required CheckListModel checklist}) {
+    return _$deleteSupplyAsyncAction
+        .run(() => super.deleteSupply(supply: supply, checklist: checklist));
   }
 
   final _$_AppControllerBaseActionController =
       ActionController(name: '_AppControllerBase');
 
   @override
-  dynamic setResgate(String value) {
+  dynamic setVersion(String value) {
     final _$actionInfo = _$_AppControllerBaseActionController.startAction(
-        name: '_AppControllerBase.setResgate');
+        name: '_AppControllerBase.setVersion');
     try {
-      return super.setResgate(value);
+      return super.setVersion(value);
     } finally {
       _$_AppControllerBaseActionController.endAction(_$actionInfo);
     }
@@ -342,19 +356,18 @@ mixin _$AppController on _AppControllerBase, Store {
   @override
   String toString() {
     return '''
+version: ${version},
 user: ${user},
 unidade: ${unidade},
 isLogged: ${isLogged},
 loading: ${loading},
 date: ${date},
-resgate: ${resgate},
 cars: ${cars},
 checkLists: ${checkLists},
 enable: ${enable},
 carsADM: ${carsADM},
 carsOPR: ${carsOPR},
-resgates: ${resgates},
-listenCheckList: ${listenCheckList}
+prefixs: ${prefixs}
     ''';
   }
 }

@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/src/app_interface.dart';
 import 'package:bsu_control/src/firebase_repository.dart';
@@ -36,6 +35,7 @@ class AppWidget extends StatefulWidget {
 
 class _AppWidgetState extends State<AppWidget> {
   final controller = GetIt.I.get<AppController>();
+
   late StreamSubscription carDispose;
   late StreamSubscription checkListDispose;
   late ReactionDisposer rec;
@@ -43,10 +43,9 @@ class _AppWidgetState extends State<AppWidget> {
   @override
   void initState() {
     super.initState();
-
     rec = autorun((_) {
       if (controller.isLogged) {
-        carDispose = controller.listenCar().listen((result) {
+        carDispose = controller.listenCar.listen((result) {
           controller.setCars(result);
         });
 
@@ -73,6 +72,7 @@ class _AppWidgetState extends State<AppWidget> {
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate
       ],
       supportedLocales: const [
         Locale('pt'),

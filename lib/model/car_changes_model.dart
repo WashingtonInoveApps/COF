@@ -1,13 +1,13 @@
+import 'dart:convert';
 import 'dart:typed_data';
 import 'package:bsu_control/model/user_model.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CarChangeModel {
   double dx;
   double dy;
   String description;
   String image;
-  String? id;
+  String? checklistId;
   UserModel user;
   DateTime date;
   Uint8List? fileImage;
@@ -17,23 +17,40 @@ class CarChangeModel {
       {required this.dx,
       required this.dy,
       this.description = "",
-      this.id,
+      this.checklistId,
       this.image = "",
       required this.user,
       this.fileImage,
       required this.date,
       this.value = false});
 
-  factory CarChangeModel.from(Map<String, dynamic> json) => CarChangeModel(
-      dx: json["dx"].toDouble(),
-      dy: json["dy"].toDouble(),
-      id: (json["id"] == null) ? null : json["id"],
-      value: json["value"],
-      user: UserModel.fromResume(json["user"]),
-      date: json["date"] is DateTime ? json["date"] : (json["date"] as Timestamp).toDate(),
-      image: json["image"],
-      description: json["description"]);
+  Map<String, dynamic> toMap() {
+    return {
+      'dx': dx,
+      'dy': dy,
+      'description': description,
+      'image': image,
+      'checklistId': checklistId,
+      'user': user.toMapResume(),
+      'date': date.millisecondsSinceEpoch,
+      'value': value,
+    };
+  }
 
-  Map<String, dynamic> toJson() =>
-      {"id": id, "date": date, "dx": dx, "dy": dy, "value": value, "description": description, "image": image, "user": user.toJsonResume()};
+  factory CarChangeModel.fromMap(Map<String, dynamic> map) {
+    return CarChangeModel(
+      dx: map['dx']?.toDouble() ?? 0.0,
+      dy: map['dy']?.toDouble() ?? 0.0,
+      description: map['description'] ?? '',
+      image: map['image'] ?? '',
+      checklistId: map['checklistId'],
+      user: UserModel.fromMapResume(map['user']),
+      date: DateTime.fromMillisecondsSinceEpoch(map['date']),
+      value: map['value'] ?? false,
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory CarChangeModel.fromJson(String source) => CarChangeModel.fromMap(json.decode(source));
 }
