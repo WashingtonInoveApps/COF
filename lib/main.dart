@@ -1,28 +1,40 @@
 import 'dart:async';
+
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/src/app_interface.dart';
 import 'package:bsu_control/src/firebase_repository.dart';
 import 'package:bsu_control/src/pages/login_page.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+// ignore: depend_on_referenced_packages
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
+import 'package:url_strategy/url_strategy.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
 
-  if (!kIsWeb) {
-    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  if (kIsWeb) {
+    await Firebase.initializeApp(
+      options: const FirebaseOptions(
+          apiKey: "AIzaSyDct_YQLCO4CME1hoesCp8wQojR-kDk-cE",
+          appId: "1:126364231099:web:9b081f4c1e497e6d1f509e",
+          messagingSenderId: "126364231099",
+          projectId: "cof-bsu",
+          storageBucket: "cof-bsu.appspot.com"),
+    );
+  } else {
+    await Firebase.initializeApp();
   }
 
   final repository = FireRepository();
   GetIt.I.registerSingleton<IAppRepository>(repository);
-  GetIt.I.registerSingleton<AppController>(AppController(repository: repository));
+  GetIt.I
+      .registerSingleton<AppController>(AppController(repository: repository));
 
+  setPathUrlStrategy();
   runApp(const AppWidget());
 }
 
@@ -37,7 +49,8 @@ class _AppWidgetState extends State<AppWidget> {
   final controller = GetIt.I.get<AppController>();
 
   late StreamSubscription carDispose;
-  late StreamSubscription checkListDispose;
+  late StreamSubscription checklistDispose;
+  late StreamSubscription usersDispose;
   late ReactionDisposer rec;
 
   @override
@@ -49,8 +62,12 @@ class _AppWidgetState extends State<AppWidget> {
           controller.setCars(result);
         });
 
-        checkListDispose = controller.listenCheckList.listen((result) {
+        checklistDispose = controller.listenChecklist.listen((result) {
           controller.setCheckList(result);
+        });
+
+        usersDispose = controller.listenUsers.listen((result) {
+          controller.setUsers(result);
         });
       }
     });
@@ -60,14 +77,15 @@ class _AppWidgetState extends State<AppWidget> {
   void dispose() {
     super.dispose();
     carDispose.cancel();
-    checkListDispose.cancel();
+    checklistDispose.cancel();
+    usersDispose.cancel();
     rec.reaction.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Controle de Frota',
+      title: 'BSU - Controle Operacional de Serviço',
       debugShowCheckedModeBanner: false,
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
@@ -77,7 +95,9 @@ class _AppWidgetState extends State<AppWidget> {
       supportedLocales: const [
         Locale('pt'),
       ],
-      theme: ThemeData(primarySwatch: Colors.red, scaffoldBackgroundColor: const Color.fromRGBO(251, 251, 251, 1)),
+      theme: ThemeData(
+          primarySwatch: Colors.green,
+          scaffoldBackgroundColor: const Color.fromRGBO(251, 251, 251, 1)),
       home: const LoginPage(),
     );
   }

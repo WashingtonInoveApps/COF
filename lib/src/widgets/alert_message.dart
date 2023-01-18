@@ -1,6 +1,5 @@
-import 'package:flutter/material.dart';
-
 import 'package:bsu_control/core/constants.dart' as constant;
+import 'package:flutter/material.dart';
 
 class AlertMessage extends StatelessWidget {
   final String title;
@@ -57,20 +56,22 @@ class AlertMessage extends StatelessWidget {
       actions: <Widget>[
         cancel
             ? TextButton(
+                onPressed: onPressedCancel,
                 child: Text(
                   "Cancelar",
-                  style: TextStyle(color: Theme.of(context).primaryColor, fontFamily: 'Nunito'),
+                  style: constant.title
+                      .copyWith(color: Theme.of(context).primaryColor),
                 ),
-                onPressed: onPressedCancel,
               )
             : Container(),
         ok
             ? TextButton(
+                onPressed: onPressedOK,
                 child: Text(
                   "OK",
-                  style: TextStyle(color: Theme.of(context).primaryColor, fontFamily: 'Nunito'),
+                  style: constant.title
+                      .copyWith(color: Theme.of(context).primaryColor),
                 ),
-                onPressed: onPressedOK,
               )
             : Container(),
       ],

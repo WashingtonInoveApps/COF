@@ -35,7 +35,7 @@ class CarChangesWidget extends StatefulWidget {
       : super(key: key);
 
   @override
-  _CarChangesWidgetState createState() => _CarChangesWidgetState();
+  State createState() => _CarChangesWidgetState();
 }
 
 class _CarChangesWidgetState extends State<CarChangesWidget> {
@@ -53,173 +53,180 @@ class _CarChangesWidgetState extends State<CarChangesWidget> {
     debugPrint('Chagens widget.: ${widget.initValue?.length}');
 
     return Container(
-      width: double.infinity,
+      width: 400.0,
+      height: 280.0,
       alignment: Alignment.center,
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey),
         borderRadius: BorderRadius.circular(5),
         color: Colors.white,
       ),
-      child: Stack(
-        children: [
-          Center(
-            child: Container(
-              height: 250.0,
-              width: 380.0,
-              decoration: const BoxDecoration(image: DecorationImage(image: AssetImage("assets/car.jpg"), fit: BoxFit.contain)),
-            ),
-          ),
-          Center(
-            child: Listener(
-              onPointerDown: (PointerDownEvent event) async {
-                RenderBox box = paintKey.currentContext!.findRenderObject()! as RenderBox;
-
-                var _off = box.globalToLocal(event.position);
-                var result = Offset((_off.dx.round()).toDouble(), (_off.dy.round()).toDouble());
-
-                int index = -1;
-
-                if (offs.isNotEmpty) {
-                  for (int i = 0; i < offs.length; i++) {
-                    var dx = (offs[i].dx - result.dx).abs();
-                    var dy = (offs[i].dy - result.dy).abs();
-
-                    if (dx < widget.region && dy < widget.region) {
-                      index = i;
-                      break;
-                    }
-                  }
-                }
-
-                if (index != -1) {
-                  final enable = (widget.remove || ((widget.checklistId == changes[index].checklistId) && (changes[index].value == widget.update)));
-
-                  debugPrint('Enable.: $enable , checklistId.: ${changes[index].checklistId}');
-                  await showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                            titlePadding: EdgeInsets.zero,
-                            contentPadding: EdgeInsets.zero,
-                            content: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(5.0),
-                                  child: Stack(
-                                    children: [
-                                      changes[index].fileImage != null
-                                          ? Image.memory(
-                                              changes[index].fileImage!,
-                                              height: 250,
-                                              width: 350,
-                                              fit: BoxFit.cover,
-                                            )
-                                          : kIsWeb
-                                              ? Image.network(
-                                                  changes[index].image,
-                                                  height: 250,
-                                                  width: 350,
-                                                  fit: BoxFit.cover,
-                                                )
-                                              : CachedNetworkImage(
-                                                  height: 250,
-                                                  width: 350,
-                                                  imageUrl: changes[index].image,
-                                                  fit: BoxFit.cover,
-                                                  placeholder: (context, url) =>
-                                                      const SizedBox(height: 60.0, width: 60.0, child: Center(child: CircularProgressIndicator())),
-                                                  errorWidget: (context, url, error) => const Center(
-                                                      child: Icon(
-                                                    Icons.error,
-                                                    size: 60.0,
-                                                  )),
-                                                ),
-                                      Positioned(
-                                          top: 10.0,
-                                          right: 10.0,
-                                          child: enable
-                                              ? GestureDetector(
-                                                  onTap: () {
-                                                    if (widget.onRemove != null) {
-                                                      widget.onRemove!(index);
-                                                    }
-
-                                                    changes.removeAt(index);
-                                                    Navigator.of(context).pop();
-                                                  },
-                                                  child: const CircleAvatar(
-                                                      radius: 20,
-                                                      backgroundColor: Colors.black45,
-                                                      child: Icon(
-                                                        MdiIcons.delete,
-                                                        size: 20,
-                                                        color: Colors.white,
-                                                      )),
-                                                )
-                                              : Container())
-                                    ],
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(10.0),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        formatDate(changes[index].date),
-                                        style: subtitleHint,
-                                      ),
-                                      const Divider(),
-                                      Text(
-                                        changes[index].description,
-                                        style: title,
-                                      ),
-                                      const Divider(),
-                                      Text(
-                                        "${changes[index].user.name} - ${changes[index].user.matricula}",
-                                        style: subtitleHint,
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ));
-                } else {
-                  if (widget.add) {
-                    await showDialog(
-                        context: context,
-                        builder: (context) => AddChange(
-                              onSelect: (image, description) {
-                                final change = CarChangeModel(
-                                    checklistId: widget.checklistId,
-                                    user: widget.user,
-                                    value: widget.update,
-                                    dx: result.dx,
-                                    dy: result.dy,
-                                    description: description,
-                                    fileImage: image,
-                                    date: DateTime.now());
-
-                                changes.add(change);
-                                if (widget.onAdd != null) widget.onAdd!(change);
-                              },
-                            ));
-                  }
-                }
-              },
-              child: CustomPaint(
-                key: paintKey,
-                foregroundPainter: MyCustomPainter(changes: changes),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Center(
+          child: Stack(
+            children: [
+              Center(
                 child: Container(
                   height: 250.0,
                   width: 380.0,
-                  color: Colors.transparent,
+                  decoration: const BoxDecoration(image: DecorationImage(image: AssetImage("assets/car.jpg"), fit: BoxFit.contain)),
                 ),
               ),
-            ),
+              Center(
+                child: Listener(
+                  onPointerDown: (PointerDownEvent event) async {
+                    RenderBox box = paintKey.currentContext!.findRenderObject()! as RenderBox;
+
+                    var off = box.globalToLocal(event.position);
+                    var result = Offset((off.dx.round()).toDouble(), (off.dy.round()).toDouble());
+
+                    int index = -1;
+
+                    if (offs.isNotEmpty) {
+                      for (int i = 0; i < offs.length; i++) {
+                        var dx = (offs[i].dx - result.dx).abs();
+                        var dy = (offs[i].dy - result.dy).abs();
+
+                        if (dx < widget.region && dy < widget.region) {
+                          index = i;
+                          break;
+                        }
+                      }
+                    }
+
+                    if (index != -1) {
+                      final enable =
+                          (widget.remove || ((widget.checklistId == changes[index].checklistId) && (changes[index].value == widget.update)));
+
+                      debugPrint('Enable.: $enable , checklistId.: ${changes[index].checklistId}');
+                      await showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                                titlePadding: EdgeInsets.zero,
+                                contentPadding: EdgeInsets.zero,
+                                content: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(5.0),
+                                      child: Stack(
+                                        children: [
+                                          changes[index].fileImage != null
+                                              ? Image.memory(
+                                                  changes[index].fileImage!,
+                                                  height: 250,
+                                                  width: 350,
+                                                  fit: BoxFit.cover,
+                                                )
+                                              : kIsWeb
+                                                  ? Image.network(
+                                                      changes[index].image,
+                                                      height: 250,
+                                                      width: 350,
+                                                      fit: BoxFit.cover,
+                                                    )
+                                                  : CachedNetworkImage(
+                                                      height: 250,
+                                                      width: 350,
+                                                      imageUrl: changes[index].image,
+                                                      fit: BoxFit.cover,
+                                                      placeholder: (context, url) => const SizedBox(
+                                                          height: 60.0, width: 60.0, child: Center(child: CircularProgressIndicator())),
+                                                      errorWidget: (context, url, error) => const Center(
+                                                          child: Icon(
+                                                        Icons.error,
+                                                        size: 60.0,
+                                                      )),
+                                                    ),
+                                          Positioned(
+                                              top: 10.0,
+                                              right: 10.0,
+                                              child: enable
+                                                  ? GestureDetector(
+                                                      onTap: () {
+                                                        if (widget.onRemove != null) {
+                                                          widget.onRemove!(index);
+                                                        }
+
+                                                        changes.removeAt(index);
+                                                        Navigator.of(context).pop();
+                                                      },
+                                                      child: const CircleAvatar(
+                                                          radius: 20,
+                                                          backgroundColor: Colors.black45,
+                                                          child: Icon(
+                                                            MdiIcons.delete,
+                                                            size: 20,
+                                                            color: Colors.white,
+                                                          )),
+                                                    )
+                                                  : Container())
+                                        ],
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(10.0),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            formatDate(changes[index].date),
+                                            style: subtitleHint,
+                                          ),
+                                          const Divider(),
+                                          Text(
+                                            changes[index].description,
+                                            style: title,
+                                          ),
+                                          const Divider(),
+                                          Text(
+                                            "${changes[index].user.name} - ${changes[index].user.matricula}",
+                                            style: subtitleHint,
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ));
+                    } else {
+                      if (widget.add) {
+                        await showDialog(
+                            context: context,
+                            builder: (context) => AddChange(
+                                  onSelect: (image, description) {
+                                    final change = CarChangeModel(
+                                        checklistId: widget.checklistId,
+                                        user: widget.user,
+                                        value: widget.update,
+                                        dx: result.dx,
+                                        dy: result.dy,
+                                        description: description,
+                                        fileImage: image,
+                                        date: DateTime.now());
+
+                                    changes.add(change);
+                                    if (widget.onAdd != null) widget.onAdd!(change);
+                                  },
+                                ));
+                      }
+                    }
+                  },
+                  child: CustomPaint(
+                    key: paintKey,
+                    foregroundPainter: MyCustomPainter(changes: changes),
+                    child: Container(
+                      height: 240.0,
+                      width: 380.0,
+                      color: Colors.transparent,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -257,7 +264,7 @@ class AddChange extends StatefulWidget {
   const AddChange({Key? key, required this.onSelect}) : super(key: key);
 
   @override
-  _AddChangeState createState() => _AddChangeState();
+  State createState() => _AddChangeState();
 }
 
 class _AddChangeState extends State<AddChange> {

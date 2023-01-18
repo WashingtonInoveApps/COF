@@ -1,27 +1,25 @@
-import 'dart:convert';
-
 import 'package:bsu_control/core/constants.dart';
+import 'package:bsu_control/core/db.dart';
 import 'package:bsu_control/model/car_model.dart';
-import 'package:bsu_control/model/car_status_model.dart';
 import 'package:bsu_control/model/user_model.dart';
 import 'package:bsu_control/src/app_interface.dart';
 import 'package:mobx/mobx.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-import 'model/car_mapa_model.dart';
 import 'model/check_list_model.dart';
 import 'model/supply_model.dart';
 
 part 'app_controller.g.dart';
 
+// ignore: library_private_types_in_public_api
 class AppController = _AppControllerBase with _$AppController;
 
 abstract class _AppControllerBase with Store {
   final IAppRepository repository;
 
-  _AppControllerBase({required this.repository}){
+  _AppControllerBase({required this.repository}) {
     PackageInfo.fromPlatform().then((value) => setVersion(value.version));
+    getUserDB(tag: 'user');
   }
 
   @observable
@@ -40,6 +38,9 @@ abstract class _AppControllerBase with Store {
   bool loading = false;
 
   @observable
+  bool checklistVeicular = false;
+
+  @observable
   DateTime date = DateTime.now();
 
   @observable
@@ -47,9 +48,22 @@ abstract class _AppControllerBase with Store {
 
   @observable
   List<CheckListModel> checkLists = <CheckListModel>[].asObservable();
+  
+  @observable
+  List<UserModel> users = <UserModel>[].asObservable();
 
   @computed
   bool get enable => user.adm;
+
+  @computed
+  List<UserModel> get usersValidations => users.where((e) => e.enable && !e.adm).toList();
+
+  Stream<List<CheckListModel>> get listenChecklist => repository
+      .listenChecklist(referenceDate: formatDate(date, outher: true));
+
+  Stream<List<CarModel>> get listenCar => repository.listenCar();
+
+  Stream<List<UserModel>> get listenUsers => repository.listenUsers();
 
   @computed
   List<CarModel> get carsADM => cars.where((e) => e.adm).toList();
@@ -59,7 +73,7 @@ abstract class _AppControllerBase with Store {
 
   @computed
   List<String> get prefixs => cars.map((e) => e.prefix).toList();
-  
+
   @action
   setVersion(String value) => version = value;
 
@@ -67,10 +81,22 @@ abstract class _AppControllerBase with Store {
   setReferenceDate(DateTime value) => date = value;
 
   @action
+  setCheckListVeicular(bool value) => checklistVeicular = value;
+
+  @action
   setCars(List<CarModel> value) {
     cars
       ..clear()
       ..addAll(value);
+  }
+
+  @action
+  setUsers(List<UserModel> value) {
+    users
+      ..clear()
+      ..addAll(value);
+
+    users.sort((a,b) => a.name.compareTo(b.name));
   }
 
   @action
@@ -81,105 +107,12 @@ abstract class _AppControllerBase with Store {
       ..addAll(value);
   }
 
-  Stream<List<CarModel>> get listenCar => repository.listenCar();
-
-  Stream<List<UserModel>> get listenUsers => repository.listenUsers();
-
-  Stream<List<CheckListModel>> get listenCheckList => repository.listenCheckList(referenceDate: formatDate(date, referenceDate: true));
-
-  Stream<List<CarMapaModel>> listenMapas({required String carId}) {
-    return repository.listenMapas(carId: carId);
-  }
-
-  Stream<List<CarStatusModel>> listenStatus({required String carId}) {
-    return repository.listenStatusCar(carId: carId);
-  }
-
   @action
-  Future<bool> saveCar({required CarModel car, String? id}) async {
+  Future<bool> saveSupplies(
+      {required SupplyModel supply, required CheckListModel checklist}) async {
     loading = true;
-    final result = await repository.saveCar(car: car, unidade: unidade, id: id);
-    loading = false;
-
-    return result;
-  }
-
-  @action
-  Future<bool> saveCheckList({required CheckListModel checkList, String? id}) async {
-    loading = true;
-    final result = await repository.saveCheckList(checkList: checkList, unidade: unidade, id: id);
-    loading = false;
-
-    return result;
-  }
-
-  @action
-  Future<bool> saveSupplies({required SupplyModel supply, required CheckListModel checklist}) async {
-    loading = true;
-    final result = await repository.saveSupplies(supply: supply, checklist: checklist);
-    loading = false;
-
-    return result;
-  }
-
-  @action
-  Future<bool> updateStatusCar({required CarStatusModel status, required String id, required bool enable}) async {
-    loading = true;
-    final result = await repository.updateStatusCar(status: status, id: id, enable: enable);
-    loading = false;
-
-    return result;
-  }
-
-  @action
-  Future<bool> updateKMOil({required String id, required int value}) async {
-    loading = true;
-    final result = await repository.updateKMCar(id: id, data: {'oil': value});
-    loading = false;
-
-    return result;
-  }
-
-  @action
-  Future<bool> updateKMArref({required String id, required int value}) async {
-    loading = true;
-    final result = await repository.updateKMCar(id: id, data: {'arref': value});
-    loading = false;
-
-    return result;
-  }
-
-  @action
-  Future<bool> insertMapaCar({required CarMapaModel mapa}) async {
-    loading = true;
-    final result = await repository.insertMapaCar(mapa: mapa);
-    loading = false;
-
-    return result;
-  }
-
-  @action
-  Future<bool> finishCheckList({required String kmFinal, required CheckListModel checkList}) async {
-    loading = true;
-    final result = await repository.finishCheckList(kmFinal: kmFinal, checkList: checkList);
-    loading = false;
-
-    return result;
-  }
-
-  @action
-  Future<bool> createUser({required UserModel user, required String password}) async {
-    loading = true;
-    final result = await repository.createUser(user: user, password: password);
-    loading = false;
-
-    return result;
-  }
-
-  @action
-  Future<bool> stateUser({required UserModel user}) async {
-    loading = true;
-    final result = await repository.stateUser(user: user);
+    final result =
+        await repository.saveSupplies(supply: supply, checklist: checklist);
     loading = false;
 
     return result;
@@ -194,8 +127,17 @@ abstract class _AppControllerBase with Store {
     if (result == null) return false;
 
     user = result;
+    await DBController.save(tag: 'user', value: result.toJson());
+
     isLogged = true;
     return true;
+  }
+
+  Future<bool> getUserDB({required String tag}) async {
+    final result = await DBController.get(tag: tag);
+    if (result != null) user = UserModel.fromMap(result);
+
+    return result != null;
   }
 
   @action
@@ -208,57 +150,32 @@ abstract class _AppControllerBase with Store {
   }
 
   @action
-  Future<bool> saveUserDBLocal() async {
+  Future<bool> deleteChecklist({required CheckListModel checkList}) async {
     try {
-      final prefs = await SharedPreferences.getInstance();
+      loading = true;
 
-      await prefs.setString("user", jsonEncode(user.toJson()));
-      return true;
+      final car = CarModel.copy(
+          cars.firstWhere((e) => e.id == checkList.checkCar.car.id));
+      final changes =
+          car.changes.where((e) => e.checklistId != checkList.id).toList();
+
+      final result = await repository.deleteChecklist(
+          checklist: checkList, car: car.copyWith(changes: changes));
+      loading = false;
+
+      return result;
     } catch (e) {
+      loading = false;
       return false;
     }
   }
 
   @action
-  Future<bool> getUserDBLocal() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-
-      final result = prefs.getString("user");
-
-      if (result == null) return false;
-
-      user = UserModel.fromMap(jsonDecode(result));
-
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }
-
-  @action
-  Future<bool> deleteUserDBLocal() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      return await prefs.remove("user");
-    } catch (e) {
-      return false;
-    }
-  }
-
-  @action
-  Future<bool> deleteCarMapa({required String id}) async {
+  Future<bool> deleteSupply(
+      {required SupplyModel supply, required CheckListModel checklist}) async {
     loading = true;
-    final result = await repository.deleteCarMapa(id: id);
-
-    loading = false;
-    return result;
-  }
-
-  @action
-  Future<bool> deleteSupply({required SupplyModel supply, required CheckListModel checklist}) async {
-    loading = true;
-    final result = await repository.deleteSupply(supply: supply, checklist: checklist);
+    final result =
+        await repository.deleteSupply(supply: supply, checklist: checklist);
     loading = false;
     return result;
   }

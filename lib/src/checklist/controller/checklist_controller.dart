@@ -1,24 +1,37 @@
+import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/model/car_changes_model.dart';
 import 'package:bsu_control/model/car_model.dart';
 import 'package:bsu_control/model/check_list_model.dart';
 import 'package:bsu_control/model/itens_changes_model.dart';
 import 'package:bsu_control/model/user_model.dart';
+import 'package:bsu_control/src/checklist/repository/checklist_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
 
 part 'checklist_controller.g.dart';
 
+// ignore: library_private_types_in_public_api
 class CheckListController = _CheckListControllerBase with _$CheckListController;
 
 abstract class _CheckListControllerBase with Store {
   final List<CarModel> cars;
   final UserModel user;
+  final ICheckListRepository repository;
+  final AppController app;
 
   @observable
   late CheckListModel checklist;
 
-  _CheckListControllerBase({required this.checklist, required this.cars, required this.user}) {
+  @observable
+  bool loading = false;
+
+  _CheckListControllerBase(
+      {required this.checklist,
+      required this.cars,
+      required this.user,
+      required this.app,
+      required this.repository}) {
     initController();
   }
 
@@ -45,7 +58,8 @@ abstract class _CheckListControllerBase with Store {
   ObservableList<CarChangeModel> carChanges = <CarChangeModel>[].asObservable();
 
   @observable
-  ObservableList<ItensChangesModel> itens = <ItensChangesModel>[].asObservable();
+  ObservableList<ItensChangesModel> itens =
+      <ItensChangesModel>[].asObservable();
 
   @observable
   String prefix = "";
@@ -155,5 +169,26 @@ abstract class _CheckListControllerBase with Store {
       ..insert(index, item);
 
     checklist.checkCar.car.itens = itens;
+  }
+
+  @action
+  Future<bool> save({required CheckListModel checkList, String? id}) async {
+    loading = true;
+    final result = await repository.save(
+        checkList: checkList, unidade: app.unidade, id: id);
+    loading = false;
+
+    return result;
+  }
+
+  @action
+  Future<bool> finish(
+      {required String kmFinal, required CheckListModel checkList}) async {
+    loading = true;
+    final result =
+        await repository.finish(kmFinal: kmFinal, checkList: checkList);
+    loading = false;
+
+    return result;
   }
 }

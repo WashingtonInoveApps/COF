@@ -5,12 +5,14 @@ import 'package:flutter/material.dart';
 class CheckListCard extends StatelessWidget {
   final CheckListModel checkList;
   final Function() onTap;
-  const CheckListCard({Key? key, required this.checkList, required this.onTap}) : super(key: key);
+  final Function()? onDelete;
+  const CheckListCard({Key? key, required this.checkList, required this.onTap, required this.onDelete}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
+      onLongPress: onDelete,
       child: Card(
         elevation: 2,
         margin: const EdgeInsets.only(bottom: 10.0),
@@ -28,7 +30,7 @@ class CheckListCard extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    checkList.pb,
+                    checkList.pb.toUpperCase(),
                     style: title.copyWith(fontWeight: FontWeight.bold),
                   ),
                 ],
@@ -37,14 +39,11 @@ class CheckListCard extends StatelessWidget {
                 height: 10.0,
               ),
               Text(
-                "Condutor",
+                "CONDUTOR",
                 style: subtitleHint,
               ),
-              const SizedBox(
-                height: 5.0,
-              ),
               Text(
-                "${checkList.user.name} - ${checkList.user.matricula}",
+                "${checkList.user.name.toUpperCase()} - ${checkList.user.matricula}",
                 style: title.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(
@@ -57,7 +56,7 @@ class CheckListCard extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          "KM Inicial",
+                          "KM INICIAL",
                           style: subtitleHint,
                         ),
                         const SizedBox(
@@ -76,7 +75,7 @@ class CheckListCard extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         Text(
-                          "KM Final",
+                          "KM FINAL",
                           style: subtitleHint,
                         ),
                         const SizedBox(

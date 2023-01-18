@@ -6,7 +6,7 @@ part of 'app_controller.dart';
 // StoreGenerator
 // **************************************************************************
 
-// ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic
+// ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$AppController on _AppControllerBase, Store {
   Computed<bool>? _$enableComputed;
@@ -14,6 +14,13 @@ mixin _$AppController on _AppControllerBase, Store {
   @override
   bool get enable => (_$enableComputed ??=
           Computed<bool>(() => super.enable, name: '_AppControllerBase.enable'))
+      .value;
+  Computed<List<UserModel>>? _$usersValidationsComputed;
+
+  @override
+  List<UserModel> get usersValidations => (_$usersValidationsComputed ??=
+          Computed<List<UserModel>>(() => super.usersValidations,
+              name: '_AppControllerBase.usersValidations'))
       .value;
   Computed<List<CarModel>>? _$carsADMComputed;
 
@@ -37,7 +44,8 @@ mixin _$AppController on _AppControllerBase, Store {
               name: '_AppControllerBase.prefixs'))
           .value;
 
-  final _$versionAtom = Atom(name: '_AppControllerBase.version');
+  late final _$versionAtom =
+      Atom(name: '_AppControllerBase.version', context: context);
 
   @override
   String get version {
@@ -52,7 +60,8 @@ mixin _$AppController on _AppControllerBase, Store {
     });
   }
 
-  final _$userAtom = Atom(name: '_AppControllerBase.user');
+  late final _$userAtom =
+      Atom(name: '_AppControllerBase.user', context: context);
 
   @override
   UserModel get user {
@@ -67,7 +76,8 @@ mixin _$AppController on _AppControllerBase, Store {
     });
   }
 
-  final _$unidadeAtom = Atom(name: '_AppControllerBase.unidade');
+  late final _$unidadeAtom =
+      Atom(name: '_AppControllerBase.unidade', context: context);
 
   @override
   String get unidade {
@@ -82,7 +92,8 @@ mixin _$AppController on _AppControllerBase, Store {
     });
   }
 
-  final _$isLoggedAtom = Atom(name: '_AppControllerBase.isLogged');
+  late final _$isLoggedAtom =
+      Atom(name: '_AppControllerBase.isLogged', context: context);
 
   @override
   bool get isLogged {
@@ -97,7 +108,8 @@ mixin _$AppController on _AppControllerBase, Store {
     });
   }
 
-  final _$loadingAtom = Atom(name: '_AppControllerBase.loading');
+  late final _$loadingAtom =
+      Atom(name: '_AppControllerBase.loading', context: context);
 
   @override
   bool get loading {
@@ -112,7 +124,24 @@ mixin _$AppController on _AppControllerBase, Store {
     });
   }
 
-  final _$dateAtom = Atom(name: '_AppControllerBase.date');
+  late final _$checklistVeicularAtom =
+      Atom(name: '_AppControllerBase.checklistVeicular', context: context);
+
+  @override
+  bool get checklistVeicular {
+    _$checklistVeicularAtom.reportRead();
+    return super.checklistVeicular;
+  }
+
+  @override
+  set checklistVeicular(bool value) {
+    _$checklistVeicularAtom.reportWrite(value, super.checklistVeicular, () {
+      super.checklistVeicular = value;
+    });
+  }
+
+  late final _$dateAtom =
+      Atom(name: '_AppControllerBase.date', context: context);
 
   @override
   DateTime get date {
@@ -127,7 +156,8 @@ mixin _$AppController on _AppControllerBase, Store {
     });
   }
 
-  final _$carsAtom = Atom(name: '_AppControllerBase.cars');
+  late final _$carsAtom =
+      Atom(name: '_AppControllerBase.cars', context: context);
 
   @override
   List<CarModel> get cars {
@@ -142,7 +172,8 @@ mixin _$AppController on _AppControllerBase, Store {
     });
   }
 
-  final _$checkListsAtom = Atom(name: '_AppControllerBase.checkLists');
+  late final _$checkListsAtom =
+      Atom(name: '_AppControllerBase.checkLists', context: context);
 
   @override
   List<CheckListModel> get checkLists {
@@ -157,24 +188,24 @@ mixin _$AppController on _AppControllerBase, Store {
     });
   }
 
-  final _$saveCarAsyncAction = AsyncAction('_AppControllerBase.saveCar');
+  late final _$usersAtom =
+      Atom(name: '_AppControllerBase.users', context: context);
 
   @override
-  Future<bool> saveCar({required CarModel car, String? id}) {
-    return _$saveCarAsyncAction.run(() => super.saveCar(car: car, id: id));
+  List<UserModel> get users {
+    _$usersAtom.reportRead();
+    return super.users;
   }
-
-  final _$saveCheckListAsyncAction =
-      AsyncAction('_AppControllerBase.saveCheckList');
 
   @override
-  Future<bool> saveCheckList({required CheckListModel checkList, String? id}) {
-    return _$saveCheckListAsyncAction
-        .run(() => super.saveCheckList(checkList: checkList, id: id));
+  set users(List<UserModel> value) {
+    _$usersAtom.reportWrite(value, super.users, () {
+      super.users = value;
+    });
   }
 
-  final _$saveSuppliesAsyncAction =
-      AsyncAction('_AppControllerBase.saveSupplies');
+  late final _$saveSuppliesAsyncAction =
+      AsyncAction('_AppControllerBase.saveSupplies', context: context);
 
   @override
   Future<bool> saveSupplies(
@@ -183,71 +214,8 @@ mixin _$AppController on _AppControllerBase, Store {
         .run(() => super.saveSupplies(supply: supply, checklist: checklist));
   }
 
-  final _$updateStatusCarAsyncAction =
-      AsyncAction('_AppControllerBase.updateStatusCar');
-
-  @override
-  Future<bool> updateStatusCar(
-      {required CarStatusModel status,
-      required String id,
-      required bool enable}) {
-    return _$updateStatusCarAsyncAction.run(
-        () => super.updateStatusCar(status: status, id: id, enable: enable));
-  }
-
-  final _$updateKMOilAsyncAction =
-      AsyncAction('_AppControllerBase.updateKMOil');
-
-  @override
-  Future<bool> updateKMOil({required String id, required int value}) {
-    return _$updateKMOilAsyncAction
-        .run(() => super.updateKMOil(id: id, value: value));
-  }
-
-  final _$updateKMArrefAsyncAction =
-      AsyncAction('_AppControllerBase.updateKMArref');
-
-  @override
-  Future<bool> updateKMArref({required String id, required int value}) {
-    return _$updateKMArrefAsyncAction
-        .run(() => super.updateKMArref(id: id, value: value));
-  }
-
-  final _$insertMapaCarAsyncAction =
-      AsyncAction('_AppControllerBase.insertMapaCar');
-
-  @override
-  Future<bool> insertMapaCar({required CarMapaModel mapa}) {
-    return _$insertMapaCarAsyncAction
-        .run(() => super.insertMapaCar(mapa: mapa));
-  }
-
-  final _$finishCheckListAsyncAction =
-      AsyncAction('_AppControllerBase.finishCheckList');
-
-  @override
-  Future<bool> finishCheckList(
-      {required String kmFinal, required CheckListModel checkList}) {
-    return _$finishCheckListAsyncAction.run(
-        () => super.finishCheckList(kmFinal: kmFinal, checkList: checkList));
-  }
-
-  final _$createUserAsyncAction = AsyncAction('_AppControllerBase.createUser');
-
-  @override
-  Future<bool> createUser({required UserModel user, required String password}) {
-    return _$createUserAsyncAction
-        .run(() => super.createUser(user: user, password: password));
-  }
-
-  final _$stateUserAsyncAction = AsyncAction('_AppControllerBase.stateUser');
-
-  @override
-  Future<bool> stateUser({required UserModel user}) {
-    return _$stateUserAsyncAction.run(() => super.stateUser(user: user));
-  }
-
-  final _$loginAsyncAction = AsyncAction('_AppControllerBase.login');
+  late final _$loginAsyncAction =
+      AsyncAction('_AppControllerBase.login', context: context);
 
   @override
   Future<bool> login({required String email, required String senha}) {
@@ -255,8 +223,8 @@ mixin _$AppController on _AppControllerBase, Store {
         .run(() => super.login(email: email, senha: senha));
   }
 
-  final _$recuperarPasswordAsyncAction =
-      AsyncAction('_AppControllerBase.recuperarPassword');
+  late final _$recuperarPasswordAsyncAction =
+      AsyncAction('_AppControllerBase.recuperarPassword', context: context);
 
   @override
   Future<bool> recuperarPassword({required String email}) {
@@ -264,40 +232,17 @@ mixin _$AppController on _AppControllerBase, Store {
         .run(() => super.recuperarPassword(email: email));
   }
 
-  final _$saveUserDBLocalAsyncAction =
-      AsyncAction('_AppControllerBase.saveUserDBLocal');
+  late final _$deleteChecklistAsyncAction =
+      AsyncAction('_AppControllerBase.deleteChecklist', context: context);
 
   @override
-  Future<bool> saveUserDBLocal() {
-    return _$saveUserDBLocalAsyncAction.run(() => super.saveUserDBLocal());
+  Future<bool> deleteChecklist({required CheckListModel checkList}) {
+    return _$deleteChecklistAsyncAction
+        .run(() => super.deleteChecklist(checkList: checkList));
   }
 
-  final _$getUserDBLocalAsyncAction =
-      AsyncAction('_AppControllerBase.getUserDBLocal');
-
-  @override
-  Future<bool> getUserDBLocal() {
-    return _$getUserDBLocalAsyncAction.run(() => super.getUserDBLocal());
-  }
-
-  final _$deleteUserDBLocalAsyncAction =
-      AsyncAction('_AppControllerBase.deleteUserDBLocal');
-
-  @override
-  Future<bool> deleteUserDBLocal() {
-    return _$deleteUserDBLocalAsyncAction.run(() => super.deleteUserDBLocal());
-  }
-
-  final _$deleteCarMapaAsyncAction =
-      AsyncAction('_AppControllerBase.deleteCarMapa');
-
-  @override
-  Future<bool> deleteCarMapa({required String id}) {
-    return _$deleteCarMapaAsyncAction.run(() => super.deleteCarMapa(id: id));
-  }
-
-  final _$deleteSupplyAsyncAction =
-      AsyncAction('_AppControllerBase.deleteSupply');
+  late final _$deleteSupplyAsyncAction =
+      AsyncAction('_AppControllerBase.deleteSupply', context: context);
 
   @override
   Future<bool> deleteSupply(
@@ -306,8 +251,8 @@ mixin _$AppController on _AppControllerBase, Store {
         .run(() => super.deleteSupply(supply: supply, checklist: checklist));
   }
 
-  final _$_AppControllerBaseActionController =
-      ActionController(name: '_AppControllerBase');
+  late final _$_AppControllerBaseActionController =
+      ActionController(name: '_AppControllerBase', context: context);
 
   @override
   dynamic setVersion(String value) {
@@ -332,11 +277,33 @@ mixin _$AppController on _AppControllerBase, Store {
   }
 
   @override
+  dynamic setCheckListVeicular(bool value) {
+    final _$actionInfo = _$_AppControllerBaseActionController.startAction(
+        name: '_AppControllerBase.setCheckListVeicular');
+    try {
+      return super.setCheckListVeicular(value);
+    } finally {
+      _$_AppControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   dynamic setCars(List<CarModel> value) {
     final _$actionInfo = _$_AppControllerBaseActionController.startAction(
         name: '_AppControllerBase.setCars');
     try {
       return super.setCars(value);
+    } finally {
+      _$_AppControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setUsers(List<UserModel> value) {
+    final _$actionInfo = _$_AppControllerBaseActionController.startAction(
+        name: '_AppControllerBase.setUsers');
+    try {
+      return super.setUsers(value);
     } finally {
       _$_AppControllerBaseActionController.endAction(_$actionInfo);
     }
@@ -361,10 +328,13 @@ user: ${user},
 unidade: ${unidade},
 isLogged: ${isLogged},
 loading: ${loading},
+checklistVeicular: ${checklistVeicular},
 date: ${date},
 cars: ${cars},
 checkLists: ${checkLists},
+users: ${users},
 enable: ${enable},
+usersValidations: ${usersValidations},
 carsADM: ${carsADM},
 carsOPR: ${carsOPR},
 prefixs: ${prefixs}

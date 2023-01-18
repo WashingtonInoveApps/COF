@@ -1,183 +1,246 @@
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
-import 'package:bsu_control/src/checklist/check_list_details_page.dart';
-import 'package:bsu_control/src/widgets/app_bar_widget.dart';
-import 'package:bsu_control/src/widgets/car_card.dart';
-import 'package:bsu_control/src/widgets/check_list_card.dart';
-import 'package:cherry_toast/cherry_toast.dart';
+import 'package:bsu_control/src/checklist/view/checklist_page.dart';
+import 'package:bsu_control/src/exchange/view/exchange_page.dart';
+import 'package:bsu_control/src/pages/login_page.dart';
+import 'package:bsu_control/src/pages/manegent_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
-import 'package:mobx/mobx.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+
+import '../exchange/view/exchange_verify_page.dart';
+import '../widgets/app_bar_widget.dart';
 
 class HomePage extends StatefulWidget {
-  final bool home;
-  const HomePage({Key? key, this.home = false}) : super(key: key);
+  const HomePage({Key? key}) : super(key: key);
 
   @override
-  _HomePageState createState() => _HomePageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  final controller = GetIt.I.get<AppController>();
-
-  late ReactionDisposer rec;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-
-    rec = autorun((_) {
-      if (widget.home) {
-        for (var car in controller.cars) {
-          if ((car.km > car.oil) && car.oil > 0) {
-            Future.delayed(Duration.zero, () {
-              CherryToast.warning(
-                title: "${car.prefix} - Verifique troca de óleo",
-                titleStyle: title,
-                toastDuration: const Duration(seconds: 2),
-                animationDuration: const Duration(milliseconds: 500),
-              ).show(context);
-            });
-          }
-        }
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    rec.reaction.dispose();
-  }
-
+  final app = GetIt.I.get<AppController>();
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async => false,
-      child: Scaffold(
-        appBar: const AppBarCustom(
-          page: 0,
-        ),
-        body: SingleChildScrollView(
-          child: LayoutBuilder(builder: (context, constrains) {
-            double width = constrains.maxWidth > 500 ? 500.0 : constrains.maxWidth;
-            double width1 = constrains.maxWidth > 500 ? constrains.maxWidth * 0.5 : constrains.maxWidth;
-
-            return Center(
+    return Scaffold(
+      body: Column(
+        children: [
+          const AppBarCustom(
+            menu: false,
+          ),
+          Expanded(
+            child: Center(
               child: Wrap(
                 children: [
-                  Container(
-                    padding: const EdgeInsets.all(10.0),
-                    width: width1,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
+                  InkWell(
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => const ChecklistPage(
+                                home: true,
+                              )));
+                    },
+                    child: Card(
+                      elevation: 2,
+                      child: Container(
+                        width: 140.0,
+                        height: 140.0,
+                        alignment: Alignment.center,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 20.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            Expanded(
-                                child: Text(
-                              "OPERACIONAIS",
-                              style: titleHint,
-                            )),
-                            Expanded(
-                              child: Observer(builder: (_) {
-                                return TextButton(
-                                    style: TextButton.styleFrom(side: BorderSide(color: Theme.of(context).primaryColor)),
-                                    onPressed: () async {
-                                      showDatePicker(
-                                              context: context, initialDate: DateTime.now(), firstDate: DateTime(2021), lastDate: DateTime(2050))
-                                          .then((value) {
-                                        if (value != null) controller.setReferenceDate(value);
-                                      });
-                                    },
-                                    child: Text(
-                                      formatDate(controller.date, outher: true),
-                                      style: title.copyWith(color: Theme.of(context).primaryColor),
-                                    ));
-                              }),
+                            const Icon(
+                              MdiIcons.carMultiple,
+                              size: 40,
+                              color: Colors.green,
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Text(
+                              'FROTA',
+                              style: subtitle,
                             ),
                           ],
                         ),
-                        const Divider(),
-                        Center(
-                          child: SizedBox(
-                            width: width,
-                            child: Observer(builder: (_) {
-                              return controller.checkLists.isEmpty
-                                  ? Center(
-                                      child: Text(
-                                        "Ops ! Nenhum registro encontrado.",
-                                        style: title,
-                                      ),
-                                    )
-                                  : Column(
-                                      children: List.generate(
-                                          controller.checkLists.length,
-                                          (index) => CheckListCard(
-                                                checkList: controller.checkLists[index],
-                                                onTap: () {
-                                                  Navigator.of(context).push(MaterialPageRoute(
-                                                      builder: (context) => CheckListDetailsPage(checkListId: controller.checkLists[index].id!)));
-                                                },
-                                              )),
-                                    );
-                            }),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 5.0,
-                        ),
-                      ],
+                      ),
                     ),
                   ),
-                  Container(
-                    padding: const EdgeInsets.all(10.0),
-                    width: width1,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(
-                          height: 8.0,
+                  InkWell(
+                    onTap: null,
+                    child: Card(
+                      elevation: 2,
+                      child: Container(
+                        width: 140.0,
+                        height: 140.0,
+                        alignment: Alignment.center,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 20.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              MdiIcons.semanticWeb,
+                              size: 40,
+                              color: Colors.grey,
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Text(
+                              'MATERIAL',
+                              style: subtitle.copyWith(color: Colors.grey),
+                            ),
+                          ],
                         ),
-                        Text(
-                          "ADMINISTRATIVO",
-                          style: titleHint,
+                      ),
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => const ExchangePage()));
+                    },
+                    child: Card(
+                      elevation: 2,
+                      child: Container(
+                        width: 140.0,
+                        height: 140.0,
+                        alignment: Alignment.center,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 20.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              MdiIcons.repeatVariant,
+                              size: 40,
+                              color: Colors.green,
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Text(
+                              'PERMUTAS SAMU',
+                              style: subtitle,
+                            ),
+                          ],
                         ),
-                        const Divider(),
-                        Center(
-                          child: SizedBox(
-                            width: width,
-                            child: Observer(builder: (_) {
-                              return controller.carsADM.isEmpty
-                                  ? Center(
-                                      child: Text(
-                                        "Ops ! Nenhum registro encontrado.",
-                                        style: title,
-                                      ),
-                                    )
-                                  : Column(
-                                      children: List.generate(
-                                          controller.carsADM.length,
-                                          (index) => CarCard(
-                                                car: controller.carsADM[index],
-                                                onTap: () {},
-                                              )),
-                                    );
-                            }),
-                          ),
+                      ),
+                    ),
+                  ),
+                  InkWell(
+                    onTap: app.enable
+                        ? () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => const ManagementPage()));
+                          }
+                        : null,
+                    child: Card(
+                      elevation: 2,
+                      child: Container(
+                        width: 140.0,
+                        height: 140.0,
+                        alignment: Alignment.center,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 20.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              MdiIcons.cogs,
+                              size: 40,
+                              color: app.enable ? Colors.green : Colors.grey,
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Text(
+                              'GERENCIAMENTO',
+                              style: subtitle,
+                            ),
+                          ],
                         ),
-                        const SizedBox(
-                          height: 50.0,
+                      ),
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => const FilesPage()));
+                    },
+                    child: Card(
+                      elevation: 2,
+                      child: Container(
+                        width: 140.0,
+                        height: 140.0,
+                        alignment: Alignment.center,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 20.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              MdiIcons.fileDocument,
+                              size: 40,
+                              color: Colors.green,
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Text(
+                              'VERIFICAR DOCUMENTOS',
+                              style: subtitle,
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () {
+                      Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const LoginPage(exit: true)),
+                          (route) => false);
+                    },
+                    child: Card(
+                      elevation: 2,
+                      child: Container(
+                        width: 140.0,
+                        height: 140.0,
+                        alignment: Alignment.center,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 20.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              MdiIcons.exitToApp,
+                              size: 40,
+                              color: Colors.green,
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Text(
+                              'SAIR',
+                              style: subtitle,
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ],
               ),
-            );
-          }),
-        ),
+            ),
+          )
+        ],
       ),
     );
   }

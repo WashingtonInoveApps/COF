@@ -6,10 +6,11 @@ part of 'checklist_controller.dart';
 // StoreGenerator
 // **************************************************************************
 
-// ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic
+// ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$CheckListController on _CheckListControllerBase, Store {
-  final _$checklistAtom = Atom(name: '_CheckListControllerBase.checklist');
+  late final _$checklistAtom =
+      Atom(name: '_CheckListControllerBase.checklist', context: context);
 
   @override
   CheckListModel get checklist {
@@ -24,7 +25,24 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
     });
   }
 
-  final _$carChangesAtom = Atom(name: '_CheckListControllerBase.carChanges');
+  late final _$loadingAtom =
+      Atom(name: '_CheckListControllerBase.loading', context: context);
+
+  @override
+  bool get loading {
+    _$loadingAtom.reportRead();
+    return super.loading;
+  }
+
+  @override
+  set loading(bool value) {
+    _$loadingAtom.reportWrite(value, super.loading, () {
+      super.loading = value;
+    });
+  }
+
+  late final _$carChangesAtom =
+      Atom(name: '_CheckListControllerBase.carChanges', context: context);
 
   @override
   ObservableList<CarChangeModel> get carChanges {
@@ -39,7 +57,8 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
     });
   }
 
-  final _$itensAtom = Atom(name: '_CheckListControllerBase.itens');
+  late final _$itensAtom =
+      Atom(name: '_CheckListControllerBase.itens', context: context);
 
   @override
   ObservableList<ItensChangesModel> get itens {
@@ -54,7 +73,8 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
     });
   }
 
-  final _$prefixAtom = Atom(name: '_CheckListControllerBase.prefix');
+  late final _$prefixAtom =
+      Atom(name: '_CheckListControllerBase.prefix', context: context);
 
   @override
   String get prefix {
@@ -69,7 +89,8 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
     });
   }
 
-  final _$alfaAtom = Atom(name: '_CheckListControllerBase.alfa');
+  late final _$alfaAtom =
+      Atom(name: '_CheckListControllerBase.alfa', context: context);
 
   @override
   String get alfa {
@@ -84,7 +105,8 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
     });
   }
 
-  final _$oilAtom = Atom(name: '_CheckListControllerBase.oil');
+  late final _$oilAtom =
+      Atom(name: '_CheckListControllerBase.oil', context: context);
 
   @override
   double get oil {
@@ -99,7 +121,8 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
     });
   }
 
-  final _$hidraAtom = Atom(name: '_CheckListControllerBase.hidra');
+  late final _$hidraAtom =
+      Atom(name: '_CheckListControllerBase.hidra', context: context);
 
   @override
   double get hidra {
@@ -114,7 +137,8 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
     });
   }
 
-  final _$frAtom = Atom(name: '_CheckListControllerBase.fr');
+  late final _$frAtom =
+      Atom(name: '_CheckListControllerBase.fr', context: context);
 
   @override
   double get fr {
@@ -129,7 +153,8 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
     });
   }
 
-  final _$arrefAtom = Atom(name: '_CheckListControllerBase.arref');
+  late final _$arrefAtom =
+      Atom(name: '_CheckListControllerBase.arref', context: context);
 
   @override
   double get arref {
@@ -144,8 +169,27 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
     });
   }
 
-  final _$_CheckListControllerBaseActionController =
-      ActionController(name: '_CheckListControllerBase');
+  late final _$saveAsyncAction =
+      AsyncAction('_CheckListControllerBase.save', context: context);
+
+  @override
+  Future<bool> save({required CheckListModel checkList, String? id}) {
+    return _$saveAsyncAction
+        .run(() => super.save(checkList: checkList, id: id));
+  }
+
+  late final _$finishAsyncAction =
+      AsyncAction('_CheckListControllerBase.finish', context: context);
+
+  @override
+  Future<bool> finish(
+      {required String kmFinal, required CheckListModel checkList}) {
+    return _$finishAsyncAction
+        .run(() => super.finish(kmFinal: kmFinal, checkList: checkList));
+  }
+
+  late final _$_CheckListControllerBaseActionController =
+      ActionController(name: '_CheckListControllerBase', context: context);
 
   @override
   dynamic initController() {
@@ -272,6 +316,7 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
   String toString() {
     return '''
 checklist: ${checklist},
+loading: ${loading},
 carChanges: ${carChanges},
 itens: ${itens},
 prefix: ${prefix},

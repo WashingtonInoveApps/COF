@@ -1,8 +1,9 @@
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/model/car_model.dart';
-import 'package:bsu_control/src/car/car_mapa_page.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+
+import '../car/view/car_mapa_page.dart';
 
 class CarCard extends StatelessWidget {
   final CarModel car;

@@ -29,7 +29,7 @@ class FieldText extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _FieldTextState createState() => _FieldTextState();
+  State createState() => _FieldTextState();
 }
 
 class _FieldTextState extends State<FieldText> {

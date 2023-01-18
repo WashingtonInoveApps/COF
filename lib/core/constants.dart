@@ -3,18 +3,40 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 final title = GoogleFonts.nunitoSans(fontSize: 14.0, color: Colors.black);
-final titleHead = GoogleFonts.nunitoSans(fontSize: 18.0, color: Colors.white, fontWeight: FontWeight.bold);
-final titleButton = GoogleFonts.nunitoSans(fontSize: 14.0, fontWeight: FontWeight.bold, color: Colors.white);
+final titleHead = GoogleFonts.nunitoSans(
+    fontSize: 14.0, color: Colors.white, fontWeight: FontWeight.bold);
+final titleButton = GoogleFonts.nunitoSans(
+    fontSize: 14.0, fontWeight: FontWeight.bold, color: Colors.white);
 final titleHint = GoogleFonts.nunitoSans(fontSize: 14.0, color: Colors.grey);
 
 final subtitle = GoogleFonts.nunitoSans(fontSize: 12.0, color: Colors.black);
-final subtitleHead = GoogleFonts.nunitoSans(fontSize: 16.0, color: Colors.white);
+final subtitleHead =
+    GoogleFonts.nunitoSans(fontSize: 14.0, color: Colors.white);
 final subtitleHint = GoogleFonts.nunitoSans(fontSize: 12.0, color: Colors.grey);
 
 final alfas = ["ALFA 1", "ALFA 2", "ALFA 3", "ALFA 4", "ALFA 5", "ALFA 6"];
 final carsType = ["AMBULÂNCIA", "AUTO BOMBA TANQUE", "CAMINHÃO", "PICK UP"];
-final statusType = ["AR CONDICIONADO", "VAZAMENTO", "ÉLETRICOS", "MÊCANICOS", "PNEU", "DIREÇÃO", "FREIO"];
+final statusType = [
+  "AR CONDICIONADO",
+  "VAZAMENTO",
+  "ÉLETRICOS",
+  "MÊCANICOS",
+  "PNEU",
+  "DIREÇÃO",
+  "FREIO"
+];
 final unidades = ["BSU", "1BBM"];
+final graduacao = [
+  'SOLDADO',
+  'CABO',
+  'SARGENTO',
+  'SUBTENENTE',
+  'TENENTE',
+  'CAPITÃO',
+  'MAJOR',
+  'TEN CORONEL',
+  'CORONEL'
+];
 
 final listItensEletric = [
   ItemModel(description: "AR CONDICIONADO"),
@@ -57,13 +79,43 @@ final listItensEquip = [
   ItemModel(description: "FLANELA")
 ];
 
-String formatDate(DateTime date, {bool outher = false, bool referenceDate = false}) {
-  final week = ["", "Domingo", "Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado"];
-  if (outher) {
-    return "${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year} - ${week[date.weekday]}";
-  }
+String formatDate(DateTime date,
+    {bool outher = false, bool referenceDate = false}) {
+  final week = [
+    "",
+    "Segunda-feira",
+    "Terça-feira",
+    "Quarta-feira",
+    "Quinta-feira",
+    "Sexta-feira",
+    "Sábado",
+    "Domingo"
+  ];
 
-  if (referenceDate) {
+  final month = [
+    '',
+    'Janeiro',
+    'Fevereiro',
+    'Março',
+    'Abril',
+    'Maio',
+    'Junho',
+    'Julho',
+    'Agosto',
+    'Setembro',
+    'Outubro',
+    'Novembro',
+    'Dezembro'
+  ];
+
+  if (outher && referenceDate) {
+    return ("${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year} - ${week[date.weekday]}")
+        .toUpperCase();
+  }
+  if (referenceDate && !outher) {
+    return "${date.month.toString().padLeft(2, '0')}/${date.year} - ${month[date.month].toUpperCase()}";
+  }
+  if (!referenceDate && outher) {
     return "${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}";
   }
 
