@@ -31,10 +31,10 @@ class _ManagementPageState extends State<ManagementPage> {
               child: Column(
                 children: [
                   ListTile(
-                    onTap: () {
+                    onTap: app.user.adminFleet ? () {
                       Navigator.of(context).push(MaterialPageRoute(
                                 builder: (context) => const CarsPage()));
-                    },
+                    } : null,
                     leading: Icon(MdiIcons.car, size: 40, color: Theme.of(context).primaryColor,),
                     title: Text(
                       'VIATURAS',
@@ -45,10 +45,10 @@ class _ManagementPageState extends State<ManagementPage> {
                   ),
                   const Divider(),
                   ListTile(
-                    onTap: () {
+                    onTap: app.user.admin ? () {
                       Navigator.of(context).push(MaterialPageRoute(
                                 builder: (context) => const UsersPage()));
-                    },
+                    } : null,
                     leading: Icon(MdiIcons.account, size: 40, color: Theme.of(context).primaryColor,),
                     title: Text(
                       'USUÁRIOS',

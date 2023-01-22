@@ -33,12 +33,12 @@ class _HomePageState extends State<HomePage> {
               child: Wrap(
                 children: [
                   InkWell(
-                    onTap: () {
+                    onTap: app.user.fleet || app.user.admin ? () {
                       Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) => const ChecklistPage(
                                 home: true,
                               )));
-                    },
+                    } : null,
                     child: Card(
                       elevation: 2,
                       child: Container(
@@ -68,7 +68,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   InkWell(
-                    onTap: null,
+                    onTap: app.user.material || app.user.admin ? (){} : null,
                     child: Card(
                       elevation: 2,
                       child: Container(
@@ -98,10 +98,10 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   InkWell(
-                    onTap: () {
+                    onTap: app.user.samu || app.user.admin ? () {
                       Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) => const ExchangePage()));
-                    },
+                    } : null,
                     child: Card(
                       elevation: 2,
                       child: Container(
@@ -131,7 +131,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   InkWell(
-                    onTap: app.enable
+                    onTap: (app.user.admin || app.user.adminFleet || app.user.adminMaterial)
                         ? () {
                             Navigator.of(context).push(MaterialPageRoute(
                                 builder: (context) => const ManagementPage()));
@@ -151,7 +151,7 @@ class _HomePageState extends State<HomePage> {
                             Icon(
                               MdiIcons.cogs,
                               size: 40,
-                              color: app.enable ? Colors.green : Colors.grey,
+                              color: (app.user.admin || app.user.adminFleet || app.user.adminMaterial) ? Colors.green : Colors.grey,
                             ),
                             const SizedBox(
                               height: 10,

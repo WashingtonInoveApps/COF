@@ -240,7 +240,7 @@ class _CarMapaPageState extends State<CarMapaPage> {
                                           return GestureDetector(
                                             onLongPress: (app.user.id ==
                                                         mapas[index].user.id) ||
-                                                    (app.user.adm)
+                                                    (app.user.admin)
                                                 ? () async {
                                                     final result = await showDialog(
                                                         context: context,

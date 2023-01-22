@@ -50,11 +50,12 @@ class ExchangeRepository implements IExchangeRepository {
             }));
   }
 
+  @override
   Future<String?> onDownload(
       {required String path,
       required String filename,
       required String destFile}) async {
-    await dio!.download(path, destFile);
+    await dio!.download(path, '$destFile/$filename');
 
     debugPrint("Path: $path Arquivo criado.: $destFile");
     return destFile;

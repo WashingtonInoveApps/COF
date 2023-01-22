@@ -2,7 +2,11 @@ import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/model/exchange_model.dart';
 import 'package:bsu_control/model/user_model.dart';
 import 'package:bsu_control/src/exchange/repository/exchange_interface.dart';
+import 'package:flutter/foundation.dart';
 import 'package:mobx/mobx.dart';
+import 'package:open_app_file/open_app_file.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:universal_html/html.dart' as html;
 part 'exchange_controller.g.dart';
 
 // ignore: library_private_types_in_public_api
@@ -42,7 +46,7 @@ abstract class _ExchangeControllerBase with Store {
       repository.listenExchange(referenceDate: referenceDate);
 
   @computed
-  List<ExchangeModel> get exhangesSort => app.user.adm
+  List<ExchangeModel> get exhangesSort => app.user.admin
       ? exchanges
       : exchanges
           .where((e) =>
@@ -109,5 +113,39 @@ abstract class _ExchangeControllerBase with Store {
     loading = false;
 
     return result;
+  }
+
+  @action
+  Future<void> onDownload({required String id}) async {
+    try {
+      loading = true;
+      final url =
+          'https://us-central1-bsucos-function.cloudfunctions.net/app/exchange/pdf?exchangeID=$id';
+
+      if (kIsWeb) {
+        debugPrint('É WEB');
+
+        html.AnchorElement anchorElement = html.AnchorElement(href: url);
+        anchorElement.download = url;
+        anchorElement.click();
+        // await launchUrlString(url, mode: LaunchMode.externalApplication);
+      } else {
+        debugPrint('Não é WEB');
+        final appDocDir = await getApplicationDocumentsDirectory();
+        String destFile = appDocDir.path;
+        String filename = 'permutasamu_${DateTime.now().millisecond}.pdf';
+
+        await repository.onDownload(
+            destFile: destFile, filename: filename, path: url);
+
+        await OpenAppFile.open('$destFile/$filename');
+      }
+
+      loading = false;
+      return;
+    } catch (e) {
+      loading = false;
+      return;
+    }
   }
 }

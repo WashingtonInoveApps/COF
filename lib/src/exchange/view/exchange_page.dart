@@ -11,7 +11,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 import 'package:month_picker_dialog_2/month_picker_dialog_2.dart';
-import 'package:url_launcher/url_launcher_string.dart';
 
 import '../../../core/constants.dart';
 
@@ -133,8 +132,7 @@ class _ExchangePageState extends State<ExchangePage> {
                                       controller.exhangesSort[index];
                                   return ExchangeCard(
                                       onDownload: () async {
-                                        await launchUrlString(
-                                            'https://us-central1-bsucos-function.cloudfunctions.net/app/exchange/pdf?exchangeID=${exchange.id}');
+                                        await controller.onDownload(id: exchange.id!);
                                       },
                                       onAuthorized: () async {
                                         final result = await showDialog(

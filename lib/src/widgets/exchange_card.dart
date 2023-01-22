@@ -142,7 +142,7 @@ class ExchangeCard extends StatelessWidget {
               ),
             ),
             Visibility(
-              visible: (user.adm && exchange.authorizer == null),
+              visible: (user.admin && exchange.authorizer == null),
               child: Align(
                 alignment: Alignment.centerRight,
                 child: Container(

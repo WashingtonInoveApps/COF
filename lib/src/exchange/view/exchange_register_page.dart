@@ -137,12 +137,53 @@ class _ExchangeRegisterPageState extends State<ExchangeRegisterPage> {
                       const SizedBox(
                         height: 10,
                       ),
-                      FieldText(
-                        hint: 'EX.: USB MARANGUAPE',
-                        validation: Validation.validatorPreenchimento,
-                        onSaved: (value) {
-                          exchange.baseFirst = value ?? '';
-                        },
+                      Row(
+                        children: [
+                          Observer(builder: (_) {
+                            return Container(
+                              color: Colors.white,
+                              height: 60,
+                              child: TextButton(
+                                  style: TextButton.styleFrom(
+                                      side: const BorderSide(
+                                          width: 1, color: Colors.grey)),
+                                  onPressed: () async {
+                                    showDatePicker(
+                                            context: context,
+                                            initialDate: DateTime.now(),
+                                            firstDate: DateTime(2021),
+                                            lastDate: DateTime(2050))
+                                        .then((value) {
+                                      if (value != null) {
+                                        controller.setDateFirst(value);
+                                        exchange.dateFirst = value;
+                                      }
+                                    });
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10),
+                                    child: Text(
+                                      formatDate(controller.dateFirst,
+                                          outher: true),
+                                      style: title,
+                                    ),
+                                  )),
+                            );
+                          }),
+                          const SizedBox(
+                            width: 5,
+                          ),
+                          Expanded(
+                            child: FieldText(
+                              hint: 'EX.: USB MARANGUAPE',
+                              validation: Validation.validatorPreenchimento,
+                              onSaved: (value) {
+                                exchange.baseFirst = value ?? '';
+                              },
+                            ),
+                          ),
+                        ],
                       ),
                       const SizedBox(
                         height: 10,
@@ -154,120 +195,56 @@ class _ExchangeRegisterPageState extends State<ExchangeRegisterPage> {
                       const SizedBox(
                         height: 10,
                       ),
-                      FieldText(
-                        hint: 'EX.: USB CAPISTRANO',
-                        validation: Validation.validatorPreenchimento,
-                        onSaved: (value) {
-                          exchange.baseLast = value ?? '';
-                        },
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Text(
-                        'DATAS DO SERVIÇO',
-                        style: titleHint,
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Column(
+                      Row(
                         children: [
-                          Row(
-                            children: [
-                              SizedBox(
-                                width: 50,
-                                child: Center(
-                                  child: Text(
-                                    'DE',
-                                    style: subtitleHint,
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: Observer(builder: (_) {
-                                  return Container(
-                                    color: Colors.white,
-                                    height: 60,
-                                    width: double.infinity,
-                                    child: TextButton(
-                                        style: TextButton.styleFrom(
-                                            side: const BorderSide(
-                                                width: 1, color: Colors.grey)),
-                                        onPressed: () async {
-                                          showDatePicker(
-                                                  context: context,
-                                                  initialDate: DateTime.now(),
-                                                  firstDate: DateTime(2021),
-                                                  lastDate: DateTime(2050))
-                                              .then((value) {
-                                            if (value != null) {
-                                              controller.setDateFirst(value);
-                                              exchange.dateFirst = value;
-                                            }
-                                          });
-                                        },
-                                        child: Text(
-                                          formatDate(controller.dateFirst,
-                                              outher: true),
-                                          style: subtitle,
-                                        )),
-                                  );
-                                }),
-                              ),
-                            ],
-                          ),
+                          Observer(builder: (_) {
+                            return Container(
+                              color: Colors.white,
+                              height: 60,
+                              child: TextButton(
+                                  style: TextButton.styleFrom(
+                                      side: const BorderSide(
+                                          width: 1, color: Colors.grey)),
+                                  onPressed: () async {
+                                    showDatePicker(
+                                            context: context,
+                                            initialDate: DateTime.now(),
+                                            firstDate: DateTime(2021),
+                                            lastDate: DateTime(2050))
+                                        .then((value) {
+                                      if (value != null) {
+                                        controller.setDateLast(value);
+                                        exchange.dateLast = value;
+                                      }
+                                    });
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10),
+                                    child: Text(
+                                      formatDate(controller.dateLast,
+                                          outher: true),
+                                      style: title,
+                                    ),
+                                  )),
+                            );
+                          }),
                           const SizedBox(
-                            height: 10,
+                            width: 5,
                           ),
-                          Row(
-                            children: [
-                              SizedBox(
-                                width: 50,
-                                child: Center(
-                                  child: Text(
-                                    'POR',
-                                    style: subtitleHint,
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: Observer(builder: (_) {
-                                  return Container(
-                                    color: Colors.white,
-                                    height: 60,
-                                    width: double.infinity,
-                                    child: TextButton(
-                                        style: TextButton.styleFrom(
-                                            side: const BorderSide(
-                                                width: 1, color: Colors.grey)),
-                                        onPressed: () async {
-                                          showDatePicker(
-                                                  context: context,
-                                                  initialDate: DateTime.now(),
-                                                  firstDate: DateTime(2021),
-                                                  lastDate: DateTime(2050))
-                                              .then((value) {
-                                            if (value != null) {
-                                              controller.setDateLast(value);
-                                              exchange.dateLast = value;
-                                            }
-                                          });
-                                        },
-                                        child: Text(
-                                          formatDate(controller.dateLast,
-                                              outher: true),
-                                          style: subtitle,
-                                        )),
-                                  );
-                                }),
-                              ),
-                            ],
+                          Expanded(
+                            child: FieldText(
+                              hint: 'EX.: USB CAPISTRANO',
+                              validation: Validation.validatorPreenchimento,
+                              onSaved: (value) {
+                                exchange.baseLast = value ?? '';
+                              },
+                            ),
                           ),
                         ],
                       ),
                       const SizedBox(
-                        height: 5,
+                        height: 10,
                       ),
                       const Divider(),
                       const SizedBox(

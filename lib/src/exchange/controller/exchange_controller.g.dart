@@ -169,6 +169,14 @@ mixin _$ExchangeController on _ExchangeControllerBase, Store {
     return _$updateAsyncAction.run(() => super.update(exchange: exchange));
   }
 
+  late final _$onDownloadAsyncAction =
+      AsyncAction('_ExchangeControllerBase.onDownload', context: context);
+
+  @override
+  Future<void> onDownload({required String id}) {
+    return _$onDownloadAsyncAction.run(() => super.onDownload(id: id));
+  }
+
   late final _$_ExchangeControllerBaseActionController =
       ActionController(name: '_ExchangeControllerBase', context: context);
 

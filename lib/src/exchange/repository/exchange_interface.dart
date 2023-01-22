@@ -5,4 +5,8 @@ abstract class IExchangeRepository {
   Future<String?> save({required ExchangeModel exchange});
   Future<bool> update({required ExchangeModel exchange});
   Stream<List<ExchangeModel>> listenExchange({required DateTime referenceDate});
+  Future<String?> onDownload(
+      {required String path,
+      required String filename,
+      required String destFile});
 }

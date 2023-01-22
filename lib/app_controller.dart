@@ -53,10 +53,10 @@ abstract class _AppControllerBase with Store {
   List<UserModel> users = <UserModel>[].asObservable();
 
   @computed
-  bool get enable => user.adm;
+  bool get enable => user.admin;
 
   @computed
-  List<UserModel> get usersValidations => users.where((e) => e.enable && !e.adm).toList();
+  List<UserModel> get usersValidations => users.where((e) => e.samu).toList();
 
   Stream<List<CheckListModel>> get listenChecklist => repository
       .listenChecklist(referenceDate: formatDate(date, outher: true));

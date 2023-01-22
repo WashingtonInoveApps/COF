@@ -19,7 +19,7 @@ abstract class _CarControllerBase with Store {
   bool loading = false;
 
   @computed
-  bool get enable => app.user.adm;
+  bool get enable => app.user.admin;
 
   _CarControllerBase({required this.app, required this.repository});
 

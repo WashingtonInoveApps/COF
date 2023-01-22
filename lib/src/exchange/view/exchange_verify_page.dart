@@ -59,7 +59,7 @@ class _FilesPageState extends State<FilesPage> {
                                 if (controllerCOD.text.isNotEmpty) {
                                   controller
                                       .verifyFile(
-                                          token: (controllerCOD.text).trim())
+                                          token: (controllerCOD.text).replaceAll(' ', '').trim())
                                       .then((value) {
                                     if (value == null) {
                                       controllerCOD.clear();

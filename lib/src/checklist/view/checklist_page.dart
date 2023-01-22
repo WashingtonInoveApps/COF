@@ -150,7 +150,7 @@ class _ChecklistPageState extends State<ChecklistPage> {
                                             final checklist =
                                                 controller.checkLists[index];
                                             final delete =
-                                                controller.user.adm ||
+                                                controller.user.admin ||
                                                     (controller.user.id ==
                                                             checklist.user.id &&
                                                         checklist.enable);
