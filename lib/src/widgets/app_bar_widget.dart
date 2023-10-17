@@ -5,9 +5,15 @@ import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 class AppBarCustom extends StatelessWidget implements PreferredSizeWidget {
   final bool menu;
   final int page;
+  final bool back;
   final Function()? onBack;
 
-  const AppBarCustom({Key? key, this.menu = true, this.onBack, this.page = -1})
+  const AppBarCustom(
+      {Key? key,
+      this.menu = true,
+      this.onBack,
+      this.page = -1,
+      this.back = true})
       : super(key: key);
 
   @override
@@ -34,10 +40,23 @@ class AppBarCustom extends StatelessWidget implements PreferredSizeWidget {
           Padding(
             padding: EdgeInsets.only(
                 top: MediaQuery.of(context).padding.top + 10,
-                left: 15.0,
-                right: 15.0),
+                left: back ? 5.0 : 10,
+                right: 10.0),
             child: Row(
               children: [
+                Visibility(
+                  visible: back,
+                  child: InkWell(
+                      onTap: onBack ?? () => Navigator.of(context).pop(),
+                      child: const Padding(
+                        padding: EdgeInsets.only(left: 5, right: 10),
+                        child: Icon(
+                          Icons.arrow_back_ios_new_rounded,
+                          size: 20,
+                          color: Colors.white,
+                        ),
+                      )),
+                ),
                 Expanded(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,

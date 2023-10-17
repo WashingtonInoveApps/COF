@@ -7,6 +7,7 @@ import 'package:bsu_control/model/check_list_model.dart';
 import 'package:bsu_control/model/itens_changes_model.dart';
 import 'package:bsu_control/src/checklist/repository/checklist_repository.dart';
 import 'package:bsu_control/src/checklist/view/checklist_page.dart';
+import 'package:bsu_control/src/checklist/view/widget/fluids_widget.dart';
 import 'package:bsu_control/src/widgets/alert_message.dart';
 import 'package:bsu_control/src/widgets/app_bar_widget.dart';
 import 'package:bsu_control/src/widgets/car_changes_widget.dart';
@@ -14,7 +15,6 @@ import 'package:bsu_control/src/widgets/textfield_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
-import 'package:syncfusion_flutter_sliders/sliders.dart';
 
 import '../controller/checklist_controller.dart';
 
@@ -111,7 +111,7 @@ class _ChecklistRegisterPageState extends State<ChecklistRegisterPage> {
                                               CrossAxisAlignment.start,
                                           children: [
                                             Text(
-                                              "prefix",
+                                              "PREFIXO",
                                               style: subtitle.copyWith(
                                                   fontWeight: FontWeight.bold),
                                             ),
@@ -247,181 +247,19 @@ class _ChecklistRegisterPageState extends State<ChecklistRegisterPage> {
                                     style: titleHint,
                                   ),
                                   const Divider(),
-                                  SizedBox(
+                                  Container(
                                     width: double.infinity,
-                                    child: SingleChildScrollView(
-                                      scrollDirection: Axis.horizontal,
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 5, vertical: 10.0),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Container(
-                                              padding: const EdgeInsets.all(10),
-                                              margin:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 5),
-                                              decoration: BoxDecoration(
-                                                  border: Border.all(
-                                                      color: Colors.grey),
-                                                  borderRadius:
-                                                      BorderRadius.circular(5)),
-                                              child: Row(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  RotatedBox(
-                                                    quarterTurns: 3,
-                                                    child: Text(
-                                                      "ÓLEO DO MOTOR",
-                                                      style: subtitle,
-                                                    ),
-                                                  ),
-                                                  Observer(builder: (_) {
-                                                    return SfSlider.vertical(
-                                                      min: 1.0,
-                                                      max: 3.0,
-                                                      stepSize: 0.5,
-                                                      value: controller.oil,
-                                                      interval: 1,
-                                                      activeColor: Colors.brown,
-                                                      inactiveColor:
-                                                          Colors.brown.shade200,
-                                                      showTicks: true,
-                                                      minorTicksPerInterval: 1,
-                                                      onChanged:
-                                                          controller.setOil,
-                                                    );
-                                                  }),
-                                                ],
-                                              ),
-                                            ),
-                                            Container(
-                                              padding: const EdgeInsets.all(10),
-                                              margin:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 5),
-                                              decoration: BoxDecoration(
-                                                  border: Border.all(
-                                                      color: Colors.grey),
-                                                  borderRadius:
-                                                      BorderRadius.circular(5)),
-                                              child: Row(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  RotatedBox(
-                                                    quarterTurns: 3,
-                                                    child: Text(
-                                                      "ÓLEO HIDRAÚLICO",
-                                                      style: subtitle,
-                                                    ),
-                                                  ),
-                                                  Observer(builder: (_) {
-                                                    return SfSlider.vertical(
-                                                      min: 1.0,
-                                                      max: 3.0,
-                                                      stepSize: 0.5,
-                                                      value: controller.hidra,
-                                                      interval: 1,
-                                                      showTicks: true,
-                                                      activeColor: Colors.red,
-                                                      inactiveColor:
-                                                          Colors.red.shade200,
-                                                      minorTicksPerInterval: 1,
-                                                      onChanged:
-                                                          controller.setHidra,
-                                                    );
-                                                  }),
-                                                ],
-                                              ),
-                                            ),
-                                            Container(
-                                              margin:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 5),
-                                              padding: const EdgeInsets.all(10),
-                                              decoration: BoxDecoration(
-                                                  border: Border.all(
-                                                      color: Colors.grey),
-                                                  borderRadius:
-                                                      BorderRadius.circular(5)),
-                                              child: Row(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  RotatedBox(
-                                                    quarterTurns: 3,
-                                                    child: Text(
-                                                      "ÓLEO DE FREIO",
-                                                      style: subtitle,
-                                                    ),
-                                                  ),
-                                                  Observer(builder: (_) {
-                                                    return SfSlider.vertical(
-                                                      min: 1.0,
-                                                      max: 3.0,
-                                                      stepSize: 0.5,
-                                                      value: controller.fr,
-                                                      interval: 1,
-                                                      showTicks: true,
-                                                      activeColor: Colors.grey,
-                                                      inactiveColor:
-                                                          Colors.grey.shade200,
-                                                      minorTicksPerInterval: 1,
-                                                      onChanged:
-                                                          controller.setFR,
-                                                    );
-                                                  }),
-                                                ],
-                                              ),
-                                            ),
-                                            Container(
-                                              margin:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 5),
-                                              padding: const EdgeInsets.all(10),
-                                              decoration: BoxDecoration(
-                                                  border: Border.all(
-                                                      color: Colors.grey),
-                                                  borderRadius:
-                                                      BorderRadius.circular(5)),
-                                              child: Row(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  RotatedBox(
-                                                    quarterTurns: 3,
-                                                    child: Text(
-                                                      "ÁGUA DO RADIADOR",
-                                                      style: subtitle,
-                                                    ),
-                                                  ),
-                                                  Observer(builder: (_) {
-                                                    return SfSlider.vertical(
-                                                      min: 1.0,
-                                                      max: 3.0,
-                                                      stepSize: 0.5,
-                                                      value: controller.arref,
-                                                      interval: 1,
-                                                      showTicks: true,
-                                                      activeColor: Colors.blue,
-                                                      inactiveColor:
-                                                          Colors.blue.shade200,
-                                                      minorTicksPerInterval: 1,
-                                                      onChanged:
-                                                          controller.setArref,
-                                                    );
-                                                  }),
-                                                ],
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
+                                    alignment: Alignment.center,
+                                    child: Observer(
+                                        builder: (context) => FluidsWidget(
+                                            oil: controller.oil,
+                                            hidra: controller.hidra,
+                                            fr: controller.fr,
+                                            arref: controller.arref,
+                                            onOil: controller.setOil,
+                                            onHidra: controller.setHidra,
+                                            onFr: controller.setFR,
+                                            onArref: controller.setArref)),
                                   ),
                                   const SizedBox(
                                     height: 15.0,
@@ -431,9 +269,6 @@ class _ChecklistRegisterPageState extends State<ChecklistRegisterPage> {
                                     style: titleHint,
                                   ),
                                   const Divider(),
-                                  Text(
-                                      "Marque os itens que apresentam problemas.",
-                                      style: subtitle),
                                   const SizedBox(
                                     height: 10.0,
                                   ),
@@ -451,24 +286,32 @@ class _ChecklistRegisterPageState extends State<ChecklistRegisterPage> {
                                                 controller.itens[index].value,
                                             headerBuilder:
                                                 (context, isExpanded) {
-                                              return Container(
+                                              return Padding(
                                                 padding:
-                                                    const EdgeInsets.all(10),
-                                                child: Align(
-                                                  alignment:
-                                                      Alignment.centerLeft,
-                                                  child: Text(
-                                                    controller.itens[index]
-                                                        .description,
-                                                    style: subtitle.copyWith(
-                                                      fontWeight:
-                                                          FontWeight.bold,
+                                                    const EdgeInsets.all(10.0),
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      controller.itens[index]
+                                                          .description,
+                                                      style: title.copyWith(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
                                                     ),
-                                                  ),
+                                                    Text(
+                                                      "Marque os itens que estão em conformidade.",
+                                                      style: subtitle.copyWith(
+                                                          color: Colors.grey),
+                                                    ),
+                                                  ],
                                                 ),
                                               );
                                             },
                                             body: SingleChildScrollView(
+                                              padding: const EdgeInsets.all(10),
                                               child: Column(
                                                 children: [
                                                   Column(
@@ -490,7 +333,7 @@ class _ChecklistRegisterPageState extends State<ChecklistRegisterPage> {
                                                     }),
                                                   ),
                                                   const SizedBox(
-                                                    height: 5.0,
+                                                    height: 10.0,
                                                   ),
                                                   Padding(
                                                     padding:
@@ -520,28 +363,29 @@ class _ChecklistRegisterPageState extends State<ChecklistRegisterPage> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Observer(builder: (_) {
-                                    debugPrint(
-                                        'Changes.: ${controller.carChanges.length}');
-                                    return StatefulBuilder(
-                                        builder: (context, setStateChanges) {
-                                      return CarChangesWidget(
-                                        checklistId: controller.id,
-                                        initValue: controller.carChanges,
-                                        user: controller.user,
-                                        onAdd: (change) {
-                                          setStateChanges(() {
-                                            controller.addCarChanges(change);
-                                          });
-                                        },
-                                        onRemove: (index) {
-                                          setStateChanges(() {
-                                            controller.removeCarChanges(index);
-                                          });
-                                        },
-                                      );
-                                    });
-                                  }),
+                                  Center(
+                                    child: Observer(builder: (_) {
+                                      return StatefulBuilder(
+                                          builder: (context, setStateChanges) {
+                                        return CarChangesWidget(
+                                          checklistId: controller.id,
+                                          initValue: controller.carChanges,
+                                          user: controller.user,
+                                          onAdd: (change) {
+                                            setStateChanges(() {
+                                              controller.addCarChanges(change);
+                                            });
+                                          },
+                                          onRemove: (index) {
+                                            setStateChanges(() {
+                                              controller
+                                                  .removeCarChanges(index);
+                                            });
+                                          },
+                                        );
+                                      });
+                                    }),
+                                  ),
                                   const SizedBox(
                                     height: 15.0,
                                   ),

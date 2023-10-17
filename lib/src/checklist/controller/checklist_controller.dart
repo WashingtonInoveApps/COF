@@ -148,8 +148,9 @@ abstract class _CheckListControllerBase with Store {
 
   @action
   statusExpanded(int index, bool value) {
-    var result = itens.elementAt(index);
-    result.value = !value;
+    final result = itens.elementAt(index);
+
+    result.value = value;
 
     itens
       ..removeAt(index)

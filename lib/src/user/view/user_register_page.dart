@@ -21,7 +21,6 @@ class UserPageRegister extends StatefulWidget {
 }
 
 class _UserPageRegisterState extends State<UserPageRegister> {
-  
   late UserController controller;
   final _key = GlobalKey<FormState>();
   final app = GetIt.I.get<AppController>();
@@ -223,6 +222,7 @@ class _UserPageRegisterState extends State<UserPageRegister> {
                                         user: user,
                                         update: widget.user != null);
 
+                                    // ignore: use_build_context_synchronously
                                     await showDialog(
                                         context: context,
                                         builder: (context) => AlertMessage(

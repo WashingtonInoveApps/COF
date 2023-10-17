@@ -24,6 +24,14 @@ class _ExchangeRegisterPageState extends State<ExchangeRegisterPage> {
   final app = GetIt.I.get<AppController>();
   final keyForm = GlobalKey<FormState>();
 
+  final types = ['QUARTEL', 'SAMU'];
+
+  final function = [
+    'OFICIAL DE DIA',
+    'CONDUTOR/SOCORRISTA',
+    'ADJ. OFICIAL DE DIA'
+  ];
+
   late ExchangeController controller;
   late ExchangeModel exchange;
 
@@ -32,6 +40,8 @@ class _ExchangeRegisterPageState extends State<ExchangeRegisterPage> {
     super.initState();
     controller = ExchangeController(app: app, repository: ExchangeRepository());
     controller.setRequested(app.usersValidations.first);
+    controller.setType(types.first);
+    controller.setFunction(function.first);
 
     exchange = ExchangeModel(
         date: DateTime.now(),
@@ -59,14 +69,15 @@ class _ExchangeRegisterPageState extends State<ExchangeRegisterPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'PERMUTA SAMU/CE',
-                        style: titleHint,
-                      ),
-                      const Divider(),
-                      Text(
-                        'SOLICITANTE ${app.user.graduacao.toUpperCase()} ${app.user.name.toUpperCase()}',
-                        style: title,
+                      Text.rich(
+                        TextSpan(text: 'SOLICITANTE ', children: [
+                          TextSpan(
+                              text:
+                                  '${app.user.graduacao.toUpperCase()} ${app.user.name.toUpperCase()}',
+                              style:
+                                  title.copyWith(fontWeight: FontWeight.bold))
+                        ]),
+                        style: title.copyWith(color: Colors.grey),
                       ),
                       Text(
                         'MATRICULA ${app.user.matricula.toUpperCase()}',
@@ -75,6 +86,80 @@ class _ExchangeRegisterPageState extends State<ExchangeRegisterPage> {
                       const Divider(),
                       const SizedBox(
                         height: 5,
+                      ),
+                      Text(
+                        'UNIDADE',
+                        style: titleHint,
+                      ),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      Observer(builder: (_) {
+                        return Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 5),
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              border: Border.all(color: Colors.grey),
+                              borderRadius: BorderRadius.circular(5)),
+                          child: DropdownButton<String>(
+                              value: controller.type,
+                              onChanged: (value) {
+                                controller.setType(value);
+                                // exchange.requested = value;
+                              },
+                              underline: Container(),
+                              isExpanded: true,
+                              items: List.generate(
+                                  types.length,
+                                  (index) => DropdownMenuItem<String>(
+                                        value: types[index],
+                                        child: Text(
+                                          types[index],
+                                          style: subtitle,
+                                        ),
+                                      ))),
+                        );
+                      }),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Text(
+                        'FUNÇÃO',
+                        style: titleHint,
+                      ),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      Observer(builder: (_) {
+                        return Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 5),
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              border: Border.all(color: Colors.grey),
+                              borderRadius: BorderRadius.circular(5)),
+                          child: DropdownButton<String>(
+                              value: controller.function,
+                              onChanged: (value) {
+                                controller.setFunction(value);
+                                // exchange.requested = value;
+                              },
+                              underline: Container(),
+                              isExpanded: true,
+                              items: List.generate(
+                                  function.length,
+                                  (index) => DropdownMenuItem<String>(
+                                        value: function[index],
+                                        child: Text(
+                                          function[index],
+                                          style: subtitle,
+                                        ),
+                                      ))),
+                        );
+                      }),
+                      const SizedBox(
+                        height: 10,
                       ),
                       Text(
                         'MOTIVO',
@@ -283,20 +368,18 @@ class _ExchangeRegisterPageState extends State<ExchangeRegisterPage> {
                                   if (keyForm.currentState?.validate() ??
                                       false) {
                                     keyForm.currentState?.save();
-                                    final result = await controller.save(
-                                        exchange: exchange);
-
-                                    showDialog(
-                                        context: context,
-                                        builder: (context) => AlertMessage(
-                                            title: '',
-                                            message: result
-                                                ? 'Sua solicitação de permuta foi criada, aguarde autorização.'
-                                                : 'Ops ! Falha ao solicitar permuta, entre em contato com o gestor.',
-                                            onPressedOK: () =>
-                                                Navigator.of(context)
-                                                  ..pop()
-                                                  ..pop()));
+                                    controller.save(exchange: exchange).then(
+                                        (result) => showDialog(
+                                            context: context,
+                                            builder: (context) => AlertMessage(
+                                                title: '',
+                                                message: result
+                                                    ? 'Sua solicitação de permuta foi criada, aguarde autorização.'
+                                                    : 'Ops ! Falha ao solicitar permuta, entre em contato com o gestor.',
+                                                onPressedOK: () =>
+                                                    Navigator.of(context)
+                                                      ..pop()
+                                                      ..pop())));
                                   }
                                 } else {
                                   showDialog(

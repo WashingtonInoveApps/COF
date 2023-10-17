@@ -39,7 +39,7 @@ class _CarsPageState extends State<CarsPage> {
                           style: titleHint,
                         ),
                       ),
-                      controller.enable
+                      controller.user.adminFleet
                           ? TextButton.icon(
                               style: TextButton.styleFrom(
                                   side: BorderSide(

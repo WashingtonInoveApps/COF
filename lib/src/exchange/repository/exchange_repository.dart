@@ -13,10 +13,8 @@ class ExchangeRepository implements IExchangeRepository {
 
   ExchangeRepository({this.dio, this.instance}) {
     BaseOptions options = BaseOptions(
-        receiveDataWhenStatusError: true,
-        connectTimeout: 30 * 1000, // 60 seconds
-        receiveTimeout: 30 * 1000 // 60 seconds
-        );
+      receiveDataWhenStatusError: true,
+    );
 
     instance ??= FirebaseFirestore.instance;
     dio ??= Dio(options);
@@ -72,7 +70,7 @@ class ExchangeRepository implements IExchangeRepository {
       }
 
       return null;
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       throw e.response?.data['message'];
     } catch (e) {
       throw 'Falha não tratada.';

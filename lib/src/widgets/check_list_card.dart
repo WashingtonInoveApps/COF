@@ -6,7 +6,12 @@ class CheckListCard extends StatelessWidget {
   final CheckListModel checkList;
   final Function() onTap;
   final Function()? onDelete;
-  const CheckListCard({Key? key, required this.checkList, required this.onTap, required this.onDelete}) : super(key: key);
+  const CheckListCard(
+      {Key? key,
+      required this.checkList,
+      required this.onTap,
+      required this.onDelete})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -24,19 +29,39 @@ class CheckListCard extends StatelessWidget {
               Row(
                 children: [
                   Expanded(
-                    child: Text(
-                      "${checkList.prefix} - ${checkList.alfa}",
-                      style: title.copyWith(fontWeight: FontWeight.bold),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "PREFIXO",
+                          style: subtitleHint,
+                        ),
+                        Text(
+                          "${checkList.prefix} - ${checkList.alfa}",
+                          style: title.copyWith(fontWeight: FontWeight.bold),
+                        ),
+                      ],
                     ),
                   ),
-                  Text(
-                    checkList.pb.toUpperCase(),
-                    style: title.copyWith(fontWeight: FontWeight.bold),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "PONTO BASE",
+                          style: subtitleHint,
+                        ),
+                        Text(
+                          checkList.pb.toUpperCase(),
+                          style: title.copyWith(fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
               const SizedBox(
-                height: 10.0,
+                height: 5.0,
               ),
               Text(
                 "CONDUTOR",
@@ -47,20 +72,17 @@ class CheckListCard extends StatelessWidget {
                 style: title.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(
-                height: 10.0,
+                height: 5.0,
               ),
               Row(
                 children: [
                   Expanded(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           "KM INICIAL",
                           style: subtitleHint,
-                        ),
-                        const SizedBox(
-                          width: 10.0,
                         ),
                         Text(
                           checkList.kmStart,
@@ -69,20 +91,16 @@ class CheckListCard extends StatelessWidget {
                       ],
                     ),
                   ),
-                  const SizedBox(width: 15.0,),
                   Expanded(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           "KM FINAL",
                           style: subtitleHint,
                         ),
-                        const SizedBox(
-                          width: 10.0,
-                        ),
                         Text(
-                          checkList.kmFinal,
+                          checkList.kmFinal.isEmpty ? '--' : checkList.kmFinal,
                           style: title.copyWith(fontWeight: FontWeight.bold),
                         ),
                       ],

@@ -3,9 +3,7 @@ import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/src/checklist/view/checklist_details_page.dart';
 import 'package:bsu_control/src/widgets/alert_message.dart';
 import 'package:bsu_control/src/widgets/app_bar_widget.dart';
-import 'package:bsu_control/src/widgets/car_card.dart';
 import 'package:bsu_control/src/widgets/check_list_card.dart';
-import 'package:cherry_toast/cherry_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
@@ -30,25 +28,6 @@ class _ChecklistPageState extends State<ChecklistPage> {
   void initState() {
     super.initState();
     controller.setCheckListVeicular(true);
-    rec = autorun((_) {
-      if (widget.home) {
-        for (var car in controller.cars) {
-          if ((car.km > car.oil) && car.oil > 0) {
-            Future.delayed(Duration.zero, () {
-              CherryToast.warning(
-                title: Text(
-                  "${car.prefix} - Verifique troca de óleo",
-                  style: title,
-                ),
-                toastDuration: const Duration(seconds: 2),
-                animationDuration: const Duration(milliseconds: 500),
-                autoDismiss: false,
-              ).show(context);
-            });
-          }
-        }
-      }
-    });
   }
 
   @override
@@ -85,20 +64,23 @@ class _ChecklistPageState extends State<ChecklistPage> {
                             children: [
                               Row(
                                 children: [
-                                  SizedBox(
-                                    height: 45.0,
-                                    child: ElevatedButton(
-                                        onPressed: () {
-                                          Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      const ChecklistRegisterPage()));
-                                        },
+                                  ElevatedButton(
+                                      onPressed: () {
+                                        Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const ChecklistRegisterPage()));
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 5, vertical: 2),
                                         child: Text(
-                                          "REALIZAR CHECKLIST",
-                                          style: subtitle.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
-                                        )),
-                                  ),
+                                          "NOVO",
+                                          style: subtitle.copyWith(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      )),
                                   const Spacer(),
                                   Observer(builder: (_) {
                                     return TextButton(
@@ -121,7 +103,8 @@ class _ChecklistPageState extends State<ChecklistPage> {
                                         },
                                         child: Text(
                                           formatDate(controller.date,
-                                              outher: true, referenceDate: true),
+                                              outher: true,
+                                              referenceDate: true),
                                           style: subtitle.copyWith(
                                               color: Theme.of(context)
                                                   .primaryColor),
@@ -207,49 +190,49 @@ class _ChecklistPageState extends State<ChecklistPage> {
                             ],
                           ),
                         ),
-                        Container(
-                          padding: const EdgeInsets.all(10.0),
-                          width: width1,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(
-                                height: 8.0,
-                              ),
-                              Text(
-                                "ADMINISTRATIVO",
-                                style: titleHint,
-                              ),
-                              const Divider(),
-                              Center(
-                                child: SizedBox(
-                                  width: width,
-                                  child: Observer(builder: (_) {
-                                    return controller.carsADM.isEmpty
-                                        ? Center(
-                                            child: Text(
-                                              "Ops ! Nenhum registro encontrado.",
-                                              style: title,
-                                            ),
-                                          )
-                                        : Column(
-                                            children: List.generate(
-                                                controller.carsADM.length,
-                                                (index) => CarCard(
-                                                      car: controller
-                                                          .carsADM[index],
-                                                      onTap: () {},
-                                                    )),
-                                          );
-                                  }),
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 50.0,
-                              ),
-                            ],
-                          ),
-                        ),
+                        //   Container(
+                        //     padding: const EdgeInsets.all(10.0),
+                        //     width: width1,
+                        //     child: Column(
+                        //       crossAxisAlignment: CrossAxisAlignment.start,
+                        //       children: [
+                        //         const SizedBox(
+                        //           height: 8.0,
+                        //         ),
+                        //         Text(
+                        //           "ADMINISTRATIVO",
+                        //           style: titleHint,
+                        //         ),
+                        //         const Divider(),
+                        //         Center(
+                        //           child: SizedBox(
+                        //             width: width,
+                        //             child: Observer(builder: (_) {
+                        //               return controller.carsADM.isEmpty
+                        //                   ? Center(
+                        //                       child: Text(
+                        //                         "Ops ! Nenhum registro encontrado.",
+                        //                         style: title,
+                        //                       ),
+                        //                     )
+                        //                   : Column(
+                        //                       children: List.generate(
+                        //                           controller.carsADM.length,
+                        //                           (index) => CarCard(
+                        //                                 car: controller
+                        //                                     .carsADM[index],
+                        //                                 onTap: () {},
+                        //                               )),
+                        //                     );
+                        //             }),
+                        //           ),
+                        //         ),
+                        //         const SizedBox(
+                        //           height: 50.0,
+                        //         ),
+                        //       ],
+                        //     ),
+                        //   ),
                       ],
                     );
                   }),

@@ -57,6 +57,7 @@ class _LoginPageState extends State<LoginPage> {
               const AppBarCustom(
                 menu: false,
                 page: 3,
+                back: false,
               ),
               Expanded(
                 child: Stack(
@@ -96,6 +97,7 @@ class _LoginPageState extends State<LoginPage> {
                                 hint: "SENHA",
                                 inputType: TextInputType.visiblePassword,
                                 obscure: true,
+                                upper: false,
                                 validation: Validation.validatorPassoword,
                               ),
                               const SizedBox(

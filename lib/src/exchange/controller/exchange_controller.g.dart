@@ -65,6 +65,38 @@ mixin _$ExchangeController on _ExchangeControllerBase, Store {
     });
   }
 
+  late final _$typeAtom =
+      Atom(name: '_ExchangeControllerBase.type', context: context);
+
+  @override
+  String get type {
+    _$typeAtom.reportRead();
+    return super.type;
+  }
+
+  @override
+  set type(String value) {
+    _$typeAtom.reportWrite(value, super.type, () {
+      super.type = value;
+    });
+  }
+
+  late final _$functionAtom =
+      Atom(name: '_ExchangeControllerBase.function', context: context);
+
+  @override
+  String get function {
+    _$functionAtom.reportRead();
+    return super.function;
+  }
+
+  @override
+  set function(String value) {
+    _$functionAtom.reportWrite(value, super.function, () {
+      super.function = value;
+    });
+  }
+
   late final _$exchangesAtom =
       Atom(name: '_ExchangeControllerBase.exchanges', context: context);
 
@@ -192,6 +224,28 @@ mixin _$ExchangeController on _ExchangeControllerBase, Store {
   }
 
   @override
+  dynamic setType(String? value) {
+    final _$actionInfo = _$_ExchangeControllerBaseActionController.startAction(
+        name: '_ExchangeControllerBase.setType');
+    try {
+      return super.setType(value);
+    } finally {
+      _$_ExchangeControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setFunction(String? value) {
+    final _$actionInfo = _$_ExchangeControllerBaseActionController.startAction(
+        name: '_ExchangeControllerBase.setFunction');
+    try {
+      return super.setFunction(value);
+    } finally {
+      _$_ExchangeControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   dynamic setRequested(UserModel? value) {
     final _$actionInfo = _$_ExchangeControllerBaseActionController.startAction(
         name: '_ExchangeControllerBase.setRequested');
@@ -263,6 +317,8 @@ mixin _$ExchangeController on _ExchangeControllerBase, Store {
 loading: ${loading},
 checkConfirm: ${checkConfirm},
 requested: ${requested},
+type: ${type},
+function: ${function},
 exchanges: ${exchanges},
 referenceDate: ${referenceDate},
 dateFirst: ${dateFirst},

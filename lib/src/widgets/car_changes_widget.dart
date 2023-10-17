@@ -70,16 +70,21 @@ class _CarChangesWidgetState extends State<CarChangesWidget> {
                 child: Container(
                   height: 250.0,
                   width: 380.0,
-                  decoration: const BoxDecoration(image: DecorationImage(image: AssetImage("assets/car.jpg"), fit: BoxFit.contain)),
+                  decoration: const BoxDecoration(
+                      image: DecorationImage(
+                          image: AssetImage("assets/car.jpg"),
+                          fit: BoxFit.contain)),
                 ),
               ),
               Center(
                 child: Listener(
                   onPointerDown: (PointerDownEvent event) async {
-                    RenderBox box = paintKey.currentContext!.findRenderObject()! as RenderBox;
+                    RenderBox box = paintKey.currentContext!.findRenderObject()!
+                        as RenderBox;
 
                     var off = box.globalToLocal(event.position);
-                    var result = Offset((off.dx.round()).toDouble(), (off.dy.round()).toDouble());
+                    var result = Offset((off.dx.round()).toDouble(),
+                        (off.dy.round()).toDouble());
 
                     int index = -1;
 
@@ -96,16 +101,19 @@ class _CarChangesWidgetState extends State<CarChangesWidget> {
                     }
 
                     if (index != -1) {
-                      final enable =
-                          (widget.remove || ((widget.checklistId == changes[index].checklistId) && (changes[index].value == widget.update)));
+                      final enable = (widget.remove ||
+                          ((widget.checklistId == changes[index].checklistId) &&
+                              (changes[index].value == widget.update)));
 
-                      debugPrint('Enable.: $enable , checklistId.: ${changes[index].checklistId}');
+                      debugPrint(
+                          'Enable.: $enable , checklistId.: ${changes[index].checklistId}');
                       await showDialog(
                           context: context,
                           builder: (context) => AlertDialog(
                                 titlePadding: EdgeInsets.zero,
                                 contentPadding: EdgeInsets.zero,
                                 content: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Padding(
@@ -129,12 +137,21 @@ class _CarChangesWidgetState extends State<CarChangesWidget> {
                                                   : CachedNetworkImage(
                                                       height: 250,
                                                       width: 350,
-                                                      imageUrl: changes[index].image,
+                                                      imageUrl:
+                                                          changes[index].image,
                                                       fit: BoxFit.cover,
-                                                      placeholder: (context, url) => const SizedBox(
-                                                          height: 60.0, width: 60.0, child: Center(child: CircularProgressIndicator())),
-                                                      errorWidget: (context, url, error) => const Center(
-                                                          child: Icon(
+                                                      placeholder: (context,
+                                                              url) =>
+                                                          const SizedBox(
+                                                              height: 60.0,
+                                                              width: 60.0,
+                                                              child: Center(
+                                                                  child:
+                                                                      CircularProgressIndicator())),
+                                                      errorWidget: (context,
+                                                              url, error) =>
+                                                          const Center(
+                                                              child: Icon(
                                                         Icons.error,
                                                         size: 60.0,
                                                       )),
@@ -145,16 +162,20 @@ class _CarChangesWidgetState extends State<CarChangesWidget> {
                                               child: enable
                                                   ? GestureDetector(
                                                       onTap: () {
-                                                        if (widget.onRemove != null) {
-                                                          widget.onRemove!(index);
+                                                        if (widget.onRemove !=
+                                                            null) {
+                                                          widget
+                                                              .onRemove!(index);
                                                         }
 
                                                         changes.removeAt(index);
-                                                        Navigator.of(context).pop();
+                                                        Navigator.of(context)
+                                                            .pop();
                                                       },
                                                       child: const CircleAvatar(
                                                           radius: 20,
-                                                          backgroundColor: Colors.black45,
+                                                          backgroundColor:
+                                                              Colors.black45,
                                                           child: Icon(
                                                             MdiIcons.delete,
                                                             size: 20,
@@ -166,24 +187,29 @@ class _CarChangesWidgetState extends State<CarChangesWidget> {
                                       ),
                                     ),
                                     Padding(
-                                      padding: const EdgeInsets.all(10.0),
+                                      padding: const EdgeInsets.only(
+                                          left: 10, right: 10, bottom: 5),
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
+                                          Text(
+                                            changes[index]
+                                                .description
+                                                .toUpperCase(),
+                                            style: title,
+                                          ),
+                                          Text(
+                                            "${changes[index].user.name} - ${changes[index].user.matricula}",
+                                            style: subtitleHint,
+                                          ),
+                                          const SizedBox(
+                                            height: 2,
+                                          ),
                                           Text(
                                             formatDate(changes[index].date),
                                             style: subtitleHint,
                                           ),
-                                          const Divider(),
-                                          Text(
-                                            changes[index].description,
-                                            style: title,
-                                          ),
-                                          const Divider(),
-                                          Text(
-                                            "${changes[index].user.name} - ${changes[index].user.matricula}",
-                                            style: subtitleHint,
-                                          )
                                         ],
                                       ),
                                     ),
@@ -207,7 +233,9 @@ class _CarChangesWidgetState extends State<CarChangesWidget> {
                                         date: DateTime.now());
 
                                     changes.add(change);
-                                    if (widget.onAdd != null) widget.onAdd!(change);
+                                    if (widget.onAdd != null) {
+                                      widget.onAdd!(change);
+                                    }
                                   },
                                 ));
                       }
@@ -215,7 +243,8 @@ class _CarChangesWidgetState extends State<CarChangesWidget> {
                   },
                   child: CustomPaint(
                     key: paintKey,
-                    foregroundPainter: MyCustomPainter(changes: changes),
+                    foregroundPainter:
+                        MyCustomPainter(changes: changes, user: widget.user),
                     child: Container(
                       height: 240.0,
                       width: 380.0,
@@ -234,8 +263,9 @@ class _CarChangesWidgetState extends State<CarChangesWidget> {
 
 class MyCustomPainter extends CustomPainter {
   final List<CarChangeModel> changes;
+  final UserModel user;
 
-  MyCustomPainter({required this.changes});
+  MyCustomPainter({required this.user, required this.changes});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -250,7 +280,8 @@ class MyCustomPainter extends CustomPainter {
     final points = changes.map((e) => Offset(e.dx, e.dy)).toList();
 
     for (int i = 0; i < points.length; i++) {
-      canvas.drawCircle(points[i], 6, changes[i].value ? paint1 : paint2);
+      canvas.drawCircle(
+          points[i], 6, changes[i].user.id == user.id ? paint2 : paint1);
     }
   }
 
@@ -274,13 +305,14 @@ class _AddChangeState extends State<AddChange> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      contentPadding: const EdgeInsets.all(6),
+      contentPadding: const EdgeInsets.all(10),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           GestureDetector(
               onTap: () async {
-                final result = await ImagePicker().pickImage(source: ImageSource.gallery, imageQuality: 70);
+                final result = await ImagePicker()
+                    .pickImage(source: ImageSource.gallery, imageQuality: 70);
 
                 if (result != null) {
                   image = await result.readAsBytes();
@@ -291,7 +323,9 @@ class _AddChangeState extends State<AddChange> {
               child: Container(
                 width: double.infinity,
                 decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey.shade400), borderRadius: BorderRadius.circular(5), color: Colors.grey.shade300),
+                    border: Border.all(color: Colors.grey.shade400),
+                    borderRadius: BorderRadius.circular(5),
+                    color: Colors.grey.shade300),
                 child: image != null
                     ? Image.memory(
                         image!,

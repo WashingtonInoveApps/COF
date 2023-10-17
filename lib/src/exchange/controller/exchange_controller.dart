@@ -28,6 +28,12 @@ abstract class _ExchangeControllerBase with Store {
   UserModel? requested;
 
   @observable
+  String type = "";
+
+  @observable
+  String function = "";
+
+  @observable
   ObservableList<ExchangeModel> exchanges = <ExchangeModel>[].asObservable();
 
   @observable
@@ -61,6 +67,12 @@ abstract class _ExchangeControllerBase with Store {
 
     exchanges.sort((a, b) => a.date.compareTo(b.date));
   }
+
+  @action
+  setType(String? value) => type = value ?? type;
+
+  @action
+  setFunction(String? value) => function = value ?? function;
 
   @action
   setRequested(UserModel? value) => requested = value;

@@ -15,10 +15,10 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:mobx/mobx.dart';
-import 'package:syncfusion_flutter_sliders/sliders.dart';
 
 import '../controller/checklist_controller.dart';
 import '../repository/checklist_repository.dart';
+import 'widget/fluids_widget.dart';
 
 class ChecklistDetailsPage extends StatefulWidget {
   final String checkListId;
@@ -70,7 +70,7 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
   finishWidget({required Function(String value) onFinish}) => Form(
         key: _key,
         child: AlertDialog(
-          contentPadding: const EdgeInsets.all(6),
+          contentPadding: const EdgeInsets.all(10),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -154,12 +154,13 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
                                                         color: color)),
                                                 onPressed: () async {
                                                   await Navigator.of(context)
-                                                      .push(MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              ChecklistRegisterPage(
-                                                                checkList:
-                                                                    checklist,
-                                                              )));
+                                                      .pushReplacement(
+                                                          MaterialPageRoute(
+                                                              builder: (context) =>
+                                                                  ChecklistRegisterPage(
+                                                                    checkList:
+                                                                        checklist,
+                                                                  )));
                                                 },
                                                 icon: Icon(
                                                   MdiIcons.bookEdit,
@@ -315,156 +316,22 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
                                       style: titleHint,
                                     ),
                                     const Divider(),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Container(
-                                          padding: const EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                              border: Border.all(
-                                                  color: Colors.grey),
-                                              borderRadius:
-                                                  BorderRadius.circular(5)),
-                                          child: Row(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              RotatedBox(
-                                                quarterTurns: 3,
-                                                child: Text(
-                                                  "ÓLEO DO MOTOR",
-                                                  style: subtitle,
-                                                ),
-                                              ),
-                                              SfSlider.vertical(
-                                                min: 1.0,
-                                                max: 3.0,
-                                                stepSize: 0.5,
-                                                value: checklist.checkCar.oil,
-                                                interval: 1,
-                                                showTicks: true,
-                                                activeColor: Colors.brown,
-                                                inactiveColor:
-                                                    Colors.brown.shade100,
-                                                minorTicksPerInterval: 1,
-                                                onChanged: (value) {},
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          height: 10.0,
-                                        ),
-                                        Container(
-                                          padding: const EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                              border: Border.all(
-                                                  color: Colors.grey),
-                                              borderRadius:
-                                                  BorderRadius.circular(5)),
-                                          child: Row(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              RotatedBox(
-                                                quarterTurns: 3,
-                                                child: Text(
-                                                  "ÓLEO HIDRAÚLICO",
-                                                  style: subtitle,
-                                                ),
-                                              ),
-                                              SfSlider.vertical(
-                                                min: 1.0,
-                                                max: 3.0,
-                                                stepSize: 0.5,
-                                                value: checklist.checkCar.hidra,
-                                                interval: 1,
-                                                showTicks: true,
-                                                activeColor: Colors.red,
-                                                inactiveColor:
-                                                    Colors.red.shade100,
-                                                minorTicksPerInterval: 1,
-                                                onChanged: (value) {},
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          height: 10.0,
-                                        ),
-                                        Container(
-                                          padding: const EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                              border: Border.all(
-                                                  color: Colors.grey),
-                                              borderRadius:
-                                                  BorderRadius.circular(5)),
-                                          child: Row(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              RotatedBox(
-                                                quarterTurns: 3,
-                                                child: Text(
-                                                  "ÓLEO DE FREIO",
-                                                  style: subtitle,
-                                                ),
-                                              ),
-                                              SfSlider.vertical(
-                                                min: 1.0,
-                                                max: 3.0,
-                                                stepSize: 0.5,
-                                                value: checklist.checkCar.fr,
-                                                interval: 1,
-                                                showTicks: true,
-                                                activeColor: Colors.grey,
-                                                inactiveColor:
-                                                    Colors.grey.shade200,
-                                                minorTicksPerInterval: 1,
-                                                onChanged: (value) {},
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          height: 10.0,
-                                        ),
-                                        Container(
-                                          padding: const EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                              border: Border.all(
-                                                  color: Colors.grey),
-                                              borderRadius:
-                                                  BorderRadius.circular(5)),
-                                          child: Row(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              RotatedBox(
-                                                quarterTurns: 3,
-                                                child: Text(
-                                                  "ÁGUA DO RADIADOR",
-                                                  style: subtitle,
-                                                ),
-                                              ),
-                                              SfSlider.vertical(
-                                                min: 1.0,
-                                                max: 3.0,
-                                                stepSize: 0.5,
-                                                value: checklist.checkCar.arref,
-                                                interval: 1,
-                                                showTicks: true,
-                                                activeColor: Colors.blue,
-                                                inactiveColor:
-                                                    Colors.blue.shade100,
-                                                minorTicksPerInterval: 1,
-                                                onChanged: (value) {},
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
+                                    Container(
+                                      width: double.infinity,
+                                      alignment: Alignment.center,
+                                      child: IgnorePointer(
+                                        ignoring: true,
+                                        child: Observer(
+                                            builder: (context) => FluidsWidget(
+                                                oil: controller.oil,
+                                                hidra: controller.hidra,
+                                                fr: controller.fr,
+                                                arref: controller.arref,
+                                                onOil: controller.setOil,
+                                                onHidra: controller.setHidra,
+                                                onFr: controller.setFR,
+                                                onArref: controller.setArref)),
+                                      ),
                                     ),
                                     Wrap(
                                         children: List.generate(
@@ -535,9 +402,12 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
                                     ),
                                     (checklist.supply.isEmpty)
                                         ? Center(
+                                            child: Padding(
+                                            padding: const EdgeInsets.all(10.0),
                                             child: Text(
                                                 "Ops ! Nenhum registro encontrado.",
-                                                style: title))
+                                                style: title),
+                                          ))
                                         : Column(
                                             children: List.generate(
                                                 checklist.supply.length,
@@ -559,12 +429,15 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
                                           ),
                                     const Divider(),
                                     const SizedBox(
-                                      height: 5.0,
+                                      height: 10.0,
                                     ),
-                                    CarChangesWidget(
-                                      add: false,
-                                      user: checklist.user,
-                                      initValue: checklist.checkCar.car.changes,
+                                    Center(
+                                      child: CarChangesWidget(
+                                        add: false,
+                                        user: checklist.user,
+                                        initValue:
+                                            checklist.checkCar.car.changes,
+                                      ),
                                     ),
                                     const SizedBox(
                                       height: 15.0,
@@ -629,7 +502,7 @@ Widget changesListWidget({required ItensChangesModel itensChanges}) => Padding(
         children: [
           Text(
             itensChanges.description,
-            style: subtitleHint,
+            style: titleHint,
           ),
           const Divider(),
           Column(
@@ -639,8 +512,8 @@ Widget changesListWidget({required ItensChangesModel itensChanges}) => Padding(
                       margin: const EdgeInsets.only(bottom: 5.0),
                       padding: const EdgeInsets.all(6),
                       decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey),
-                          borderRadius: BorderRadius.circular(5)),
+                          border: Border.all(color: Colors.grey.shade300),
+                          borderRadius: BorderRadius.circular(2)),
                       child: Row(
                         children: [
                           Expanded(
@@ -649,7 +522,7 @@ Widget changesListWidget({required ItensChangesModel itensChanges}) => Padding(
                               style: subtitle,
                             ),
                           ),
-                          !itensChanges.itens[index].value
+                          itensChanges.itens[index].value
                               ? const Icon(MdiIcons.checkCircle,
                                   size: 20.0, color: Colors.green)
                               : const Icon(MdiIcons.closeCircle,
@@ -712,7 +585,7 @@ class _SupplyWidgetState extends State<SupplyWidget> {
     return Form(
       key: _key,
       child: AlertDialog(
-        contentPadding: const EdgeInsets.all(6),
+        contentPadding: const EdgeInsets.all(10),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [

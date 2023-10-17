@@ -90,8 +90,7 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                                   children: [
                                     Text(
                                       "PREFIXO",
-                                      style: subtitle.copyWith(
-                                          fontWeight: FontWeight.bold),
+                                      style: subtitleHint,
                                     ),
                                     const SizedBox(
                                       height: 10.0,
@@ -109,8 +108,7 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                                     ),
                                     Text(
                                       "MODELO",
-                                      style: subtitle.copyWith(
-                                          fontWeight: FontWeight.bold),
+                                      style: subtitleHint,
                                     ),
                                     const SizedBox(
                                       height: 10.0,
@@ -128,8 +126,7 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                                     ),
                                     Text(
                                       "PLACA",
-                                      style: subtitle.copyWith(
-                                          fontWeight: FontWeight.bold),
+                                      style: subtitleHint,
                                     ),
                                     const SizedBox(
                                       height: 10.0,
@@ -147,8 +144,7 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                                     ),
                                     Text(
                                       "KM INICIAL",
-                                      style: subtitle.copyWith(
-                                          fontWeight: FontWeight.bold),
+                                      style: subtitleHint,
                                     ),
                                     const SizedBox(
                                       height: 10.0,
@@ -166,8 +162,7 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                                     ),
                                     Text(
                                       "MODELO PNEU",
-                                      style: subtitle.copyWith(
-                                          fontWeight: FontWeight.bold),
+                                      style: subtitleHint,
                                     ),
                                     const SizedBox(
                                       height: 10.0,
@@ -185,8 +180,7 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                                     ),
                                     Text(
                                       "NÚMERO CARTÃO DE ABASTECIMENTO",
-                                      style: subtitle.copyWith(
-                                          fontWeight: FontWeight.bold),
+                                      style: subtitleHint,
                                     ),
                                     const SizedBox(
                                       height: 10.0,
@@ -205,8 +199,7 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                                     ),
                                     Text(
                                       "NÚMERO CARTÃO DE MANUTENÇÃO",
-                                      style: subtitle.copyWith(
-                                          fontWeight: FontWeight.bold),
+                                      style: subtitleHint,
                                     ),
                                     const SizedBox(
                                       height: 10.0,
@@ -242,7 +235,7 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                                           const EdgeInsets.all(5),
                                       expansionCallback: (item, value) {
                                         setState(() {
-                                          car.itens[item].value = !value;
+                                          car.itens[item].value = value;
                                         });
                                       },
                                       children: List.generate(
@@ -252,14 +245,13 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                                             headerBuilder:
                                                 (context, isExpanded) {
                                               return Container(
+                                                alignment: Alignment.centerLeft,
                                                 padding:
                                                     const EdgeInsets.all(10),
                                                 child: Text(
-                                                  car.itens[index].description,
-                                                  style: subtitle.copyWith(
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
+                                                    car.itens[index]
+                                                        .description,
+                                                    style: title),
                                               );
                                             },
                                             body: changesListWidget(
@@ -268,46 +260,47 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                                                 onAdd: () {
                                                   showDialog(
                                                       context: context,
-                                                      builder:
-                                                          (context) =>
-                                                              AlertDialog(
-                                                                contentPadding:
-                                                                    const EdgeInsets
-                                                                        .all(6),
-                                                                content: Column(
-                                                                  mainAxisSize:
-                                                                      MainAxisSize
-                                                                          .min,
-                                                                  children: [
-                                                                    FieldText(
-                                                                      controller:
-                                                                          _textController,
-                                                                      hint:
-                                                                          "DESCRIÇÃO",
-                                                                    ),
-                                                                    const SizedBox(
-                                                                      height:
-                                                                          10.0,
-                                                                    ),
-                                                                    SizedBox(
-                                                                        height:
-                                                                            50.0,
-                                                                        width: double
-                                                                            .infinity,
-                                                                        child: ElevatedButton(
-                                                                            onPressed: () {
-                                                                              if (_textController.text.isNotEmpty) {
-                                                                                setState(() {
-                                                                                  car.itens[index].itens.add(ItemModel(description: _textController.text));
-                                                                                });
-                                                                              }
-
-                                                                              Navigator.of(context).pop();
-                                                                            },
-                                                                            child: Text("INSERIR", style: titleButton)))
-                                                                  ],
+                                                      builder: (context) =>
+                                                          AlertDialog(
+                                                            contentPadding:
+                                                                const EdgeInsets
+                                                                    .all(10),
+                                                            content: Column(
+                                                              mainAxisSize:
+                                                                  MainAxisSize
+                                                                      .min,
+                                                              children: [
+                                                                FieldText(
+                                                                  controller:
+                                                                      _textController,
+                                                                  hint:
+                                                                      "DESCRIÇÃO",
                                                                 ),
-                                                              ));
+                                                                const SizedBox(
+                                                                  height: 10.0,
+                                                                ),
+                                                                SizedBox(
+                                                                    height:
+                                                                        50.0,
+                                                                    width: double
+                                                                        .infinity,
+                                                                    child: ElevatedButton(
+                                                                        onPressed: () {
+                                                                          if (_textController
+                                                                              .text
+                                                                              .isNotEmpty) {
+                                                                            setState(() {
+                                                                              car.itens[index].itens.add(ItemModel(description: _textController.text));
+                                                                            });
+                                                                          }
+
+                                                                          Navigator.of(context)
+                                                                              .pop();
+                                                                        },
+                                                                        child: Text("INSERIR", style: titleButton)))
+                                                              ],
+                                                            ),
+                                                          ));
                                                   _textController.clear();
                                                 },
                                                 onDelete: (i) {
@@ -403,23 +396,25 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                                       ],
                                     ),
                                     const SizedBox(
-                                      height: 10,
+                                      height: 20,
                                     ),
-                                    CarChangesWidget(
-                                      initValue: car.changes,
-                                      remove: true,
-                                      user: app.user,
-                                      update: true,
-                                      onAdd: (change) {
-                                        setState(() {
-                                          car.changes.add(change);
-                                        });
-                                      },
-                                      onRemove: (index) {
-                                        setState(() {
-                                          car.changes.removeAt(index);
-                                        });
-                                      },
+                                    Center(
+                                      child: CarChangesWidget(
+                                        initValue: car.changes,
+                                        remove: true,
+                                        user: app.user,
+                                        update: true,
+                                        onAdd: (change) {
+                                          setState(() {
+                                            car.changes.add(change);
+                                          });
+                                        },
+                                        onRemove: (index) {
+                                          setState(() {
+                                            car.changes.removeAt(index);
+                                          });
+                                        },
+                                      ),
                                     ),
                                     const SizedBox(
                                       height: 15,

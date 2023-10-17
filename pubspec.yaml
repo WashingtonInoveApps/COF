@@ -37,7 +37,7 @@ dependencies:
   dio:
   image_picker: ^0.8.4+9
   material_design_icons_flutter: ^6.0.7096
-  google_fonts: ^3.0.1
+  google_fonts: ^5.1.0
   syncfusion_flutter_sliders: ^20.4.38
   # quds_popup_menu: ^0.0.1+1
   get_it: ^7.2.0
@@ -45,17 +45,17 @@ dependencies:
   cpf_cnpj_validator: ^2.0.0
   mask_text_input_formatter:
   firebase_storage: ^11.0.9
-  firebase_core: ^2.4.0
-  firebase_auth: ^4.2.3
+  firebase_core: ^2.15.1
+  firebase_auth: ^4.9.0
   cloud_firestore: ^4.3.0
-  month_picker_dialog_2: ^0.5.8
+  month_picker_dialog: ^2.0.2
   shared_preferences: ^2.0.13
   flutter_launcher_icons: ^0.11.0
   cherry_toast: ^1.0.3
   mobx: 
   flutter_mobx:
   cached_network_image: ^3.2.0
-  package_info_plus: ^3.0.2
+  # package_info_plus: ^4.2.0
   flutter_custom_clippers: ^2.1.0
   pluto_menu_bar: ^3.0.0
   url_strategy: ^0.2.0

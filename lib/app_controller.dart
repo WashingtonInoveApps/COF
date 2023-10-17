@@ -4,7 +4,6 @@ import 'package:bsu_control/model/car_model.dart';
 import 'package:bsu_control/model/user_model.dart';
 import 'package:bsu_control/src/app_interface.dart';
 import 'package:mobx/mobx.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 
 import 'model/check_list_model.dart';
 import 'model/supply_model.dart';
@@ -18,7 +17,7 @@ abstract class _AppControllerBase with Store {
   final IAppRepository repository;
 
   _AppControllerBase({required this.repository}) {
-    PackageInfo.fromPlatform().then((value) => setVersion(value.version));
+    // PackageInfo.fromPlatform().then((value) => setVersion(value.version));
     getUserDB(tag: 'user');
   }
 
@@ -48,18 +47,15 @@ abstract class _AppControllerBase with Store {
 
   @observable
   List<CheckListModel> checkLists = <CheckListModel>[].asObservable();
-  
+
   @observable
   List<UserModel> users = <UserModel>[].asObservable();
 
   @computed
-  bool get enable => user.admin;
-
-  @computed
   List<UserModel> get usersValidations => users.where((e) => e.samu).toList();
 
-  Stream<List<CheckListModel>> get listenChecklist => repository
-      .listenChecklist(referenceDate: formatDate(date, outher: true));
+  Stream<List<CheckListModel>> get listenChecklist =>
+      repository.listenChecklist(referenceDate: formatDate(date, outher: true));
 
   Stream<List<CarModel>> get listenCar => repository.listenCar();
 
@@ -96,7 +92,7 @@ abstract class _AppControllerBase with Store {
       ..clear()
       ..addAll(value);
 
-    users.sort((a,b) => a.name.compareTo(b.name));
+    users.sort((a, b) => a.name.compareTo(b.name));
   }
 
   @action

@@ -9,12 +9,6 @@ part of 'app_controller.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$AppController on _AppControllerBase, Store {
-  Computed<bool>? _$enableComputed;
-
-  @override
-  bool get enable => (_$enableComputed ??=
-          Computed<bool>(() => super.enable, name: '_AppControllerBase.enable'))
-      .value;
   Computed<List<UserModel>>? _$usersValidationsComputed;
 
   @override
@@ -333,7 +327,6 @@ date: ${date},
 cars: ${cars},
 checkLists: ${checkLists},
 users: ${users},
-enable: ${enable},
 usersValidations: ${usersValidations},
 carsADM: ${carsADM},
 carsOPR: ${carsOPR},
