@@ -34,6 +34,21 @@ abstract class _UserControllerBase with Store {
   @observable
   bool isSamu = false;
 
+  @observable
+  bool admin = false;
+
+  @observable
+  bool adminFleet = false;
+
+  @observable
+  bool adminMaterial = false;
+
+  @observable
+  bool fleet = false;
+
+  @observable
+  bool material = false;
+
   _UserControllerBase({required this.app, required this.repository});
 
   @action
@@ -41,6 +56,21 @@ abstract class _UserControllerBase with Store {
 
   @action
   setIsSamu(bool? value) => isSamu = value ?? isSamu;
+
+  @action
+  setAdmin(bool? value) => admin = value ?? admin;
+
+  @action
+  setAdminFleet(bool? value) => adminFleet = value ?? adminFleet;
+
+  @action
+  setAdminMaterial(bool? value) => adminMaterial = value ?? adminMaterial;
+
+  @action
+  setFleet(bool? value) => fleet = value ?? fleet;
+
+  @action
+  setMaterial(bool? value) => material = value ?? material;
 
   @action
   setOBM(String? value) => obm = value ?? obm;

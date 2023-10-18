@@ -73,6 +73,86 @@ mixin _$UserController on _UserControllerBase, Store {
     });
   }
 
+  late final _$adminAtom =
+      Atom(name: '_UserControllerBase.admin', context: context);
+
+  @override
+  bool get admin {
+    _$adminAtom.reportRead();
+    return super.admin;
+  }
+
+  @override
+  set admin(bool value) {
+    _$adminAtom.reportWrite(value, super.admin, () {
+      super.admin = value;
+    });
+  }
+
+  late final _$adminFleetAtom =
+      Atom(name: '_UserControllerBase.adminFleet', context: context);
+
+  @override
+  bool get adminFleet {
+    _$adminFleetAtom.reportRead();
+    return super.adminFleet;
+  }
+
+  @override
+  set adminFleet(bool value) {
+    _$adminFleetAtom.reportWrite(value, super.adminFleet, () {
+      super.adminFleet = value;
+    });
+  }
+
+  late final _$adminMaterialAtom =
+      Atom(name: '_UserControllerBase.adminMaterial', context: context);
+
+  @override
+  bool get adminMaterial {
+    _$adminMaterialAtom.reportRead();
+    return super.adminMaterial;
+  }
+
+  @override
+  set adminMaterial(bool value) {
+    _$adminMaterialAtom.reportWrite(value, super.adminMaterial, () {
+      super.adminMaterial = value;
+    });
+  }
+
+  late final _$fleetAtom =
+      Atom(name: '_UserControllerBase.fleet', context: context);
+
+  @override
+  bool get fleet {
+    _$fleetAtom.reportRead();
+    return super.fleet;
+  }
+
+  @override
+  set fleet(bool value) {
+    _$fleetAtom.reportWrite(value, super.fleet, () {
+      super.fleet = value;
+    });
+  }
+
+  late final _$materialAtom =
+      Atom(name: '_UserControllerBase.material', context: context);
+
+  @override
+  bool get material {
+    _$materialAtom.reportRead();
+    return super.material;
+  }
+
+  @override
+  set material(bool value) {
+    _$materialAtom.reportWrite(value, super.material, () {
+      super.material = value;
+    });
+  }
+
   late final _$createAsyncAction =
       AsyncAction('_UserControllerBase.create', context: context);
 
@@ -124,6 +204,61 @@ mixin _$UserController on _UserControllerBase, Store {
   }
 
   @override
+  dynamic setAdmin(bool? value) {
+    final _$actionInfo = _$_UserControllerBaseActionController.startAction(
+        name: '_UserControllerBase.setAdmin');
+    try {
+      return super.setAdmin(value);
+    } finally {
+      _$_UserControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setAdminFleet(bool? value) {
+    final _$actionInfo = _$_UserControllerBaseActionController.startAction(
+        name: '_UserControllerBase.setAdminFleet');
+    try {
+      return super.setAdminFleet(value);
+    } finally {
+      _$_UserControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setAdminMaterial(bool? value) {
+    final _$actionInfo = _$_UserControllerBaseActionController.startAction(
+        name: '_UserControllerBase.setAdminMaterial');
+    try {
+      return super.setAdminMaterial(value);
+    } finally {
+      _$_UserControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setFleet(bool? value) {
+    final _$actionInfo = _$_UserControllerBaseActionController.startAction(
+        name: '_UserControllerBase.setFleet');
+    try {
+      return super.setFleet(value);
+    } finally {
+      _$_UserControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setMaterial(bool? value) {
+    final _$actionInfo = _$_UserControllerBaseActionController.startAction(
+        name: '_UserControllerBase.setMaterial');
+    try {
+      return super.setMaterial(value);
+    } finally {
+      _$_UserControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   dynamic setOBM(String? value) {
     final _$actionInfo = _$_UserControllerBaseActionController.startAction(
         name: '_UserControllerBase.setOBM');
@@ -140,7 +275,12 @@ mixin _$UserController on _UserControllerBase, Store {
 loading: ${loading},
 graduacao: ${graduacao},
 obm: ${obm},
-isSamu: ${isSamu}
+isSamu: ${isSamu},
+admin: ${admin},
+adminFleet: ${adminFleet},
+adminMaterial: ${adminMaterial},
+fleet: ${fleet},
+material: ${material}
     ''';
   }
 }

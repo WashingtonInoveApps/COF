@@ -11,6 +11,7 @@ class UserModel {
   String obm;
   String fullname;
 
+  bool adminFull;
   bool admin;
   bool adminFleet;
   bool adminMaterial;
@@ -28,6 +29,7 @@ class UserModel {
     this.graduacao = '',
     this.obm = '',
     this.fullname = '',
+    this.adminFull = false,
     this.admin = false,
     this.adminFleet = false,
     this.adminMaterial = false,
@@ -46,6 +48,7 @@ class UserModel {
     String? graduacao,
     String? obm,
     String? fullname,
+    bool? adminFull,
     bool? admin,
     bool? adminFleet,
     bool? adminMaterial,
@@ -63,6 +66,7 @@ class UserModel {
       graduacao: graduacao ?? this.graduacao,
       obm: obm ?? this.obm,
       fullname: fullname ?? this.fullname,
+      adminFull: adminFull ?? this.adminFull,
       admin: admin ?? this.admin,
       adminFleet: adminFleet ?? this.adminFleet,
       adminMaterial: adminMaterial ?? this.adminMaterial,
@@ -83,6 +87,7 @@ class UserModel {
       'graduacao': graduacao,
       'obm': obm,
       'fullname': fullname,
+      'adminFull': adminFull,
       'admin': admin,
       'adminFleet': adminFleet,
       'adminMaterial': adminMaterial,
@@ -114,6 +119,7 @@ class UserModel {
       graduacao: map['graduacao'] ?? '',
       obm: map['obm'] ?? '',
       fullname: map['fullname'] ?? '',
+      adminFull: map['adminFull'] ?? false,
       admin: map['admin'] ?? false,
       adminFleet: map['adminFleet'] ?? false,
       adminMaterial: map['adminMaterial'] ?? false,
@@ -141,6 +147,6 @@ class UserModel {
 
   @override
   String toString() {
-    return 'UserModel(name: $name, matricula: $matricula, contato: $contato, email: $email, id: $id, graduacao: $graduacao, obm: $obm, fullname: $fullname, admin: $admin, adminFleet: $adminFleet, adminMaterial: $adminMaterial, enable: $enable, fleet: $fleet, material: $material, samu: $samu)';
+    return 'UserModel(name: $name, matricula: $matricula, contato: $contato, email: $email, id: $id, graduacao: $graduacao, obm: $obm, fullname: $fullname, adminFull: $adminFull, admin: $admin, adminFleet: $adminFleet, adminMaterial: $adminMaterial, enable: $enable, fleet: $fleet, material: $material, samu: $samu)';
   }
 }

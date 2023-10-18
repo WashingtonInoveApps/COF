@@ -40,6 +40,11 @@ class _UserPageRegisterState extends State<UserPageRegister> {
 
     controller.setIsSamu(user.samu);
     controller.setOBM(user.obm);
+    controller.setAdmin(user.admin);
+    controller.setAdminFleet(user.adminFleet);
+    controller.setAdminMaterial(user.adminMaterial);
+    controller.setFleet(user.fleet);
+    controller.setMaterial(user.material);
   }
 
   @override
@@ -238,6 +243,96 @@ class _UserPageRegisterState extends State<UserPageRegister> {
                             ],
                           ),
                           const Divider(),
+                          Visibility(
+                            visible: app.user.adminFull,
+                            child: Card(
+                              child: Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'PAINEL ADMINISTRATIVO ( PERMISSÕES )',
+                                      style: titleHint,
+                                    ),
+                                    const Divider(),
+                                    SizedBox(
+                                      height: 50,
+                                      child: Observer(builder: (_) {
+                                        return ListView(
+                                          scrollDirection: Axis.horizontal,
+                                          children: [
+                                            Row(
+                                              children: [
+                                                Checkbox(
+                                                    value: controller.admin,
+                                                    onChanged:
+                                                        controller.setAdmin),
+                                                Text(
+                                                  'ADMIN',
+                                                  style: title,
+                                                )
+                                              ],
+                                            ),
+                                            Row(
+                                              children: [
+                                                Checkbox(
+                                                    value:
+                                                        controller.adminFleet,
+                                                    onChanged: controller
+                                                        .setAdminFleet),
+                                                Text(
+                                                  'ADMIN FROTA',
+                                                  style: title,
+                                                )
+                                              ],
+                                            ),
+                                            Row(
+                                              children: [
+                                                Checkbox(
+                                                    value: controller
+                                                        .adminMaterial,
+                                                    onChanged: controller
+                                                        .setAdminMaterial),
+                                                Text(
+                                                  'ADMIN MATERIAL',
+                                                  style: title,
+                                                )
+                                              ],
+                                            ),
+                                            Row(
+                                              children: [
+                                                Checkbox(
+                                                    value: controller.fleet,
+                                                    onChanged:
+                                                        controller.setFleet),
+                                                Text(
+                                                  'CHECKLIST VEICULAR',
+                                                  style: title,
+                                                )
+                                              ],
+                                            ),
+                                            Row(
+                                              children: [
+                                                Checkbox(
+                                                    value: controller.material,
+                                                    onChanged:
+                                                        controller.setMaterial),
+                                                Text(
+                                                  'CHECKLIST MATERIAL',
+                                                  style: title,
+                                                )
+                                              ],
+                                            ),
+                                          ],
+                                        );
+                                      }),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
                           const SizedBox(
                             height: 10.0,
                           ),
@@ -253,6 +348,12 @@ class _UserPageRegisterState extends State<UserPageRegister> {
                                     user.samu = controller.isSamu;
                                     user.graduacao = controller.graduacao;
                                     user.obm = controller.obm;
+                                    user.admin = controller.admin;
+                                    user.adminFleet = controller.adminFleet;
+                                    user.adminMaterial =
+                                        controller.adminMaterial;
+                                    user.fleet = controller.fleet;
+                                    user.material = controller.material;
 
                                     controller
                                         .create(

@@ -31,31 +31,57 @@ class _ManagementPageState extends State<ManagementPage> {
               child: Column(
                 children: [
                   ListTile(
-                    onTap: app.user.adminFleet ? () {
-                      Navigator.of(context).push(MaterialPageRoute(
+                    onTap: (app.user.adminFleet || app.user.adminFull)
+                        ? () {
+                            Navigator.of(context).push(MaterialPageRoute(
                                 builder: (context) => const CarsPage()));
-                    } : null,
-                    leading: Icon(MdiIcons.car, size: 40, color: Theme.of(context).primaryColor,),
+                          }
+                        : null,
+                    leading: Icon(
+                      MdiIcons.car,
+                      size: 40,
+                      color: Theme.of(context).primaryColor,
+                    ),
                     title: Text(
                       'VIATURAS',
                       style: title,
                     ),
-                    subtitle: Text('GERENCIAMENTO E INFORMAÇÕES', style: subtitleHint,),
-                    trailing: const Icon(Icons.arrow_forward_ios_outlined, size: 20, color: Colors.grey,),
+                    subtitle: Text(
+                      'GERENCIAMENTO E INFORMAÇÕES',
+                      style: subtitleHint,
+                    ),
+                    trailing: const Icon(
+                      Icons.arrow_forward_ios_outlined,
+                      size: 20,
+                      color: Colors.grey,
+                    ),
                   ),
                   const Divider(),
                   ListTile(
-                    onTap: app.user.admin ? () {
-                      Navigator.of(context).push(MaterialPageRoute(
+                    onTap: (app.user.admin || app.user.adminFull)
+                        ? () {
+                            Navigator.of(context).push(MaterialPageRoute(
                                 builder: (context) => const UsersPage()));
-                    } : null,
-                    leading: Icon(MdiIcons.account, size: 40, color: Theme.of(context).primaryColor,),
+                          }
+                        : null,
+                    leading: Icon(
+                      MdiIcons.account,
+                      size: 40,
+                      color: Theme.of(context).primaryColor,
+                    ),
                     title: Text(
                       'USUÁRIOS',
                       style: title,
                     ),
-                    subtitle: Text('GERENCIAMENTO DE USUÁRIOS', style: subtitleHint,),
-                    trailing: const Icon(Icons.arrow_forward_ios_outlined, size: 20, color: Colors.grey,),
+                    subtitle: Text(
+                      'GERENCIAMENTO DE USUÁRIOS',
+                      style: subtitleHint,
+                    ),
+                    trailing: const Icon(
+                      Icons.arrow_forward_ios_outlined,
+                      size: 20,
+                      color: Colors.grey,
+                    ),
                   ),
                 ],
               ),

@@ -33,7 +33,7 @@ class _HomePageState extends State<HomePage> {
               child: Wrap(
                 children: [
                   InkWell(
-                    onTap: app.user.fleet || app.user.admin
+                    onTap: app.user.fleet
                         ? () {
                             Navigator.of(context).push(MaterialPageRoute(
                                 builder: (context) => const ChecklistPage(
@@ -55,7 +55,8 @@ class _HomePageState extends State<HomePage> {
                             Icon(
                               MdiIcons.carMultiple,
                               size: 40,
-                              color: Colors.green,
+                              color:
+                                  app.user.fleet ? Colors.green : Colors.grey,
                             ),
                             const SizedBox(
                               height: 10,
@@ -133,7 +134,9 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   Visibility(
-                    visible: (app.user.admin || app.user.adminFleet),
+                    visible: (app.user.admin ||
+                        app.user.adminFleet ||
+                        app.user.adminMaterial),
                     child: InkWell(
                       onTap: () {
                         Navigator.of(context).push(MaterialPageRoute(
@@ -172,40 +175,6 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                   ),
-                  // InkWell(
-                  //   onTap: () {
-                  //     Navigator.of(context).push(MaterialPageRoute(
-                  //         builder: (context) => const FilesPage()));
-                  //   },
-                  //   child: Card(
-                  //     elevation: 2,
-                  //     child: Container(
-                  //       width: 140.0,
-                  //       height: 140.0,
-                  //       alignment: Alignment.center,
-                  //       padding: const EdgeInsets.symmetric(
-                  //           horizontal: 10, vertical: 20.0),
-                  //       child: Column(
-                  //         mainAxisSize: MainAxisSize.min,
-                  //         children: [
-                  //           const Icon(
-                  //             MdiIcons.fileDocument,
-                  //             size: 40,
-                  //             color: Colors.green,
-                  //           ),
-                  //           const SizedBox(
-                  //             height: 10,
-                  //           ),
-                  //           Text(
-                  //             'VERIFICAR DOCUMENTOS',
-                  //             style: subtitle,
-                  //             textAlign: TextAlign.center,
-                  //           ),
-                  //         ],
-                  //       ),
-                  //     ),
-                  //   ),
-                  // ),
                   InkWell(
                     onTap: () {
                       Navigator.of(context).pushAndRemoveUntil(
