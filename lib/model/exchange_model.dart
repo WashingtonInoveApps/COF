@@ -6,84 +6,82 @@ import 'package:bsu_control/model/user_model.dart';
 class ExchangeModel {
   String? id;
   String reason;
+  String type;
+  String function;
+  String unidad;
   UserModel? requested;
   UserModel? requester;
-  UserModel? authorizer;
   String baseFirst;
   String baseLast;
   String requesterID;
   String requestedID;
-  String authorizerID;
   String referenceDate;
   DateTime date;
-  DateTime? dateFirst;
-  DateTime? dateLast;
-  DateTime? requestedAuthorizedDate;
-  DateTime? requesterAuthorizedDate;
-  DateTime? authorizedDate;
+  DateTime? firstDateFirst;
+  DateTime? lastDateFirst;
+  DateTime? firstDateLast;
+  DateTime? lastDateLast;
   DateTime? at;
 
   ExchangeModel({
     this.id,
     this.reason = '',
+    this.type = '',
+    this.function = '',
+    this.unidad = '',
     this.requested,
     this.requester,
-    this.authorizer,
     this.baseFirst = '',
     this.baseLast = '',
     this.requesterID = '',
     this.requestedID = '',
-    this.authorizerID = '',
     this.referenceDate = '',
     required this.date,
-    this.dateFirst,
-    this.dateLast,
-    this.requestedAuthorizedDate,
-    this.requesterAuthorizedDate,
-    this.authorizedDate,
+    this.firstDateFirst,
+    this.lastDateFirst,
+    this.firstDateLast,
+    this.lastDateLast,
     this.at,
   });
 
   ExchangeModel copyWith({
     String? id,
     String? reason,
+    String? type,
+    String? function,
+    String? unidad,
     UserModel? requested,
     UserModel? requester,
-    UserModel? authorizer,
     String? baseFirst,
     String? baseLast,
     String? requesterID,
     String? requestedID,
-    String? authorizerID,
     String? referenceDate,
     DateTime? date,
-    DateTime? dateFirst,
-    DateTime? dateLast,
-    DateTime? requestedAuthorizedDate,
-    DateTime? requesterAuthorizedDate,
-    DateTime? authorizedDate,
+    DateTime? firstDateFirst,
+    DateTime? lastDateFirst,
+    DateTime? firstDateLast,
+    DateTime? lastDateLast,
     DateTime? at,
   }) {
     return ExchangeModel(
       id: id ?? this.id,
       reason: reason ?? this.reason,
+      type: type ?? this.type,
+      function: function ?? this.function,
+      unidad: unidad ?? this.unidad,
       requested: requested ?? this.requested,
       requester: requester ?? this.requester,
-      authorizer: authorizer ?? this.authorizer,
       baseFirst: baseFirst ?? this.baseFirst,
       baseLast: baseLast ?? this.baseLast,
       requesterID: requesterID ?? this.requesterID,
       requestedID: requestedID ?? this.requestedID,
-      authorizerID: authorizerID ?? this.authorizerID,
       referenceDate: referenceDate ?? this.referenceDate,
       date: date ?? this.date,
-      dateFirst: dateFirst ?? this.dateFirst,
-      dateLast: dateLast ?? this.dateLast,
-      requestedAuthorizedDate:
-          requestedAuthorizedDate ?? this.requestedAuthorizedDate,
-      requesterAuthorizedDate:
-          requesterAuthorizedDate ?? this.requesterAuthorizedDate,
-      authorizedDate: authorizedDate ?? this.authorizedDate,
+      firstDateFirst: firstDateFirst ?? this.firstDateFirst,
+      lastDateFirst: lastDateFirst ?? this.lastDateFirst,
+      firstDateLast: firstDateLast ?? this.firstDateLast,
+      lastDateLast: lastDateLast ?? this.lastDateLast,
       at: at ?? this.at,
     );
   }
@@ -92,62 +90,56 @@ class ExchangeModel {
     return <String, dynamic>{
       'id': id,
       'reason': reason,
+      'type': type,
+      'function': function,
+      'unidad': unidad,
       'requested': requested?.toMapResume(),
       'requester': requester?.toMapResume(),
-      'authorizer': authorizer?.toMapResume(),
       'baseFirst': baseFirst,
       'baseLast': baseLast,
       'requesterID': requesterID,
       'requestedID': requestedID,
-      'authorizerID': authorizerID,
+      'referenceDate':
+          '${date.day.toString().padLeft(2, '0')}/${date.year.toString()}',
       'date': date.millisecondsSinceEpoch,
-      'dateFirst': dateFirst?.millisecondsSinceEpoch,
-      'dateLast': dateLast?.millisecondsSinceEpoch,
-      'requestedAuthorizedDate':
-          requestedAuthorizedDate?.millisecondsSinceEpoch,
-      'requesterAuthorizedDate':
-          requesterAuthorizedDate?.millisecondsSinceEpoch,
-      'authorizedDate': authorizedDate?.millisecondsSinceEpoch,
-      'referenceDate': "${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}",
-      'referenceMonth': "${date.month.toString().padLeft(2, '0')}/${date.year}",
-      'at': at
+      'firstDateFirst': firstDateFirst?.millisecondsSinceEpoch,
+      'lastDateFirst': lastDateFirst?.millisecondsSinceEpoch,
+      'firstDateLast': firstDateLast?.millisecondsSinceEpoch,
+      'lastDateLast': lastDateLast?.millisecondsSinceEpoch,
+      'at': at?.millisecondsSinceEpoch,
     };
   }
 
   factory ExchangeModel.fromMap(Map<String, dynamic> map) {
     return ExchangeModel(
-      id: map['id'] ?? '',
-      reason: map['reason'] ?? '',
-      requested:
-          map['requested'] != null ? UserModel.fromMapResume(map['requested']) : null,
-      requester:
-          map['requester'] != null ? UserModel.fromMapResume(map['requester']) : null,
-      authorizer: map['authorizer'] != null
-          ? UserModel.fromMapResume(map['authorizer'])
+      id: map['id'] != null ? map['id'] as String : null,
+      reason: map['reason'] as String,
+      type: map['type'] as String,
+      function: map['function'] as String,
+      unidad: map['unidad'] as String,
+      requested: map['requested'] != null
+          ? UserModel.fromMapResume(map['requested'] as Map<String, dynamic>)
           : null,
-      baseFirst: map['baseFirst'] ?? '',
-      baseLast: map['baseLast'] ?? '',
-      requesterID: map['requesterID'] ?? '',
-      requestedID: map['requestedID'] ?? '',
-      authorizerID: map['authorizerID'] ?? '',
-      referenceDate: map['referenceDate'] ?? '',
-      date: DateTime.fromMillisecondsSinceEpoch(map['date']),
-      dateFirst: map['dateFirst'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(map['dateFirst'])
+      requester: map['requester'] != null
+          ? UserModel.fromMapResume(map['requester'] as Map<String, dynamic>)
           : null,
-      dateLast: map['dateLast'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(map['dateLast'])
+      baseFirst: map['baseFirst'] as String,
+      baseLast: map['baseLast'] as String,
+      requesterID: map['requesterID'] as String,
+      requestedID: map['requestedID'] as String,
+      referenceDate: map['referenceDate'] as String,
+      date: DateTime.fromMillisecondsSinceEpoch(map['date'] as int),
+      firstDateFirst: map['firstDateFirst'] != null
+          ? DateTime.fromMillisecondsSinceEpoch(map['firstDateFirst'] as int)
           : null,
-      requestedAuthorizedDate: map['requestedAuthorizedDate'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(
-              map['requestedAuthorizedDate'] as int)
+      lastDateFirst: map['lastDateFirst'] != null
+          ? DateTime.fromMillisecondsSinceEpoch(map['lastDateFirst'] as int)
           : null,
-      requesterAuthorizedDate: map['requesterAuthorizedDate'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(
-              map['requesterAuthorizedDate'] as int)
+      firstDateLast: map['firstDateLast'] != null
+          ? DateTime.fromMillisecondsSinceEpoch(map['firstDateLast'] as int)
           : null,
-      authorizedDate: map['authorizedDate'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(map['authorizedDate'] as int)
+      lastDateLast: map['lastDateLast'] != null
+          ? DateTime.fromMillisecondsSinceEpoch(map['lastDateLast'] as int)
           : null,
       at: map['at'] != null
           ? DateTime.fromMillisecondsSinceEpoch(map['at'] as int)
@@ -162,6 +154,52 @@ class ExchangeModel {
 
   @override
   String toString() {
-    return 'ExchangeModel(id: $id, reason: $reason, requested: $requested, requester: $requester, authorizer: $authorizer, baseFirst: $baseFirst, baseLast: $baseLast, requesterID: $requesterID, requestedID: $requestedID, authorizerID: $authorizerID, referenceDate: $referenceDate, date: $date, dateFirst: $dateFirst, dateLast: $dateLast, requestedAuthorizedDate: $requestedAuthorizedDate, requesterAuthorizedDate: $requesterAuthorizedDate, authorizedDate: $authorizedDate, at: $at)';
+    return 'ExchangeModel(id: $id, reason: $reason, type: $type, function: $function, unidad: $unidad, requested: $requested, requester: $requester, baseFirst: $baseFirst, baseLast: $baseLast, requesterID: $requesterID, requestedID: $requestedID, referenceDate: $referenceDate, date: $date, firstDateFirst: $firstDateFirst, lastDateFirst: $lastDateFirst, firstDateLast: $firstDateLast, lastDateLast: $lastDateLast, at: $at)';
+  }
+
+  @override
+  bool operator ==(covariant ExchangeModel other) {
+    if (identical(this, other)) return true;
+
+    return other.id == id &&
+        other.reason == reason &&
+        other.type == type &&
+        other.function == function &&
+        other.unidad == unidad &&
+        other.requested == requested &&
+        other.requester == requester &&
+        other.baseFirst == baseFirst &&
+        other.baseLast == baseLast &&
+        other.requesterID == requesterID &&
+        other.requestedID == requestedID &&
+        other.referenceDate == referenceDate &&
+        other.date == date &&
+        other.firstDateFirst == firstDateFirst &&
+        other.lastDateFirst == lastDateFirst &&
+        other.firstDateLast == firstDateLast &&
+        other.lastDateLast == lastDateLast &&
+        other.at == at;
+  }
+
+  @override
+  int get hashCode {
+    return id.hashCode ^
+        reason.hashCode ^
+        type.hashCode ^
+        function.hashCode ^
+        unidad.hashCode ^
+        requested.hashCode ^
+        requester.hashCode ^
+        baseFirst.hashCode ^
+        baseLast.hashCode ^
+        requesterID.hashCode ^
+        requestedID.hashCode ^
+        referenceDate.hashCode ^
+        date.hashCode ^
+        firstDateFirst.hashCode ^
+        lastDateFirst.hashCode ^
+        firstDateLast.hashCode ^
+        lastDateLast.hashCode ^
+        at.hashCode;
   }
 }

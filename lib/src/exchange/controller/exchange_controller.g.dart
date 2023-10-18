@@ -65,19 +65,19 @@ mixin _$ExchangeController on _ExchangeControllerBase, Store {
     });
   }
 
-  late final _$typeAtom =
-      Atom(name: '_ExchangeControllerBase.type', context: context);
+  late final _$unidadAtom =
+      Atom(name: '_ExchangeControllerBase.unidad', context: context);
 
   @override
-  String get type {
-    _$typeAtom.reportRead();
-    return super.type;
+  String get unidad {
+    _$unidadAtom.reportRead();
+    return super.unidad;
   }
 
   @override
-  set type(String value) {
-    _$typeAtom.reportWrite(value, super.type, () {
-      super.type = value;
+  set unidad(String value) {
+    _$unidadAtom.reportWrite(value, super.unidad, () {
+      super.unidad = value;
     });
   }
 
@@ -94,6 +94,22 @@ mixin _$ExchangeController on _ExchangeControllerBase, Store {
   set function(String value) {
     _$functionAtom.reportWrite(value, super.function, () {
       super.function = value;
+    });
+  }
+
+  late final _$typeAtom =
+      Atom(name: '_ExchangeControllerBase.type', context: context);
+
+  @override
+  String get type {
+    _$typeAtom.reportRead();
+    return super.type;
+  }
+
+  @override
+  set type(String value) {
+    _$typeAtom.reportWrite(value, super.type, () {
+      super.type = value;
     });
   }
 
@@ -129,35 +145,99 @@ mixin _$ExchangeController on _ExchangeControllerBase, Store {
     });
   }
 
-  late final _$dateFirstAtom =
-      Atom(name: '_ExchangeControllerBase.dateFirst', context: context);
+  late final _$firstDateFirstAtom =
+      Atom(name: '_ExchangeControllerBase.firstDateFirst', context: context);
 
   @override
-  DateTime get dateFirst {
-    _$dateFirstAtom.reportRead();
-    return super.dateFirst;
+  DateTime get firstDateFirst {
+    _$firstDateFirstAtom.reportRead();
+    return super.firstDateFirst;
   }
 
   @override
-  set dateFirst(DateTime value) {
-    _$dateFirstAtom.reportWrite(value, super.dateFirst, () {
-      super.dateFirst = value;
+  set firstDateFirst(DateTime value) {
+    _$firstDateFirstAtom.reportWrite(value, super.firstDateFirst, () {
+      super.firstDateFirst = value;
     });
   }
 
-  late final _$dateLastAtom =
-      Atom(name: '_ExchangeControllerBase.dateLast', context: context);
+  late final _$lastDateFirstAtom =
+      Atom(name: '_ExchangeControllerBase.lastDateFirst', context: context);
 
   @override
-  DateTime get dateLast {
-    _$dateLastAtom.reportRead();
-    return super.dateLast;
+  DateTime get lastDateFirst {
+    _$lastDateFirstAtom.reportRead();
+    return super.lastDateFirst;
   }
 
   @override
-  set dateLast(DateTime value) {
-    _$dateLastAtom.reportWrite(value, super.dateLast, () {
-      super.dateLast = value;
+  set lastDateFirst(DateTime value) {
+    _$lastDateFirstAtom.reportWrite(value, super.lastDateFirst, () {
+      super.lastDateFirst = value;
+    });
+  }
+
+  late final _$firstDateLastAtom =
+      Atom(name: '_ExchangeControllerBase.firstDateLast', context: context);
+
+  @override
+  DateTime get firstDateLast {
+    _$firstDateLastAtom.reportRead();
+    return super.firstDateLast;
+  }
+
+  @override
+  set firstDateLast(DateTime value) {
+    _$firstDateLastAtom.reportWrite(value, super.firstDateLast, () {
+      super.firstDateLast = value;
+    });
+  }
+
+  late final _$lastDateLastAtom =
+      Atom(name: '_ExchangeControllerBase.lastDateLast', context: context);
+
+  @override
+  DateTime get lastDateLast {
+    _$lastDateLastAtom.reportRead();
+    return super.lastDateLast;
+  }
+
+  @override
+  set lastDateLast(DateTime value) {
+    _$lastDateLastAtom.reportWrite(value, super.lastDateLast, () {
+      super.lastDateLast = value;
+    });
+  }
+
+  late final _$isSimpleAtom =
+      Atom(name: '_ExchangeControllerBase.isSimple', context: context);
+
+  @override
+  bool get isSimple {
+    _$isSimpleAtom.reportRead();
+    return super.isSimple;
+  }
+
+  @override
+  set isSimple(bool value) {
+    _$isSimpleAtom.reportWrite(value, super.isSimple, () {
+      super.isSimple = value;
+    });
+  }
+
+  late final _$isSamuAtom =
+      Atom(name: '_ExchangeControllerBase.isSamu', context: context);
+
+  @override
+  bool get isSamu {
+    _$isSamuAtom.reportRead();
+    return super.isSamu;
+  }
+
+  @override
+  set isSamu(bool value) {
+    _$isSamuAtom.reportWrite(value, super.isSamu, () {
+      super.isSamu = value;
     });
   }
 
@@ -177,36 +257,12 @@ mixin _$ExchangeController on _ExchangeControllerBase, Store {
     });
   }
 
-  late final _$verifyFileAsyncAction =
-      AsyncAction('_ExchangeControllerBase.verifyFile', context: context);
-
-  @override
-  Future<ExchangeModel?> verifyFile({required String token}) {
-    return _$verifyFileAsyncAction.run(() => super.verifyFile(token: token));
-  }
-
   late final _$saveAsyncAction =
       AsyncAction('_ExchangeControllerBase.save', context: context);
 
   @override
   Future<bool> save({required ExchangeModel exchange}) {
     return _$saveAsyncAction.run(() => super.save(exchange: exchange));
-  }
-
-  late final _$updateAsyncAction =
-      AsyncAction('_ExchangeControllerBase.update', context: context);
-
-  @override
-  Future<bool> update({required ExchangeModel exchange}) {
-    return _$updateAsyncAction.run(() => super.update(exchange: exchange));
-  }
-
-  late final _$onDownloadAsyncAction =
-      AsyncAction('_ExchangeControllerBase.onDownload', context: context);
-
-  @override
-  Future<void> onDownload({required String id}) {
-    return _$onDownloadAsyncAction.run(() => super.onDownload(id: id));
   }
 
   late final _$_ExchangeControllerBaseActionController =
@@ -224,11 +280,11 @@ mixin _$ExchangeController on _ExchangeControllerBase, Store {
   }
 
   @override
-  dynamic setType(String? value) {
+  dynamic setUnidad(String? value) {
     final _$actionInfo = _$_ExchangeControllerBaseActionController.startAction(
-        name: '_ExchangeControllerBase.setType');
+        name: '_ExchangeControllerBase.setUnidad');
     try {
-      return super.setType(value);
+      return super.setUnidad(value);
     } finally {
       _$_ExchangeControllerBaseActionController.endAction(_$actionInfo);
     }
@@ -246,22 +302,22 @@ mixin _$ExchangeController on _ExchangeControllerBase, Store {
   }
 
   @override
-  dynamic setRequested(UserModel? value) {
+  dynamic setType(String? value) {
     final _$actionInfo = _$_ExchangeControllerBaseActionController.startAction(
-        name: '_ExchangeControllerBase.setRequested');
+        name: '_ExchangeControllerBase.setType');
     try {
-      return super.setRequested(value);
+      return super.setType(value);
     } finally {
       _$_ExchangeControllerBaseActionController.endAction(_$actionInfo);
     }
   }
 
   @override
-  dynamic setDateFirst(DateTime value) {
+  dynamic setRequested(UserModel? value) {
     final _$actionInfo = _$_ExchangeControllerBaseActionController.startAction(
-        name: '_ExchangeControllerBase.setDateFirst');
+        name: '_ExchangeControllerBase.setRequested');
     try {
-      return super.setDateFirst(value);
+      return super.setRequested(value);
     } finally {
       _$_ExchangeControllerBaseActionController.endAction(_$actionInfo);
     }
@@ -290,11 +346,22 @@ mixin _$ExchangeController on _ExchangeControllerBase, Store {
   }
 
   @override
-  dynamic setDateLast(DateTime value) {
+  dynamic setSimple(bool value) {
     final _$actionInfo = _$_ExchangeControllerBaseActionController.startAction(
-        name: '_ExchangeControllerBase.setDateLast');
+        name: '_ExchangeControllerBase.setSimple');
     try {
-      return super.setDateLast(value);
+      return super.setSimple(value);
+    } finally {
+      _$_ExchangeControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setSamu(bool value) {
+    final _$actionInfo = _$_ExchangeControllerBaseActionController.startAction(
+        name: '_ExchangeControllerBase.setSamu');
+    try {
+      return super.setSamu(value);
     } finally {
       _$_ExchangeControllerBaseActionController.endAction(_$actionInfo);
     }
@@ -312,17 +379,66 @@ mixin _$ExchangeController on _ExchangeControllerBase, Store {
   }
 
   @override
+  dynamic setFirstDateFirst(DateTime value) {
+    final _$actionInfo = _$_ExchangeControllerBaseActionController.startAction(
+        name: '_ExchangeControllerBase.setFirstDateFirst');
+    try {
+      return super.setFirstDateFirst(value);
+    } finally {
+      _$_ExchangeControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setLastDateFirst(DateTime value) {
+    final _$actionInfo = _$_ExchangeControllerBaseActionController.startAction(
+        name: '_ExchangeControllerBase.setLastDateFirst');
+    try {
+      return super.setLastDateFirst(value);
+    } finally {
+      _$_ExchangeControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setFirstDateLast(DateTime value) {
+    final _$actionInfo = _$_ExchangeControllerBaseActionController.startAction(
+        name: '_ExchangeControllerBase.setFirstDateLast');
+    try {
+      return super.setFirstDateLast(value);
+    } finally {
+      _$_ExchangeControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setLastDateLast(DateTime value) {
+    final _$actionInfo = _$_ExchangeControllerBaseActionController.startAction(
+        name: '_ExchangeControllerBase.setLastDateLast');
+    try {
+      return super.setLastDateLast(value);
+    } finally {
+      _$_ExchangeControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 loading: ${loading},
 checkConfirm: ${checkConfirm},
 requested: ${requested},
-type: ${type},
+unidad: ${unidad},
 function: ${function},
+type: ${type},
 exchanges: ${exchanges},
 referenceDate: ${referenceDate},
-dateFirst: ${dateFirst},
-dateLast: ${dateLast},
+firstDateFirst: ${firstDateFirst},
+lastDateFirst: ${lastDateFirst},
+firstDateLast: ${firstDateLast},
+lastDateLast: ${lastDateLast},
+isSimple: ${isSimple},
+isSamu: ${isSamu},
 exchangeVerify: ${exchangeVerify},
 exhangesSort: ${exhangesSort}
     ''';

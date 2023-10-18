@@ -3,6 +3,7 @@ import 'package:bsu_control/model/exchange_model.dart';
 import 'package:bsu_control/model/user_model.dart';
 import 'package:bsu_control/src/exchange/repository/exchange_interface.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
 import 'package:open_app_file/open_app_file.dart';
 import 'package:path_provider/path_provider.dart';
@@ -28,10 +29,13 @@ abstract class _ExchangeControllerBase with Store {
   UserModel? requested;
 
   @observable
-  String type = "";
+  String unidad = "";
 
   @observable
   String function = "";
+
+  @observable
+  String type = "";
 
   @observable
   ObservableList<ExchangeModel> exchanges = <ExchangeModel>[].asObservable();
@@ -39,11 +43,35 @@ abstract class _ExchangeControllerBase with Store {
   @observable
   DateTime referenceDate = DateTime.now();
 
-  @observable
-  DateTime dateFirst = DateTime.now();
+  // @observable
+  // TimeOfDay firstHourFirst = const TimeOfDay(hour: 8, minute: 0);
+
+  // @observable
+  // TimeOfDay lastHourFirst = const TimeOfDay(hour: 8, minute: 0);
+
+  // @observable
+  // TimeOfDay firstHourLast = const TimeOfDay(hour: 8, minute: 0);
+
+  // @observable
+  // TimeOfDay lastHourLast = const TimeOfDay(hour: 8, minute: 0);
 
   @observable
-  DateTime dateLast = DateTime.now();
+  DateTime firstDateFirst = DateTime.now();
+
+  @observable
+  DateTime lastDateFirst = DateTime.now().add(const Duration(days: 1));
+
+  @observable
+  DateTime firstDateLast = DateTime.now();
+
+  @observable
+  DateTime lastDateLast = DateTime.now().add(const Duration(days: 1));
+
+  @observable
+  bool isSimple = true;
+
+  @observable
+  bool isSamu = true;
 
   @observable
   ExchangeModel? exchangeVerify;
@@ -69,16 +97,16 @@ abstract class _ExchangeControllerBase with Store {
   }
 
   @action
-  setType(String? value) => type = value ?? type;
+  setUnidad(String? value) => unidad = value ?? unidad;
 
   @action
   setFunction(String? value) => function = value ?? function;
 
   @action
-  setRequested(UserModel? value) => requested = value;
+  setType(String? value) => type = value ?? type;
 
   @action
-  setDateFirst(DateTime value) => dateFirst = value;
+  setRequested(UserModel? value) => requested = value;
 
   @action
   setReferenceDate(DateTime value) => referenceDate = value;
@@ -87,50 +115,69 @@ abstract class _ExchangeControllerBase with Store {
   setCheckConfirm(bool? value) => checkConfirm = value ?? checkConfirm;
 
   @action
-  setDateLast(DateTime value) => dateLast = value;
+  setSimple(bool value) => isSimple = value;
+
+  @action
+  setSamu(bool value) {
+    isSamu = value;
+
+    if (value) {
+      setSimple(true);
+      setType('SIMPLES');
+    }
+  }
 
   @action
   setExchangeVerify(ExchangeModel? value) => exchangeVerify = value;
 
   @action
-  Future<ExchangeModel?> verifyFile({required String token}) async {
-    try {
-      loading = true;
-      final result = await repository.verifyFile(token: token);
-      loading = false;
+  setFirstDateFirst(DateTime value) => firstDateFirst = value;
 
-      exchangeVerify = result;
-      return result;
-    } catch (e) {
-      loading = false;
+  @action
+  setLastDateFirst(DateTime value) => lastDateFirst = value;
 
-      exchangeVerify = null;
-      return null;
-    }
-  }
+  @action
+  setFirstDateLast(DateTime value) => firstDateLast = value;
+
+  @action
+  setLastDateLast(DateTime value) => lastDateLast = value;
+
+  // @action
+  // setFirstTimeFirst(TimeOfDay value) => firstHourFirst = value;
+
+  // @action
+  // setLastTimeFirst(TimeOfDay value) => lastHourFirst = value;
+
+  // @action
+  // setFirstTimeLast(TimeOfDay value) => firstHourLast = value;
+
+  // @action
+  // setLastTimeLast(TimeOfDay value) => lastHourLast = value;
 
   @action
   Future<bool> save({required ExchangeModel exchange}) async {
     loading = true;
     final result = await repository.save(exchange: exchange);
-    loading = false;
 
+    if (result != null) {
+      await onDownload(id: result);
+    }
+
+    loading = false;
     return result != null;
   }
 
-  @action
-  Future<bool> update({required ExchangeModel exchange}) async {
-    loading = true;
-    final result = await repository.update(exchange: exchange);
-    loading = false;
+  // @action
+  // Future<bool> update({required ExchangeModel exchange}) async {
+  //   loading = true;
+  //   final result = await repository.update(exchange: exchange);
+  //   loading = false;
 
-    return result;
-  }
+  //   return result;
+  // }
 
-  @action
-  Future<void> onDownload({required String id}) async {
+  Future<bool> onDownload({required String id}) async {
     try {
-      loading = true;
       final url =
           'https://us-central1-bsucos-function.cloudfunctions.net/app/exchange/pdf?exchangeID=$id';
 
@@ -153,11 +200,13 @@ abstract class _ExchangeControllerBase with Store {
         await OpenAppFile.open('$destFile/$filename');
       }
 
-      loading = false;
-      return;
+      return true;
     } catch (e) {
-      loading = false;
-      return;
+      return false;
     }
+  }
+
+  DateTime processDate({required DateTime date, required TimeOfDay hour}) {
+    return DateTime(date.year, date.month, date.day, hour.hour, hour.minute, 0);
   }
 }
