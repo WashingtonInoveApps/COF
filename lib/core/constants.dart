@@ -26,6 +26,24 @@ final statusType = [
   "FREIO"
 ];
 final unidades = ["BSU", "1BBM"];
+
+final obms = [
+  "1º BBM",
+  "1º BCIF",
+  "2º BBM",
+  "3º BBM",
+  "4º BBM",
+  "5º BBM",
+  "ATI",
+  "BBS",
+  "BSU",
+  "CBC",
+  "CBI",
+  "CIOPS - FORTALEZA",
+  "COMALP",
+  "DEFESA CIVIL"
+];
+
 final graduacao = [
   'SOLDADO',
   'CABO',

@@ -37,6 +37,9 @@ class _UserPageRegisterState extends State<UserPageRegister> {
         : graduacao.first);
 
     if (widget.user != null) user = UserModel.fromMap(widget.user!.toMap());
+
+    controller.setIsSamu(user.samu);
+    controller.setOBM(user.obm);
   }
 
   @override
@@ -94,6 +97,38 @@ class _UserPageRegisterState extends State<UserPageRegister> {
                                           horizontal: 10.0),
                                       child: Observer(builder: (_) {
                                         return DropdownButton<String>(
+                                            value: controller.obm,
+                                            onChanged: controller.setOBM,
+                                            underline: Container(),
+                                            isExpanded: true,
+                                            items: List.generate(
+                                                obms.length,
+                                                (index) =>
+                                                    DropdownMenuItem<String>(
+                                                      value: obms[index],
+                                                      child: Text(
+                                                        obms[index],
+                                                        style: title,
+                                                      ),
+                                                    )));
+                                      }),
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  Card(
+                                    margin: EdgeInsets.zero,
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                          border:
+                                              Border.all(color: Colors.grey),
+                                          borderRadius:
+                                              BorderRadius.circular(5)),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 10.0),
+                                      child: Observer(builder: (_) {
+                                        return DropdownButton<String>(
                                             value: controller.graduacao,
                                             onChanged: controller.setGraduacao,
                                             underline: Container(),
@@ -105,7 +140,7 @@ class _UserPageRegisterState extends State<UserPageRegister> {
                                                       value: graduacao[index],
                                                       child: Text(
                                                         graduacao[index],
-                                                        style: subtitle,
+                                                        style: title,
                                                       ),
                                                     )));
                                       }),
@@ -179,27 +214,6 @@ class _UserPageRegisterState extends State<UserPageRegister> {
                                       user.email = text!;
                                     },
                                   ),
-
-                                  // const SizedBox(
-                                  //   height: 15.0,
-                                  // ),
-                                  // FieldText(
-                                  //   controller: _controllerPassword,
-                                  //   hint: "SENHA",
-                                  //   inputType: TextInputType.visiblePassword,
-                                  //   obscure: true,
-                                  //   validation: Validation.validatorPassoword,
-                                  // ),
-                                  // const SizedBox(
-                                  //   height: 15.0,
-                                  // ),
-                                  // FieldText(
-                                  //   controller: _controllerPasswordConfirme,
-                                  //   inputType: TextInputType.visiblePassword,
-                                  //   hint: "CONFIRMAR SENHA",
-                                  //   obscure: true,
-                                  //   validation: (text) => Validation.validatorConfirmePassoword(_controllerPassword.text, _controllerPasswordConfirme.text),
-                                  // ),
                                   const SizedBox(
                                     height: 15.0,
                                   ),
@@ -207,8 +221,25 @@ class _UserPageRegisterState extends State<UserPageRegister> {
                               ),
                             ),
                           ),
+                          const Divider(),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  'Tem escala no SAMU/CE ?',
+                                  style: title,
+                                ),
+                              ),
+                              Observer(builder: (context) {
+                                return Checkbox(
+                                    value: controller.isSamu,
+                                    onChanged: controller.setIsSamu);
+                              })
+                            ],
+                          ),
+                          const Divider(),
                           const SizedBox(
-                            height: 15.0,
+                            height: 10.0,
                           ),
                           Center(
                             child: SizedBox(
@@ -218,25 +249,31 @@ class _UserPageRegisterState extends State<UserPageRegister> {
                                 onPressed: () async {
                                   if (_key.currentState!.validate()) {
                                     _key.currentState!.save();
-                                    final value = await controller.create(
-                                        user: user,
-                                        update: widget.user != null);
 
-                                    // ignore: use_build_context_synchronously
-                                    await showDialog(
-                                        context: context,
-                                        builder: (context) => AlertMessage(
-                                            title: "Atenção",
-                                            message: value
-                                                ? ((widget.user == null)
-                                                    ? "Cadastro foi realizado com sucesso, aguarde liberação."
-                                                    : "Cadastro foi alterado com sucesso.")
-                                                : "Ops ! Falha ao realizar cadastro.",
-                                            onPressedOK: () =>
-                                                Navigator.of(context).pop()));
+                                    user.samu = controller.isSamu;
+                                    user.graduacao = controller.graduacao;
+                                    user.obm = controller.obm;
 
-                                    // ignore: use_build_context_synchronously
-                                    if (value) Navigator.of(context).pop();
+                                    controller
+                                        .create(
+                                            user: user,
+                                            update: widget.user != null)
+                                        .then((value) async {
+                                      showDialog(
+                                          context: context,
+                                          builder: (context) => AlertMessage(
+                                              title: "Atenção",
+                                              message: value
+                                                  ? ((widget.user == null)
+                                                      ? "Cadastro foi realizado com sucesso, aguarde liberação."
+                                                      : "Cadastro foi alterado com sucesso.")
+                                                  : "Ops ! Falha ao realizar cadastro.",
+                                              onPressedOK: () =>
+                                                  Navigator.of(context)
+                                                      .pop())).then((_) {
+                                        if (value) Navigator.of(context).pop();
+                                      });
+                                    });
                                   }
                                 },
                                 child: Text(

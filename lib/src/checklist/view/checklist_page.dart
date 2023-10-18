@@ -73,7 +73,7 @@ class _ChecklistPageState extends State<ChecklistPage> {
                                       },
                                       child: Padding(
                                         padding: const EdgeInsets.symmetric(
-                                            horizontal: 5, vertical: 2),
+                                            horizontal: 15, vertical: 2),
                                         child: Text(
                                           "NOVO",
                                           style: subtitle.copyWith(

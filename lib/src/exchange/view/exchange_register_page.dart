@@ -5,6 +5,7 @@ import 'package:bsu_control/model/exchange_model.dart';
 import 'package:bsu_control/model/user_model.dart';
 import 'package:bsu_control/src/exchange/controller/exchange_controller.dart';
 import 'package:bsu_control/src/exchange/repository/exchange_repository.dart';
+import 'package:bsu_control/src/widgets/alert_message.dart';
 import 'package:bsu_control/src/widgets/app_bar_widget.dart';
 import 'package:bsu_control/src/widgets/textfield_widget.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +24,7 @@ class _ExchangeRegisterPageState extends State<ExchangeRegisterPage> {
   final app = GetIt.I.get<AppController>();
   final keyForm = GlobalKey<FormState>();
 
-  final unidad = ['QUARTEL', 'SAMU'];
+  final unidad = ['BSU', 'SAMU CEARÁ'];
 
   final function = [
     'OFICIAL DE DIA',
@@ -41,18 +42,18 @@ class _ExchangeRegisterPageState extends State<ExchangeRegisterPage> {
     super.initState();
     controller = ExchangeController(app: app, repository: ExchangeRepository());
 
-    controller.setRequested(app.usersValidations.first);
     controller.setUnidad(unidad.first);
     controller.setFunction(function.first);
     controller.setType(types.first);
     controller.setSamu(false);
+    controller.setRequested(controller.usersExchange.first);
 
     exchange = ExchangeModel(
+        date: DateTime.now(),
         requesterID: app.user.id,
         unidad: controller.unidad,
         type: controller.type,
         function: controller.function,
-        date: controller.referenceDate,
         requester: app.user,
         requested: controller.requested,
         firstDateFirst: controller.firstDateFirst,
@@ -207,7 +208,7 @@ class _ExchangeRegisterPageState extends State<ExchangeRegisterPage> {
                               value: controller.unidad,
                               onChanged: (value) {
                                 controller.setUnidad(value);
-                                controller.setSamu(value == 'SAMU');
+                                controller.setSamu(value == 'SAMU CEARÁ');
                                 exchange.unidad = value ?? '';
                               },
                               underline: Container(),
@@ -305,11 +306,11 @@ class _ExchangeRegisterPageState extends State<ExchangeRegisterPage> {
                               underline: Container(),
                               isExpanded: true,
                               items: List.generate(
-                                  app.usersValidations.length,
+                                  controller.usersExchange.length,
                                   (index) => DropdownMenuItem<UserModel>(
-                                        value: app.usersValidations[index],
+                                        value: controller.usersExchange[index],
                                         child: Text(
-                                          '${app.usersValidations[index].graduacao.toUpperCase()} ${app.usersValidations[index].name.toUpperCase()}',
+                                          '${controller.usersExchange[index].graduacao.toUpperCase()} ${controller.usersExchange[index].name.toUpperCase()}',
                                           style: title,
                                         ),
                                       ))),
@@ -440,21 +441,20 @@ class _ExchangeRegisterPageState extends State<ExchangeRegisterPage> {
                               onPressed: () async {
                                 if (keyForm.currentState?.validate() ?? false) {
                                   keyForm.currentState?.save();
-                                  debugPrint(exchange.toJson());
-                                  // controller
-                                  //     .save(exchange: exchange)
-                                  //     .then((result) {
-                                  //   if (!result) {
-                                  //     showDialog(
-                                  //         context: context,
-                                  //         builder: (context) => AlertMessage(
-                                  //             title: '',
-                                  //             message:
-                                  //                 'Ops ! Falha ao solicitar permuta, entre em contato com o gestor.',
-                                  //             onPressedOK: () =>
-                                  //                 Navigator.of(context).pop()));
-                                  //   }
-                                  // });
+                                  controller
+                                      .onDownload(exchange: exchange)
+                                      .then((value) {
+                                    if (!value) {
+                                      showDialog(
+                                          context: context,
+                                          builder: (context) => AlertMessage(
+                                              title: '',
+                                              message:
+                                                  'Ops ! Falha ao solicitar permuta, entre em contato com o gestor.',
+                                              onPressedOK: () =>
+                                                  Navigator.of(context).pop()));
+                                    }
+                                  });
                                 }
                               },
                               child: Text(

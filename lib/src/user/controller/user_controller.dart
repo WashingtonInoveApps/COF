@@ -28,10 +28,22 @@ abstract class _UserControllerBase with Store {
   @observable
   String graduacao = '';
 
+  @observable
+  String obm = '';
+
+  @observable
+  bool isSamu = false;
+
   _UserControllerBase({required this.app, required this.repository});
 
   @action
   setGraduacao(String? value) => graduacao = value ?? graduacao;
+
+  @action
+  setIsSamu(bool? value) => isSamu = value ?? isSamu;
+
+  @action
+  setOBM(String? value) => obm = value ?? obm;
 
   @action
   Future<bool> create({required UserModel user, bool update = false}) async {

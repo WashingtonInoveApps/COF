@@ -22,9 +22,23 @@ class CardUser extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    user.graduacao,
-                    style: subtitle.copyWith(color: Colors.grey),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          user.graduacao,
+                          style: subtitle.copyWith(color: Colors.grey),
+                        ),
+                      ),
+                      Visibility(
+                        visible: user.samu,
+                        child: Text(
+                          'SAMU',
+                          style: title.copyWith(
+                              color: Colors.blue, fontWeight: FontWeight.bold),
+                        ),
+                      )
+                    ],
                   ),
                   const Divider(),
                 ],

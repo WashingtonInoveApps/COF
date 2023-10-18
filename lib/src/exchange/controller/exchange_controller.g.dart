@@ -129,19 +129,19 @@ mixin _$ExchangeController on _ExchangeControllerBase, Store {
     });
   }
 
-  late final _$referenceDateAtom =
-      Atom(name: '_ExchangeControllerBase.referenceDate', context: context);
+  late final _$usersExchangeAtom =
+      Atom(name: '_ExchangeControllerBase.usersExchange', context: context);
 
   @override
-  DateTime get referenceDate {
-    _$referenceDateAtom.reportRead();
-    return super.referenceDate;
+  ObservableList<UserModel> get usersExchange {
+    _$usersExchangeAtom.reportRead();
+    return super.usersExchange;
   }
 
   @override
-  set referenceDate(DateTime value) {
-    _$referenceDateAtom.reportWrite(value, super.referenceDate, () {
-      super.referenceDate = value;
+  set usersExchange(ObservableList<UserModel> value) {
+    _$usersExchangeAtom.reportWrite(value, super.usersExchange, () {
+      super.usersExchange = value;
     });
   }
 
@@ -257,12 +257,13 @@ mixin _$ExchangeController on _ExchangeControllerBase, Store {
     });
   }
 
-  late final _$saveAsyncAction =
-      AsyncAction('_ExchangeControllerBase.save', context: context);
+  late final _$onDownloadAsyncAction =
+      AsyncAction('_ExchangeControllerBase.onDownload', context: context);
 
   @override
-  Future<bool> save({required ExchangeModel exchange}) {
-    return _$saveAsyncAction.run(() => super.save(exchange: exchange));
+  Future<bool> onDownload({required ExchangeModel exchange}) {
+    return _$onDownloadAsyncAction
+        .run(() => super.onDownload(exchange: exchange));
   }
 
   late final _$_ExchangeControllerBaseActionController =
@@ -318,17 +319,6 @@ mixin _$ExchangeController on _ExchangeControllerBase, Store {
         name: '_ExchangeControllerBase.setRequested');
     try {
       return super.setRequested(value);
-    } finally {
-      _$_ExchangeControllerBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  dynamic setReferenceDate(DateTime value) {
-    final _$actionInfo = _$_ExchangeControllerBaseActionController.startAction(
-        name: '_ExchangeControllerBase.setReferenceDate');
-    try {
-      return super.setReferenceDate(value);
     } finally {
       _$_ExchangeControllerBaseActionController.endAction(_$actionInfo);
     }
@@ -432,7 +422,7 @@ unidad: ${unidad},
 function: ${function},
 type: ${type},
 exchanges: ${exchanges},
-referenceDate: ${referenceDate},
+usersExchange: ${usersExchange},
 firstDateFirst: ${firstDateFirst},
 lastDateFirst: ${lastDateFirst},
 firstDateLast: ${firstDateLast},

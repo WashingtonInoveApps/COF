@@ -41,6 +41,38 @@ mixin _$UserController on _UserControllerBase, Store {
     });
   }
 
+  late final _$obmAtom =
+      Atom(name: '_UserControllerBase.obm', context: context);
+
+  @override
+  String get obm {
+    _$obmAtom.reportRead();
+    return super.obm;
+  }
+
+  @override
+  set obm(String value) {
+    _$obmAtom.reportWrite(value, super.obm, () {
+      super.obm = value;
+    });
+  }
+
+  late final _$isSamuAtom =
+      Atom(name: '_UserControllerBase.isSamu', context: context);
+
+  @override
+  bool get isSamu {
+    _$isSamuAtom.reportRead();
+    return super.isSamu;
+  }
+
+  @override
+  set isSamu(bool value) {
+    _$isSamuAtom.reportWrite(value, super.isSamu, () {
+      super.isSamu = value;
+    });
+  }
+
   late final _$createAsyncAction =
       AsyncAction('_UserControllerBase.create', context: context);
 
@@ -81,10 +113,34 @@ mixin _$UserController on _UserControllerBase, Store {
   }
 
   @override
+  dynamic setIsSamu(bool? value) {
+    final _$actionInfo = _$_UserControllerBaseActionController.startAction(
+        name: '_UserControllerBase.setIsSamu');
+    try {
+      return super.setIsSamu(value);
+    } finally {
+      _$_UserControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setOBM(String? value) {
+    final _$actionInfo = _$_UserControllerBaseActionController.startAction(
+        name: '_UserControllerBase.setOBM');
+    try {
+      return super.setOBM(value);
+    } finally {
+      _$_UserControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 loading: ${loading},
-graduacao: ${graduacao}
+graduacao: ${graduacao},
+obm: ${obm},
+isSamu: ${isSamu}
     ''';
   }
 }

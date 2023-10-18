@@ -523,9 +523,9 @@ Widget changesListWidget({required ItensChangesModel itensChanges}) => Padding(
                             ),
                           ),
                           itensChanges.itens[index].value
-                              ? const Icon(MdiIcons.checkCircle,
+                              ? Icon(MdiIcons.checkCircle,
                                   size: 20.0, color: Colors.green)
-                              : const Icon(MdiIcons.closeCircle,
+                              : Icon(MdiIcons.closeCircle,
                                   size: 20.0, color: Colors.red),
                         ],
                       ),

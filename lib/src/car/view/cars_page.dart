@@ -1,5 +1,8 @@
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
+import 'package:bsu_control/src/car/controller/car_controller.dart';
+import 'package:bsu_control/src/car/repository/car_repository.dart';
+import 'package:bsu_control/src/widgets/alert_message.dart';
 import 'package:bsu_control/src/widgets/app_bar_widget.dart';
 import 'package:bsu_control/src/widgets/car_card.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +21,13 @@ class CarsPage extends StatefulWidget {
 
 class _CarsPageState extends State<CarsPage> {
   final controller = GetIt.I.get<AppController>();
+  late CarController carController;
+
+  @override
+  void initState() {
+    super.initState();
+    carController = CarController(app: controller, repository: CarRepository());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,24 +50,21 @@ class _CarsPageState extends State<CarsPage> {
                         ),
                       ),
                       controller.user.adminFleet
-                          ? TextButton.icon(
-                              style: TextButton.styleFrom(
-                                  side: BorderSide(
-                                      color: Theme.of(context).primaryColor)),
+                          ? ElevatedButton(
                               onPressed: () {
                                 Navigator.of(context).push(MaterialPageRoute(
                                     builder: (context) =>
                                         const CarRegisterPage()));
                               },
-                              icon: Icon(
-                                Icons.add,
-                                size: 20,
-                                color: Theme.of(context).primaryColor,
-                              ),
-                              label: Text(
-                                "Adicionar",
-                                style: title.copyWith(
-                                    color: Theme.of(context).primaryColor),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 15, vertical: 2),
+                                child: Text(
+                                  "NOVO",
+                                  style: subtitle.copyWith(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold),
+                                ),
                               ))
                           : Container(),
                     ],
@@ -79,6 +86,29 @@ class _CarsPageState extends State<CarsPage> {
                                 controller.carsOPR.length,
                                 (index) => CarCard(
                                       car: controller.carsOPR[index],
+                                      onLong: () async {
+                                        showDialog(
+                                            context: context,
+                                            builder: (context) => AlertMessage(
+                                                  title: '',
+                                                  message:
+                                                      'Deseja realmente deletar o registro desse veículo ?',
+                                                  cancel: true,
+                                                  onPressedOK: () =>
+                                                      Navigator.of(context)
+                                                          .pop(true),
+                                                  onPressedCancel: () =>
+                                                      Navigator.of(context)
+                                                          .pop(false),
+                                                )).then((value) async {
+                                          if (value ?? false) {
+                                            await carController.deleteCar(
+                                                id: controller
+                                                        .carsOPR[index].id ??
+                                                    '');
+                                          }
+                                        });
+                                      },
                                       onTap: () {
                                         Navigator.of(context).push(
                                             MaterialPageRoute(

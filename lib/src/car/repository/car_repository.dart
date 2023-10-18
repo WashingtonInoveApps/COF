@@ -96,6 +96,17 @@ class CarRepository implements ICarRepository {
   }
 
   @override
+  Future<bool> deleteCar({required String id}) async {
+    try {
+      await _instance.collection("cars").doc(id).delete();
+
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  @override
   Future<bool> insertMapaCar({required CarMapaModel mapa}) async {
     try {
       final docMapa = _instance.collection("mapas").doc();

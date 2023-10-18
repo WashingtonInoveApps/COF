@@ -87,6 +87,14 @@ mixin _$CarController on _CarControllerBase, Store {
     return _$deleteCarMapaAsyncAction.run(() => super.deleteCarMapa(id: id));
   }
 
+  late final _$deleteCarAsyncAction =
+      AsyncAction('_CarControllerBase.deleteCar', context: context);
+
+  @override
+  Future<bool> deleteCar({required String id}) {
+    return _$deleteCarAsyncAction.run(() => super.deleteCar(id: id));
+  }
+
   @override
   String toString() {
     return '''

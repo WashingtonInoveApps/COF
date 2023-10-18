@@ -52,7 +52,7 @@ class _HomePageState extends State<HomePage> {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(
+                            Icon(
                               MdiIcons.carMultiple,
                               size: 40,
                               color: Colors.green,
@@ -115,7 +115,7 @@ class _HomePageState extends State<HomePage> {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(
+                            Icon(
                               MdiIcons.repeatVariant,
                               size: 40,
                               color: Colors.green,
@@ -132,41 +132,42 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                   ),
-                  InkWell(
-                    onTap: (app.user.admin || app.user.adminFleet)
-                        ? () {
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => const ManagementPage()));
-                          }
-                        : null,
-                    child: Card(
-                      elevation: 2,
-                      child: Container(
-                        width: 140.0,
-                        height: 140.0,
-                        alignment: Alignment.center,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 20.0),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              MdiIcons.cogs,
-                              size: 40,
-                              color: (app.user.admin ||
-                                      app.user.adminFleet ||
-                                      app.user.adminMaterial)
-                                  ? Colors.green
-                                  : Colors.grey,
-                            ),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Text(
-                              'GERENCIAMENTO',
-                              style: subtitle,
-                            ),
-                          ],
+                  Visibility(
+                    visible: (app.user.admin || app.user.adminFleet),
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => const ManagementPage()));
+                      },
+                      child: Card(
+                        elevation: 2,
+                        child: Container(
+                          width: 140.0,
+                          height: 140.0,
+                          alignment: Alignment.center,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 20.0),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                MdiIcons.cogs,
+                                size: 40,
+                                color: (app.user.admin ||
+                                        app.user.adminFleet ||
+                                        app.user.adminMaterial)
+                                    ? Colors.green
+                                    : Colors.grey,
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Text(
+                                'GERENCIAMENTO',
+                                style: subtitle,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -224,7 +225,7 @@ class _HomePageState extends State<HomePage> {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(
+                            Icon(
                               MdiIcons.exitToApp,
                               size: 40,
                               color: Colors.green,

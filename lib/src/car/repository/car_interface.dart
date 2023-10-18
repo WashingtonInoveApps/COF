@@ -11,10 +11,11 @@ abstract class ICarRepository {
       required bool enable});
   Future<bool> updateKMCar(
       {required String id, required Map<String, dynamic> data});
+  Future<bool> deleteCar({required String id});
 
-  Stream<List<CarStatusModel>> listenStatusCar({required String carId});  
+  Stream<List<CarStatusModel>> listenStatusCar({required String carId});
   Stream<List<CarMapaModel>> listenMapas({required String carId});
-  
+
   Future<bool> deleteCarMapa({required String id});
   Future<bool> insertMapaCar({required CarMapaModel mapa});
 }

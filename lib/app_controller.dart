@@ -51,8 +51,8 @@ abstract class _AppControllerBase with Store {
   @observable
   List<UserModel> users = <UserModel>[].asObservable();
 
-  @computed
-  List<UserModel> get usersValidations => users.where((e) => e.samu).toList();
+  // @computed
+  // List<UserModel> get usersValidations => users;
 
   Stream<List<CheckListModel>> get listenChecklist =>
       repository.listenChecklist(referenceDate: formatDate(date, outher: true));

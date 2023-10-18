@@ -172,7 +172,7 @@ class _CarChangesWidgetState extends State<CarChangesWidget> {
                                                         Navigator.of(context)
                                                             .pop();
                                                       },
-                                                      child: const CircleAvatar(
+                                                      child: CircleAvatar(
                                                           radius: 20,
                                                           backgroundColor:
                                                               Colors.black45,
@@ -332,8 +332,8 @@ class _AddChangeState extends State<AddChange> {
                         height: 250,
                         fit: BoxFit.cover,
                       )
-                    : const Padding(
-                        padding: EdgeInsets.all(10.0),
+                    : Padding(
+                        padding: const EdgeInsets.all(10.0),
                         child: Icon(
                           MdiIcons.imagePlus,
                           size: 50.0,

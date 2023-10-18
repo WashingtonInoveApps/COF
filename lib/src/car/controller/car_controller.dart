@@ -89,4 +89,13 @@ abstract class _CarControllerBase with Store {
     loading = false;
     return result;
   }
+
+  @action
+  Future<bool> deleteCar({required String id}) async {
+    loading = true;
+    final result = await repository.deleteCar(id: id);
+
+    loading = false;
+    return result;
+  }
 }

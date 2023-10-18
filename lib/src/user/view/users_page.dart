@@ -35,16 +35,6 @@ class _UsersPageState extends State<UsersPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: FloatingActionButton(
-          child: const Icon(
-            Icons.add,
-            color: Colors.white,
-          ),
-          onPressed: () {
-            Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => const UserPageRegister()));
-          }),
       body: Column(
         children: [
           const AppBarCustom(
@@ -58,9 +48,31 @@ class _UsersPageState extends State<UsersPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        "USUÁRIOS",
-                        style: title.copyWith(color: Colors.grey),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              "USUÁRIOS",
+                              style: title.copyWith(color: Colors.grey),
+                            ),
+                          ),
+                          ElevatedButton(
+                              onPressed: () {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) =>
+                                        const UserPageRegister()));
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 15, vertical: 2),
+                                child: Text(
+                                  "NOVO",
+                                  style: subtitle.copyWith(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ))
+                        ],
                       ),
                       const Divider(),
                       Observer(

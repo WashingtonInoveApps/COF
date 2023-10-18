@@ -8,12 +8,15 @@ import '../car/view/car_mapa_page.dart';
 class CarCard extends StatelessWidget {
   final CarModel car;
   final Function() onTap;
-  const CarCard({Key? key, required this.car, required this.onTap}) : super(key: key);
+  final Function()? onLong;
+  const CarCard({Key? key, required this.car, required this.onTap, this.onLong})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
+      onLongPress: onLong,
       child: Card(
         elevation: 2,
         margin: const EdgeInsets.only(bottom: 10.0),
@@ -52,10 +55,12 @@ class CarCard extends StatelessWidget {
                 children: [
                   car.adm
                       ? SizedBox(
-                        height: 35,
+                          height: 35,
                           width: 80.0,
                           child: TextButton(
-                              style: TextButton.styleFrom(side: BorderSide(color: Theme.of(context).primaryColor)),
+                              style: TextButton.styleFrom(
+                                  side: BorderSide(
+                                      color: Theme.of(context).primaryColor)),
                               onPressed: () {
                                 Navigator.of(context).push(MaterialPageRoute(
                                     builder: (context) => CarMapaPage(
@@ -64,7 +69,9 @@ class CarCard extends StatelessWidget {
                               },
                               child: Text(
                                 "MAPA",
-                                style: subtitle.copyWith(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
+                                style: subtitle.copyWith(
+                                    color: Theme.of(context).primaryColor,
+                                    fontWeight: FontWeight.bold),
                               )),
                         )
                       : Container(

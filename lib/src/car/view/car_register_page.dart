@@ -522,7 +522,7 @@ Widget changesListWidget(
                             ),
                           ),
                           InkWell(
-                            child: const Icon(
+                            child: Icon(
                               MdiIcons.delete,
                               color: Colors.grey,
                             ),

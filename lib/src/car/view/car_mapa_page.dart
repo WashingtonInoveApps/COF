@@ -42,7 +42,7 @@ class _CarMapaPageState extends State<CarMapaPage> {
                 children: [
                   Row(
                     children: [
-                      const Icon(
+                      Icon(
                         MdiIcons.locationEnter,
                         size: 20,
                         color: Colors.green,
@@ -63,7 +63,7 @@ class _CarMapaPageState extends State<CarMapaPage> {
                   ),
                   Row(
                     children: [
-                      const Icon(
+                      Icon(
                         MdiIcons.locationExit,
                         size: 20,
                         color: Colors.green,
