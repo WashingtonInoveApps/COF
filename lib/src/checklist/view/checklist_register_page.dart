@@ -127,11 +127,17 @@ class _ChecklistRegisterPageState extends State<ChecklistRegisterPage> {
                                                 child: Observer(builder: (_) {
                                                   return DropdownButton<String>(
                                                       value: controller.prefix,
-                                                      onChanged: (widget
-                                                                  .checkList ==
-                                                              null)
-                                                          ? controller.setPrefix
-                                                          : null,
+                                                      onChanged:
+                                                          (widget.checkList ==
+                                                                  null)
+                                                              ? (value) {
+                                                                  setState(() {
+                                                                    controller
+                                                                        .setPrefix(
+                                                                            value);
+                                                                  });
+                                                                }
+                                                              : null,
                                                       underline: Container(),
                                                       isExpanded: true,
                                                       items: List.generate(
