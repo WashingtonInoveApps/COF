@@ -111,7 +111,10 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
         children: [
           Column(
             children: [
-              AppBarCustom(onBack: () => Navigator.of(context).pop()),
+              AppBarCustom(
+                onBack: () => Navigator.of(context).pop(),
+                titlePage: 'DETALHES DO CHECKLIST',
+              ),
               Expanded(
                 child: SingleChildScrollView(
                   child: LayoutBuilder(builder: (context, constrains) {
@@ -536,7 +539,7 @@ Widget changesListWidget({required ItensChangesModel itensChanges}) => Padding(
               : Container(
                   padding: const EdgeInsets.all(5),
                   decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey),
+                      border: Border.all(color: Colors.grey.shade300),
                       borderRadius: BorderRadius.circular(5)),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -548,7 +551,9 @@ Widget changesListWidget({required ItensChangesModel itensChanges}) => Padding(
                         "OBSERVAÇÃO",
                         style: subtitleHint,
                       ),
-                      const Divider(),
+                      const SizedBox(
+                        height: 5.0,
+                      ),
                       Text(
                         itensChanges.obs,
                         style: title,

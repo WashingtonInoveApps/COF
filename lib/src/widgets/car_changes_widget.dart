@@ -277,11 +277,18 @@ class MyCustomPainter extends CustomPainter {
       ..color = Colors.red
       ..strokeCap = StrokeCap.round;
 
+    final date = DateTime.now();
+
     final points = changes.map((e) => Offset(e.dx, e.dy)).toList();
 
     for (int i = 0; i < points.length; i++) {
       canvas.drawCircle(
-          points[i], 6, changes[i].user.id == user.id ? paint2 : paint1);
+          points[i],
+          6,
+          ((changes[i].date.day == date.day) &&
+                  (changes[i].date.month == date.month))
+              ? paint2
+              : paint1);
     }
   }
 

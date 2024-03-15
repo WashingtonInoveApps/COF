@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 final title = GoogleFonts.nunitoSans(fontSize: 14.0, color: Colors.black);
 final titleHead = GoogleFonts.nunitoSans(
-    fontSize: 14.0, color: Colors.white, fontWeight: FontWeight.bold);
+    fontSize: 15.0, color: Colors.white, fontWeight: FontWeight.bold);
 final titleButton = GoogleFonts.nunitoSans(
     fontSize: 14.0, fontWeight: FontWeight.bold, color: Colors.white);
 final titleHint = GoogleFonts.nunitoSans(fontSize: 14.0, color: Colors.grey);

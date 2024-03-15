@@ -1,7 +1,7 @@
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/validation.dart';
-import 'package:bsu_control/src/pages/home_page.dart';
+import 'package:bsu_control/src/checklist/view/checklist_page.dart';
 import 'package:bsu_control/src/widgets/alert_message.dart';
 import 'package:bsu_control/src/widgets/app_bar_widget.dart';
 import 'package:bsu_control/src/widgets/textfield_widget.dart';
@@ -71,7 +71,7 @@ class _LoginPageState extends State<LoginPage> {
                               opacity: 0.1,
                               child: Image.asset(
                                 'assets/bsu.png',
-                                width: 250,
+                                width: 230,
                                 fit: BoxFit.cover,
                               )),
                         )),
@@ -137,11 +137,10 @@ class _LoginPageState extends State<LoginPage> {
                                                             .pop()));
                                           } else {
                                             // ignore: use_build_context_synchronously
-                                            Navigator.of(context)
-                                                .pushReplacement(
-                                                    MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            const HomePage()));
+                                            Navigator.of(context).pushReplacement(
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        const ChecklistPage()));
                                           }
                                         }
                                       });

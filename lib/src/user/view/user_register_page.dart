@@ -39,7 +39,7 @@ class _UserPageRegisterState extends State<UserPageRegister> {
     if (widget.user != null) user = UserModel.fromMap(widget.user!.toMap());
 
     controller.setIsSamu(user.samu);
-    controller.setOBM(user.obm);
+    controller.setOBM((widget.user == null) ? obms.first : user.obm);
     controller.setAdmin(user.admin);
     controller.setAdminFleet(user.adminFleet);
     controller.setAdminMaterial(user.adminMaterial);
@@ -61,6 +61,7 @@ class _UserPageRegisterState extends State<UserPageRegister> {
         children: [
           const AppBarCustom(
             menu: false,
+            titlePage: 'REGISTRO DE USUÁRIO',
           ),
           Expanded(
             child: Stack(

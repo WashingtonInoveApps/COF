@@ -31,17 +31,19 @@ class _ChecklistRegisterPageState extends State<ChecklistRegisterPage> {
   final _key = GlobalKey<FormState>();
 
   late CheckListController controller;
+  List<String> prefixs = ['SELECIONE O PREFIXO'];
 
   @override
   void initState() {
     super.initState();
+    prefixs = List<String>.from(prefixs..addAll(app.prefixs));
 
     final car = CarModel.copy(app.cars.first);
     final checkList = (widget.checkList == null)
         ? CheckListModel(
             checkCar: CarCheckList(car: car),
             alfa: alfas.first,
-            prefix: car.prefix,
+            prefix: prefixs.first,
             user: app.user,
             date: DateTime.now(),
             supply: [])
@@ -64,6 +66,7 @@ class _ChecklistRegisterPageState extends State<ChecklistRegisterPage> {
             children: [
               const AppBarCustom(
                 page: 2,
+                titlePage: 'REGISTRO DE CHECKLIST',
               ),
               Expanded(
                 child: SingleChildScrollView(
@@ -141,18 +144,22 @@ class _ChecklistRegisterPageState extends State<ChecklistRegisterPage> {
                                                       underline: Container(),
                                                       isExpanded: true,
                                                       items: List.generate(
-                                                          app.prefixs.length,
+                                                          prefixs.length,
                                                           (index) =>
                                                               DropdownMenuItem<
                                                                   String>(
-                                                                value:
-                                                                    app.prefixs[
-                                                                        index],
+                                                                enabled:
+                                                                    index != 0,
+                                                                value: prefixs[
+                                                                    index],
                                                                 child: Text(
-                                                                  app.prefixs[
+                                                                  prefixs[
                                                                       index],
                                                                   style:
                                                                       subtitle,
+                                                                  overflow:
+                                                                      TextOverflow
+                                                                          .ellipsis,
                                                                 ),
                                                               )));
                                                 }),
@@ -371,25 +378,30 @@ class _ChecklistRegisterPageState extends State<ChecklistRegisterPage> {
                                 children: [
                                   Center(
                                     child: Observer(builder: (_) {
-                                      return StatefulBuilder(
-                                          builder: (context, setStateChanges) {
-                                        return CarChangesWidget(
-                                          checklistId: controller.id,
-                                          initValue: controller.carChanges,
-                                          user: controller.user,
-                                          onAdd: (change) {
-                                            setStateChanges(() {
-                                              controller.addCarChanges(change);
-                                            });
-                                          },
-                                          onRemove: (index) {
-                                            setStateChanges(() {
-                                              controller
-                                                  .removeCarChanges(index);
-                                            });
-                                          },
-                                        );
-                                      });
+                                      return Visibility(
+                                        visible:
+                                            controller.prefix != prefixs.first,
+                                        child: StatefulBuilder(builder:
+                                            (context, setStateChanges) {
+                                          return CarChangesWidget(
+                                            checklistId: controller.id,
+                                            initValue: controller.carChanges,
+                                            user: controller.user,
+                                            onAdd: (change) {
+                                              setStateChanges(() {
+                                                controller
+                                                    .addCarChanges(change);
+                                              });
+                                            },
+                                            onRemove: (index) {
+                                              setStateChanges(() {
+                                                controller
+                                                    .removeCarChanges(index);
+                                              });
+                                            },
+                                          );
+                                        }),
+                                      );
                                     }),
                                   ),
                                   const SizedBox(
@@ -421,38 +433,56 @@ class _ChecklistRegisterPageState extends State<ChecklistRegisterPage> {
                                             if (_key.currentState!.validate()) {
                                               _key.currentState!.save();
 
-                                              controller
-                                                  .save(
-                                                      id: widget.checkList?.id,
-                                                      checkList:
-                                                          controller.checklist)
-                                                  .then((value) async {
-                                                await showDialog(
+                                              if (controller.prefix ==
+                                                  prefixs.first) {
+                                                showDialog(
                                                     context: context,
-                                                    builder: (context) => AlertMessage(
-                                                        title: "Atenção",
-                                                        message: value
-                                                            ? "CheckList realizado com sucesso."
-                                                            : "Ops ! Erro ao tentar salvar o checklist.",
-                                                        onPressedOK: () =>
-                                                            Navigator.of(
-                                                                    context)
-                                                                .pop()));
-
-                                                if (value) {
-                                                  (widget.checkList?.id == null)
-                                                      // ignore: use_build_context_synchronously
-                                                      ? Navigator.of(context)
-                                                          .pushReplacement(
-                                                              MaterialPageRoute(
-                                                                  builder:
-                                                                      (context) =>
-                                                                          const ChecklistPage()))
-                                                      // ignore: use_build_context_synchronously
-                                                      : Navigator.of(context)
-                                                          .pop();
-                                                }
-                                              });
+                                                    builder: (context) =>
+                                                        AlertMessage(
+                                                            title: 'Atenção',
+                                                            message:
+                                                                'Selecione o prefixo do veículo antes de salvar o checklist.',
+                                                            onPressedOK: () =>
+                                                                Navigator.of(
+                                                                        context)
+                                                                    .pop()));
+                                              } else {
+                                                controller
+                                                    .save(
+                                                        id: widget
+                                                            .checkList?.id,
+                                                        checkList: controller
+                                                            .checklist)
+                                                    .then((value) async {
+                                                  await showDialog(
+                                                      context: context,
+                                                      builder: (context) => AlertMessage(
+                                                          title: "Atenção",
+                                                          message: value
+                                                              ? "CheckList realizado com sucesso."
+                                                              : "Ops ! Erro ao tentar salvar o checklist.",
+                                                          onPressedOK: () =>
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .pop())).then(
+                                                      (_) {
+                                                    if (value) {
+                                                      (widget.checkList?.id ==
+                                                              null)
+                                                          ? Navigator.of(
+                                                                  context)
+                                                              .pushReplacement(
+                                                                  MaterialPageRoute(
+                                                                      builder:
+                                                                          (context) =>
+                                                                              const ChecklistPage()))
+                                                          : Navigator.of(
+                                                                  context)
+                                                              .pop();
+                                                    }
+                                                  });
+                                                });
+                                              }
                                             }
                                           },
                                           child: Text(

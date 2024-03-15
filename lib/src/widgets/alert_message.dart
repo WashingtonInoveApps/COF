@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 class AlertMessage extends StatelessWidget {
   final String title;
   final String message;
+  final String? titleOK;
+  final String? titleCancel;
   final bool ok;
   final bool cancel;
   final Function() onPressedOK;
@@ -14,6 +16,8 @@ class AlertMessage extends StatelessWidget {
       {Key? key,
       required this.title,
       required this.message,
+      this.titleCancel,
+      this.titleOK,
       required this.onPressedOK,
       this.cancel = false,
       this.ok = true,
@@ -28,7 +32,7 @@ class AlertMessage extends StatelessWidget {
         borderRadius: BorderRadius.circular(10.0),
       ),
       title: Text(
-        title,
+        title.toUpperCase(),
         style: constant.title.copyWith(color: Theme.of(context).primaryColor),
         textAlign: TextAlign.center,
       ),
@@ -45,22 +49,21 @@ class AlertMessage extends StatelessWidget {
             flex: 1,
             child: Text(
               message,
-              style: constant.title,
+              style: constant.title.copyWith(fontSize: 16),
               textAlign: TextAlign.center,
             ),
           ),
         ],
       ),
-      contentTextStyle: constant.subtitle,
+      contentTextStyle: constant.title,
       contentPadding: const EdgeInsets.symmetric(horizontal: 10.0),
       actions: <Widget>[
         cancel
             ? TextButton(
                 onPressed: onPressedCancel,
                 child: Text(
-                  "Cancelar",
-                  style: constant.title
-                      .copyWith(color: Theme.of(context).primaryColor),
+                  titleCancel ?? "Cancelar",
+                  style: constant.title.copyWith(color: Colors.grey),
                 ),
               )
             : Container(),
@@ -68,7 +71,7 @@ class AlertMessage extends StatelessWidget {
             ? TextButton(
                 onPressed: onPressedOK,
                 child: Text(
-                  "OK",
+                  titleOK ?? "OK",
                   style: constant.title
                       .copyWith(color: Theme.of(context).primaryColor),
                 ),

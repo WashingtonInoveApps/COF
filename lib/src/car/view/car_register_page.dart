@@ -67,7 +67,7 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
         Scaffold(
           body: Column(
             children: [
-              const AppBarCustom(),
+              const AppBarCustom(titlePage: 'REGISTRO DE VEÍCULO'),
               Expanded(
                 child: SingleChildScrollView(
                   child: Form(

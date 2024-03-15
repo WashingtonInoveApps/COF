@@ -91,7 +91,9 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
     return Scaffold(
       body: Column(
         children: [
-          const AppBarCustom(),
+          const AppBarCustom(
+            titlePage: 'DETALHES DO VEÍCULO',
+          ),
           Expanded(
             child: Stack(
               children: [

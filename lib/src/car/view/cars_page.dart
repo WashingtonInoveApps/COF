@@ -34,7 +34,7 @@ class _CarsPageState extends State<CarsPage> {
     return Scaffold(
       body: Column(
         children: [
-          const AppBarCustom(),
+          const AppBarCustom(titlePage: 'VEÍCULOS CADASTRADOS'),
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(10),

@@ -24,6 +24,7 @@ class _ManagementPageState extends State<ManagementPage> {
         children: [
           const AppBarCustom(
             menu: false,
+            titlePage: 'PAINEL ADMINISTRATIVO',
           ),
           Expanded(
             child: SingleChildScrollView(

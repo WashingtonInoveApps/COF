@@ -85,7 +85,7 @@ class _AppWidgetState extends State<AppWidget> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'BSU - Controle Operacional de Serviço',
+      title: 'COF - Controle Operacional de Frota',
       debugShowCheckedModeBanner: false,
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
@@ -96,6 +96,32 @@ class _AppWidgetState extends State<AppWidget> {
         Locale('pt'),
       ],
       theme: ThemeData(
+          colorScheme: const ColorScheme.light(primary: Colors.green),
+          dividerTheme: DividerThemeData(
+            color: Colors.grey.shade300,
+          ),
+          dialogTheme: DialogTheme(
+              shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+          )),
+          cardTheme: CardTheme(
+              surfaceTintColor: Colors.white,
+              color: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              )),
+          datePickerTheme: DatePickerThemeData(
+              shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+          )),
+          elevatedButtonTheme: ElevatedButtonThemeData(
+              style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.green,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(5.0),
+            ),
+          )),
+          primaryColor: Colors.green,
           primarySwatch: Colors.green,
           scaffoldBackgroundColor: const Color.fromRGBO(251, 251, 251, 1)),
       home: const LoginPage(),

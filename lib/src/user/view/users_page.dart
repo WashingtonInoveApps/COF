@@ -39,6 +39,7 @@ class _UsersPageState extends State<UsersPage> {
         children: [
           const AppBarCustom(
             menu: false,
+            titlePage: 'USUÁRIOS CADASTRADOS',
           ),
           Expanded(
             child: Stack(
