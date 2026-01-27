@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.0+40
+version: 1.0.0+41
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
@@ -29,40 +29,45 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations: # Add this line
+    sdk: flutter
 
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.2
+  cupertino_icons:
   dio:
-  image_picker: ^0.8.4+9
-  material_design_icons_flutter: ^7.0.7296
-  google_fonts: ^5.1.0
-  syncfusion_flutter_sliders: ^20.4.38
+  image_picker:
+  material_design_icons_flutter:
+  google_fonts:
+  syncfusion_flutter_sliders:
   # quds_popup_menu: ^0.0.1+1
-  get_it: ^7.2.0
-  validators: ^3.0.0
-  cpf_cnpj_validator: ^2.0.0
+  get_it:
+  validators:
+  cpf_cnpj_validator:
   mask_text_input_formatter:
-  firebase_storage: ^11.0.9
-  firebase_core: ^2.15.1
-  firebase_auth: ^4.9.0
-  cloud_firestore: ^4.3.0
-  month_picker_dialog: ^2.0.2
-  shared_preferences: ^2.0.13
+  firebase_storage:
+  firebase_core:
+  firebase_auth:
+  cloud_firestore:
+  month_picker_dialog:
+  shared_preferences:
   flutter_launcher_icons:
-  cherry_toast: ^1.0.3
+  cherry_toast:
   mobx: 
   flutter_mobx:
-  cached_network_image: ^3.2.0
+  cached_network_image:
   # package_info_plus: ^4.2.0
-  flutter_custom_clippers: ^2.1.0
-  pluto_menu_bar: ^3.0.0
-  url_strategy: ^0.2.0
-  url_launcher: ^6.1.7 
-  universal_html: ^2.0.8
-  path_provider: ^2.0.11
-  open_app_file: ^4.0.1
+  flutter_custom_clippers:
+  pluto_menu_bar:
+  url_strategy:
+  url_launcher: 
+  universal_html:
+  path_provider:
+  open_app_file: ^4.0.4
+  mime: ^2.0.0
+  image_cropper: ^11.0.0
+  image: ^4.7.2
 
 dev_dependencies:
   mobx_codegen:
@@ -93,6 +98,8 @@ flutter:
     - assets/car.jpg
     - assets/cof.png
     - assets/bsu.png
+    - assets/cbmcecabecalho.png
+    - assets/cbmcecabecalho2.png
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

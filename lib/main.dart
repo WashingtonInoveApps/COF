@@ -1,14 +1,12 @@
 import 'dart:async';
 
 import 'package:bsu_control/app_controller.dart';
-import 'package:bsu_control/src/app_interface.dart';
-import 'package:bsu_control/src/firebase_repository.dart';
+import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/src/pages/login_page.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-// ignore: depend_on_referenced_packages
 import 'package:flutter_localizations/flutter_localizations.dart';
+// ignore: depend_on_referenced_packages
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:url_strategy/url_strategy.dart';
@@ -16,23 +14,10 @@ import 'package:url_strategy/url_strategy.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  if (kIsWeb) {
-    await Firebase.initializeApp(
-      options: const FirebaseOptions(
-          apiKey: "AIzaSyDct_YQLCO4CME1hoesCp8wQojR-kDk-cE",
-          appId: "1:126364231099:web:9b081f4c1e497e6d1f509e",
-          messagingSenderId: "126364231099",
-          projectId: "cof-bsu",
-          storageBucket: "cof-bsu.appspot.com"),
-    );
-  } else {
-    await Firebase.initializeApp();
-  }
+  await Firebase.initializeApp();
 
-  final repository = FireRepository();
-  GetIt.I.registerSingleton<IAppRepository>(repository);
-  GetIt.I
-      .registerSingleton<AppController>(AppController(repository: repository));
+  GetIt.I.registerSingleton<AppController>(
+      AppController(appID: 'VBJM7eAETNS2pYWpfKLY', endpoint: '', test: true));
 
   setPathUrlStrategy();
   runApp(const AppWidget());
@@ -90,40 +75,56 @@ class _AppWidgetState extends State<AppWidget> {
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate
       ],
       supportedLocales: const [
         Locale('pt'),
       ],
       theme: ThemeData(
-          colorScheme: const ColorScheme.light(primary: Colors.green),
-          dividerTheme: DividerThemeData(
-            color: Colors.grey.shade300,
+          // scaffoldBackgroundColor: Core.primary,
+          primaryColor: Colors.green.shade800,
+          dialogTheme: DialogThemeData(
+            backgroundColor: Colors.white,
+            surfaceTintColor: Colors.transparent,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
           ),
-          dialogTheme: DialogTheme(
-              shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
-          )),
-          cardTheme: CardTheme(
-              surfaceTintColor: Colors.white,
+          popupMenuTheme: const PopupMenuThemeData(
+              shadowColor: Colors.white,
               color: Colors.white,
+              surfaceTintColor: Colors.transparent),
+          floatingActionButtonTheme: FloatingActionButtonThemeData(
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
-              )),
-          datePickerTheme: DatePickerThemeData(
-              shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
-          )),
+                  borderRadius: BorderRadius.circular(40))),
           elevatedButtonTheme: ElevatedButtonThemeData(
-              style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.green,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(5.0),
-            ),
-          )),
-          primaryColor: Colors.green,
-          primarySwatch: Colors.green,
-          scaffoldBackgroundColor: const Color.fromRGBO(251, 251, 251, 1)),
+            style: ElevatedButton.styleFrom(
+                backgroundColor: Core.primary,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5))),
+          ),
+          bottomSheetTheme: BottomSheetThemeData(
+              surfaceTintColor: Colors.transparent,
+              backgroundColor: Colors.white,
+              elevation: 10,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10))),
+          checkboxTheme: CheckboxThemeData(
+            fillColor: WidgetStateProperty.resolveWith<Color>(
+                (Set<WidgetState> states) {
+              if (states.contains(WidgetState.selected)) {
+                return Colors.black;
+              }
+              return Colors.white;
+            }),
+          ),
+          cardTheme: CardThemeData(
+            elevation: 4,
+            color: Colors.white,
+            surfaceTintColor: Colors.transparent,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+          ),
+          primarySwatch: Colors.grey,
+          cardColor: Colors.white),
       home: const LoginPage(),
     );
   }

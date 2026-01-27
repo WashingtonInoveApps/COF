@@ -29,7 +29,7 @@ class _UsersPageState extends State<UsersPage> {
   void initState() {
     super.initState();
     controller = UserController(app: app, repository: UserRepository());
-    controller.setGraduacao(graduacao.first);
+    controller.setGraduation(Core.graduations.first);
   }
 
   @override
@@ -38,7 +38,6 @@ class _UsersPageState extends State<UsersPage> {
       body: Column(
         children: [
           const AppBarCustom(
-            menu: false,
             titlePage: 'USUÁRIOS CADASTRADOS',
           ),
           Expanded(
@@ -54,7 +53,7 @@ class _UsersPageState extends State<UsersPage> {
                           Expanded(
                             child: Text(
                               "USUÁRIOS",
-                              style: title.copyWith(color: Colors.grey),
+                              style: Core.title.copyWith(color: Colors.grey),
                             ),
                           ),
                           ElevatedButton(
@@ -68,7 +67,7 @@ class _UsersPageState extends State<UsersPage> {
                                     horizontal: 15, vertical: 2),
                                 child: Text(
                                   "NOVO",
-                                  style: subtitle.copyWith(
+                                  style: Core.subtitle.copyWith(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold),
                                 ),

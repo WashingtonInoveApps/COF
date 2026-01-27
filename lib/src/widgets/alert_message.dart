@@ -1,4 +1,4 @@
-import 'package:bsu_control/core/constants.dart' as constant;
+import 'package:bsu_control/core/constants.dart';
 import 'package:flutter/material.dart';
 
 class AlertMessage extends StatelessWidget {
@@ -33,10 +33,10 @@ class AlertMessage extends StatelessWidget {
       ),
       title: Text(
         title.toUpperCase(),
-        style: constant.title.copyWith(color: Theme.of(context).primaryColor),
+        style: Core.title,
         textAlign: TextAlign.center,
       ),
-      titleTextStyle: constant.title,
+      titleTextStyle: Core.title,
       titlePadding: const EdgeInsets.only(top: 20.0, left: 10.0, bottom: 10.0),
       content: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -49,13 +49,13 @@ class AlertMessage extends StatelessWidget {
             flex: 1,
             child: Text(
               message,
-              style: constant.title.copyWith(fontSize: 16),
+              style: Core.title,
               textAlign: TextAlign.center,
             ),
           ),
         ],
       ),
-      contentTextStyle: constant.title,
+      contentTextStyle: Core.title,
       contentPadding: const EdgeInsets.symmetric(horizontal: 10.0),
       actions: <Widget>[
         cancel
@@ -63,7 +63,7 @@ class AlertMessage extends StatelessWidget {
                 onPressed: onPressedCancel,
                 child: Text(
                   titleCancel ?? "Cancelar",
-                  style: constant.title.copyWith(color: Colors.grey),
+                  style: Core.title.copyWith(color: Colors.grey),
                 ),
               )
             : Container(),
@@ -72,7 +72,7 @@ class AlertMessage extends StatelessWidget {
                 onPressed: onPressedOK,
                 child: Text(
                   titleOK ?? "OK",
-                  style: constant.title
+                  style: Core.title
                       .copyWith(color: Theme.of(context).primaryColor),
                 ),
               )

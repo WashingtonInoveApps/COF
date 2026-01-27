@@ -18,10 +18,14 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
     return super.checklist;
   }
 
+  bool _checklistIsInitialized = false;
+
   @override
   set checklist(CheckListModel value) {
-    _$checklistAtom.reportWrite(value, super.checklist, () {
+    _$checklistAtom.reportWrite(
+        value, _checklistIsInitialized ? super.checklist : null, () {
       super.checklist = value;
+      _checklistIsInitialized = true;
     });
   }
 

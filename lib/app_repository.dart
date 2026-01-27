@@ -1,26 +1,28 @@
+import 'package:bsu_control/app_interface.dart';
+import 'package:bsu_control/core/api_client.dart';
 import 'package:bsu_control/model/car_model.dart';
 import 'package:bsu_control/model/check_list_model.dart';
 import 'package:bsu_control/model/supply_model.dart';
 import 'package:bsu_control/model/user_model.dart';
-import 'package:bsu_control/src/app_interface.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class FireRepository implements IAppRepository {
-  final _instance = FirebaseFirestore.instance;
+class AppRepository extends APIClient implements IAppRepository {
+  AppRepository(
+      {required String endpoint, required String appID, required bool test})
+      : super(endpoint: endpoint, appID: appID, test: test);
 
   @override
   Future<bool> saveSupplies(
       {required SupplyModel supply, required CheckListModel checklist}) async {
     try {
-      final docChecklist = _instance.collection("checklist").doc(checklist.id);
-      final docSupplies = _instance.collection("supplies").doc(supply.id);
+      final docChecklist = colChecklist.doc(checklist.id);
+      final docSupplies = colSupplies.doc(supply.id);
 
       supply.checklistId = checklist.id;
       supply.id = docSupplies.id;
       supply.carId = checklist.checkCar.car.id;
 
-      await _instance.runTransaction((trans) async {
+      await firebase!.runTransaction((trans) async {
         trans.set(docSupplies, supply.toMap());
 
         var supplies = List<SupplyModel>.from(checklist.supply);
@@ -39,12 +41,12 @@ class FireRepository implements IAppRepository {
   @override
   Stream<List<CheckListModel>> listenChecklist(
       {required String referenceDate}) {
-    return _instance
-        .collection("checklist")
+    return colChecklist
         .where("referenceDate", isEqualTo: referenceDate)
         .snapshots()
         .map((e) => e.docs.map((doc) {
-              var checkList = CheckListModel.fromMap(doc.data());
+              var checkList =
+                  CheckListModel.fromMap(doc.data() as Map<String, dynamic>);
               checkList.id = doc.id;
               return checkList;
             }).toList());
@@ -52,46 +54,49 @@ class FireRepository implements IAppRepository {
 
   @override
   Stream<List<CarModel>> listenCar() {
-    return _instance
-        .collection("cars")
-        .snapshots()
-        .map((e) => e.docs.map((doc) {
-              var car = CarModel.fromMap(doc.data());
-              car.id = doc.id;
-              return car;
-            }).toList());
+    return colCars.snapshots().map((e) => e.docs.map((doc) {
+          var car = CarModel.fromMap(doc.data() as Map<String, dynamic>);
+          car.id = doc.id;
+          return car;
+        }).toList());
   }
 
   @override
   Stream<List<UserModel>> listenUsers() {
-    return _instance
-        .collection("users")
-        .snapshots()
-        .map((e) => e.docs.map((doc) {
-              var user = UserModel.fromMap(doc.data());
-              user.id = doc.id;
-              return user;
-            }).toList());
+    return colUsers.snapshots().map((e) => e.docs.map((doc) {
+          var user = UserModel.fromMap(doc.data() as Map<String, dynamic>);
+          user.id = doc.id;
+          return user;
+        }).toList());
   }
 
   @override
   Future<UserModel?> login(
       {required String email, required String senha}) async {
     try {
-      var infor = await FirebaseAuth.instance
+      var response = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: senha);
 
-      if (infor.user != null) {
-        String id = infor.user!.uid;
-        final result =
-            await FirebaseFirestore.instance.collection("users").doc(id).get();
-        UserModel user = UserModel.fromMap(result.data()!);
+      if (response.user != null) {
+        String id = response.user!.uid;
+        final result = await colUsers.doc(id).get();
+
+        if (!result.exists || result.data() == null) {
+          throw Exception("Usuário não encontrado.");
+        }
+
+        UserModel user =
+            UserModel.fromMap(result.data() as Map<String, dynamic>);
         return user;
       }
 
       return null;
+    } on FirebaseAuthException catch (e) {
+      throw Exception("Erro Auth: ${e.code}");
+    } on FirebaseException catch (e) {
+      throw Exception("Erro Firestore: ${e.message}");
     } catch (e) {
-      return null;
+      throw Exception("Erro inesperado: $e");
     }
   }
 
@@ -110,10 +115,10 @@ class FireRepository implements IAppRepository {
   Future<bool> deleteChecklist(
       {required CheckListModel checklist, required CarModel car}) async {
     try {
-      var docCheckList = _instance.collection("checklist").doc(checklist.id);
-      var docCar = _instance.collection("cars").doc(car.id);
+      var docCheckList = colChecklist.doc(checklist.id);
+      var docCar = colCars.doc(car.id);
 
-      await _instance.runTransaction((trans) async {
+      await firebase!.runTransaction((trans) async {
         trans.delete(docCheckList);
         trans.update(docCar, car.toMap());
       });
@@ -128,10 +133,10 @@ class FireRepository implements IAppRepository {
   Future<bool> deleteSupply(
       {required SupplyModel supply, required CheckListModel checklist}) async {
     try {
-      final docChecklist = _instance.collection("checklist").doc(checklist.id);
-      final docSupplies = _instance.collection("supplies").doc(supply.id);
+      final docChecklist = colChecklist.doc(checklist.id);
+      final docSupplies = colSupplies.doc(supply.id);
 
-      await _instance.runTransaction((trans) async {
+      await firebase!.runTransaction((trans) async {
         trans.delete(docSupplies);
 
         var supplies = List<SupplyModel>.from(checklist.supply);

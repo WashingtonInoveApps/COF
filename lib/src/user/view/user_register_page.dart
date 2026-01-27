@@ -32,19 +32,14 @@ class _UserPageRegisterState extends State<UserPageRegister> {
     super.initState();
     controller = UserController(app: app, repository: UserRepository());
 
-    controller.setGraduacao((widget.user?.graduacao.isNotEmpty ?? false)
-        ? widget.user?.graduacao
-        : graduacao.first);
+    controller.setGraduation((widget.user?.graduation.isNotEmpty ?? false)
+        ? widget.user?.graduation
+        : Core.graduations.first);
 
     if (widget.user != null) user = UserModel.fromMap(widget.user!.toMap());
 
-    controller.setIsSamu(user.samu);
-    controller.setOBM((widget.user == null) ? obms.first : user.obm);
+    controller.setOBM((widget.user == null) ? Core.obms.first : user.obm);
     controller.setAdmin(user.admin);
-    controller.setAdminFleet(user.adminFleet);
-    controller.setAdminMaterial(user.adminMaterial);
-    controller.setFleet(user.fleet);
-    controller.setMaterial(user.material);
   }
 
   @override
@@ -60,7 +55,6 @@ class _UserPageRegisterState extends State<UserPageRegister> {
       body: Column(
         children: [
           const AppBarCustom(
-            menu: false,
             titlePage: 'REGISTRO DE USUÁRIO',
           ),
           Expanded(
@@ -79,7 +73,7 @@ class _UserPageRegisterState extends State<UserPageRegister> {
                           ),
                           Text(
                             "INFORMAÇÕES DO USUÁRIO",
-                            style: titleHint,
+                            style: Core.titleHint,
                           ),
                           const Divider(),
                           const SizedBox(
@@ -108,13 +102,13 @@ class _UserPageRegisterState extends State<UserPageRegister> {
                                             underline: Container(),
                                             isExpanded: true,
                                             items: List.generate(
-                                                obms.length,
+                                                Core.obms.length,
                                                 (index) =>
                                                     DropdownMenuItem<String>(
-                                                      value: obms[index],
+                                                      value: Core.obms[index],
                                                       child: Text(
-                                                        obms[index],
-                                                        style: title,
+                                                        Core.obms[index],
+                                                        style: Core.title,
                                                       ),
                                                     )));
                                       }),
@@ -135,18 +129,19 @@ class _UserPageRegisterState extends State<UserPageRegister> {
                                           horizontal: 10.0),
                                       child: Observer(builder: (_) {
                                         return DropdownButton<String>(
-                                            value: controller.graduacao,
-                                            onChanged: controller.setGraduacao,
+                                            value: controller.graduation,
+                                            onChanged: controller.setGraduation,
                                             underline: Container(),
                                             isExpanded: true,
                                             items: List.generate(
-                                                graduacao.length,
+                                                Core.graduations.length,
                                                 (index) =>
                                                     DropdownMenuItem<String>(
-                                                      value: graduacao[index],
+                                                      value: Core
+                                                          .graduations[index],
                                                       child: Text(
-                                                        graduacao[index],
-                                                        style: title,
+                                                        Core.graduations[index],
+                                                        style: Core.title,
                                                       ),
                                                     )));
                                       }),
@@ -168,26 +163,26 @@ class _UserPageRegisterState extends State<UserPageRegister> {
                                     height: 15.0,
                                   ),
                                   FieldText(
-                                    initValue: user.matricula,
+                                    initValue: user.registration,
                                     inputType: TextInputType.number,
                                     hint: "MATRÍCULA",
                                     validation:
                                         Validation.validatorPreenchimento,
                                     onSaved: (text) {
-                                      user.matricula = text!;
+                                      user.registration = text!;
                                     },
                                   ),
                                   const SizedBox(
                                     height: 15.0,
                                   ),
                                   FieldText(
-                                    initValue: user.contato,
+                                    initValue: user.contact,
                                     inputType: TextInputType.phone,
                                     hint: "CONTATO WHATSAP",
                                     validation: Validation.validatorPhone,
                                     mask: [controller.maskFormatter],
                                     onSaved: (text) {
-                                      user.contato = text!;
+                                      user.contact = text!;
                                     },
                                   ),
                                 ],
@@ -199,7 +194,7 @@ class _UserPageRegisterState extends State<UserPageRegister> {
                           ),
                           Text(
                             "INFORMAÇÕES DE ACESSO",
-                            style: titleHint,
+                            style: Core.titleHint,
                           ),
                           const Divider(),
                           const SizedBox(
@@ -215,7 +210,7 @@ class _UserPageRegisterState extends State<UserPageRegister> {
                                     inputType: TextInputType.emailAddress,
                                     hint: "E-MAIL",
                                     validation: Validation.validatorEmail,
-                                    upper: false,
+                                    // upper: false,
                                     onSaved: (text) {
                                       user.email = text!;
                                     },
@@ -228,22 +223,6 @@ class _UserPageRegisterState extends State<UserPageRegister> {
                             ),
                           ),
                           const Divider(),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  'Tem escala no SAMU/CE ?',
-                                  style: title,
-                                ),
-                              ),
-                              Observer(builder: (context) {
-                                return Checkbox(
-                                    value: controller.isSamu,
-                                    onChanged: controller.setIsSamu);
-                              })
-                            ],
-                          ),
-                          const Divider(),
                           Visibility(
                             visible: app.user.adminFull,
                             child: Card(
@@ -254,7 +233,7 @@ class _UserPageRegisterState extends State<UserPageRegister> {
                                   children: [
                                     Text(
                                       'PAINEL ADMINISTRATIVO ( PERMISSÕES )',
-                                      style: titleHint,
+                                      style: Core.titleHint,
                                     ),
                                     const Divider(),
                                     SizedBox(
@@ -271,57 +250,7 @@ class _UserPageRegisterState extends State<UserPageRegister> {
                                                         controller.setAdmin),
                                                 Text(
                                                   'ADMIN',
-                                                  style: title,
-                                                )
-                                              ],
-                                            ),
-                                            Row(
-                                              children: [
-                                                Checkbox(
-                                                    value:
-                                                        controller.adminFleet,
-                                                    onChanged: controller
-                                                        .setAdminFleet),
-                                                Text(
-                                                  'ADMIN FROTA',
-                                                  style: title,
-                                                )
-                                              ],
-                                            ),
-                                            Row(
-                                              children: [
-                                                Checkbox(
-                                                    value: controller
-                                                        .adminMaterial,
-                                                    onChanged: controller
-                                                        .setAdminMaterial),
-                                                Text(
-                                                  'ADMIN MATERIAL',
-                                                  style: title,
-                                                )
-                                              ],
-                                            ),
-                                            Row(
-                                              children: [
-                                                Checkbox(
-                                                    value: controller.fleet,
-                                                    onChanged:
-                                                        controller.setFleet),
-                                                Text(
-                                                  'CHECKLIST VEICULAR',
-                                                  style: title,
-                                                )
-                                              ],
-                                            ),
-                                            Row(
-                                              children: [
-                                                Checkbox(
-                                                    value: controller.material,
-                                                    onChanged:
-                                                        controller.setMaterial),
-                                                Text(
-                                                  'CHECKLIST MATERIAL',
-                                                  style: title,
+                                                  style: Core.title,
                                                 )
                                               ],
                                             ),
@@ -346,15 +275,9 @@ class _UserPageRegisterState extends State<UserPageRegister> {
                                   if (_key.currentState!.validate()) {
                                     _key.currentState!.save();
 
-                                    user.samu = controller.isSamu;
-                                    user.graduacao = controller.graduacao;
+                                    user.graduation = controller.graduation;
                                     user.obm = controller.obm;
                                     user.admin = controller.admin;
-                                    user.adminFleet = controller.adminFleet;
-                                    user.adminMaterial =
-                                        controller.adminMaterial;
-                                    user.fleet = controller.fleet;
-                                    user.material = controller.material;
 
                                     controller
                                         .create(
@@ -380,7 +303,7 @@ class _UserPageRegisterState extends State<UserPageRegister> {
                                 },
                                 child: Text(
                                   "CADASTRAR",
-                                  style: titleButton,
+                                  style: Core.titleButton,
                                 ),
                               ),
                             ),

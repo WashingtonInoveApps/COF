@@ -5,12 +5,10 @@ import 'package:bsu_control/model/car_checklist.dart';
 import 'package:bsu_control/model/car_model.dart';
 import 'package:bsu_control/model/check_list_model.dart';
 import 'package:bsu_control/model/itens_changes_model.dart';
-import 'package:bsu_control/src/checklist/repository/checklist_repository.dart';
 import 'package:bsu_control/src/checklist/view/checklist_page.dart';
 import 'package:bsu_control/src/checklist/view/widget/fluids_widget.dart';
 import 'package:bsu_control/src/widgets/alert_message.dart';
 import 'package:bsu_control/src/widgets/app_bar_widget.dart';
-import 'package:bsu_control/src/widgets/car_changes_widget.dart';
 import 'package:bsu_control/src/widgets/textfield_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -42,7 +40,7 @@ class _ChecklistRegisterPageState extends State<ChecklistRegisterPage> {
     final checkList = (widget.checkList == null)
         ? CheckListModel(
             checkCar: CarCheckList(car: car),
-            alfa: alfas.first,
+            alfa: Core.alfas.first,
             prefix: prefixs.first,
             user: app.user,
             date: DateTime.now(),
@@ -50,11 +48,11 @@ class _ChecklistRegisterPageState extends State<ChecklistRegisterPage> {
         : CheckListModel.copy(checklist: widget.checkList!);
 
     controller = CheckListController(
-        checklist: checkList,
-        cars: app.cars,
-        user: app.user,
-        app: app,
-        repository: CheckListRepository());
+      checklist: checkList,
+      cars: app.cars,
+      user: app.user,
+      app: app,
+    );
   }
 
   @override
@@ -93,12 +91,14 @@ class _ChecklistRegisterPageState extends State<ChecklistRegisterPage> {
                                       Expanded(
                                           child: Text(
                                         "CHECKLIST VEÍCULAR",
-                                        style: titleHint,
+                                        style: Core.titleHint,
                                       )),
                                       Text(
-                                        formatDate(controller.date,
-                                            outher: true, referenceDate: true),
-                                        style: titleHint,
+                                        Core.formatDate(
+                                          controller.date,
+                                          largeDay: true,
+                                        ),
+                                        style: Core.titleHint,
                                       ),
                                     ],
                                   ),
@@ -115,7 +115,7 @@ class _ChecklistRegisterPageState extends State<ChecklistRegisterPage> {
                                           children: [
                                             Text(
                                               "PREFIXO",
-                                              style: subtitle.copyWith(
+                                              style: Core.subtitle.copyWith(
                                                   fontWeight: FontWeight.bold),
                                             ),
                                             const SizedBox(
@@ -155,8 +155,8 @@ class _ChecklistRegisterPageState extends State<ChecklistRegisterPage> {
                                                                 child: Text(
                                                                   prefixs[
                                                                       index],
-                                                                  style:
-                                                                      subtitle,
+                                                                  style: Core
+                                                                      .subtitle,
                                                                   overflow:
                                                                       TextOverflow
                                                                           .ellipsis,
@@ -178,7 +178,7 @@ class _ChecklistRegisterPageState extends State<ChecklistRegisterPage> {
                                           children: [
                                             Text(
                                               "ALFA",
-                                              style: subtitle.copyWith(
+                                              style: Core.subtitle.copyWith(
                                                   fontWeight: FontWeight.bold),
                                             ),
                                             const SizedBox(
@@ -198,16 +198,18 @@ class _ChecklistRegisterPageState extends State<ChecklistRegisterPage> {
                                                       underline: Container(),
                                                       isExpanded: true,
                                                       items: List.generate(
-                                                          alfas.length,
+                                                          Core.alfas.length,
                                                           (index) =>
                                                               DropdownMenuItem<
                                                                   String>(
-                                                                value: alfas[
-                                                                    index],
+                                                                value:
+                                                                    Core.alfas[
+                                                                        index],
                                                                 child: Text(
-                                                                  alfas[index],
-                                                                  style:
-                                                                      subtitle,
+                                                                  Core.alfas[
+                                                                      index],
+                                                                  style: Core
+                                                                      .subtitle,
                                                                 ),
                                                               )));
                                                 }),
@@ -223,8 +225,8 @@ class _ChecklistRegisterPageState extends State<ChecklistRegisterPage> {
                                   ),
                                   Text(
                                     "PONTO BASE",
-                                    style: subtitle.copyWith(
-                                        fontWeight: FontWeight.bold),
+                                    style: Core.subtitle
+                                        .copyWith(fontWeight: FontWeight.bold),
                                   ),
                                   const SizedBox(
                                     height: 10.0,
@@ -240,8 +242,8 @@ class _ChecklistRegisterPageState extends State<ChecklistRegisterPage> {
                                   ),
                                   Text(
                                     "KM INICIAL",
-                                    style: subtitle.copyWith(
-                                        fontWeight: FontWeight.bold),
+                                    style: Core.subtitle
+                                        .copyWith(fontWeight: FontWeight.bold),
                                   ),
                                   const SizedBox(
                                     height: 10.0,
@@ -257,7 +259,7 @@ class _ChecklistRegisterPageState extends State<ChecklistRegisterPage> {
                                   ),
                                   Text(
                                     " NIVÉIS DOS FLUÍDOS",
-                                    style: titleHint,
+                                    style: Core.titleHint,
                                   ),
                                   const Divider(),
                                   Container(
@@ -279,7 +281,7 @@ class _ChecklistRegisterPageState extends State<ChecklistRegisterPage> {
                                   ),
                                   Text(
                                     "ITENS",
-                                    style: titleHint,
+                                    style: Core.titleHint,
                                   ),
                                   const Divider(),
                                   const SizedBox(
@@ -309,15 +311,18 @@ class _ChecklistRegisterPageState extends State<ChecklistRegisterPage> {
                                                     Text(
                                                       controller.itens[index]
                                                           .description,
-                                                      style: title.copyWith(
+                                                      style:
+                                                          Core.title.copyWith(
                                                         fontWeight:
                                                             FontWeight.bold,
                                                       ),
                                                     ),
                                                     Text(
                                                       "Marque os itens que estão em conformidade.",
-                                                      style: subtitle.copyWith(
-                                                          color: Colors.grey),
+                                                      style: Core.subtitle
+                                                          .copyWith(
+                                                              color:
+                                                                  Colors.grey),
                                                     ),
                                                   ],
                                                 ),
@@ -383,23 +388,25 @@ class _ChecklistRegisterPageState extends State<ChecklistRegisterPage> {
                                             controller.prefix != prefixs.first,
                                         child: StatefulBuilder(builder:
                                             (context, setStateChanges) {
-                                          return CarChangesWidget(
-                                            checklistId: controller.id,
-                                            initValue: controller.carChanges,
-                                            user: controller.user,
-                                            onAdd: (change) {
-                                              setStateChanges(() {
-                                                controller
-                                                    .addCarChanges(change);
-                                              });
-                                            },
-                                            onRemove: (index) {
-                                              setStateChanges(() {
-                                                controller
-                                                    .removeCarChanges(index);
-                                              });
-                                            },
-                                          );
+                                          return Container();
+                                          // return CarChangesWidget(
+                                          //   checklistId: controller.id,
+                                          //   // initValue: controller.carChanges,
+                                          //   car: controller.cars.first,
+                                          //   user: controller.user,
+                                          //   onAdd: (change) {
+                                          //     setStateChanges(() {
+                                          //       controller
+                                          //           .addCarChanges(change);
+                                          //     });
+                                          //   },
+                                          //   onRemove: (index) {
+                                          //     setStateChanges(() {
+                                          //       controller
+                                          //           .removeCarChanges(index);
+                                          //     });
+                                          //   },
+                                          // );
                                         }),
                                       );
                                     }),
@@ -409,7 +416,7 @@ class _ChecklistRegisterPageState extends State<ChecklistRegisterPage> {
                                   ),
                                   Text(
                                     "OUTRAS OBSERVAÇÕES",
-                                    style: titleHint,
+                                    style: Core.titleHint,
                                   ),
                                   const Divider(),
                                   const SizedBox(
@@ -487,7 +494,7 @@ class _ChecklistRegisterPageState extends State<ChecklistRegisterPage> {
                                           },
                                           child: Text(
                                             "SALVAR",
-                                            style: titleButton,
+                                            style: Core.titleButton,
                                           )),
                                     ),
                                   ),
@@ -544,7 +551,7 @@ Widget itemWidget(
         ),
         Text(
           item.description,
-          style: subtitle,
+          style: Core.subtitle,
         )
       ],
     );

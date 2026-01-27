@@ -1,20 +1,21 @@
 import 'dart:typed_data';
 
+import 'package:bsu_control/core/api_client.dart';
+import 'package:bsu_control/model/file_model.dart';
 import 'package:bsu_control/src/car/repository/car_interface.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 
 import '../../../model/car_mapa_model.dart';
 import '../../../model/car_model.dart';
 import '../../../model/car_status_model.dart';
 
-class CarRepository implements ICarRepository {
-  final _instance = FirebaseFirestore.instance;
+class CarRepository extends APIClient implements ICarRepository {
+  CarRepository(
+      {required String endpoint, required String appID, required bool test})
+      : super(endpoint: endpoint, appID: appID, test: test);
 
   @override
   Stream<List<CarStatusModel>> listenStatusCar({required String carId}) {
-    return _instance
-        .collection("cars")
+    return colCars
         .doc(carId)
         .collection("status")
         .snapshots()
@@ -27,55 +28,71 @@ class CarRepository implements ICarRepository {
 
   @override
   Future<bool> save(
-      {required CarModel car, required String unidade, String? id}) async {
+      {required CarModel car, required List<dynamic> images}) async {
     try {
-      var doc = _instance.collection("cars").doc(id);
+      var doc = colCars.doc(car.id);
       car.id = doc.id;
 
-      for (var change in car.changes) {
+      final prefix = car.prefix.replaceAll(" ", "");
+
+      for (final change in car.changes) {
         if (change.fileImage != null) {
-          change.image = await _saveImage(
-              image: change.fileImage!, unidade: unidade, id: car.id!);
+          final image = await saveFile(
+              pathStorage: 'imagens/changes/$prefix',
+              data: change.fileImage!,
+              filename: '${prefix}_changes.png');
+
+          if (image == null) {
+            throw Exception('Falha ao salvar imagem da alteração.');
+          }
+
+          change.image = image;
         }
       }
 
-      (id == null) ? await doc.set(car.toMap()) : await doc.update(car.toMap());
+      List<FileModel?> imagesProcess =
+          List.filled(4, FileModel(url: '', name: ''), growable: true);
+
+      for (int i = 0; i < images.length; i++) {
+        if (images[i] is Uint8List) {
+          final image = await saveFile(
+              pathStorage: 'imagens/cars/$prefix',
+              data: images[i],
+              filename: '${prefix}_${i.toString().padLeft(2, '0')}.png');
+
+          if (image == null) {
+            throw Exception('Falha ao salvar imagem da vista do carro.');
+          }
+
+          imagesProcess[i] = image;
+        } else {
+          imagesProcess[i] = images[i];
+        }
+      }
+
+      car.images = imagesProcess;
+      await doc.set(car.toMap());
 
       return true;
     } catch (e) {
-      return false;
+      rethrow;
     }
-  }
-
-  Future<String> _saveImage(
-      {required Uint8List image,
-      required String unidade,
-      required String id}) async {
-    String arq = "${DateTime.now().millisecondsSinceEpoch.toString()}.png";
-    TaskSnapshot upload = await FirebaseStorage.instance
-        .ref()
-        .child('imagens')
-        .child(unidade.replaceAll(' ', ""))
-        .child(id)
-        .child(arq)
-        .putData(image);
-
-    return await upload.ref.getDownloadURL();
   }
 
   @override
   Future<bool> updateStatusCar(
-      {required CarStatusModel status,
-      required String id,
-      required bool enable}) async {
+      {required CarModel car, CarStatusModel? status}) async {
     try {
-      final docCar = _instance.collection('cars').doc(id);
+      final docCar = colCars.doc(car.id);
       final docStatus = docCar.collection('status').doc();
 
-      await _instance.runTransaction((trans) async {
-        status.id = docStatus.id;
-        trans.update(docCar, {'enable': enable});
-        trans.set(docStatus, status.toMap());
+      await firebase!.runTransaction((trans) async {
+        if (status != null) {
+          status.id = docStatus.id;
+          trans.set(docStatus, status.toMap());
+        }
+
+        trans.update(docCar, car.toMap());
       });
       return true;
     } catch (e) {
@@ -87,7 +104,7 @@ class CarRepository implements ICarRepository {
   Future<bool> updateKMCar(
       {required String id, required Map<String, dynamic> data}) async {
     try {
-      await _instance.collection("cars").doc(id).update(data);
+      await colCars.doc(id).update(data);
 
       return true;
     } catch (e) {
@@ -98,7 +115,7 @@ class CarRepository implements ICarRepository {
   @override
   Future<bool> deleteCar({required String id}) async {
     try {
-      await _instance.collection("cars").doc(id).delete();
+      await colCars.doc(id).delete();
 
       return true;
     } catch (e) {
@@ -109,11 +126,11 @@ class CarRepository implements ICarRepository {
   @override
   Future<bool> insertMapaCar({required CarMapaModel mapa}) async {
     try {
-      final docMapa = _instance.collection("mapas").doc();
-      final docCar = _instance.collection("cars").doc(mapa.carId);
+      final docMapa = firebase!.collection("mapas").doc();
+      final docCar = colCars.doc(mapa.carId);
 
       mapa.id = docMapa.id;
-      await _instance.runTransaction((trans) async {
+      await firebase!.runTransaction((trans) async {
         trans.update(docCar, {'km': int.parse(mapa.kmFinal)});
         trans.set(docMapa, mapa.toMap());
       });
@@ -127,7 +144,7 @@ class CarRepository implements ICarRepository {
   @override
   Future<bool> deleteCarMapa({required String id}) async {
     try {
-      await _instance.collection("mapas").doc(id).delete();
+      await firebase!.collection("mapas").doc(id).delete();
 
       return true;
     } catch (e) {
@@ -137,14 +154,31 @@ class CarRepository implements ICarRepository {
 
   @override
   Stream<List<CarMapaModel>> listenMapas({required String carId}) {
-    return _instance
-        .collection("mapas")
+    return colMaps
         .where("carId", isEqualTo: carId)
         .snapshots()
         .map((e) => e.docs.map((doc) {
-              var mapa = CarMapaModel.fromMap(doc.data());
+              var mapa =
+                  CarMapaModel.fromMap(doc.data() as Map<String, dynamic>);
               mapa.id = doc.id;
               return mapa;
             }).toList());
+  }
+
+  @override
+  Future<bool> deleteStatusCar(
+      {required CarModel car, required CarStatusModel status}) async {
+    try {
+      final docCar = colCars.doc(car.id);
+      final docStatus = docCar.collection('status').doc(status.id);
+
+      await firebase!.runTransaction((trans) async {
+        trans.update(docCar, car.toMap());
+        trans.delete(docStatus);
+      });
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 }

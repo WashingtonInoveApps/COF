@@ -4,30 +4,75 @@ import 'dart:convert';
 import 'package:bsu_control/model/car_changes_model.dart';
 import 'package:bsu_control/model/car_mapa_model.dart';
 import 'package:bsu_control/model/car_status_model.dart';
+import 'package:bsu_control/model/file_model.dart';
 import 'package:bsu_control/model/itens_changes_model.dart';
+import 'package:flutter/material.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+
+enum StatusCar { operando, reserva, baixado }
+
+extension CarStateLabel on StatusCar {
+  String get label {
+    switch (this) {
+      case StatusCar.operando:
+        return "Operando";
+      case StatusCar.reserva:
+        return "Reserva";
+      case StatusCar.baixado:
+        return "Baixado";
+    }
+  }
+}
+
+extension CarStateColor on StatusCar {
+  Color get color {
+    switch (this) {
+      case StatusCar.operando:
+        return Colors.green.shade800;
+      case StatusCar.reserva:
+        return Colors.orange;
+      case StatusCar.baixado:
+        return Colors.red;
+    }
+  }
+}
+
+extension CarStateIcon on StatusCar {
+  IconData get icon {
+    switch (this) {
+      case StatusCar.operando:
+        return Icons.check_circle;
+      case StatusCar.reserva:
+        return Icons.info_rounded;
+      case StatusCar.baixado:
+        return MdiIcons.closeCircle;
+    }
+  }
+}
 
 class CarModel {
   String? id;
   String prefix;
   String model;
   String plate;
-  int km;
   String modelPneu;
   String ticket;
-  String prime;
+  String obm;
+  String typeCar;
+  String obs;
+  StatusCar state;
 
   List<ItensChangesModel> itens;
   List<CarChangeModel> changes;
   List<CarStatusModel> status;
   List<CarMapaModel>? mapas;
+  List<FileModel?> images;
 
-  String typeCar;
-  bool adm;
-  bool enable;
-
-  String obs;
+  int km;
   int oil;
   int arref;
+  bool adm;
+  bool enable;
 
   CarModel(
       {this.prefix = "",
@@ -36,10 +81,12 @@ class CarModel {
       this.km = 0,
       this.modelPneu = "",
       this.ticket = "",
-      this.prime = "",
+      this.obm = "",
+      this.state = StatusCar.operando,
       required this.itens,
       required this.changes,
       required this.status,
+      required this.images,
       this.mapas,
       this.typeCar = "",
       this.adm = false,
@@ -54,6 +101,7 @@ class CarModel {
         "prefix": prefix,
         "itens": List<dynamic>.from(itens.map((e) => e.toMap()).toList()),
         "changes": List<dynamic>.from(changes.map((e) => e.toMap()).toList()),
+        "images": [],
       };
 
   Map<String, dynamic> toMap() {
@@ -65,10 +113,12 @@ class CarModel {
       'km': km,
       'modelPneu': modelPneu,
       'ticket': ticket,
-      'prime': prime,
+      'obm': obm,
+      'state': state.name,
       'itens': itens.map((x) => x.toMap()).toList(),
       'changes': changes.map((x) => x.toMap()).toList(),
       'mapas': mapas?.map((x) => x.toMap()).toList(),
+      "images": images.map((x) => x?.toMap()).toList(),
       'typeCar': typeCar,
       'adm': adm,
       'enable': enable,
@@ -86,6 +136,7 @@ class CarModel {
           map['itens']?.map((x) => ItensChangesModel.fromMap(x))),
       changes: List<CarChangeModel>.from(
           map['changes']?.map((x) => CarChangeModel.fromMap(x))),
+      images: [],
       status: [],
     );
   }
@@ -99,13 +150,16 @@ class CarModel {
       km: map['km']?.toInt() ?? 0,
       modelPneu: map['modelPneu'] ?? '',
       ticket: map['ticket'] ?? '',
-      prime: map['prime'] ?? '',
+      obm: map['obm'] ?? '',
+      state: statusFromString(map['state'] as String),
       itens: List<ItensChangesModel>.from(
           map['itens']?.map((x) => ItensChangesModel.fromMap(x))),
       changes: List<CarChangeModel>.from(
           map['changes']?.map((x) => CarChangeModel.fromMap(x))),
       mapas: List<CarMapaModel>.from(
           map['mapas']?.map((x) => CarMapaModel.fromMap(x))),
+      images: List<FileModel?>.from(
+          map['images'].map((x) => (x == null) ? null : FileModel.fromMap(x))),
       status: [],
       typeCar: map['typeCar'] ?? '',
       adm: map['adm'] ?? false,
@@ -131,11 +185,13 @@ class CarModel {
     int? km,
     String? modelPneu,
     String? ticket,
-    String? prime,
+    String? obm,
     List<ItensChangesModel>? itens,
     List<CarChangeModel>? changes,
     List<CarStatusModel>? status,
     List<CarMapaModel>? mapas,
+    List<FileModel>? images,
+    StatusCar? state,
     String? typeCar,
     bool? adm,
     bool? enable,
@@ -151,17 +207,26 @@ class CarModel {
       km: km ?? this.km,
       modelPneu: modelPneu ?? this.modelPneu,
       ticket: ticket ?? this.ticket,
-      prime: prime ?? this.prime,
+      obm: obm ?? this.obm,
+      images: images ?? this.images,
       itens: itens ?? this.itens,
       changes: changes ?? this.changes,
       status: status ?? this.status,
       mapas: mapas ?? this.mapas,
       typeCar: typeCar ?? this.typeCar,
       adm: adm ?? this.adm,
+      state: state ?? this.state,
       enable: enable ?? this.enable,
       obs: obs ?? this.obs,
       oil: oil ?? this.oil,
       arref: arref ?? this.arref,
     );
   }
+}
+
+StatusCar statusFromString(String value) {
+  return StatusCar.values.firstWhere(
+    (e) => e.name == value,
+    orElse: () => StatusCar.operando,
+  );
 }

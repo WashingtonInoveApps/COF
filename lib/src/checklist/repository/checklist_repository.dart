@@ -1,13 +1,15 @@
 import 'dart:typed_data';
 
+import 'package:bsu_control/core/api_client.dart';
 import 'package:bsu_control/src/checklist/repository/checklist_interface.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 import '../../../model/check_list_model.dart';
 
-class CheckListRepository implements ICheckListRepository {
-  final instance = FirebaseFirestore.instance;
+class CheckListRepository extends APIClient implements ICheckListRepository {
+  CheckListRepository(
+      {required String endpoint, required String appID, required bool test})
+      : super(endpoint: endpoint, appID: appID, test: test);
 
   @override
   Future<bool> save(
@@ -15,18 +17,18 @@ class CheckListRepository implements ICheckListRepository {
       required String unidade,
       String? id}) async {
     try {
-      var doc = instance.collection("checklist").doc(id);
-      var docCar = instance.collection("cars").doc(checkList.checkCar.car.id);
+      var doc = colChecklist.doc(id);
+      var docCar = colCars.doc(checkList.checkCar.car.id);
 
       checkList.id = doc.id;
-      await instance.runTransaction((trans) async {
+      await firebase!.runTransaction((trans) async {
         for (var change in checkList.checkCar.car.changes) {
           if (change.fileImage != null) {
-            change.image = await saveImage(
-                image: change.fileImage!,
-                unidade: unidade,
-                id: checkList.checkCar.car.id!);
-            change.checklistId = checkList.id;
+            // change.image = await saveImage(
+            //     image: change.fileImage!,
+            //     unidade: unidade,
+            //     id: checkList.checkCar.car.id!);
+            // change.checklistId = checkList.id;
           }
         }
 
@@ -50,10 +52,10 @@ class CheckListRepository implements ICheckListRepository {
   Future<bool> finish(
       {required String kmFinal, required CheckListModel checkList}) async {
     try {
-      var doc = instance.collection("checklist").doc(checkList.id);
-      var docCar = instance.collection("cars").doc(checkList.checkCar.car.id);
+      var doc = colChecklist.doc(checkList.id);
+      var docCar = colCars.doc(checkList.checkCar.car.id);
 
-      await instance.runTransaction((trans) async {
+      await firebase!.runTransaction((trans) async {
         trans.update(docCar, {"km": int.parse(kmFinal)});
         trans.update(doc, {
           "enable": false,

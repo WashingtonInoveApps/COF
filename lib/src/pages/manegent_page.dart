@@ -23,7 +23,6 @@ class _ManagementPageState extends State<ManagementPage> {
       body: Column(
         children: [
           const AppBarCustom(
-            menu: false,
             titlePage: 'PAINEL ADMINISTRATIVO',
           ),
           Expanded(
@@ -32,7 +31,7 @@ class _ManagementPageState extends State<ManagementPage> {
               child: Column(
                 children: [
                   ListTile(
-                    onTap: (app.user.adminFleet || app.user.adminFull)
+                    onTap: (app.user.admin || app.user.adminFull)
                         ? () {
                             Navigator.of(context).push(MaterialPageRoute(
                                 builder: (context) => const CarsPage()));
@@ -45,11 +44,11 @@ class _ManagementPageState extends State<ManagementPage> {
                     ),
                     title: Text(
                       'VIATURAS',
-                      style: title,
+                      style: Core.title,
                     ),
                     subtitle: Text(
                       'GERENCIAMENTO E INFORMAÇÕES',
-                      style: subtitleHint,
+                      style: Core.subtitleHint,
                     ),
                     trailing: const Icon(
                       Icons.arrow_forward_ios_outlined,
@@ -72,11 +71,11 @@ class _ManagementPageState extends State<ManagementPage> {
                     ),
                     title: Text(
                       'USUÁRIOS',
-                      style: title,
+                      style: Core.title,
                     ),
                     subtitle: Text(
                       'GERENCIAMENTO DE USUÁRIOS',
-                      style: subtitleHint,
+                      style: Core.subtitleHint,
                     ),
                     trailing: const Icon(
                       Icons.arrow_forward_ios_outlined,

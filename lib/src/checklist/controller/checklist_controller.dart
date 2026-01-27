@@ -6,6 +6,7 @@ import 'package:bsu_control/model/check_list_model.dart';
 import 'package:bsu_control/model/itens_changes_model.dart';
 import 'package:bsu_control/model/user_model.dart';
 import 'package:bsu_control/src/checklist/repository/checklist_interface.dart';
+import 'package:bsu_control/src/checklist/repository/checklist_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
 
@@ -17,8 +18,9 @@ class CheckListController = _CheckListControllerBase with _$CheckListController;
 abstract class _CheckListControllerBase with Store {
   final List<CarModel> cars;
   final UserModel user;
-  final ICheckListRepository repository;
   final AppController app;
+
+  late ICheckListRepository repository;
 
   @observable
   late CheckListModel checklist;
@@ -30,8 +32,9 @@ abstract class _CheckListControllerBase with Store {
       {required this.checklist,
       required this.cars,
       required this.user,
-      required this.app,
-      required this.repository}) {
+      required this.app}) {
+    repository = CheckListRepository(
+        endpoint: app.endpoint, appID: app.appID, test: app.test);
     initController();
   }
 
@@ -97,7 +100,7 @@ abstract class _CheckListControllerBase with Store {
 
   @action
   setAlfa(String? value) {
-    final result = value ?? alfas.first;
+    final result = value ?? Core.alfas.first;
     checklist.alfa = result;
     alfa = result;
   }

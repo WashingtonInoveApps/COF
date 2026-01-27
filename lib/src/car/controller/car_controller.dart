@@ -1,10 +1,14 @@
 import 'package:bsu_control/app_controller.dart';
+import 'package:bsu_control/core/constants.dart';
+import 'package:bsu_control/model/car_changes_model.dart';
+import 'package:bsu_control/model/itens_changes_model.dart';
 import 'package:bsu_control/src/car/repository/car_interface.dart';
 import 'package:mobx/mobx.dart';
 
 import '../../../model/car_mapa_model.dart';
 import '../../../model/car_model.dart';
 import '../../../model/car_status_model.dart';
+import '../repository/car_repository.dart';
 
 part 'car_controller.g.dart';
 
@@ -12,16 +16,32 @@ part 'car_controller.g.dart';
 class CarController = _CarControllerBase with _$CarController;
 
 abstract class _CarControllerBase with Store {
-  final ICarRepository repository;
   final AppController app;
+  late ICarRepository repository;
 
   @observable
   bool loading = false;
 
+  @observable
+  String typeCar = '';
+
+  @observable
+  ObservableList<ItensChangesModel> sectionsItens =
+      <ItensChangesModel>[].asObservable();
+
+  @observable
+  ObservableList<CarChangeModel> carChanges = <CarChangeModel>[].asObservable();
+
   @computed
   bool get enable => app.user.admin;
 
-  _CarControllerBase({required this.app, required this.repository});
+  @computed
+  bool get adm => typeCar == Core.carsType.first;
+
+  _CarControllerBase({required this.app}) {
+    repository =
+        CarRepository(endpoint: app.endpoint, appID: app.appID, test: app.test);
+  }
 
   Stream<List<CarStatusModel>> listenStatus({required String carId}) {
     return repository.listenStatusCar(carId: carId);
@@ -32,13 +52,89 @@ abstract class _CarControllerBase with Store {
   }
 
   @action
-  Future<bool> saveCar({required CarModel car, String? id}) async {
-    loading = true;
-    final result =
-        await repository.save(car: car, unidade: app.unidade, id: id);
-    loading = false;
+  setTypeCar(String? value) {
+    typeCar = value ?? typeCar;
+  }
 
-    return result;
+  @action
+  onChangesCar(List<CarChangeModel> value) {
+    carChanges
+      ..clear()
+      ..addAll(value);
+  }
+
+  @action
+  removeChangesCar(int index) {
+    carChanges.removeAt(index);
+  }
+
+  @action
+  addSections(ItensChangesModel value) {
+    sectionsItens.add(value);
+  }
+
+  @action
+  editSections(int index, ItensChangesModel value) {
+    final section =
+        sectionsItens[index].copyWith(description: value.description);
+
+    sectionsItens.removeAt(index);
+    sectionsItens.insert(index, section);
+  }
+
+  @action
+  removeSections(int index) {
+    sectionsItens.removeAt(index);
+  }
+
+  @action
+  cleanSections() {
+    sectionsItens.clear();
+  }
+
+  @action
+  expansionSections(int index) {
+    final section =
+        sectionsItens[index].copyWith(value: !sectionsItens[index].value);
+    sectionsItens.removeAt(index);
+    sectionsItens.insert(index, section);
+  }
+
+  @action
+  addItensSection(int index, ItemModel value) {
+    final section = ItensChangesModel.fromMap(sectionsItens[index].toMap());
+
+    final itens = List<ItemModel>.from(section.itens);
+    itens.add(value);
+
+    sectionsItens.removeAt(index);
+    sectionsItens.insert(index, section.copyWith(itens: itens));
+  }
+
+  @action
+  removeItensSection(int index, int itemIndex) {
+    final section = ItensChangesModel.fromMap(sectionsItens[index].toMap());
+
+    final itens = List<ItemModel>.from(section.itens);
+    itens.removeAt(itemIndex);
+
+    sectionsItens.removeAt(index);
+    sectionsItens.insert(index, section.copyWith(itens: itens));
+  }
+
+  @action
+  Future<bool> saveCar(
+      {required CarModel car, required List<dynamic> images}) async {
+    try {
+      loading = true;
+      final result = await repository.save(car: car, images: images);
+      loading = false;
+
+      return result;
+    } catch (e) {
+      loading = false;
+      rethrow;
+    }
   }
 
   @action
@@ -61,12 +157,19 @@ abstract class _CarControllerBase with Store {
 
   @action
   Future<bool> updateStatusCar(
-      {required CarStatusModel status,
-      required String id,
-      required bool enable}) async {
+      {required CarModel car, CarStatusModel? status}) async {
     loading = true;
-    final result = await repository.updateStatusCar(
-        status: status, id: id, enable: enable);
+    final result = await repository.updateStatusCar(car: car, status: status);
+    loading = false;
+
+    return result;
+  }
+
+  @action
+  Future<bool> deleteStatusCar(
+      {required CarModel car, required CarStatusModel status}) async {
+    loading = true;
+    final result = await repository.deleteStatusCar(car: car, status: status);
     loading = false;
 
     return result;

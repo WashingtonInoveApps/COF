@@ -4,16 +4,15 @@ import 'package:bsu_control/core/validation.dart';
 import 'package:bsu_control/model/car_model.dart';
 import 'package:bsu_control/model/itens_changes_model.dart';
 import 'package:bsu_control/src/widgets/alert_message.dart';
-import 'package:bsu_control/src/widgets/app_bar_widget.dart';
 import 'package:bsu_control/src/widgets/car_changes_widget.dart';
 import 'package:bsu_control/src/widgets/textfield_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../controller/car_controller.dart';
-import '../repository/car_repository.dart';
+import 'widgets/itens_section_widget.dart';
+import 'widgets/section_widget.dart';
 
 class CarRegisterPage extends StatefulWidget {
   final CarModel? car;
@@ -31,27 +30,35 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
   final _textController = TextEditingController();
   final app = GetIt.I.get<AppController>();
 
-  List<ItensChangesModel> checkListSection = [
-    ItensChangesModel(
-        description: "SISTEMA ÉLETRICO", itens: List.from(listItensEletric)),
-    ItensChangesModel(
-        description: "EQUIPAMENTO", itens: List.from(listItensEquip)),
-    ItensChangesModel(description: "ACESSÓRIOS", itens: [])
-  ];
+  List<dynamic> images = [];
 
   @override
   void initState() {
     super.initState();
-    controller = CarController(app: app, repository: CarRepository());
+    controller = CarController(app: app);
+    controller.cleanSections();
 
-    car = (widget.car == null)
-        ? CarModel(
-            itens: checkListSection,
-            changes: [],
-            status: [],
-            mapas: [],
-            typeCar: carsType.first)
-        : CarModel.copy(widget.car!);
+    if (widget.car != null) {
+      controller.setTypeCar(widget.car?.typeCar);
+      controller.cleanSections();
+
+      car = CarModel.copy(widget.car!);
+      for (final itens in car.itens) {
+        controller.addSections(itens.copyWith(value: false));
+      }
+
+      controller.onChangesCar(widget.car?.changes ?? []);
+    } else {
+      car = CarModel(
+          images: [],
+          itens: [],
+          changes: [],
+          status: [],
+          mapas: [],
+          typeCar: Core.carsType.first);
+
+      controller.setTypeCar(Core.carsType.first);
+    }
   }
 
   @override
@@ -62,38 +69,65 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Scaffold(
-          body: Column(
-            children: [
-              const AppBarCustom(titlePage: 'REGISTRO DE VEÍCULO'),
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Form(
+    return SafeArea(
+      top: true,
+      child: Stack(
+        children: [
+          Scaffold(
+            body: SingleChildScrollView(
+              padding: const EdgeInsets.all(15.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: InkWell(
+                      onTap: () => Navigator.of(context).pop(),
+                      child: Image.asset(
+                        'assets/cbmcecabecalho2.png',
+                        fit: BoxFit.fitHeight,
+                        height: 70,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Text(
+                    'Registro de veículo',
+                    style: Core.title.copyWith(fontSize: 18),
+                  ),
+                  const Divider(),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Form(
                     key: _key,
                     child: LayoutBuilder(
-                      builder: (context, constrains) {
-                        double width = constrains.maxWidth > 500
-                            ? 500.0
-                            : constrains.maxWidth;
+                      builder: (context, constrained) {
+                        double width = constrained.maxWidth > 500
+                            ? constrained.maxWidth * 0.48
+                            : constrained.maxWidth;
 
-                        return Center(
+                        return SizedBox(
+                          width: double.infinity,
                           child: Wrap(
-                            alignment: WrapAlignment.center,
+                            alignment: WrapAlignment.spaceBetween,
                             children: [
-                              Container(
-                                padding: const EdgeInsets.all(10.0),
+                              SizedBox(
                                 width: width,
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
                                       "PREFIXO",
-                                      style: subtitleHint,
+                                      style: Core.subtitleHint,
                                     ),
                                     const SizedBox(
-                                      height: 10.0,
+                                      height: 5.0,
                                     ),
                                     FieldText(
                                       initValue: car.prefix,
@@ -102,16 +136,17 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                                           Validation.validatorPreenchimento,
                                       onSaved: (value) =>
                                           car.prefix = value ?? car.prefix,
+                                      upper: true,
                                     ),
                                     const SizedBox(
                                       height: 15.0,
                                     ),
                                     Text(
                                       "MODELO",
-                                      style: subtitleHint,
+                                      style: Core.subtitleHint,
                                     ),
                                     const SizedBox(
-                                      height: 10.0,
+                                      height: 5.0,
                                     ),
                                     FieldText(
                                       initValue: car.model,
@@ -120,34 +155,36 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                                           Validation.validatorPreenchimento,
                                       onSaved: (value) =>
                                           car.model = value ?? car.model,
+                                      upper: true,
                                     ),
                                     const SizedBox(
                                       height: 15.0,
                                     ),
                                     Text(
                                       "PLACA",
-                                      style: subtitleHint,
+                                      style: Core.subtitleHint,
                                     ),
                                     const SizedBox(
-                                      height: 10.0,
+                                      height: 5.0,
                                     ),
                                     FieldText(
                                       initValue: car.plate,
-                                      hint: "EX.: XXX 2345",
+                                      hint: "EX.: XXX2X45",
                                       validation:
                                           Validation.validatorPreenchimento,
                                       onSaved: (value) =>
                                           car.plate = value ?? car.plate,
+                                      upper: true,
                                     ),
                                     const SizedBox(
                                       height: 15.0,
                                     ),
                                     Text(
                                       "KM INICIAL",
-                                      style: subtitleHint,
+                                      style: Core.subtitleHint,
                                     ),
                                     const SizedBox(
-                                      height: 10.0,
+                                      height: 5.0,
                                     ),
                                     FieldText(
                                       initValue: car.km.toString(),
@@ -161,11 +198,11 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                                       height: 15.0,
                                     ),
                                     Text(
-                                      "MODELO PNEU",
-                                      style: subtitleHint,
+                                      "MODELO DO PNEU",
+                                      style: Core.subtitleHint,
                                     ),
                                     const SizedBox(
-                                      height: 10.0,
+                                      height: 5.0,
                                     ),
                                     FieldText(
                                       initValue: car.modelPneu,
@@ -174,16 +211,17 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                                           Validation.validatorPreenchimento,
                                       onSaved: (value) => car.modelPneu =
                                           value ?? car.modelPneu,
+                                      upper: true,
                                     ),
                                     const SizedBox(
                                       height: 15.0,
                                     ),
                                     Text(
-                                      "NÚMERO CARTÃO DE ABASTECIMENTO",
-                                      style: subtitleHint,
+                                      "NÚMERO DO CARTÃO",
+                                      style: Core.subtitleHint,
                                     ),
                                     const SizedBox(
-                                      height: 10.0,
+                                      height: 5.0,
                                     ),
                                     FieldText(
                                       initValue: car.ticket,
@@ -194,227 +232,245 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                                       onSaved: (value) =>
                                           car.ticket = value ?? car.ticket,
                                     ),
-                                    const SizedBox(
-                                      height: 15.0,
-                                    ),
-                                    Text(
-                                      "NÚMERO CARTÃO DE MANUTENÇÃO",
-                                      style: subtitleHint,
-                                    ),
-                                    const SizedBox(
-                                      height: 10.0,
-                                    ),
-                                    FieldText(
-                                      initValue: car.prime,
-                                      hint: "EX.: 0000 0000 0000 0000",
-                                      inputType: TextInputType.number,
-                                      validation:
-                                          Validation.validatorPreenchimento,
-                                      onSaved: (value) =>
-                                          car.prime = value ?? car.prime,
-                                    ),
                                   ],
                                 ),
                               ),
-                              Container(
-                                padding: const EdgeInsets.all(10.0),
+                              SizedBox(
                                 width: width,
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
                                       "ITENS",
-                                      style: titleHint,
+                                      style: Core.subtitleHint,
                                     ),
                                     const Divider(),
                                     const SizedBox(
                                       height: 5,
                                     ),
-                                    ExpansionPanelList(
-                                      expandedHeaderPadding:
-                                          const EdgeInsets.all(5),
-                                      expansionCallback: (item, value) {
-                                        setState(() {
-                                          car.itens[item].value = value;
-                                        });
-                                      },
-                                      children: List.generate(
-                                        car.itens.length,
-                                        (index) => ExpansionPanel(
-                                            isExpanded: car.itens[index].value,
-                                            headerBuilder:
-                                                (context, isExpanded) {
-                                              return Container(
-                                                alignment: Alignment.centerLeft,
-                                                padding:
-                                                    const EdgeInsets.all(10),
-                                                child: Text(
-                                                    car.itens[index]
-                                                        .description,
-                                                    style: title),
-                                              );
-                                            },
-                                            body: changesListWidget(
-                                                context: context,
-                                                itensChanges: car.itens[index],
-                                                onAdd: () {
-                                                  showDialog(
-                                                      context: context,
-                                                      builder: (context) =>
-                                                          AlertDialog(
-                                                            contentPadding:
-                                                                const EdgeInsets
-                                                                    .all(10),
-                                                            content: Column(
-                                                              mainAxisSize:
-                                                                  MainAxisSize
-                                                                      .min,
-                                                              children: [
-                                                                FieldText(
-                                                                  controller:
-                                                                      _textController,
-                                                                  hint:
-                                                                      "DESCRIÇÃO",
-                                                                ),
-                                                                const SizedBox(
-                                                                  height: 10.0,
-                                                                ),
-                                                                SizedBox(
-                                                                    height:
-                                                                        50.0,
-                                                                    width: double
-                                                                        .infinity,
-                                                                    child: ElevatedButton(
-                                                                        onPressed: () {
-                                                                          if (_textController
-                                                                              .text
-                                                                              .isNotEmpty) {
-                                                                            setState(() {
-                                                                              car.itens[index].itens.add(ItemModel(description: _textController.text));
-                                                                            });
-                                                                          }
+                                    Observer(builder: (context) {
+                                      return controller.sectionsItens.isEmpty
+                                          ? Text(
+                                              'Nenhum itens do checklist encontrado.',
+                                              style: Core.title,
+                                            )
+                                          : Column(
+                                              children: List.generate(
+                                                  controller.sectionsItens
+                                                      .length, (index) {
+                                                final section = controller
+                                                    .sectionsItens[index];
 
-                                                                          Navigator.of(context)
-                                                                              .pop();
-                                                                        },
-                                                                        child: Text("INSERIR", style: titleButton)))
-                                                              ],
+                                                return Card(
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            10.0),
+                                                    child: Column(
+                                                      children: [
+                                                        Row(
+                                                          spacing: 5,
+                                                          children: [
+                                                            Expanded(
+                                                                child: Text(
+                                                              section
+                                                                  .description,
+                                                              style: Core.title,
+                                                            )),
+                                                            InkWell(
+                                                              onTap: () => controller
+                                                                  .removeSections(
+                                                                      index),
+                                                              child:
+                                                                  CircleAvatar(
+                                                                radius: 12,
+                                                                backgroundColor:
+                                                                    Core.primary,
+                                                                child:
+                                                                    const Icon(
+                                                                  Icons.remove,
+                                                                  size: 15,
+                                                                  color: Colors
+                                                                      .white,
+                                                                ),
+                                                              ),
                                                             ),
-                                                          ));
-                                                  _textController.clear();
-                                                },
-                                                onDelete: (i) {
-                                                  showDialog(
-                                                      context: context,
-                                                      builder: (context) =>
-                                                          AlertMessage(
-                                                              title: "Atenção",
-                                                              message:
-                                                                  "Deseja excluir o item ?",
-                                                              cancel: true,
-                                                              onPressedCancel: () =>
-                                                                  Navigator.of(
-                                                                          context)
-                                                                      .pop(),
-                                                              onPressedOK: () {
-                                                                setState(() {
-                                                                  car
-                                                                      .itens[
-                                                                          index]
-                                                                      .itens
-                                                                      .removeAt(
-                                                                          i);
-                                                                });
-
-                                                                Navigator.of(
-                                                                        context)
-                                                                    .pop();
-                                                              }));
-                                                })),
-                                      ),
+                                                            InkWell(
+                                                              onTap: () {
+                                                                showDialog(
+                                                                    context:
+                                                                        context,
+                                                                    builder:
+                                                                        (context) =>
+                                                                            Center(
+                                                                              child: SectionWidget(
+                                                                                section: section,
+                                                                                onChange: (value) {
+                                                                                  controller.editSections(index, value);
+                                                                                },
+                                                                              ),
+                                                                            ));
+                                                              },
+                                                              child:
+                                                                  CircleAvatar(
+                                                                radius: 12,
+                                                                backgroundColor:
+                                                                    Core.primary,
+                                                                child:
+                                                                    const Icon(
+                                                                  Icons.edit,
+                                                                  size: 12,
+                                                                  color: Colors
+                                                                      .white,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                            InkWell(
+                                                              onTap: () => controller
+                                                                  .expansionSections(
+                                                                      index),
+                                                              child:
+                                                                  CircleAvatar(
+                                                                radius: 12,
+                                                                backgroundColor:
+                                                                    Core.primary,
+                                                                child: Icon(
+                                                                  section.value
+                                                                      ? Icons
+                                                                          .keyboard_arrow_up_outlined
+                                                                      : Icons
+                                                                          .keyboard_arrow_down_outlined,
+                                                                  size: 20,
+                                                                  color: Colors
+                                                                      .white,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        Visibility(
+                                                            visible:
+                                                                section.value,
+                                                            child: SizedBox(
+                                                              height: 300,
+                                                              child:
+                                                                  changesListWidget(
+                                                                      section:
+                                                                          section,
+                                                                      context:
+                                                                          context,
+                                                                      onDelete: (value) => controller.removeItensSection(
+                                                                          index,
+                                                                          value),
+                                                                      onAdd:
+                                                                          () {
+                                                                        showDialog(
+                                                                            context:
+                                                                                context,
+                                                                            builder: (context) =>
+                                                                                Center(
+                                                                                  child: ItensSectionWidget(
+                                                                                    onChange: (value) {
+                                                                                      controller.addItensSection(index, value);
+                                                                                    },
+                                                                                  ),
+                                                                                ));
+                                                                      }),
+                                                            ))
+                                                      ],
+                                                    ),
+                                                  ),
+                                                );
+                                              }),
+                                            );
+                                    }),
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    Center(
+                                      child: IconButton(
+                                          onPressed: () {
+                                            showDialog(
+                                                context: context,
+                                                builder: (context) => Center(
+                                                      child: SectionWidget(
+                                                        onChange: (value) {
+                                                          controller
+                                                              .addSections(
+                                                                  value);
+                                                        },
+                                                      ),
+                                                    ));
+                                          },
+                                          style: IconButton.styleFrom(
+                                              backgroundColor: Core.primary),
+                                          icon: const Icon(
+                                            Icons.add,
+                                            color: Colors.white,
+                                            size: 20,
+                                          )),
                                     ),
                                     const SizedBox(
                                       height: 15,
                                     ),
                                     Text(
                                       "TIPO DE VEÍCULO",
-                                      style: titleHint,
+                                      style: Core.subtitleHint,
                                     ),
                                     const Divider(),
-                                    const SizedBox(
-                                      height: 5,
-                                    ),
-                                    const SizedBox(
-                                      height: 10,
-                                    ),
-                                    Row(
-                                      children: [
-                                        Expanded(
-                                          child: Card(
-                                            margin: EdgeInsets.zero,
-                                            child: Container(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 10.0),
-                                              child: DropdownButton<String>(
-                                                  value: car.typeCar,
-                                                  onChanged: (value) {
-                                                    setState(() {
-                                                      car.typeCar = value ??
-                                                          carsType.first;
-                                                    });
-                                                  },
-                                                  underline: Container(),
-                                                  isExpanded: true,
-                                                  items: List.generate(
-                                                      carsType.length,
-                                                      (index) =>
-                                                          DropdownMenuItem<
-                                                              String>(
-                                                            value:
-                                                                carsType[index],
-                                                            child: Text(
-                                                              carsType[index],
-                                                              style: subtitle,
-                                                            ),
-                                                          ))),
-                                            ),
-                                          ),
-                                        ),
-                                        Checkbox(
-                                            value: car.adm,
-                                            onChanged: (value) {
-                                              setState(() {
-                                                car.adm = value ?? false;
-                                              });
-                                            }),
-                                        Text(
-                                          "ADM",
-                                          style: title.copyWith(
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ],
+                                    Card(
+                                      margin: EdgeInsets.zero,
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 10.0),
+                                        child: Observer(builder: (_) {
+                                          return DropdownButton<String>(
+                                              value: controller.typeCar,
+                                              onChanged: (value) {
+                                                controller.setTypeCar(value);
+
+                                                FocusScope.of(context)
+                                                    .unfocus();
+                                              },
+                                              underline: Container(),
+                                              isExpanded: true,
+                                              items: List.generate(
+                                                  Core.carsType.length,
+                                                  (index) =>
+                                                      DropdownMenuItem<String>(
+                                                        value: Core
+                                                            .carsType[index],
+                                                        child: Text(
+                                                          Core.carsType[index],
+                                                          style: Core.subtitle,
+                                                        ),
+                                                      )));
+                                        }),
+                                      ),
                                     ),
                                     const SizedBox(
                                       height: 20,
                                     ),
                                     Center(
-                                      child: CarChangesWidget(
-                                        initValue: car.changes,
-                                        remove: true,
-                                        user: app.user,
-                                        update: true,
-                                        onAdd: (change) {
-                                          setState(() {
-                                            car.changes.add(change);
-                                          });
-                                        },
-                                        onRemove: (index) {
-                                          setState(() {
-                                            car.changes.removeAt(index);
-                                          });
-                                        },
-                                      ),
+                                      child: Observer(builder: (_) {
+                                        final resultCar = car.copyWith(
+                                            changes: controller.carChanges
+                                                .toList()); //toList() para vê as mudanças
+
+                                        return CarChangesWidget(
+                                          car: resultCar,
+                                          remove: true,
+                                          register: true,
+                                          user: app.user,
+                                          update: true,
+                                          onChange: controller.onChangesCar,
+                                          onChangeImages: (value) {
+                                            images
+                                              ..clear()
+                                              ..addAll(value);
+                                          },
+                                        );
+                                      }),
                                     ),
                                     const SizedBox(
                                       height: 15,
@@ -430,35 +486,53 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                                                   .validate()) {
                                                 _key.currentState!.save();
 
+                                                car.typeCar =
+                                                    controller.typeCar;
+                                                car.adm = controller.adm;
+                                                car.changes =
+                                                    controller.carChanges;
+                                                car.obm = app.user.obm;
+                                                car.itens =
+                                                    controller.sectionsItens;
+
                                                 controller
                                                     .saveCar(
                                                         car: car,
-                                                        id: (widget.car != null)
-                                                            ? widget.car!.id
-                                                            : null)
+                                                        images: images)
                                                     .then((value) async {
                                                   await showDialog(
                                                       context: context,
-                                                      builder: (context) => AlertMessage(
-                                                          title: "Atenção",
-                                                          message: value
-                                                              ? "Cadastro realizado com sucesso."
-                                                              : "Ops ! Erro ao tentar realizar o cadastro.",
-                                                          onPressedOK: () =>
-                                                              Navigator.of(
-                                                                      context)
-                                                                  .pop()));
+                                                      builder: (context) =>
+                                                          AlertMessage(
+                                                              title: "Atenção",
+                                                              message:
+                                                                  "Cadastro realizado com sucesso.",
+                                                              onPressedOK: () =>
+                                                                  Navigator.of(
+                                                                          context)
+                                                                      .pop()));
 
                                                   if (value) {
-                                                    // ignore: use_build_context_synchronously
                                                     Navigator.of(context).pop();
                                                   }
+                                                }).catchError((err) {
+                                                  showDialog(
+                                                      context: context,
+                                                      builder: (context) =>
+                                                          AlertMessage(
+                                                              title: "Atenção",
+                                                              message: err
+                                                                  .toString(),
+                                                              onPressedOK: () =>
+                                                                  Navigator.of(
+                                                                          context)
+                                                                      .pop()));
                                                 });
                                               }
                                             },
                                             child: Text(
                                               "SALVAR",
-                                              style: titleButton,
+                                              style: Core.titleButton,
                                             )),
                                       ),
                                     ),
@@ -474,85 +548,93 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                       },
                     ),
                   ),
-                ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
-        Observer(builder: (_) {
-          return IgnorePointer(
-            ignoring: !controller.loading,
-            child: Container(
-              color: controller.loading ? Colors.black54 : Colors.transparent,
-              child: Center(
-                  child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(
-                    controller.loading ? Colors.white : Colors.transparent),
-              )),
             ),
-          );
-        })
-      ],
+          ),
+          Observer(builder: (_) {
+            return IgnorePointer(
+              ignoring: !controller.loading,
+              child: Container(
+                color: controller.loading ? Colors.black54 : Colors.transparent,
+                child: Center(
+                    child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                      controller.loading ? Colors.white : Colors.transparent),
+                )),
+              ),
+            );
+          })
+        ],
+      ),
     );
   }
 }
 
 Widget changesListWidget(
-        {required ItensChangesModel itensChanges,
+        {required ItensChangesModel section,
         required BuildContext context,
         required Function(int i) onDelete,
         required Function() onAdd}) =>
-    SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 10.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: List.generate(
-                itensChanges.itens.length,
-                (index) => Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              itensChanges.itens[index].description,
-                              style: subtitle,
+    Column(
+      children: [
+        const SizedBox(
+          height: 5,
+        ),
+        const Divider(),
+        Expanded(
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: List.generate(
+                  section.itens.length,
+                  (index) => Padding(
+                        padding: const EdgeInsets.all(5.0),
+                        child: Row(
+                          spacing: 10,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                section.itens[index].description,
+                                style: Core.subtitle,
+                              ),
                             ),
-                          ),
-                          InkWell(
-                            child: Icon(
-                              MdiIcons.delete,
-                              color: Colors.grey,
-                            ),
-                            onTap: () => onDelete(index),
-                          )
-                        ],
-                      ),
-                    )),
+                            InkWell(
+                              child: const Icon(
+                                Icons.remove,
+                                color: Colors.grey,
+                                size: 20,
+                              ),
+                              onTap: () => onDelete(index),
+                            )
+                          ],
+                        ),
+                      )),
+            ),
           ),
-          const SizedBox(
-            height: 10,
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        Center(
+          child: InkWell(
+            onTap: onAdd,
+            child: CircleAvatar(
+              radius: 15,
+              backgroundColor: Core.primary,
+              child: const Icon(
+                Icons.add,
+                size: 20,
+                color: Colors.white,
+              ),
+            ),
           ),
-          Center(
-            child: TextButton.icon(
-                style: TextButton.styleFrom(
-                    side: BorderSide(color: Theme.of(context).primaryColor)),
-                onPressed: onAdd,
-                icon: Icon(
-                  Icons.add,
-                  size: 20,
-                  color: Theme.of(context).primaryColor,
-                ),
-                label: Text(
-                  "Adicionar",
-                  style: title.copyWith(color: Theme.of(context).primaryColor),
-                )),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-        ],
-      ),
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+      ],
     );

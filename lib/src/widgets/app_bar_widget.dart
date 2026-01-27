@@ -5,7 +5,6 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import '../pages/manegent_page.dart';
 
 class AppBarCustom extends StatelessWidget implements PreferredSizeWidget {
-  final bool menu;
   final int page;
   final bool back;
   final String? titlePage;
@@ -14,7 +13,6 @@ class AppBarCustom extends StatelessWidget implements PreferredSizeWidget {
 
   const AppBarCustom(
       {Key? key,
-      this.menu = true,
       this.onBack,
       this.titlePage,
       this.page = -1,
@@ -33,7 +31,7 @@ class AppBarCustom extends StatelessWidget implements PreferredSizeWidget {
         children: [
           Container(
             height: 55 + MediaQuery.of(context).padding.top,
-            color: Colors.orange,
+            color: Colors.amber,
           ),
           Container(
             padding: EdgeInsets.only(
@@ -61,7 +59,7 @@ class AppBarCustom extends StatelessWidget implements PreferredSizeWidget {
                   child: titlePage != null
                       ? Text(
                           titlePage ?? "COF - CONTROLE OPERACIONAL DE FROTA ",
-                          style: titleHead,
+                          style: Core.titleHead,
                           overflow: TextOverflow.ellipsis,
                         )
                       : Column(
@@ -69,13 +67,13 @@ class AppBarCustom extends StatelessWidget implements PreferredSizeWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "COF - CONTROLE OPERACIONAL DE FROTA ",
-                              style: titleHead,
+                              "Controle Operacional de Frota",
+                              style: Core.titleHead,
                               overflow: TextOverflow.ellipsis,
                             ),
                             Text(
                               "Batalhão de Socorro de Urgência",
-                              style: subtitleHead,
+                              style: Core.subtitleHead,
                               overflow: TextOverflow.ellipsis,
                             )
                           ],

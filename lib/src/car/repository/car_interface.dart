@@ -3,15 +3,14 @@ import '../../../model/car_model.dart';
 import '../../../model/car_status_model.dart';
 
 abstract class ICarRepository {
-  Future<bool> save(
-      {required CarModel car, required String unidade, String? id});
-  Future<bool> updateStatusCar(
-      {required CarStatusModel status,
-      required String id,
-      required bool enable});
+  Future<bool> save({required CarModel car, required List<dynamic> images});
+  Future<bool> updateStatusCar({required CarModel car, CarStatusModel? status});
   Future<bool> updateKMCar(
       {required String id, required Map<String, dynamic> data});
   Future<bool> deleteCar({required String id});
+
+  Future<bool> deleteStatusCar(
+      {required CarModel car, required CarStatusModel status});
 
   Stream<List<CarStatusModel>> listenStatusCar({required String carId});
   Stream<List<CarMapaModel>> listenMapas({required String carId});

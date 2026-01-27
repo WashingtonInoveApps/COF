@@ -26,51 +26,21 @@ abstract class _UserControllerBase with Store {
   bool loading = false;
 
   @observable
-  String graduacao = '';
+  String graduation = '';
 
   @observable
   String obm = '';
 
   @observable
-  bool isSamu = false;
-
-  @observable
   bool admin = false;
-
-  @observable
-  bool adminFleet = false;
-
-  @observable
-  bool adminMaterial = false;
-
-  @observable
-  bool fleet = false;
-
-  @observable
-  bool material = false;
 
   _UserControllerBase({required this.app, required this.repository});
 
   @action
-  setGraduacao(String? value) => graduacao = value ?? graduacao;
-
-  @action
-  setIsSamu(bool? value) => isSamu = value ?? isSamu;
+  setGraduation(String? value) => graduation = value ?? graduation;
 
   @action
   setAdmin(bool? value) => admin = value ?? admin;
-
-  @action
-  setAdminFleet(bool? value) => adminFleet = value ?? adminFleet;
-
-  @action
-  setAdminMaterial(bool? value) => adminMaterial = value ?? adminMaterial;
-
-  @action
-  setFleet(bool? value) => fleet = value ?? fleet;
-
-  @action
-  setMaterial(bool? value) => material = value ?? material;
 
   @action
   setOBM(String? value) => obm = value ?? obm;
@@ -78,7 +48,7 @@ abstract class _UserControllerBase with Store {
   @action
   Future<bool> create({required UserModel user, bool update = false}) async {
     loading = true;
-    user.graduacao = graduacao;
+    user.graduation = graduation;
 
     final result = update
         ? await repository.update(user: user)

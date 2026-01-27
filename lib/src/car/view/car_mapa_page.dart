@@ -10,7 +10,6 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
-import '../repository/car_repository.dart';
 import '../../widgets/car_mapa_card.dart';
 
 class CarMapaPage extends StatefulWidget {
@@ -33,8 +32,8 @@ class _CarMapaPageState extends State<CarMapaPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                formatDate(mapa.date),
-                style: title,
+                Core.formatDate(mapa.date),
+                style: Core.title,
               ),
               const Divider(),
               Column(
@@ -53,7 +52,8 @@ class _CarMapaPageState extends State<CarMapaPage> {
                       Expanded(
                         child: Text(
                           mapa.origin.toUpperCase(),
-                          style: subtitle.copyWith(fontWeight: FontWeight.bold),
+                          style: Core.subtitle
+                              .copyWith(fontWeight: FontWeight.bold),
                         ),
                       ),
                     ],
@@ -74,7 +74,8 @@ class _CarMapaPageState extends State<CarMapaPage> {
                       Expanded(
                         child: Text(
                           mapa.destiny.toUpperCase(),
-                          style: subtitle.copyWith(fontWeight: FontWeight.bold),
+                          style: Core.subtitle
+                              .copyWith(fontWeight: FontWeight.bold),
                           textAlign: TextAlign.justify,
                         ),
                       ),
@@ -91,14 +92,15 @@ class _CarMapaPageState extends State<CarMapaPage> {
                       children: [
                         Text(
                           "KM Inicial",
-                          style: subtitleHint,
+                          style: Core.subtitleHint,
                         ),
                         const SizedBox(
                           width: 10.0,
                         ),
                         Text(
                           mapa.kmStart,
-                          style: title.copyWith(fontWeight: FontWeight.bold),
+                          style:
+                              Core.title.copyWith(fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
@@ -112,14 +114,15 @@ class _CarMapaPageState extends State<CarMapaPage> {
                       children: [
                         Text(
                           "KM Final",
-                          style: subtitleHint,
+                          style: Core.subtitleHint,
                         ),
                         const SizedBox(
                           width: 10.0,
                         ),
                         Text(
                           mapa.kmFinal,
-                          style: title.copyWith(fontWeight: FontWeight.bold),
+                          style:
+                              Core.title.copyWith(fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
@@ -131,10 +134,10 @@ class _CarMapaPageState extends State<CarMapaPage> {
                 children: [
                   Expanded(
                       child: Text(
-                    "${mapa.user.name} ( ${mapa.user.matricula} )",
-                    style: title,
+                    "${mapa.user.name} ( ${mapa.user.registration} )",
+                    style: Core.title,
                   )),
-                  Text("$kmPercorrido KM", style: title)
+                  Text("$kmPercorrido KM", style: Core.title)
                 ],
               )
             ],
@@ -145,7 +148,7 @@ class _CarMapaPageState extends State<CarMapaPage> {
   @override
   void initState() {
     super.initState();
-    controller = CarController(app: app, repository: CarRepository());
+    controller = CarController(app: app);
   }
 
   @override
@@ -184,7 +187,7 @@ class _CarMapaPageState extends State<CarMapaPage> {
                                     Expanded(
                                       child: Text(
                                         "${widget.car.prefix} - MAPA",
-                                        style: titleHint,
+                                        style: Core.titleHint,
                                       ),
                                     ),
                                     TextButton.icon(
@@ -213,7 +216,7 @@ class _CarMapaPageState extends State<CarMapaPage> {
                                         ),
                                         label: Text(
                                           "Adicionar",
-                                          style: title.copyWith(
+                                          style: Core.title.copyWith(
                                               color: Theme.of(context)
                                                   .primaryColor),
                                         )),
@@ -227,7 +230,7 @@ class _CarMapaPageState extends State<CarMapaPage> {
                                     ? Center(
                                         child: Text(
                                           "Ops ! Nenhuma informação encontrada.",
-                                          style: title,
+                                          style: Core.title,
                                         ),
                                       )
                                     : Column(

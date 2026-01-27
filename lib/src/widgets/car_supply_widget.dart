@@ -6,7 +6,9 @@ class CardCarSupply extends StatelessWidget {
   final SupplyModel supply;
   final bool details;
   final Function()? onTap;
-  const CardCarSupply({Key? key, required this.supply, this.details = false, this.onTap}) : super(key: key);
+  const CardCarSupply(
+      {Key? key, required this.supply, this.details = false, this.onTap})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -19,11 +21,17 @@ class CardCarSupply extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  "${formatDate(supply.date)} - ${supply.user.name}",
-                  style: subtitleHint,
+                  "${Core.formatDate(supply.date)} - ${supply.user.name}",
+                  style: Core.subtitleHint,
                 ),
               ),
-              (onTap == null) ? Container() : InkWell(onTap: onTap, child: Text('Remover', style: subtitle.copyWith(color: Theme.of(context).primaryColor)))
+              (onTap == null)
+                  ? Container()
+                  : InkWell(
+                      onTap: onTap,
+                      child: Text('Remover',
+                          style: Core.subtitle
+                              .copyWith(color: Theme.of(context).primaryColor)))
             ],
           ),
           const Divider(),
@@ -35,14 +43,14 @@ class CardCarSupply extends StatelessWidget {
                 children: [
                   Text(
                     "KM",
-                    style: subtitleHint,
+                    style: Core.subtitleHint,
                   ),
                   const SizedBox(
                     width: 10.0,
                   ),
                   Text(
                     supply.kmSupply,
-                    style: title.copyWith(fontWeight: FontWeight.bold),
+                    style: Core.title.copyWith(fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
@@ -51,14 +59,14 @@ class CardCarSupply extends StatelessWidget {
                 children: [
                   Text(
                     "Litros",
-                    style: subtitleHint,
+                    style: Core.subtitleHint,
                   ),
                   const SizedBox(
                     width: 10.0,
                   ),
                   Text(
                     supply.litros.toStringAsFixed(2),
-                    style: title.copyWith(fontWeight: FontWeight.bold),
+                    style: Core.title.copyWith(fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
@@ -67,14 +75,14 @@ class CardCarSupply extends StatelessWidget {
                 children: [
                   Text(
                     "Valor",
-                    style: subtitleHint,
+                    style: Core.subtitleHint,
                   ),
                   const SizedBox(
                     width: 10.0,
                   ),
                   Text(
                     "R\$ ${supply.value.toStringAsFixed(2)}",
-                    style: title.copyWith(fontWeight: FontWeight.bold),
+                    style: Core.title.copyWith(fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
@@ -86,7 +94,9 @@ class CardCarSupply extends StatelessWidget {
     return details
         ? Container(
             margin: const EdgeInsets.only(bottom: 10.0),
-            decoration: BoxDecoration(border: Border.all(color: Colors.grey), borderRadius: BorderRadius.circular(5)),
+            decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey),
+                borderRadius: BorderRadius.circular(5)),
             child: body,
           )
         : Card(

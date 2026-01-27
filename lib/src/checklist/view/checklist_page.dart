@@ -97,7 +97,7 @@ class _ChecklistPageState extends State<ChecklistPage> {
                                               horizontal: 15, vertical: 2),
                                           child: Text(
                                             "NOVO",
-                                            style: subtitle.copyWith(
+                                            style: Core.subtitle.copyWith(
                                                 color: Colors.white,
                                                 fontWeight: FontWeight.bold),
                                           ),
@@ -123,10 +123,11 @@ class _ChecklistPageState extends State<ChecklistPage> {
                                             });
                                           },
                                           child: Text(
-                                            formatDate(controller.date,
-                                                outher: true,
-                                                referenceDate: true),
-                                            style: title.copyWith(
+                                            Core.formatDate(
+                                              controller.date,
+                                              largeDay: true,
+                                            ),
+                                            style: Core.title.copyWith(
                                                 color: Theme.of(context)
                                                     .primaryColor),
                                           ));
@@ -147,7 +148,7 @@ class _ChecklistPageState extends State<ChecklistPage> {
                                         ? Center(
                                             child: Text(
                                               "Ops ! Nenhum registro encontrado.",
-                                              style: title,
+                                              style: Core.title,
                                             ),
                                           )
                                         : Column(

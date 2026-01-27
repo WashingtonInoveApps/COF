@@ -28,24 +28,36 @@ class CarCard extends StatelessWidget {
               Row(
                 children: [
                   Expanded(
+                    flex: 3,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           car.prefix,
-                          style: title.copyWith(fontWeight: FontWeight.bold),
+                          style:
+                              Core.title.copyWith(fontWeight: FontWeight.bold),
                         ),
                         Text(
                           car.model,
-                          style: title.copyWith(color: Colors.grey),
+                          style: Core.title.copyWith(color: Colors.grey),
                         ),
                       ],
                     ),
                   ),
-                  Icon(
-                    car.enable ? MdiIcons.checkCircle : MdiIcons.closeCircle,
-                    color: car.enable ? Colors.green : Colors.red,
-                    size: 20.0,
+                  Expanded(
+                    child: TextButton.icon(
+                        style: TextButton.styleFrom(
+                            side: BorderSide(color: car.state.color)),
+                        onPressed: null,
+                        icon: Icon(
+                          car.state.icon,
+                          color: car.state.color,
+                          size: 20.0,
+                        ),
+                        label: Text(
+                          car.state.label,
+                          style: Core.title.copyWith(color: car.state.color),
+                        )),
                   ),
                 ],
               ),
@@ -69,7 +81,7 @@ class CarCard extends StatelessWidget {
                               },
                               child: Text(
                                 "MAPA",
-                                style: subtitle.copyWith(
+                                style: Core.subtitle.copyWith(
                                     color: Theme.of(context).primaryColor,
                                     fontWeight: FontWeight.bold),
                               )),
@@ -82,28 +94,28 @@ class CarCard extends StatelessWidget {
                   ),
                   Text(
                     "PLACA",
-                    style: subtitleHint,
+                    style: Core.subtitleHint,
                   ),
                   const SizedBox(
                     width: 5.0,
                   ),
                   Text(
                     car.plate,
-                    style: title.copyWith(fontWeight: FontWeight.bold),
+                    style: Core.title.copyWith(fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(
                     width: 10.0,
                   ),
                   Text(
                     "KM",
-                    style: subtitleHint,
+                    style: Core.subtitleHint,
                   ),
                   const SizedBox(
                     width: 5.0,
                   ),
                   Text(
                     car.km.toString(),
-                    style: title.copyWith(fontWeight: FontWeight.bold),
+                    style: Core.title.copyWith(fontWeight: FontWeight.bold),
                   ),
                 ],
               ),

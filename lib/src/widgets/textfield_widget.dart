@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:bsu_control/core/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -6,27 +7,33 @@ class FieldText extends StatefulWidget {
   final List<TextInputFormatter>? mask;
   final TextEditingController? controller;
   final String? Function(String? text)? validation;
+  final String? label;
   final TextInputType inputType;
   final String? hint;
   final Function(String? text)? onSaved;
   final String? initValue;
   final void Function(String text)? onChange;
-  final bool upper;
+  final double borderRadius;
   final bool obscure;
+  final bool search;
+  final bool upper;
 
-  const FieldText({
-    Key? key,
-    this.upper = true,
-    this.obscure = false,
-    this.mask,
-    this.onChange,
-    this.controller,
-    this.validation,
-    this.inputType = TextInputType.text,
-    this.hint,
-    this.onSaved,
-    this.initValue,
-  }) : super(key: key);
+  const FieldText(
+      {Key? key,
+      this.mask,
+      this.controller,
+      this.validation,
+      this.label,
+      this.inputType = TextInputType.text,
+      this.hint,
+      this.onSaved,
+      this.initValue,
+      this.onChange,
+      this.borderRadius = 5.0,
+      this.obscure = false,
+      this.search = false,
+      this.upper = false})
+      : super(key: key);
 
   @override
   State createState() => _FieldTextState();
@@ -35,36 +42,53 @@ class FieldText extends StatefulWidget {
 class _FieldTextState extends State<FieldText> {
   @override
   Widget build(BuildContext context) {
+    final mask = widget.mask ?? [];
+    if (widget.upper) mask.add(UpperCaseTextFormatter());
+
     return Container(
-      decoration: BoxDecoration(border: Border.all(color: Colors.grey), borderRadius: BorderRadius.circular(5)),
-      child: Card(
-        elevation: 0,
-        margin: EdgeInsets.zero,
-        child: Padding(
-          padding: const EdgeInsets.all(5.0),
-          child: TextFormField(
-            style: title,
-            initialValue: widget.initValue,
-            decoration: InputDecoration(
-                contentPadding: const EdgeInsets.symmetric(horizontal: 10),
-                enabledBorder: InputBorder.none,
-                hintText: widget.hint,
-                hintStyle: subtitleHint),
-            controller: widget.controller,
-            inputFormatters: widget.mask ?? [],
-            textAlign: TextAlign.justify,
-            onChanged: widget.onChange,
-            validator: widget.validation,
-            maxLines: widget.obscure ? 1 : null,
-            keyboardType: widget.inputType,
-            obscureText: widget.obscure,
-            textCapitalization: widget.upper
-                ? TextCapitalization.characters
-                : TextCapitalization.none,
-            onSaved: widget.onSaved,
-          ),
-        ),
+      decoration: BoxDecoration(
+          color: Colors.white, borderRadius: BorderRadius.circular(5)),
+      child: TextFormField(
+        style: Core.title,
+        initialValue: widget.initValue,
+        decoration: InputDecoration(
+            prefixIcon: widget.search ? const Icon(Icons.search) : null,
+            border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(widget.borderRadius),
+                borderSide: const BorderSide(color: Colors.black)),
+            hintText: widget.hint,
+            label: (widget.label != null)
+                ? Text(
+                    widget.label!,
+                  )
+                : null,
+            focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(widget.borderRadius),
+                borderSide: BorderSide(color: Core.primary)),
+            labelStyle: Core.title.copyWith(color: Colors.grey),
+            errorStyle: Core.title.copyWith(color: Colors.grey),
+            hintStyle: Core.title.copyWith(color: Colors.grey)),
+        controller: widget.controller,
+        inputFormatters: mask,
+        onChanged: widget.onChange,
+        validator: widget.validation,
+        maxLines: widget.obscure ? 1 : null,
+        keyboardType: widget.inputType,
+        obscureText: widget.obscure,
+        onSaved: widget.onSaved,
+        textCapitalization: TextCapitalization.sentences,
       ),
+    );
+  }
+}
+
+class UpperCaseTextFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    return newValue.copyWith(
+      text: newValue.text.toUpperCase(),
+      selection: newValue.selection,
     );
   }
 }

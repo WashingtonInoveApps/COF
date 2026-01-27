@@ -1,8 +1,9 @@
+import 'package:bsu_control/app_repository.dart';
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/db.dart';
 import 'package:bsu_control/model/car_model.dart';
 import 'package:bsu_control/model/user_model.dart';
-import 'package:bsu_control/src/app_interface.dart';
+import 'package:bsu_control/app_interface.dart';
 import 'package:mobx/mobx.dart';
 
 import 'model/check_list_model.dart';
@@ -14,10 +15,19 @@ part 'app_controller.g.dart';
 class AppController = _AppControllerBase with _$AppController;
 
 abstract class _AppControllerBase with Store {
-  final IAppRepository repository;
+  final String appID;
+  final bool test;
+  final String endpoint;
+  late IAppRepository repository;
 
-  _AppControllerBase({required this.repository}) {
-    // PackageInfo.fromPlatform().then((value) => setVersion(value.version));
+  _AppControllerBase(
+      {required this.appID, required this.endpoint, required this.test}) {
+    repository = AppRepository(
+      appID: appID,
+      endpoint: endpoint,
+      test: test,
+    );
+
     getUserDB(tag: 'user');
   }
 
@@ -28,7 +38,7 @@ abstract class _AppControllerBase with Store {
   UserModel user = UserModel();
 
   @observable
-  String unidade = unidades.first;
+  String unidade = Core.obms.first;
 
   @observable
   bool isLogged = false;
@@ -54,8 +64,8 @@ abstract class _AppControllerBase with Store {
   // @computed
   // List<UserModel> get usersValidations => users;
 
-  Stream<List<CheckListModel>> get listenChecklist =>
-      repository.listenChecklist(referenceDate: formatDate(date, outher: true));
+  Stream<List<CheckListModel>> get listenChecklist => repository
+      .listenChecklist(referenceDate: Core.formatDate(date, largeDay: true));
 
   Stream<List<CarModel>> get listenCar => repository.listenCar();
 
@@ -116,17 +126,22 @@ abstract class _AppControllerBase with Store {
 
   @action
   Future<bool> login({required String email, required String senha}) async {
-    loading = true;
-    final result = await repository.login(email: email, senha: senha);
-    loading = false;
+    try {
+      loading = true;
+      final result = await repository.login(email: email, senha: senha);
+      loading = false;
 
-    if (result == null) return false;
+      if (result == null) return false;
 
-    user = result;
-    await DBController.save(tag: 'user', value: result.toJson());
+      user = result;
+      await DBController.save(tag: 'user', value: result.toJson());
 
-    isLogged = true;
-    return true;
+      isLogged = true;
+      return true;
+    } catch (e) {
+      loading = false;
+      rethrow;
+    }
   }
 
   Future<bool> getUserDB({required String tag}) async {
