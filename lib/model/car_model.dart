@@ -57,8 +57,10 @@ class CarModel {
   String plate;
   String modelPneu;
   String ticket;
-  String obm;
-  String typeCar;
+  String obmID;
+  String cia;
+  String type;
+  String function;
   String obs;
   StatusCar state;
 
@@ -81,14 +83,16 @@ class CarModel {
       this.km = 0,
       this.modelPneu = "",
       this.ticket = "",
-      this.obm = "",
+      this.obmID = "",
+      this.function = '',
+      this.cia = "",
       this.state = StatusCar.operando,
       required this.itens,
       required this.changes,
       required this.status,
       required this.images,
       this.mapas,
-      this.typeCar = "",
+      this.type = "",
       this.adm = false,
       this.enable = true,
       this.obs = "",
@@ -102,6 +106,8 @@ class CarModel {
         "itens": List<dynamic>.from(itens.map((e) => e.toMap()).toList()),
         "changes": List<dynamic>.from(changes.map((e) => e.toMap()).toList()),
         "images": [],
+        "obmID": obmID,
+        "cia": cia
       };
 
   Map<String, dynamic> toMap() {
@@ -113,13 +119,15 @@ class CarModel {
       'km': km,
       'modelPneu': modelPneu,
       'ticket': ticket,
-      'obm': obm,
+      'function': function,
+      'obmID': obmID,
+      "cia": cia,
       'state': state.name,
       'itens': itens.map((x) => x.toMap()).toList(),
       'changes': changes.map((x) => x.toMap()).toList(),
       'mapas': mapas?.map((x) => x.toMap()).toList(),
       "images": images.map((x) => x?.toMap()).toList(),
-      'typeCar': typeCar,
+      'type': type,
       'adm': adm,
       'enable': enable,
       'obs': obs,
@@ -130,15 +138,16 @@ class CarModel {
 
   factory CarModel.fromMapResume(Map<String, dynamic> map) {
     return CarModel(
-      id: map['id'] ?? '',
-      prefix: map['prefix'] ?? '',
-      itens: List<ItensChangesModel>.from(
-          map['itens']?.map((x) => ItensChangesModel.fromMap(x))),
-      changes: List<CarChangeModel>.from(
-          map['changes']?.map((x) => CarChangeModel.fromMap(x))),
-      images: [],
-      status: [],
-    );
+        id: map['id'] ?? '',
+        prefix: map['prefix'] ?? '',
+        itens: List<ItensChangesModel>.from(
+            map['itens']?.map((x) => ItensChangesModel.fromMap(x))),
+        changes: List<CarChangeModel>.from(
+            map['changes']?.map((x) => CarChangeModel.fromMap(x))),
+        images: [],
+        status: [],
+        cia: map['cia'],
+        obmID: map['obmID']);
   }
 
   factory CarModel.fromMap(Map<String, dynamic> map) {
@@ -150,7 +159,9 @@ class CarModel {
       km: map['km']?.toInt() ?? 0,
       modelPneu: map['modelPneu'] ?? '',
       ticket: map['ticket'] ?? '',
-      obm: map['obm'] ?? '',
+      obmID: map['obmID'] ?? '',
+      cia: map['cia'] ?? '',
+      function: map['function'] ?? '',
       state: statusFromString(map['state'] as String),
       itens: List<ItensChangesModel>.from(
           map['itens']?.map((x) => ItensChangesModel.fromMap(x))),
@@ -161,7 +172,7 @@ class CarModel {
       images: List<FileModel?>.from(
           map['images'].map((x) => (x == null) ? null : FileModel.fromMap(x))),
       status: [],
-      typeCar: map['typeCar'] ?? '',
+      type: map['type'] ?? '',
       adm: map['adm'] ?? false,
       enable: map['enable'] ?? false,
       obs: map['obs'] ?? '',
@@ -185,14 +196,16 @@ class CarModel {
     int? km,
     String? modelPneu,
     String? ticket,
-    String? obm,
+    String? obmID,
+    String? cia,
+    String? function,
     List<ItensChangesModel>? itens,
     List<CarChangeModel>? changes,
     List<CarStatusModel>? status,
     List<CarMapaModel>? mapas,
     List<FileModel>? images,
     StatusCar? state,
-    String? typeCar,
+    String? type,
     bool? adm,
     bool? enable,
     String? obs,
@@ -207,13 +220,15 @@ class CarModel {
       km: km ?? this.km,
       modelPneu: modelPneu ?? this.modelPneu,
       ticket: ticket ?? this.ticket,
-      obm: obm ?? this.obm,
+      obmID: obmID ?? this.obmID,
+      cia: cia ?? this.cia,
       images: images ?? this.images,
       itens: itens ?? this.itens,
       changes: changes ?? this.changes,
       status: status ?? this.status,
       mapas: mapas ?? this.mapas,
-      typeCar: typeCar ?? this.typeCar,
+      function: function ?? this.function,
+      type: type ?? this.type,
       adm: adm ?? this.adm,
       state: state ?? this.state,
       enable: enable ?? this.enable,

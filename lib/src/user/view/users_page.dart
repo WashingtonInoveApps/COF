@@ -4,7 +4,7 @@ import 'package:bsu_control/model/user_model.dart';
 import 'package:bsu_control/src/user/view/user_card.dart';
 import 'package:bsu_control/src/user/view/user_register_page.dart';
 import 'package:bsu_control/src/widgets/alert_message.dart';
-import 'package:bsu_control/src/widgets/app_bar_widget.dart';
+import 'package:bsu_control/src/widgets/backgraund_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
@@ -29,7 +29,7 @@ class _UsersPageState extends State<UsersPage> {
   void initState() {
     super.initState();
     controller = UserController(app: app, repository: UserRepository());
-    controller.setGraduation(Core.graduations.first);
+    controller.setGraduation(Constants.graduations.first);
   }
 
   @override
@@ -37,9 +37,9 @@ class _UsersPageState extends State<UsersPage> {
     return Scaffold(
       body: Column(
         children: [
-          const AppBarCustom(
-            titlePage: 'USUÁRIOS CADASTRADOS',
-          ),
+          // const AppBarCustom(
+          //   titlePage: 'USUÁRIOS CADASTRADOS',
+          // ),
           Expanded(
             child: Stack(
               children: [
@@ -53,7 +53,8 @@ class _UsersPageState extends State<UsersPage> {
                           Expanded(
                             child: Text(
                               "USUÁRIOS",
-                              style: Core.title.copyWith(color: Colors.grey),
+                              style:
+                                  Constants.title.copyWith(color: Colors.grey),
                             ),
                           ),
                           ElevatedButton(
@@ -67,7 +68,7 @@ class _UsersPageState extends State<UsersPage> {
                                     horizontal: 15, vertical: 2),
                                 child: Text(
                                   "NOVO",
-                                  style: Core.subtitle.copyWith(
+                                  style: Constants.subtitle.copyWith(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold),
                                 ),

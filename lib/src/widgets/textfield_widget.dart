@@ -49,7 +49,7 @@ class _FieldTextState extends State<FieldText> {
       decoration: BoxDecoration(
           color: Colors.white, borderRadius: BorderRadius.circular(5)),
       child: TextFormField(
-        style: Core.title,
+        style: Constants.title,
         initialValue: widget.initValue,
         decoration: InputDecoration(
             prefixIcon: widget.search ? const Icon(Icons.search) : null,
@@ -64,10 +64,10 @@ class _FieldTextState extends State<FieldText> {
                 : null,
             focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(widget.borderRadius),
-                borderSide: BorderSide(color: Core.primary)),
-            labelStyle: Core.title.copyWith(color: Colors.grey),
-            errorStyle: Core.title.copyWith(color: Colors.grey),
-            hintStyle: Core.title.copyWith(color: Colors.grey)),
+                borderSide: BorderSide(color: Constants.primary)),
+            labelStyle: Constants.title.copyWith(color: Colors.grey),
+            errorStyle: Constants.title.copyWith(color: Colors.grey),
+            hintStyle: Constants.title.copyWith(color: Colors.grey)),
         controller: widget.controller,
         inputFormatters: mask,
         onChanged: widget.onChange,

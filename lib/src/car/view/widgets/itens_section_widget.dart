@@ -69,7 +69,7 @@ class _ItensSectionWidgetState extends State<ItensSectionWidget> {
                       },
                       child: Text(
                         "ADICIONAR",
-                        style: Core.titleButton,
+                        style: Constants.titleButton,
                       )),
                 ),
               ],

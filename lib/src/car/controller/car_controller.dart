@@ -2,6 +2,7 @@ import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/model/car_changes_model.dart';
 import 'package:bsu_control/model/itens_changes_model.dart';
+import 'package:bsu_control/model/obm_model.dart';
 import 'package:bsu_control/src/car/repository/car_interface.dart';
 import 'package:mobx/mobx.dart';
 
@@ -23,7 +24,16 @@ abstract class _CarControllerBase with Store {
   bool loading = false;
 
   @observable
-  String typeCar = '';
+  String type = '';
+
+  @observable
+  String function = '';
+
+  @observable
+  String? cia;
+
+  @observable
+  OBMModel obm = OBMModel(team: [], cias: []);
 
   @observable
   ObservableList<ItensChangesModel> sectionsItens =
@@ -36,7 +46,7 @@ abstract class _CarControllerBase with Store {
   bool get enable => app.user.admin;
 
   @computed
-  bool get adm => typeCar == Core.carsType.first;
+  bool get adm => function == Constants.carsFunctions.first;
 
   _CarControllerBase({required this.app}) {
     repository =
@@ -53,8 +63,31 @@ abstract class _CarControllerBase with Store {
 
   @action
   setTypeCar(String? value) {
-    typeCar = value ?? typeCar;
+    type = value ?? type;
   }
+
+  @action
+  setFunctionCar(String? value) {
+    function = value ?? function;
+  }
+
+  @action
+  setOBM(OBMModel? value) {
+    if (value != null) {
+      if (obm != value) {
+        obm = value;
+
+        if (obm.cias.isNotEmpty) {
+          cia = obm.cias.first;
+        } else {
+          cia = null;
+        }
+      }
+    }
+  }
+
+  @action
+  setCia(String? value) => cia = value;
 
   @action
   onChangesCar(List<CarChangeModel> value) {
@@ -123,11 +156,34 @@ abstract class _CarControllerBase with Store {
   }
 
   @action
-  Future<bool> saveCar(
+  Future<bool> save(
       {required CarModel car, required List<dynamic> images}) async {
     try {
       loading = true;
       final result = await repository.save(car: car, images: images);
+      loading = false;
+
+      return result;
+    } catch (e) {
+      loading = false;
+      rethrow;
+    }
+  }
+
+  @action
+  Future<bool> copy({required CarModel car}) async {
+    try {
+      loading = true;
+      final result = await repository.copy(
+          car: car.copyWith(
+              prefix: '${car.prefix} COPIA',
+              km: 0,
+              arref: 0,
+              oil: 0,
+              status: [],
+              changes: [],
+              mapas: []));
+
       loading = false;
 
       return result;

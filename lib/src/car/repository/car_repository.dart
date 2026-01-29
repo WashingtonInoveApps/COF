@@ -15,15 +15,19 @@ class CarRepository extends APIClient implements ICarRepository {
 
   @override
   Stream<List<CarStatusModel>> listenStatusCar({required String carId}) {
-    return colCars
-        .doc(carId)
-        .collection("status")
-        .snapshots()
-        .map((e) => e.docs.map((doc) {
-              var carStatu = CarStatusModel.fromMap(doc.data());
-              carStatu.id = doc.id;
-              return carStatu;
-            }).toList());
+    try {
+      return colCars
+          .doc(carId)
+          .collection("status")
+          .snapshots()
+          .map((e) => e.docs.map((doc) {
+                var carStatu = CarStatusModel.fromMap(doc.data());
+                carStatu.id = doc.id;
+                return carStatu;
+              }).toList());
+    } catch (e) {
+      return Stream.value([]);
+    }
   }
 
   @override
@@ -179,6 +183,19 @@ class CarRepository extends APIClient implements ICarRepository {
       return true;
     } catch (e) {
       return false;
+    }
+  }
+
+  @override
+  Future<bool> copy({required CarModel car}) async {
+    try {
+      var doc = colCars.doc();
+      car.id = doc.id;
+
+      await doc.set(car.toMap());
+      return true;
+    } catch (e) {
+      rethrow;
     }
   }
 }

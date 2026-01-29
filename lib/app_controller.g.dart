@@ -201,6 +201,14 @@ mixin _$AppController on _AppControllerBase, Store {
         .run(() => super.saveSupplies(supply: supply, checklist: checklist));
   }
 
+  late final _$getOBMsAsyncAction =
+      AsyncAction('_AppControllerBase.getOBMs', context: context);
+
+  @override
+  Future<void> getOBMs() {
+    return _$getOBMsAsyncAction.run(() => super.getOBMs());
+  }
+
   late final _$loginAsyncAction =
       AsyncAction('_AppControllerBase.login', context: context);
 

@@ -1,5 +1,6 @@
 //Adicionar imagem e descrição.
 import 'package:bsu_control/core/constants.dart';
+import 'package:bsu_control/core/core.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +27,9 @@ class _ImageViewChangeWidgetState extends State<ImageViewChangeWidget> {
   Uint8List? image;
   final controller = TextEditingController();
 
+  double heightImage = 300;
+  double widthImage = 400;
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -43,32 +47,33 @@ class _ImageViewChangeWidgetState extends State<ImageViewChangeWidget> {
                 widget.change.fileImage != null
                     ? Image.memory(
                         widget.change.fileImage!,
-                        height: 250,
-                        width: 350,
+                        height: heightImage,
+                        width: widthImage,
                         fit: BoxFit.cover,
                       )
                     : kIsWeb
                         ? Image.network(
                             widget.change.image?.url ?? '',
-                            height: 250,
-                            width: 350,
+                            height: heightImage,
+                            width: widthImage,
                             fit: BoxFit.cover,
                           )
                         : CachedNetworkImage(
-                            height: 250,
-                            width: 350,
                             imageUrl: widget.change.image?.url ?? '',
-                            fit: BoxFit.cover,
-                            placeholder: (context, url) => const SizedBox(
-                                height: 60.0,
-                                width: 60.0,
-                                child:
-                                    Center(child: CircularProgressIndicator())),
+                            height: heightImage,
+                            width: widthImage,
+                            progressIndicatorBuilder:
+                                (context, url, downloadProgress) => Center(
+                              child: CircularProgressIndicator(
+                                  color: Constants.primary,
+                                  value: downloadProgress.progress),
+                            ),
                             errorWidget: (context, url, error) => const Center(
                                 child: Icon(
                               Icons.error,
                               size: 60.0,
                             )),
+                            fit: BoxFit.contain,
                           ),
                 Positioned(
                     top: 10.0,
@@ -114,15 +119,15 @@ class _ImageViewChangeWidgetState extends State<ImageViewChangeWidget> {
                 children: [
                   Text(
                     widget.change.description,
-                    style: Core.title,
+                    style: Constants.title,
                   ),
                   Text(
                     "${widget.change.user.graduation} ${widget.change.user.name} - ${widget.change.user.registration}",
-                    style: Core.subtitleHint,
+                    style: Constants.subtitleHint,
                   ),
                   Text(
                     Core.formatDate(widget.change.date, largeDay: true),
-                    style: Core.subtitleHint,
+                    style: Constants.subtitleHint,
                   ),
                 ],
               ),

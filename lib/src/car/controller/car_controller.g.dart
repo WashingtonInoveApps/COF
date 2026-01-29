@@ -38,19 +38,65 @@ mixin _$CarController on _CarControllerBase, Store {
     });
   }
 
-  late final _$typeCarAtom =
-      Atom(name: '_CarControllerBase.typeCar', context: context);
+  late final _$typeAtom =
+      Atom(name: '_CarControllerBase.type', context: context);
 
   @override
-  String get typeCar {
-    _$typeCarAtom.reportRead();
-    return super.typeCar;
+  String get type {
+    _$typeAtom.reportRead();
+    return super.type;
   }
 
   @override
-  set typeCar(String value) {
-    _$typeCarAtom.reportWrite(value, super.typeCar, () {
-      super.typeCar = value;
+  set type(String value) {
+    _$typeAtom.reportWrite(value, super.type, () {
+      super.type = value;
+    });
+  }
+
+  late final _$functionAtom =
+      Atom(name: '_CarControllerBase.function', context: context);
+
+  @override
+  String get function {
+    _$functionAtom.reportRead();
+    return super.function;
+  }
+
+  @override
+  set function(String value) {
+    _$functionAtom.reportWrite(value, super.function, () {
+      super.function = value;
+    });
+  }
+
+  late final _$ciaAtom = Atom(name: '_CarControllerBase.cia', context: context);
+
+  @override
+  String? get cia {
+    _$ciaAtom.reportRead();
+    return super.cia;
+  }
+
+  @override
+  set cia(String? value) {
+    _$ciaAtom.reportWrite(value, super.cia, () {
+      super.cia = value;
+    });
+  }
+
+  late final _$obmAtom = Atom(name: '_CarControllerBase.obm', context: context);
+
+  @override
+  OBMModel get obm {
+    _$obmAtom.reportRead();
+    return super.obm;
+  }
+
+  @override
+  set obm(OBMModel value) {
+    _$obmAtom.reportWrite(value, super.obm, () {
+      super.obm = value;
     });
   }
 
@@ -86,13 +132,20 @@ mixin _$CarController on _CarControllerBase, Store {
     });
   }
 
-  late final _$saveCarAsyncAction =
-      AsyncAction('_CarControllerBase.saveCar', context: context);
+  late final _$saveAsyncAction =
+      AsyncAction('_CarControllerBase.save', context: context);
 
   @override
-  Future<bool> saveCar({required CarModel car, required List<dynamic> images}) {
-    return _$saveCarAsyncAction
-        .run(() => super.saveCar(car: car, images: images));
+  Future<bool> save({required CarModel car, required List<dynamic> images}) {
+    return _$saveAsyncAction.run(() => super.save(car: car, images: images));
+  }
+
+  late final _$copyAsyncAction =
+      AsyncAction('_CarControllerBase.copy', context: context);
+
+  @override
+  Future<bool> copy({required CarModel car}) {
+    return _$copyAsyncAction.run(() => super.copy(car: car));
   }
 
   late final _$updateKMOilAsyncAction =
@@ -167,6 +220,39 @@ mixin _$CarController on _CarControllerBase, Store {
         name: '_CarControllerBase.setTypeCar');
     try {
       return super.setTypeCar(value);
+    } finally {
+      _$_CarControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setFunctionCar(String? value) {
+    final _$actionInfo = _$_CarControllerBaseActionController.startAction(
+        name: '_CarControllerBase.setFunctionCar');
+    try {
+      return super.setFunctionCar(value);
+    } finally {
+      _$_CarControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setOBM(OBMModel? value) {
+    final _$actionInfo = _$_CarControllerBaseActionController.startAction(
+        name: '_CarControllerBase.setOBM');
+    try {
+      return super.setOBM(value);
+    } finally {
+      _$_CarControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setCia(String? value) {
+    final _$actionInfo = _$_CarControllerBaseActionController.startAction(
+        name: '_CarControllerBase.setCia');
+    try {
+      return super.setCia(value);
     } finally {
       _$_CarControllerBaseActionController.endAction(_$actionInfo);
     }
@@ -275,7 +361,10 @@ mixin _$CarController on _CarControllerBase, Store {
   String toString() {
     return '''
 loading: ${loading},
-typeCar: ${typeCar},
+type: ${type},
+function: ${function},
+cia: ${cia},
+obm: ${obm},
 sectionsItens: ${sectionsItens},
 carChanges: ${carChanges},
 enable: ${enable},

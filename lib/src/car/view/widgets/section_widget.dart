@@ -68,7 +68,7 @@ class _SectionWidgetState extends State<SectionWidget> {
                   },
                   child: Text(
                     (widget.section == null) ? "ADICIONAR" : "ALTERAR",
-                    style: Core.titleButton,
+                    style: Constants.titleButton,
                   )),
             ),
           ],

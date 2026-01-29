@@ -1,5 +1,6 @@
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
+import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/core/validation.dart';
 import 'package:bsu_control/model/car_model.dart';
 import 'package:bsu_control/model/car_status_model.dart';
@@ -82,7 +83,7 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                             onUpdate(int.parse(_controller.text));
                           }
                         },
-                        child: Text("ALTERAR", style: Core.titleButton)))
+                        child: Text("ALTERAR", style: Constants.titleButton)))
               ],
             ),
           ),
@@ -111,24 +112,24 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                         Text(
                           Core.formatDate(status[index].date,
                               largeDayHour: true),
-                          style: Core.subtitleHint,
+                          style: Constants.subtitleHint,
                         ),
                         Text(
                           status[index].description,
-                          style: Core.subtitle,
+                          style: Constants.subtitle,
                         ),
                         Row(
                           spacing: 10,
                           children: [
                             Text(
                               "${status[index].user.graduation} ${status[index].user.name}",
-                              style: Core.subtitleHint,
+                              style: Constants.subtitleHint,
                             ),
                             // InkWell(
                             //     onTap: () {},
                             //     child: Text(
                             //       'Ver detalhes',
-                            //       style: Core.subtitle
+                            //       style: Constants.subtitle
                             //           .copyWith(color: Colors.blue),
                             //     )),
                           ],
@@ -137,7 +138,7 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                           visible: status[index].local.isNotEmpty,
                           child: Text(
                             status[index].local,
-                            style: Core.subtitleHint,
+                            style: Constants.subtitleHint,
                           ),
                         )
                       ],
@@ -236,7 +237,7 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                                             children: [
                                               Text(
                                                 car.prefix,
-                                                style: Core.title.copyWith(
+                                                style: Constants.title.copyWith(
                                                     fontWeight: FontWeight.bold,
                                                     fontSize: 16),
                                               ),
@@ -245,11 +246,11 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                                                 children: [
                                                   Text(
                                                     "Quilometragem",
-                                                    style: Core.titleHint,
+                                                    style: Constants.titleHint,
                                                   ),
                                                   Text(
                                                       "${car.km.toString()} KM",
-                                                      style: Core.title
+                                                      style: Constants.title
                                                           .copyWith(
                                                               fontSize: 16)),
                                                 ],
@@ -288,9 +289,11 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                                                   ),
                                                   label: Text(
                                                     "Editar",
-                                                    style: Core.title.copyWith(
-                                                        color: Theme.of(context)
-                                                            .primaryColor),
+                                                    style: Constants.title
+                                                        .copyWith(
+                                                            color: Theme.of(
+                                                                    context)
+                                                                .primaryColor),
                                                   ))
                                               : Container(),
                                         ],
@@ -302,11 +305,11 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                                           Expanded(
                                               child: Text(
                                             "Troca de óleo (KM)",
-                                            style: Core.title,
+                                            style: Constants.title,
                                           )),
                                           Text(
                                             car.oil.toString(),
-                                            style: Core.title.copyWith(
+                                            style: Constants.title.copyWith(
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 16),
                                           ),
@@ -346,9 +349,11 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                                                   },
                                                   child: Text(
                                                     "Alterar",
-                                                    style: Core.title.copyWith(
-                                                        color: Theme.of(context)
-                                                            .primaryColor),
+                                                    style: Constants.title
+                                                        .copyWith(
+                                                            color: Theme.of(
+                                                                    context)
+                                                                .primaryColor),
                                                   ))
                                               : Container(),
                                         ],
@@ -362,11 +367,11 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                                           Expanded(
                                               child: Text(
                                             "Troca do arrefecimento (KM)",
-                                            style: Core.title,
+                                            style: Constants.title,
                                           )),
                                           Text(
                                             car.arref.toString(),
-                                            style: Core.title.copyWith(
+                                            style: Constants.title.copyWith(
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 16),
                                           ),
@@ -406,9 +411,11 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                                                   },
                                                   child: Text(
                                                     "Alterar",
-                                                    style: Core.title.copyWith(
-                                                        color: Theme.of(context)
-                                                            .primaryColor),
+                                                    style: Constants.title
+                                                        .copyWith(
+                                                            color: Theme.of(
+                                                                    context)
+                                                                .primaryColor),
                                                   ))
                                               : Container(),
                                         ],
@@ -433,41 +440,41 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                                     children: [
                                       Text(
                                         "Informações",
-                                        style: Core.titleHint,
+                                        style: Constants.titleHint,
                                       ),
                                       const Divider(),
                                       Text(
                                         "Modelo",
-                                        style: Core.subtitleHint,
+                                        style: Constants.subtitleHint,
                                       ),
                                       SelectableText(
                                         car.model,
-                                        style:
-                                            Core.title.copyWith(fontSize: 16),
+                                        style: Constants.title
+                                            .copyWith(fontSize: 16),
                                       ),
                                       const SizedBox(
                                         height: 10.0,
                                       ),
                                       Text(
                                         "Placa",
-                                        style: Core.subtitleHint,
+                                        style: Constants.subtitleHint,
                                       ),
                                       SelectableText(
                                         car.plate,
-                                        style:
-                                            Core.title.copyWith(fontSize: 16),
+                                        style: Constants.title
+                                            .copyWith(fontSize: 16),
                                       ),
                                       const SizedBox(
                                         height: 10.0,
                                       ),
                                       Text(
                                         "Referência do pneu",
-                                        style: Core.subtitleHint,
+                                        style: Constants.subtitleHint,
                                       ),
                                       SelectableText(
                                         car.modelPneu,
-                                        style:
-                                            Core.title.copyWith(fontSize: 16),
+                                        style: Constants.title
+                                            .copyWith(fontSize: 16),
                                       ),
                                       const SizedBox(
                                         height: 10.0,
@@ -479,11 +486,11 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                                               children: [
                                                 Text(
                                                   "Número cartão",
-                                                  style: Core.subtitleHint,
+                                                  style: Constants.subtitleHint,
                                                 ),
                                                 SelectableText(
                                                   car.ticket,
-                                                  style: Core.title
+                                                  style: Constants.title
                                                       .copyWith(fontSize: 16),
                                                 ),
                                               ],
@@ -500,7 +507,7 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                                             flex: 2,
                                             child: Text(
                                               "Funcionamento",
-                                              style: Core.titleHint,
+                                              style: Constants.titleHint,
                                             ),
                                           ),
                                           PopupMenuButton<StatusCar>(
@@ -544,7 +551,7 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                                                 value: state,
                                                 child: Text(
                                                   state.label,
-                                                  style: Core.title,
+                                                  style: Constants.title,
                                                 ),
                                               );
                                             }).toList(),
@@ -561,8 +568,10 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                                                 ),
                                                 label: Text(
                                                   car.state.label,
-                                                  style: Core.title.copyWith(
-                                                      color: car.state.color),
+                                                  style: Constants.title
+                                                      .copyWith(
+                                                          color:
+                                                              car.state.color),
                                                 )),
                                           ),
                                         ],
@@ -587,7 +596,8 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                                                 if (status.isEmpty) {
                                                   return Text(
                                                     'Nenhum registro de problemas encontrado.',
-                                                    style: Core.subtitleHint,
+                                                    style:
+                                                        Constants.subtitleHint,
                                                   );
                                                 } else {
                                                   status.sort((a, b) =>
@@ -600,7 +610,8 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                                                     children: [
                                                       Text(
                                                         "Registros de problemas",
-                                                        style: Core.subtitle
+                                                        style: Constants
+                                                            .subtitle
                                                             .copyWith(
                                                                 color:
                                                                     Colors.red),

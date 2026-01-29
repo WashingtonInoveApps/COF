@@ -3,12 +3,14 @@ import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/validation.dart';
 import 'package:bsu_control/model/car_model.dart';
 import 'package:bsu_control/model/itens_changes_model.dart';
+import 'package:bsu_control/model/obm_model.dart';
 import 'package:bsu_control/src/widgets/alert_message.dart';
 import 'package:bsu_control/src/widgets/car_changes_widget.dart';
 import 'package:bsu_control/src/widgets/textfield_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 import '../controller/car_controller.dart';
 import 'widgets/itens_section_widget.dart';
@@ -23,12 +25,23 @@ class CarRegisterPage extends StatefulWidget {
 }
 
 class _CarRegisterPageState extends State<CarRegisterPage> {
+  final app = GetIt.I.get<AppController>();
+
   late CarModel car;
   late CarController controller;
 
   final _key = GlobalKey<FormState>();
   final _textController = TextEditingController();
-  final app = GetIt.I.get<AppController>();
+
+  final maskReference = MaskTextInputFormatter(
+      mask: '###/## ##',
+      filter: {"#": RegExp(r'[0-9]')},
+      type: MaskAutoCompletionType.lazy);
+
+  final maskCard = MaskTextInputFormatter(
+      mask: '#### #### #### ####',
+      filter: {"#": RegExp(r'[0-9]')},
+      type: MaskAutoCompletionType.lazy);
 
   List<dynamic> images = [];
 
@@ -37,9 +50,11 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
     super.initState();
     controller = CarController(app: app);
     controller.cleanSections();
+    controller.setOBM(app.obms.firstWhere((e) => e.id == app.user.obmID));
 
     if (widget.car != null) {
-      controller.setTypeCar(widget.car?.typeCar);
+      controller.setTypeCar(widget.car?.type);
+      controller.setFunctionCar(widget.car?.function);
       controller.cleanSections();
 
       car = CarModel.copy(widget.car!);
@@ -55,9 +70,11 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
           changes: [],
           status: [],
           mapas: [],
-          typeCar: Core.carsType.first);
+          function: Constants.carsFunctions.first,
+          type: Constants.carsType.first);
 
-      controller.setTypeCar(Core.carsType.first);
+      controller.setTypeCar(Constants.carsType.first);
+      controller.setFunctionCar(Constants.carsFunctions.first);
     }
   }
 
@@ -98,7 +115,7 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                   ),
                   Text(
                     'Registro de veículo',
-                    style: Core.title.copyWith(fontSize: 18),
+                    style: Constants.title.copyWith(fontSize: 18),
                   ),
                   const Divider(),
                   const SizedBox(
@@ -120,14 +137,134 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                               SizedBox(
                                 width: width,
                                 child: Column(
+                                  spacing: 10,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      "PREFIXO",
-                                      style: Core.subtitleHint,
+                                      "ORGANIZAÇÃO",
+                                      style: Constants.subtitleHint,
                                     ),
-                                    const SizedBox(
-                                      height: 5.0,
+                                    Container(
+                                      height: 60.0,
+                                      width: double.infinity,
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 5),
+                                      alignment: Alignment.center,
+                                      decoration: BoxDecoration(
+                                          border:
+                                              Border.all(color: Colors.grey),
+                                          color: Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(5.0)),
+                                      child: Observer(builder: (_) {
+                                        return IgnorePointer(
+                                          ignoring: !app.user.adminFull,
+                                          child: DropdownButton<OBMModel>(
+                                              isExpanded: true,
+                                              value: controller.obm,
+                                              underline: Container(),
+                                              onChanged: controller.setOBM,
+                                              items: app.obms
+                                                  .map((e) => DropdownMenuItem(
+                                                        value: e,
+                                                        child: Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .symmetric(
+                                                                  horizontal:
+                                                                      5),
+                                                          child: Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            mainAxisSize:
+                                                                MainAxisSize
+                                                                    .min,
+                                                            children: [
+                                                              Text(
+                                                                e.prefix,
+                                                                style: Constants
+                                                                    .title,
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
+                                                              ),
+                                                              Text(
+                                                                e.name,
+                                                                maxLines: 1,
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
+                                                                style: Constants
+                                                                    .subtitle
+                                                                    .copyWith(
+                                                                        color: Colors
+                                                                            .grey),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ))
+                                                  .toList()),
+                                        );
+                                      }),
+                                    ),
+                                    Observer(builder: (context) {
+                                      return Visibility(
+                                          visible: (controller.cia != null),
+                                          child: Column(
+                                            spacing: 10,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                "COMPANHIA",
+                                                style: Constants.subtitleHint,
+                                              ),
+                                              Container(
+                                                height: 60.0,
+                                                width: double.infinity,
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 5),
+                                                alignment: Alignment.center,
+                                                decoration: BoxDecoration(
+                                                    border: Border.all(
+                                                        color: Colors.grey),
+                                                    color: Colors.white,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            5.0)),
+                                                child: DropdownButton<String?>(
+                                                    isExpanded: true,
+                                                    value: controller.cia,
+                                                    underline: Container(),
+                                                    onChanged:
+                                                        controller.setCia,
+                                                    items: controller.obm.cias
+                                                        .map((e) =>
+                                                            DropdownMenuItem(
+                                                              value: e,
+                                                              child: Padding(
+                                                                padding: const EdgeInsets
+                                                                    .symmetric(
+                                                                    horizontal:
+                                                                        5),
+                                                                child: Text(
+                                                                    e
+                                                                        .toUpperCase(),
+                                                                    style: Constants
+                                                                        .title),
+                                                              ),
+                                                            ))
+                                                        .toList()),
+                                              ),
+                                            ],
+                                          ));
+                                    }),
+                                    Text(
+                                      "PREFIXO",
+                                      style: Constants.subtitleHint,
                                     ),
                                     FieldText(
                                       initValue: car.prefix,
@@ -138,15 +275,9 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                                           car.prefix = value ?? car.prefix,
                                       upper: true,
                                     ),
-                                    const SizedBox(
-                                      height: 15.0,
-                                    ),
                                     Text(
                                       "MODELO",
-                                      style: Core.subtitleHint,
-                                    ),
-                                    const SizedBox(
-                                      height: 5.0,
+                                      style: Constants.subtitleHint,
                                     ),
                                     FieldText(
                                       initValue: car.model,
@@ -157,15 +288,9 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                                           car.model = value ?? car.model,
                                       upper: true,
                                     ),
-                                    const SizedBox(
-                                      height: 15.0,
-                                    ),
                                     Text(
                                       "PLACA",
-                                      style: Core.subtitleHint,
-                                    ),
-                                    const SizedBox(
-                                      height: 5.0,
+                                      style: Constants.subtitleHint,
                                     ),
                                     FieldText(
                                       initValue: car.plate,
@@ -176,15 +301,9 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                                           car.plate = value ?? car.plate,
                                       upper: true,
                                     ),
-                                    const SizedBox(
-                                      height: 15.0,
-                                    ),
                                     Text(
                                       "KM INICIAL",
-                                      style: Core.subtitleHint,
-                                    ),
-                                    const SizedBox(
-                                      height: 5.0,
+                                      style: Constants.subtitleHint,
                                     ),
                                     FieldText(
                                       initValue: car.km.toString(),
@@ -194,15 +313,9 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                                       onSaved: (value) =>
                                           car.km = int.parse(value!),
                                     ),
-                                    const SizedBox(
-                                      height: 15.0,
-                                    ),
                                     Text(
                                       "MODELO DO PNEU",
-                                      style: Core.subtitleHint,
-                                    ),
-                                    const SizedBox(
-                                      height: 5.0,
+                                      style: Constants.subtitleHint,
                                     ),
                                     FieldText(
                                       initValue: car.modelPneu,
@@ -212,16 +325,11 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                                       onSaved: (value) => car.modelPneu =
                                           value ?? car.modelPneu,
                                       upper: true,
-                                    ),
-                                    const SizedBox(
-                                      height: 15.0,
+                                      mask: [maskReference],
                                     ),
                                     Text(
                                       "NÚMERO DO CARTÃO",
-                                      style: Core.subtitleHint,
-                                    ),
-                                    const SizedBox(
-                                      height: 5.0,
+                                      style: Constants.subtitleHint,
                                     ),
                                     FieldText(
                                       initValue: car.ticket,
@@ -231,6 +339,7 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                                           Validation.validatorPreenchimento,
                                       onSaved: (value) =>
                                           car.ticket = value ?? car.ticket,
+                                      mask: [maskCard],
                                     ),
                                   ],
                                 ),
@@ -242,7 +351,7 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                                   children: [
                                     Text(
                                       "ITENS",
-                                      style: Core.subtitleHint,
+                                      style: Constants.subtitleHint,
                                     ),
                                     const Divider(),
                                     const SizedBox(
@@ -252,7 +361,7 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                                       return controller.sectionsItens.isEmpty
                                           ? Text(
                                               'Nenhum itens do checklist encontrado.',
-                                              style: Core.title,
+                                              style: Constants.title,
                                             )
                                           : Column(
                                               children: List.generate(
@@ -275,7 +384,8 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                                                                 child: Text(
                                                               section
                                                                   .description,
-                                                              style: Core.title,
+                                                              style: Constants
+                                                                  .title,
                                                             )),
                                                             InkWell(
                                                               onTap: () => controller
@@ -285,7 +395,8 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                                                                   CircleAvatar(
                                                                 radius: 12,
                                                                 backgroundColor:
-                                                                    Core.primary,
+                                                                    Constants
+                                                                        .primary,
                                                                 child:
                                                                     const Icon(
                                                                   Icons.remove,
@@ -315,7 +426,8 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                                                                   CircleAvatar(
                                                                 radius: 12,
                                                                 backgroundColor:
-                                                                    Core.primary,
+                                                                    Constants
+                                                                        .primary,
                                                                 child:
                                                                     const Icon(
                                                                   Icons.edit,
@@ -333,7 +445,8 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                                                                   CircleAvatar(
                                                                 radius: 12,
                                                                 backgroundColor:
-                                                                    Core.primary,
+                                                                    Constants
+                                                                        .primary,
                                                                 child: Icon(
                                                                   section.value
                                                                       ? Icons
@@ -403,7 +516,8 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                                                     ));
                                           },
                                           style: IconButton.styleFrom(
-                                              backgroundColor: Core.primary),
+                                              backgroundColor:
+                                                  Constants.primary),
                                           icon: const Icon(
                                             Icons.add,
                                             color: Colors.white,
@@ -414,39 +528,101 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                                       height: 15,
                                     ),
                                     Text(
-                                      "TIPO DE VEÍCULO",
-                                      style: Core.subtitleHint,
+                                      "FUNÇÃO",
+                                      style: Constants.subtitleHint,
                                     ),
                                     const Divider(),
-                                    Card(
-                                      margin: EdgeInsets.zero,
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 10.0),
-                                        child: Observer(builder: (_) {
-                                          return DropdownButton<String>(
-                                              value: controller.typeCar,
-                                              onChanged: (value) {
-                                                controller.setTypeCar(value);
+                                    const SizedBox(
+                                      height: 5,
+                                    ),
+                                    Container(
+                                      height: 60.0,
+                                      width: double.infinity,
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 5),
+                                      alignment: Alignment.center,
+                                      decoration: BoxDecoration(
+                                          border:
+                                              Border.all(color: Colors.grey),
+                                          color: Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(5.0)),
+                                      child: Observer(builder: (_) {
+                                        return DropdownButton<String?>(
+                                            isExpanded: true,
+                                            value: controller.function,
+                                            underline: Container(),
+                                            onChanged: (value) {
+                                              controller.setFunctionCar(value);
 
-                                                FocusScope.of(context)
-                                                    .unfocus();
-                                              },
-                                              underline: Container(),
-                                              isExpanded: true,
-                                              items: List.generate(
-                                                  Core.carsType.length,
-                                                  (index) =>
-                                                      DropdownMenuItem<String>(
-                                                        value: Core
-                                                            .carsType[index],
+                                              FocusScope.of(context).unfocus();
+                                            },
+                                            items: Constants.carsFunctions
+                                                .map((e) => DropdownMenuItem(
+                                                      value: e,
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .symmetric(
+                                                                horizontal: 5),
                                                         child: Text(
-                                                          Core.carsType[index],
-                                                          style: Core.subtitle,
-                                                        ),
-                                                      )));
-                                        }),
-                                      ),
+                                                            e.toUpperCase(),
+                                                            style: Constants
+                                                                .title),
+                                                      ),
+                                                    ))
+                                                .toList());
+                                      }),
+                                    ),
+                                    const SizedBox(
+                                      height: 15,
+                                    ),
+                                    Text(
+                                      "TIPO DE VEÍCULO",
+                                      style: Constants.subtitleHint,
+                                    ),
+                                    const Divider(),
+                                    const SizedBox(
+                                      height: 5,
+                                    ),
+                                    Container(
+                                      height: 60.0,
+                                      width: double.infinity,
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 5),
+                                      alignment: Alignment.center,
+                                      decoration: BoxDecoration(
+                                          border:
+                                              Border.all(color: Colors.grey),
+                                          color: Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(5.0)),
+                                      child: Observer(builder: (_) {
+                                        return DropdownButton<String?>(
+                                            isExpanded: true,
+                                            value: controller.type,
+                                            underline: Container(),
+                                            onChanged: (value) {
+                                              controller.setTypeCar(value);
+
+                                              FocusScope.of(context).unfocus();
+                                            },
+                                            items: Constants.carsType
+                                                .map((e) => DropdownMenuItem(
+                                                      value: e,
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .symmetric(
+                                                                horizontal: 5),
+                                                        child: Text(
+                                                            e.toUpperCase(),
+                                                            style: Constants
+                                                                .title),
+                                                      ),
+                                                    ))
+                                                .toList());
+                                      }),
                                     ),
                                     const SizedBox(
                                       height: 20,
@@ -486,17 +662,22 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                                                   .validate()) {
                                                 _key.currentState!.save();
 
-                                                car.typeCar =
-                                                    controller.typeCar;
+                                                car.type = controller.type;
+                                                car.function =
+                                                    controller.function;
                                                 car.adm = controller.adm;
                                                 car.changes =
                                                     controller.carChanges;
-                                                car.obm = app.user.obm;
+                                                car.obmID =
+                                                    controller.obm.id ?? '';
+                                                car.cia = (controller.cia
+                                                        ?.toLowerCase()) ??
+                                                    (controller.obm.id ?? '');
                                                 car.itens =
                                                     controller.sectionsItens;
 
                                                 controller
-                                                    .saveCar(
+                                                    .save(
                                                         car: car,
                                                         images: images)
                                                     .then((value) async {
@@ -532,7 +713,7 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                                             },
                                             child: Text(
                                               "SALVAR",
-                                              style: Core.titleButton,
+                                              style: Constants.titleButton,
                                             )),
                                       ),
                                     ),
@@ -597,9 +778,20 @@ Widget changesListWidget(
                           spacing: 10,
                           children: [
                             Expanded(
-                              child: Text(
-                                section.itens[index].description,
-                                style: Core.subtitle,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    section.itens[index].description,
+                                    style: Constants.subtitle,
+                                  ),
+                                  (section.itens[index].quantity > 1)
+                                      ? Text(
+                                          '${section.itens[index].quantity} unids.',
+                                          style: Constants.subtitleHint,
+                                        )
+                                      : Container(),
+                                ],
                               ),
                             ),
                             InkWell(
@@ -624,7 +816,7 @@ Widget changesListWidget(
             onTap: onAdd,
             child: CircleAvatar(
               radius: 15,
-              backgroundColor: Core.primary,
+              backgroundColor: Constants.primary,
               child: const Icon(
                 Icons.add,
                 size: 20,

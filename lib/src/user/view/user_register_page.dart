@@ -4,7 +4,7 @@ import 'package:bsu_control/core/validation.dart';
 import 'package:bsu_control/model/user_model.dart';
 import 'package:bsu_control/src/user/repository/user_repository.dart';
 import 'package:bsu_control/src/widgets/alert_message.dart';
-import 'package:bsu_control/src/widgets/app_bar_widget.dart';
+import 'package:bsu_control/src/widgets/backgraund_page.dart';
 import 'package:bsu_control/src/widgets/textfield_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -34,11 +34,11 @@ class _UserPageRegisterState extends State<UserPageRegister> {
 
     controller.setGraduation((widget.user?.graduation.isNotEmpty ?? false)
         ? widget.user?.graduation
-        : Core.graduations.first);
+        : Constants.graduations.first);
 
     if (widget.user != null) user = UserModel.fromMap(widget.user!.toMap());
 
-    controller.setOBM((widget.user == null) ? Core.obms.first : user.obm);
+    // controller.setOBM((widget.user == null) ? Constants.obms.first : user.obm);
     controller.setAdmin(user.admin);
   }
 
@@ -54,9 +54,9 @@ class _UserPageRegisterState extends State<UserPageRegister> {
     return Scaffold(
       body: Column(
         children: [
-          const AppBarCustom(
-            titlePage: 'REGISTRO DE USUÁRIO',
-          ),
+          // const AppBarCustom(
+          //   titlePage: 'REGISTRO DE USUÁRIO',
+          // ),
           Expanded(
             child: Stack(
               children: [
@@ -73,7 +73,7 @@ class _UserPageRegisterState extends State<UserPageRegister> {
                           ),
                           Text(
                             "INFORMAÇÕES DO USUÁRIO",
-                            style: Core.titleHint,
+                            style: Constants.titleHint,
                           ),
                           const Divider(),
                           const SizedBox(
@@ -102,13 +102,14 @@ class _UserPageRegisterState extends State<UserPageRegister> {
                                             underline: Container(),
                                             isExpanded: true,
                                             items: List.generate(
-                                                Core.obms.length,
+                                                Constants.obms.length,
                                                 (index) =>
                                                     DropdownMenuItem<String>(
-                                                      value: Core.obms[index],
+                                                      value:
+                                                          Constants.obms[index],
                                                       child: Text(
-                                                        Core.obms[index],
-                                                        style: Core.title,
+                                                        Constants.obms[index],
+                                                        style: Constants.title,
                                                       ),
                                                     )));
                                       }),
@@ -134,14 +135,15 @@ class _UserPageRegisterState extends State<UserPageRegister> {
                                             underline: Container(),
                                             isExpanded: true,
                                             items: List.generate(
-                                                Core.graduations.length,
+                                                Constants.graduations.length,
                                                 (index) =>
                                                     DropdownMenuItem<String>(
-                                                      value: Core
+                                                      value: Constants
                                                           .graduations[index],
                                                       child: Text(
-                                                        Core.graduations[index],
-                                                        style: Core.title,
+                                                        Constants
+                                                            .graduations[index],
+                                                        style: Constants.title,
                                                       ),
                                                     )));
                                       }),
@@ -194,7 +196,7 @@ class _UserPageRegisterState extends State<UserPageRegister> {
                           ),
                           Text(
                             "INFORMAÇÕES DE ACESSO",
-                            style: Core.titleHint,
+                            style: Constants.titleHint,
                           ),
                           const Divider(),
                           const SizedBox(
@@ -233,7 +235,7 @@ class _UserPageRegisterState extends State<UserPageRegister> {
                                   children: [
                                     Text(
                                       'PAINEL ADMINISTRATIVO ( PERMISSÕES )',
-                                      style: Core.titleHint,
+                                      style: Constants.titleHint,
                                     ),
                                     const Divider(),
                                     SizedBox(
@@ -250,7 +252,7 @@ class _UserPageRegisterState extends State<UserPageRegister> {
                                                         controller.setAdmin),
                                                 Text(
                                                   'ADMIN',
-                                                  style: Core.title,
+                                                  style: Constants.title,
                                                 )
                                               ],
                                             ),
@@ -276,7 +278,7 @@ class _UserPageRegisterState extends State<UserPageRegister> {
                                     _key.currentState!.save();
 
                                     user.graduation = controller.graduation;
-                                    user.obm = controller.obm;
+                                    // user.obm = controller.obm;
                                     user.admin = controller.admin;
 
                                     controller
@@ -303,7 +305,7 @@ class _UserPageRegisterState extends State<UserPageRegister> {
                                 },
                                 child: Text(
                                   "CADASTRAR",
-                                  style: Core.titleButton,
+                                  style: Constants.titleButton,
                                 ),
                               ),
                             ),

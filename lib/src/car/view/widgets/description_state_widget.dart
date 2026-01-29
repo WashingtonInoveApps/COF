@@ -17,7 +17,7 @@ class DescriptionStateWidget extends StatefulWidget {
 }
 
 class _DescriptionStateWidgetState extends State<DescriptionStateWidget> {
-  String _status = Core.statusType.first;
+  String _status = Constants.statusType.first;
 
   final _controllerDesc = TextEditingController();
   final _controllerLocal = TextEditingController();
@@ -52,18 +52,18 @@ class _DescriptionStateWidgetState extends State<DescriptionStateWidget> {
                     value: _status,
                     onChanged: (value) {
                       setState(() {
-                        _status = value ?? Core.statusType.first;
+                        _status = value ?? Constants.statusType.first;
                       });
                     },
                     underline: Container(),
                     isExpanded: true,
                     items: List.generate(
-                        Core.statusType.length,
+                        Constants.statusType.length,
                         (index) => DropdownMenuItem<String>(
-                              value: Core.statusType[index],
+                              value: Constants.statusType[index],
                               child: Text(
-                                Core.statusType[index],
-                                style: Core.title,
+                                Constants.statusType[index],
+                                style: Constants.title,
                               ),
                             ))),
               ),
@@ -104,7 +104,7 @@ class _DescriptionStateWidgetState extends State<DescriptionStateWidget> {
                               value: false));
                         }
                       },
-                      child: Text("INSERIR", style: Core.titleButton)))
+                      child: Text("INSERIR", style: Constants.titleButton)))
             ],
           ),
         ),

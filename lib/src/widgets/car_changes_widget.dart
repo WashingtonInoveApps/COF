@@ -1,17 +1,16 @@
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:bsu_control/core/constants.dart';
+import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/model/car_changes_model.dart';
 import 'package:bsu_control/model/car_model.dart';
 import 'package:bsu_control/model/user_model.dart';
+import 'package:bsu_control/src/widgets/alert_message.dart';
 import 'package:bsu_control/src/widgets/image_view_change_widget.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:image_cropper/image_cropper.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:image/image.dart' as img;
+
 import '../../model/file_model.dart';
 import 'image_change_widget.dart';
 
@@ -76,43 +75,6 @@ class _CarChangesWidgetState extends State<CarChangesWidget> {
     return false;
   }
 
-  Future<Uint8List?> pickerImage() async {
-    final image = await ImagePicker()
-        .pickImage(source: ImageSource.gallery, imageQuality: 100);
-
-    if (image != null) {
-      final croppedFile = await ImageCropper().cropImage(
-        sourcePath: image.path,
-        aspectRatio: const CropAspectRatio(ratioX: 3, ratioY: 2),
-        uiSettings: [
-          AndroidUiSettings(
-            lockAspectRatio: true,
-          ),
-          IOSUiSettings(
-            aspectRatioLockEnabled: true,
-          ),
-        ],
-      );
-
-      if (croppedFile != null) {
-        final bytes = await croppedFile.readAsBytes();
-        final original = img.decodeImage(bytes)!;
-
-        final resized = img.copyResize(
-          original,
-          width: widthImage.toInt(),
-          height: heightImage.toInt(),
-        );
-
-        final result = File("${croppedFile.path}_600x400.png")
-          ..writeAsBytesSync(img.encodePng(resized));
-        return await result.readAsBytes();
-      }
-    }
-
-    return null;
-  }
-
   @override
   Widget build(BuildContext context) {
     changes
@@ -153,23 +115,61 @@ class _CarChangesWidgetState extends State<CarChangesWidget> {
                     child: Stack(
                       children: [
                         Center(
-                          child: Container(
-                            height: heightImage,
-                            width: widthImage,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(5),
-                                image: DecorationImage(
-                                    image: (image is Uint8List)
-                                        ? MemoryImage(image) as ImageProvider
-                                        : (image is FileModel)
-                                            ? CachedNetworkImageProvider(
-                                                image.url)
-                                            : const NetworkImage(
-                                                    "assets/car.jpg")
-                                                as ImageProvider,
-                                    fit: BoxFit.contain)),
-                          ),
+                          child: (image is Uint8List)
+                              ? Image.memory(
+                                  image,
+                                  height: heightImage,
+                                  width: widthImage,
+                                  fit: BoxFit.contain,
+                                )
+                              : (image is FileModel)
+                                  ? CachedNetworkImage(
+                                      imageUrl: image.url,
+                                      height: heightImage,
+                                      width: widthImage,
+                                      progressIndicatorBuilder:
+                                          (context, url, downloadProgress) =>
+                                              Center(
+                                        child: CircularProgressIndicator(
+                                            color: Constants.primary,
+                                            value: downloadProgress.progress),
+                                      ),
+                                      fit: BoxFit.contain,
+                                    )
+                                  : Column(
+                                      spacing: 5,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        const Icon(
+                                          Icons.image_not_supported,
+                                          size: 50,
+                                          color: Colors.grey,
+                                        ),
+                                        Text(
+                                          'Sem imagem',
+                                          style: Constants.subtitleHint,
+                                        ),
+                                      ],
+                                    ),
                         ),
+                        // Center(
+                        //   child: Container(
+                        //     height: heightImage,
+                        //     width: widthImage,
+                        //     decoration: BoxDecoration(
+                        //         borderRadius: BorderRadius.circular(5),
+                        //         image: DecorationImage(
+                        //             image: (image is Uint8List)
+                        //                 ? MemoryImage(image) as ImageProvider
+                        //                 : (image is FileModel)
+                        //                     ? CachedNetworkImageProvider(
+                        //                         image.url)
+                        //                     : const NetworkImage(
+                        //                             "assets/car.jpg")
+                        //                         as ImageProvider,
+                        //             fit: BoxFit.contain)),
+                        //   ),
+                        // ),
                         Center(
                           child: GestureDetector(
                             behavior: HitTestBehavior.translucent,
@@ -268,7 +268,8 @@ class _CarChangesWidgetState extends State<CarChangesWidget> {
               : (widget.register)
                   ? InkWell(
                       onTap: () {
-                        pickerImage().then((data) {
+                        Core.pickerImage(height: heightImage, width: widthImage)
+                            .then((data) {
                           if (data != null) {
                             setState(() {
                               images[indexImage] = data;
@@ -287,7 +288,7 @@ class _CarChangesWidgetState extends State<CarChangesWidget> {
                           ),
                           Text(
                             'Clique para adicionar imagem',
-                            style: Core.subtitleHint,
+                            style: Constants.subtitleHint,
                           ),
                         ],
                       ),
@@ -295,6 +296,7 @@ class _CarChangesWidgetState extends State<CarChangesWidget> {
                   : Center(
                       child: Column(
                         spacing: 5,
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           const Icon(
                             Icons.image_not_supported,
@@ -303,7 +305,7 @@ class _CarChangesWidgetState extends State<CarChangesWidget> {
                           ),
                           Text(
                             'Sem imagem',
-                            style: Core.subtitleHint,
+                            style: Constants.subtitleHint,
                           ),
                         ],
                       ),
@@ -325,19 +327,37 @@ class _CarChangesWidgetState extends State<CarChangesWidget> {
                         Expanded(
                           child: InkWell(
                               onTap: () {
-                                pickerImage().then((data) {
-                                  if (data != null) {
-                                    setState(() {
-                                      images[indexImage] = data;
-                                      widget.onChangeImages?.call(images);
+                                showDialog(
+                                    context: context,
+                                    builder: (context) => AlertMessage(
+                                        title: '',
+                                        message:
+                                            'Deseja alterar a imagem da vista ?',
+                                        titleOK: 'Sim',
+                                        cancel: true,
+                                        onPressedCancel: () =>
+                                            Navigator.of(context).pop(false),
+                                        onPressedOK: () => Navigator.of(context)
+                                            .pop(true))).then((value) {
+                                  if (value ?? false) {
+                                    Core.pickerImage(
+                                            height: heightImage,
+                                            width: widthImage)
+                                        .then((data) {
+                                      if (data != null) {
+                                        setState(() {
+                                          images[indexImage] = data;
+                                          widget.onChangeImages?.call(images);
 
-                                      List<CarChangeModel> carChanges =
-                                          List<CarChangeModel>.from(
-                                              widget.car.changes);
+                                          List<CarChangeModel> carChanges =
+                                              List<CarChangeModel>.from(
+                                                  widget.car.changes);
 
-                                      carChanges.removeWhere(
-                                          (e) => e.indexImage == indexImage);
-                                      widget.onChange?.call(carChanges);
+                                          carChanges.removeWhere((e) =>
+                                              e.indexImage == indexImage);
+                                          widget.onChange?.call(carChanges);
+                                        });
+                                      }
                                     });
                                   }
                                 });
@@ -345,7 +365,7 @@ class _CarChangesWidgetState extends State<CarChangesWidget> {
                               child: Icon(
                                 MdiIcons.imageEdit,
                                 size: 20,
-                                color: Core.primary,
+                                color: Constants.primary,
                               )),
                         ),
                         const VerticalDivider(),
@@ -353,20 +373,37 @@ class _CarChangesWidgetState extends State<CarChangesWidget> {
                           child: InkWell(
                               onTap: changes.isNotEmpty
                                   ? () {
-                                      List<CarChangeModel> carChanges =
-                                          List<CarChangeModel>.from(
-                                              widget.car.changes);
+                                      showDialog(
+                                          context: context,
+                                          builder: (context) => AlertMessage(
+                                              title: '',
+                                              message:
+                                                  'Deseja remover as alterações constada na imagem ?',
+                                              titleOK: 'Sim',
+                                              cancel: true,
+                                              onPressedCancel: () =>
+                                                  Navigator.of(context)
+                                                      .pop(false),
+                                              onPressedOK: () =>
+                                                  Navigator.of(context).pop(
+                                                      true))).then((value) {
+                                        if (value ?? false) {
+                                          List<CarChangeModel> carChanges =
+                                              List<CarChangeModel>.from(
+                                                  widget.car.changes);
 
-                                      carChanges.removeWhere(
-                                          (e) => e.indexImage == indexImage);
-                                      widget.onChange?.call(carChanges);
+                                          carChanges.removeWhere((e) =>
+                                              e.indexImage == indexImage);
+                                          widget.onChange?.call(carChanges);
+                                        }
+                                      });
                                     }
                                   : null,
                               child: Icon(
                                 MdiIcons.refresh,
                                 size: 20,
                                 color: changes.isNotEmpty
-                                    ? Core.primary
+                                    ? Constants.primary
                                     : Colors.grey,
                               )),
                         ),
@@ -400,12 +437,14 @@ Widget menuView({required int indexImage, required Function(int) onChange}) {
                       Icon(
                         MdiIcons.chevronDown,
                         size: 20,
-                        color: indexImage == 0 ? Core.primary : Colors.grey,
+                        color:
+                            indexImage == 0 ? Constants.primary : Colors.grey,
                       ),
                       Icon(
                         MdiIcons.car,
                         size: 20,
-                        color: indexImage == 0 ? Core.primary : Colors.grey,
+                        color:
+                            indexImage == 0 ? Constants.primary : Colors.grey,
                       ),
                     ],
                   )),
@@ -419,12 +458,14 @@ Widget menuView({required int indexImage, required Function(int) onChange}) {
                       Icon(
                         MdiIcons.chevronRight,
                         size: 20,
-                        color: indexImage == 1 ? Core.primary : Colors.grey,
+                        color:
+                            indexImage == 1 ? Constants.primary : Colors.grey,
                       ),
                       Icon(
                         MdiIcons.car,
                         size: 20,
-                        color: indexImage == 1 ? Core.primary : Colors.grey,
+                        color:
+                            indexImage == 1 ? Constants.primary : Colors.grey,
                       ),
                     ],
                   )),
@@ -438,12 +479,14 @@ Widget menuView({required int indexImage, required Function(int) onChange}) {
                       Icon(
                         MdiIcons.car,
                         size: 20,
-                        color: indexImage == 2 ? Core.primary : Colors.grey,
+                        color:
+                            indexImage == 2 ? Constants.primary : Colors.grey,
                       ),
                       Icon(
                         MdiIcons.chevronLeft,
                         size: 20,
-                        color: indexImage == 2 ? Core.primary : Colors.grey,
+                        color:
+                            indexImage == 2 ? Constants.primary : Colors.grey,
                       ),
                     ],
                   )),
@@ -457,12 +500,14 @@ Widget menuView({required int indexImage, required Function(int) onChange}) {
                       Icon(
                         MdiIcons.car,
                         size: 20,
-                        color: indexImage == 3 ? Core.primary : Colors.grey,
+                        color:
+                            indexImage == 3 ? Constants.primary : Colors.grey,
                       ),
                       Icon(
                         MdiIcons.chevronUp,
                         size: 20,
-                        color: indexImage == 3 ? Core.primary : Colors.grey,
+                        color:
+                            indexImage == 3 ? Constants.primary : Colors.grey,
                       ),
                     ],
                   )),

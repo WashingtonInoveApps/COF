@@ -2,6 +2,7 @@ import 'package:bsu_control/app_interface.dart';
 import 'package:bsu_control/core/api_client.dart';
 import 'package:bsu_control/model/car_model.dart';
 import 'package:bsu_control/model/check_list_model.dart';
+import 'package:bsu_control/model/obm_model.dart';
 import 'package:bsu_control/model/supply_model.dart';
 import 'package:bsu_control/model/user_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -149,6 +150,17 @@ class AppRepository extends APIClient implements IAppRepository {
       return true;
     } catch (e) {
       return false;
+    }
+  }
+
+  @override
+  Future<List<OBMModel>> getOBMs() async {
+    try {
+      return await colOBMs.get().then((result) => result.docs
+          .map((e) => OBMModel.fromMap(e.data() as Map<String, dynamic>))
+          .toList());
+    } catch (e) {
+      return [];
     }
   }
 }

@@ -4,6 +4,8 @@ import '../../../model/car_status_model.dart';
 
 abstract class ICarRepository {
   Future<bool> save({required CarModel car, required List<dynamic> images});
+  Future<bool> copy({required CarModel car});
+
   Future<bool> updateStatusCar({required CarModel car, CarStatusModel? status});
   Future<bool> updateKMCar(
       {required String id, required Map<String, dynamic> data});

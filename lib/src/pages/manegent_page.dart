@@ -6,7 +6,7 @@ import 'package:get_it/get_it.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../user/view/users_page.dart';
-import '../widgets/app_bar_widget.dart';
+import '../widgets/backgraund_page.dart';
 
 class ManagementPage extends StatefulWidget {
   const ManagementPage({Key? key}) : super(key: key);
@@ -22,9 +22,9 @@ class _ManagementPageState extends State<ManagementPage> {
     return Scaffold(
       body: Column(
         children: [
-          const AppBarCustom(
-            titlePage: 'PAINEL ADMINISTRATIVO',
-          ),
+          // const AppBarCustom(
+          //   titlePage: 'PAINEL ADMINISTRATIVO',
+          // ),
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(10),
@@ -44,11 +44,11 @@ class _ManagementPageState extends State<ManagementPage> {
                     ),
                     title: Text(
                       'VIATURAS',
-                      style: Core.title,
+                      style: Constants.title,
                     ),
                     subtitle: Text(
                       'GERENCIAMENTO E INFORMAÇÕES',
-                      style: Core.subtitleHint,
+                      style: Constants.subtitleHint,
                     ),
                     trailing: const Icon(
                       Icons.arrow_forward_ios_outlined,
@@ -71,11 +71,11 @@ class _ManagementPageState extends State<ManagementPage> {
                     ),
                     title: Text(
                       'USUÁRIOS',
-                      style: Core.title,
+                      style: Constants.title,
                     ),
                     subtitle: Text(
                       'GERENCIAMENTO DE USUÁRIOS',
-                      style: Core.subtitleHint,
+                      style: Constants.subtitleHint,
                     ),
                     trailing: const Icon(
                       Icons.arrow_forward_ios_outlined,

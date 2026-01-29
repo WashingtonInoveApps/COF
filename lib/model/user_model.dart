@@ -8,7 +8,7 @@ class UserModel {
   String email;
   String id;
   String graduation;
-  String obm;
+  String obmID;
   String fullname;
 
   bool adminFull;
@@ -22,7 +22,7 @@ class UserModel {
     this.email = '',
     this.id = '',
     this.graduation = '',
-    this.obm = '',
+    this.obmID = '',
     this.fullname = '',
     this.adminFull = false,
     this.admin = false,
@@ -36,7 +36,7 @@ class UserModel {
     String? email,
     String? id,
     String? graduation,
-    String? obm,
+    String? obmID,
     String? fullname,
     bool? adminFull,
     bool? admin,
@@ -49,7 +49,7 @@ class UserModel {
       email: email ?? this.email,
       id: id ?? this.id,
       graduation: graduation ?? this.graduation,
-      obm: obm ?? this.obm,
+      obmID: obmID ?? this.obmID,
       fullname: fullname ?? this.fullname,
       adminFull: adminFull ?? this.adminFull,
       admin: admin ?? this.admin,
@@ -65,7 +65,7 @@ class UserModel {
       'email': email,
       'id': id,
       'graduation': graduation,
-      'obm': obm,
+      'obmID': obmID,
       'fullname': fullname,
       'adminFull': adminFull,
       'admin': admin,
@@ -79,7 +79,7 @@ class UserModel {
       'registration': registration,
       'id': id,
       'graduation': graduation,
-      'obm': obm,
+      'obmID': obmID,
       'fullname': fullname,
     };
   }
@@ -92,7 +92,7 @@ class UserModel {
       email: map['email'] ?? '',
       id: map['id'] ?? '',
       graduation: map['graduation'] ?? '',
-      obm: map['obm'] ?? '',
+      obmID: map['obmID'] ?? '',
       fullname: map['fullname'] ?? '',
       adminFull: map['adminFull'] ?? false,
       admin: map['admin'] ?? false,
@@ -106,7 +106,7 @@ class UserModel {
         registration: map['registration'] ?? '',
         id: map['id'] ?? '',
         graduation: map['graduation'] ?? '',
-        obm: map['obm'] ?? '',
+        obmID: map['obmID'] ?? '',
         fullname: map['fullname'] ?? '');
   }
 
@@ -117,6 +117,6 @@ class UserModel {
 
   @override
   String toString() {
-    return 'UserModel(name: $name, registration: $registration, contact: $contact, email: $email, id: $id, graduation: $graduation, obm: $obm, fullname: $fullname, adminFull: $adminFull, admin: $admin, )';
+    return 'UserModel(name: $name, registration: $registration, contact: $contact, email: $email, id: $id, graduation: $graduation, obmID: $obmID, fullname: $fullname, adminFull: $adminFull, admin: $admin, )';
   }
 }

@@ -33,10 +33,10 @@ class AlertMessage extends StatelessWidget {
       ),
       title: Text(
         title.toUpperCase(),
-        style: Core.title,
+        style: Constants.title,
         textAlign: TextAlign.center,
       ),
-      titleTextStyle: Core.title,
+      titleTextStyle: Constants.title,
       titlePadding: const EdgeInsets.only(top: 20.0, left: 10.0, bottom: 10.0),
       content: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -49,13 +49,13 @@ class AlertMessage extends StatelessWidget {
             flex: 1,
             child: Text(
               message,
-              style: Core.title,
+              style: Constants.title,
               textAlign: TextAlign.center,
             ),
           ),
         ],
       ),
-      contentTextStyle: Core.title,
+      contentTextStyle: Constants.title,
       contentPadding: const EdgeInsets.symmetric(horizontal: 10.0),
       actions: <Widget>[
         cancel
@@ -63,7 +63,7 @@ class AlertMessage extends StatelessWidget {
                 onPressed: onPressedCancel,
                 child: Text(
                   titleCancel ?? "Cancelar",
-                  style: Core.title.copyWith(color: Colors.grey),
+                  style: Constants.title.copyWith(color: Colors.grey),
                 ),
               )
             : Container(),
@@ -72,7 +72,7 @@ class AlertMessage extends StatelessWidget {
                 onPressed: onPressedOK,
                 child: Text(
                   titleOK ?? "OK",
-                  style: Core.title
+                  style: Constants.title
                       .copyWith(color: Theme.of(context).primaryColor),
                 ),
               )

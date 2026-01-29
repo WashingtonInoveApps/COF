@@ -44,7 +44,7 @@ class FluidsWidget extends StatelessWidget {
               quarterTurns: 3,
               child: Text(
                 title.toUpperCase(),
-                style: Core.subtitle,
+                style: Constants.subtitle,
               ),
             ),
             SfSlider.vertical(

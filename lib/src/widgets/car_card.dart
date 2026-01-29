@@ -1,126 +1,199 @@
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/model/car_model.dart';
 import 'package:flutter/material.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
-import '../car/view/car_mapa_page.dart';
+import 'alert_message.dart';
 
 class CarCard extends StatelessWidget {
   final CarModel car;
+  final bool options;
   final Function() onTap;
   final Function()? onLong;
-  const CarCard({Key? key, required this.car, required this.onTap, this.onLong})
-      : super(key: key);
+  final Function()? onCopy;
+  const CarCard({
+    Key? key,
+    required this.car,
+    required this.onTap,
+    this.onLong,
+    this.onCopy,
+    this.options = false,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      onLongPress: onLong,
-      child: Card(
-        elevation: 2,
-        margin: const EdgeInsets.only(bottom: 10.0),
-        child: Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    flex: 3,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+    return Card(
+      elevation: 2,
+      margin: const EdgeInsets.only(bottom: 10.0),
+      child: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        car.prefix,
+                        style: Constants.title
+                            .copyWith(fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        car.model,
+                        style: Constants.title.copyWith(color: Colors.grey),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: TextButton.icon(
+                      style: TextButton.styleFrom(
+                          side: BorderSide(color: car.state.color)),
+                      onPressed: null,
+                      icon: Icon(
+                        car.state.icon,
+                        color: car.state.color,
+                        size: 20.0,
+                      ),
+                      label: Text(
+                        car.state.label,
+                        style: Constants.title.copyWith(color: car.state.color),
+                      )),
+                ),
+              ],
+            ),
+            const Divider(),
+            Row(
+              spacing: 10,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Expanded(
+                  child: SizedBox(
+                    height: 35,
+                    child: ListView(
+                      scrollDirection: Axis.horizontal,
                       children: [
-                        Text(
-                          car.prefix,
-                          style:
-                              Core.title.copyWith(fontWeight: FontWeight.bold),
-                        ),
-                        Text(
-                          car.model,
-                          style: Core.title.copyWith(color: Colors.grey),
-                        ),
+                        Visibility(
+                            visible: options,
+                            child: Row(
+                              spacing: 10,
+                              children: [
+                                SizedBox(
+                                  width: 80.0,
+                                  child: TextButton(
+                                      style: TextButton.styleFrom(
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadiusGeometry.circular(
+                                                      5)),
+                                          side: BorderSide(
+                                              color: Theme.of(context)
+                                                  .primaryColor)),
+                                      onPressed: onTap,
+                                      child: Text(
+                                        "Detalhes",
+                                        style: Constants.subtitle.copyWith(
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                            fontWeight: FontWeight.bold),
+                                      )),
+                                ),
+                                SizedBox(
+                                  width: 80.0,
+                                  child: TextButton(
+                                      style: TextButton.styleFrom(
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadiusGeometry.circular(
+                                                      5)),
+                                          side: BorderSide(
+                                              color: Theme.of(context)
+                                                  .primaryColor)),
+                                      onPressed: () {
+                                        showDialog(
+                                            context: context,
+                                            builder: (context) => AlertMessage(
+                                                  title: '',
+                                                  message:
+                                                      'Deseja deletar o registro desse veículo ?',
+                                                  cancel: true,
+                                                  titleOK: 'Sim',
+                                                  onPressedOK: () =>
+                                                      Navigator.of(context)
+                                                          .pop(true),
+                                                  onPressedCancel: () =>
+                                                      Navigator.of(context)
+                                                          .pop(false),
+                                                )).then((value) {
+                                          if (value ?? false) onLong?.call();
+                                        });
+                                      },
+                                      child: Text(
+                                        "Excluir",
+                                        style: Constants.subtitle.copyWith(
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                            fontWeight: FontWeight.bold),
+                                      )),
+                                ),
+                                SizedBox(
+                                  width: 80.0,
+                                  child: TextButton(
+                                      style: TextButton.styleFrom(
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadiusGeometry.circular(
+                                                      5)),
+                                          side: BorderSide(
+                                              color: Theme.of(context)
+                                                  .primaryColor)),
+                                      onPressed: () {
+                                        showDialog(
+                                            context: context,
+                                            builder: (context) => AlertMessage(
+                                                  title: '',
+                                                  message:
+                                                      'Deseja criar uma copia atual desse veiculo ?',
+                                                  cancel: true,
+                                                  titleOK: 'Sim',
+                                                  onPressedOK: () =>
+                                                      Navigator.of(context)
+                                                          .pop(true),
+                                                  onPressedCancel: () =>
+                                                      Navigator.of(context)
+                                                          .pop(false),
+                                                )).then((value) {
+                                          if (value ?? false) onCopy?.call();
+                                        });
+                                      },
+                                      child: Text(
+                                        "Copiar",
+                                        style: Constants.subtitle.copyWith(
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                            fontWeight: FontWeight.bold),
+                                      )),
+                                ),
+                              ],
+                            )),
                       ],
                     ),
                   ),
-                  Expanded(
-                    child: TextButton.icon(
-                        style: TextButton.styleFrom(
-                            side: BorderSide(color: car.state.color)),
-                        onPressed: null,
-                        icon: Icon(
-                          car.state.icon,
-                          color: car.state.color,
-                          size: 20.0,
-                        ),
-                        label: Text(
-                          car.state.label,
-                          style: Core.title.copyWith(color: car.state.color),
-                        )),
-                  ),
-                ],
-              ),
-              const Divider(),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  car.adm
-                      ? SizedBox(
-                          height: 35,
-                          width: 80.0,
-                          child: TextButton(
-                              style: TextButton.styleFrom(
-                                  side: BorderSide(
-                                      color: Theme.of(context).primaryColor)),
-                              onPressed: () {
-                                Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) => CarMapaPage(
-                                          car: car,
-                                        )));
-                              },
-                              child: Text(
-                                "MAPA",
-                                style: Core.subtitle.copyWith(
-                                    color: Theme.of(context).primaryColor,
-                                    fontWeight: FontWeight.bold),
-                              )),
-                        )
-                      : Container(
-                          height: 40.0,
-                        ),
-                  Expanded(
-                    child: Container(),
-                  ),
-                  Text(
-                    "PLACA",
-                    style: Core.subtitleHint,
-                  ),
-                  const SizedBox(
-                    width: 5.0,
-                  ),
-                  Text(
-                    car.plate,
-                    style: Core.title.copyWith(fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(
-                    width: 10.0,
-                  ),
-                  Text(
-                    "KM",
-                    style: Core.subtitleHint,
-                  ),
-                  const SizedBox(
-                    width: 5.0,
-                  ),
-                  Text(
-                    car.km.toString(),
-                    style: Core.title.copyWith(fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-            ],
-          ),
+                ),
+                Text(
+                  car.km.toString(),
+                  style: Constants.title.copyWith(fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  " KM",
+                  style: Constants.subtitleHint,
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );

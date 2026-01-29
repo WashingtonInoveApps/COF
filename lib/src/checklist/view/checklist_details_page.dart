@@ -1,12 +1,13 @@
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
+import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/core/validation.dart';
 import 'package:bsu_control/model/check_list_model.dart';
 import 'package:bsu_control/model/itens_changes_model.dart';
 import 'package:bsu_control/model/supply_model.dart';
 import 'package:bsu_control/model/user_model.dart';
 import 'package:bsu_control/src/checklist/view/checklist_register_page.dart';
-import 'package:bsu_control/src/widgets/app_bar_widget.dart';
+import 'package:bsu_control/src/widgets/backgraund_page.dart';
 import 'package:bsu_control/src/widgets/car_changes_widget.dart';
 import 'package:bsu_control/src/widgets/car_supply_widget.dart';
 import 'package:bsu_control/src/widgets/textfield_widget.dart';
@@ -88,7 +89,7 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
                           onFinish(_controller.text);
                         }
                       },
-                      child: Text("FINALIZAR", style: Core.titleButton)))
+                      child: Text("FINALIZAR", style: Constants.titleButton)))
             ],
           ),
         ),
@@ -106,10 +107,10 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
         children: [
           Column(
             children: [
-              AppBarCustom(
-                onBack: () => Navigator.of(context).pop(),
-                titlePage: 'DETALHES DO CHECKLIST',
-              ),
+              // AppBarCustom(
+              //   onBack: () => Navigator.of(context).pop(),
+              //   titlePage: 'DETALHES DO CHECKLIST',
+              // ),
               Expanded(
                 child: SingleChildScrollView(
                   child: LayoutBuilder(builder: (context, constrains) {
@@ -134,12 +135,12 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
                                     children: [
                                       Text(
                                         "CHECKLIST VEICULAR",
-                                        style: Core.title.copyWith(
+                                        style: Constants.title.copyWith(
                                             fontWeight: FontWeight.bold),
                                       ),
                                       Text(
                                         Core.formatDate(checklist.date),
-                                        style: Core.subtitleHint,
+                                        style: Constants.subtitleHint,
                                       ),
                                     ],
                                   )),
@@ -167,7 +168,7 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
                                                 ),
                                                 label: Text(
                                                   "Editar",
-                                                  style: Core.title
+                                                  style: Constants.title
                                                       .copyWith(color: color),
                                                 )),
                                             const SizedBox(
@@ -200,7 +201,7 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
                                                 ),
                                                 label: Text(
                                                   "Finalizar",
-                                                  style: Core.title
+                                                  style: Constants.title
                                                       .copyWith(color: color),
                                                 ))
                                           ],
@@ -226,13 +227,13 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
                                         Expanded(
                                           child: Text(
                                             "${checklist.prefix} - ${checklist.alfa}",
-                                            style: Core.title.copyWith(
+                                            style: Constants.title.copyWith(
                                                 fontWeight: FontWeight.bold),
                                           ),
                                         ),
                                         Text(
                                           checklist.pb,
-                                          style: Core.title.copyWith(
+                                          style: Constants.title.copyWith(
                                               fontWeight: FontWeight.bold),
                                         ),
                                       ],
@@ -242,14 +243,14 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
                                     ),
                                     Text(
                                       "Condutor",
-                                      style: Core.subtitleHint,
+                                      style: Constants.subtitleHint,
                                     ),
                                     const SizedBox(
                                       height: 5.0,
                                     ),
                                     Text(
                                       "${checklist.user.name} - ${checklist.user.registration}",
-                                      style: Core.title.copyWith(
+                                      style: Constants.title.copyWith(
                                           fontWeight: FontWeight.bold),
                                     ),
                                     const SizedBox(
@@ -264,14 +265,14 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
                                             children: [
                                               Text(
                                                 "KM Inicial",
-                                                style: Core.subtitleHint,
+                                                style: Constants.subtitleHint,
                                               ),
                                               const SizedBox(
                                                 width: 10.0,
                                               ),
                                               Text(
                                                 checklist.kmStart,
-                                                style: Core.title.copyWith(
+                                                style: Constants.title.copyWith(
                                                     fontWeight:
                                                         FontWeight.bold),
                                               ),
@@ -288,7 +289,7 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
                                             children: [
                                               Text(
                                                 "KM Final",
-                                                style: Core.subtitleHint,
+                                                style: Constants.subtitleHint,
                                               ),
                                               const SizedBox(
                                                 width: 10.0,
@@ -297,7 +298,7 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
                                                 checklist.kmFinal.isEmpty
                                                     ? "---"
                                                     : checklist.kmFinal,
-                                                style: Core.title.copyWith(
+                                                style: Constants.title.copyWith(
                                                     fontWeight:
                                                         FontWeight.bold),
                                               ),
@@ -311,7 +312,7 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
                                     ),
                                     Text(
                                       "NÍVEIS DOS FLUÍDOS",
-                                      style: Core.titleHint,
+                                      style: Constants.titleHint,
                                     ),
                                     const Divider(),
                                     Container(
@@ -351,7 +352,7 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
                                         Expanded(
                                           child: Text(
                                             "ABASTECIMENTO",
-                                            style: Core.titleHint,
+                                            style: Constants.titleHint,
                                           ),
                                         ),
                                         checklist.enable
@@ -387,9 +388,11 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
                                                 ),
                                                 label: Text(
                                                   "Adicionar",
-                                                  style: Core.title.copyWith(
-                                                      color: Theme.of(context)
-                                                          .primaryColor),
+                                                  style: Constants.title
+                                                      .copyWith(
+                                                          color: Theme.of(
+                                                                  context)
+                                                              .primaryColor),
                                                 ))
                                             : Container(),
                                       ],
@@ -404,7 +407,7 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
                                             padding: const EdgeInsets.all(10.0),
                                             child: Text(
                                                 "Ops ! Nenhum registro encontrado.",
-                                                style: Core.title),
+                                                style: Constants.title),
                                           ))
                                         : Column(
                                             children: List.generate(
@@ -443,12 +446,12 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
                                     ),
                                     Text(
                                       "OUTRAS OBSERVAÇÕES",
-                                      style: Core.titleHint,
+                                      style: Constants.titleHint,
                                     ),
                                     const Divider(),
                                     Text(
                                       checklist.obs,
-                                      style: Core.title,
+                                      style: Constants.title,
                                     ),
                                     const SizedBox(
                                       height: 50.0,
@@ -463,7 +466,7 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
                             ? Container()
                             : Text(
                                 "Checklist finalizado em ${Core.formatDate(checklist.dateFinish!)}",
-                                style: Core.subtitleHint,
+                                style: Constants.subtitleHint,
                               ),
                         const SizedBox(
                           height: 5,
@@ -501,7 +504,7 @@ Widget changesListWidget({required ItensChangesModel itensChanges}) => Padding(
         children: [
           Text(
             itensChanges.description,
-            style: Core.titleHint,
+            style: Constants.titleHint,
           ),
           const Divider(),
           Column(
@@ -518,7 +521,7 @@ Widget changesListWidget({required ItensChangesModel itensChanges}) => Padding(
                           Expanded(
                             child: Text(
                               itensChanges.itens[index].description,
-                              style: Core.subtitle,
+                              style: Constants.subtitle,
                             ),
                           ),
                           itensChanges.itens[index].value
@@ -545,14 +548,14 @@ Widget changesListWidget({required ItensChangesModel itensChanges}) => Padding(
                       ),
                       Text(
                         "OBSERVAÇÃO",
-                        style: Core.subtitleHint,
+                        style: Constants.subtitleHint,
                       ),
                       const SizedBox(
                         height: 5.0,
                       ),
                       Text(
                         itensChanges.obs,
-                        style: Core.title,
+                        style: Constants.title,
                       ),
                     ],
                   ),
@@ -637,7 +640,7 @@ class _SupplyWidgetState extends State<SupplyWidget> {
                         }
                       }
                     },
-                    child: Text("INSERIR", style: Core.titleButton)))
+                    child: Text("INSERIR", style: Constants.titleButton)))
           ],
         ),
       ),

@@ -34,12 +34,12 @@ class CheckListCard extends StatelessWidget {
                       children: [
                         Text(
                           "PREFIXO",
-                          style: Core.subtitleHint,
+                          style: Constants.subtitleHint,
                         ),
                         Text(
                           "${checkList.prefix} - ${checkList.alfa}",
-                          style:
-                              Core.title.copyWith(fontWeight: FontWeight.bold),
+                          style: Constants.title
+                              .copyWith(fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
@@ -50,12 +50,12 @@ class CheckListCard extends StatelessWidget {
                       children: [
                         Text(
                           "PONTO BASE",
-                          style: Core.subtitleHint,
+                          style: Constants.subtitleHint,
                         ),
                         Text(
                           checkList.pb.toUpperCase(),
-                          style:
-                              Core.title.copyWith(fontWeight: FontWeight.bold),
+                          style: Constants.title
+                              .copyWith(fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
@@ -67,11 +67,11 @@ class CheckListCard extends StatelessWidget {
               ),
               Text(
                 "CONDUTOR",
-                style: Core.subtitleHint,
+                style: Constants.subtitleHint,
               ),
               Text(
                 "${checkList.user.name.toUpperCase()} - ${checkList.user.registration}",
-                style: Core.title.copyWith(fontWeight: FontWeight.bold),
+                style: Constants.title.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(
                 height: 5.0,
@@ -84,12 +84,12 @@ class CheckListCard extends StatelessWidget {
                       children: [
                         Text(
                           "KM INICIAL",
-                          style: Core.subtitleHint,
+                          style: Constants.subtitleHint,
                         ),
                         Text(
                           checkList.kmStart,
-                          style:
-                              Core.title.copyWith(fontWeight: FontWeight.bold),
+                          style: Constants.title
+                              .copyWith(fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
@@ -100,12 +100,12 @@ class CheckListCard extends StatelessWidget {
                       children: [
                         Text(
                           "KM FINAL",
-                          style: Core.subtitleHint,
+                          style: Constants.subtitleHint,
                         ),
                         Text(
                           checkList.kmFinal.isEmpty ? '--' : checkList.kmFinal,
-                          style:
-                              Core.title.copyWith(fontWeight: FontWeight.bold),
+                          style: Constants.title
+                              .copyWith(fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),

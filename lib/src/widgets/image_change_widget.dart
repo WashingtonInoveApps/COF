@@ -1,12 +1,10 @@
 //Adicionar imagem e descrição.
-import 'dart:io';
 import 'dart:typed_data';
-import 'package:image/image.dart' as img;
+
 import 'package:bsu_control/core/constants.dart';
+import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/src/widgets/textfield_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:image_cropper/image_cropper.dart';
-import 'package:image_picker/image_picker.dart';
 
 class ImageChangeWidget extends StatefulWidget {
   final Function(dynamic image, String description) onSelect;
@@ -23,43 +21,6 @@ class _ImageChangeWidgetState extends State<ImageChangeWidget> {
   double heightImage = 300;
   double widthImage = 400;
 
-  Future<Uint8List?> pickerImage() async {
-    final image = await ImagePicker()
-        .pickImage(source: ImageSource.gallery, imageQuality: 100);
-
-    if (image != null) {
-      final croppedFile = await ImageCropper().cropImage(
-        sourcePath: image.path,
-        aspectRatio: const CropAspectRatio(ratioX: 3, ratioY: 2),
-        uiSettings: [
-          AndroidUiSettings(
-            lockAspectRatio: true,
-          ),
-          IOSUiSettings(
-            aspectRatioLockEnabled: true,
-          ),
-        ],
-      );
-
-      if (croppedFile != null) {
-        final bytes = await croppedFile.readAsBytes();
-        final original = img.decodeImage(bytes)!;
-
-        final resized = img.copyResize(
-          original,
-          width: widthImage.toInt(),
-          height: heightImage.toInt(),
-        );
-
-        final result = File("${croppedFile.path}_600x400.png")
-          ..writeAsBytesSync(img.encodePng(resized));
-        return await result.readAsBytes();
-      }
-    }
-
-    return null;
-  }
-
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -74,7 +35,8 @@ class _ImageChangeWidgetState extends State<ImageChangeWidget> {
             children: [
               GestureDetector(
                   onTap: () async {
-                    pickerImage().then((result) {
+                    Core.pickerImage(height: heightImage, width: widthImage)
+                        .then((result) {
                       if (result != null) {
                         image = result;
                         setState(() {});
@@ -106,7 +68,7 @@ class _ImageChangeWidgetState extends State<ImageChangeWidget> {
                                 ),
                                 Text(
                                   'Clique para adicionar imagem',
-                                  style: Core.subtitleHint,
+                                  style: Constants.subtitleHint,
                                 ),
                               ],
                             ),
@@ -134,7 +96,7 @@ class _ImageChangeWidgetState extends State<ImageChangeWidget> {
 
                         Navigator.of(context).pop();
                       },
-                      child: Text("ADICIONAR", style: Core.titleButton)))
+                      child: Text("ADICIONAR", style: Constants.titleButton)))
             ],
           ),
         ),

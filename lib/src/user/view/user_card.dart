@@ -24,7 +24,7 @@ class CardUser extends StatelessWidget {
                 children: [
                   Text(
                     user.graduation,
-                    style: Core.subtitle.copyWith(color: Colors.grey),
+                    style: Constants.subtitle.copyWith(color: Colors.grey),
                   ),
                   const Divider(),
                 ],
@@ -35,7 +35,8 @@ class CardUser extends StatelessWidget {
                 Expanded(
                   child: Text(
                     user.name.toUpperCase(),
-                    style: Core.title.copyWith(fontWeight: FontWeight.bold),
+                    style:
+                        Constants.title.copyWith(fontWeight: FontWeight.bold),
                   ),
                 ),
                 InkWell(
@@ -50,7 +51,7 @@ class CardUser extends StatelessWidget {
                         borderRadius: BorderRadius.circular(5)),
                     child: Text(
                       user.enable ? 'Liberado' : 'Bloqueado',
-                      style: Core.subtitle.copyWith(
+                      style: Constants.subtitle.copyWith(
                           color: user.enable
                               ? Theme.of(context).primaryColor
                               : Colors.red),
@@ -69,13 +70,13 @@ class CardUser extends StatelessWidget {
                     children: [
                       Text(
                         'Matricula ',
-                        style: Core.title.copyWith(color: Colors.grey),
+                        style: Constants.title.copyWith(color: Colors.grey),
                       ),
                       Expanded(
                         child: Text(
                           user.registration.toUpperCase(),
-                          style:
-                              Core.title.copyWith(fontWeight: FontWeight.bold),
+                          style: Constants.title
+                              .copyWith(fontWeight: FontWeight.bold),
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
@@ -88,13 +89,13 @@ class CardUser extends StatelessWidget {
                     children: [
                       Text(
                         'Contato ',
-                        style: Core.title.copyWith(color: Colors.grey),
+                        style: Constants.title.copyWith(color: Colors.grey),
                       ),
                       Expanded(
                         child: Text(
                           user.contact.toUpperCase(),
-                          style:
-                              Core.title.copyWith(fontWeight: FontWeight.bold),
+                          style: Constants.title
+                              .copyWith(fontWeight: FontWeight.bold),
                         ),
                       ),
                     ],

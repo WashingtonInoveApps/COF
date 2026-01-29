@@ -1,4 +1,5 @@
 import 'package:bsu_control/core/constants.dart';
+import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/model/supply_model.dart';
 import 'package:flutter/material.dart';
 
@@ -22,7 +23,7 @@ class CardCarSupply extends StatelessWidget {
               Expanded(
                 child: Text(
                   "${Core.formatDate(supply.date)} - ${supply.user.name}",
-                  style: Core.subtitleHint,
+                  style: Constants.subtitleHint,
                 ),
               ),
               (onTap == null)
@@ -30,7 +31,7 @@ class CardCarSupply extends StatelessWidget {
                   : InkWell(
                       onTap: onTap,
                       child: Text('Remover',
-                          style: Core.subtitle
+                          style: Constants.subtitle
                               .copyWith(color: Theme.of(context).primaryColor)))
             ],
           ),
@@ -43,14 +44,15 @@ class CardCarSupply extends StatelessWidget {
                 children: [
                   Text(
                     "KM",
-                    style: Core.subtitleHint,
+                    style: Constants.subtitleHint,
                   ),
                   const SizedBox(
                     width: 10.0,
                   ),
                   Text(
                     supply.kmSupply,
-                    style: Core.title.copyWith(fontWeight: FontWeight.bold),
+                    style:
+                        Constants.title.copyWith(fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
@@ -59,14 +61,15 @@ class CardCarSupply extends StatelessWidget {
                 children: [
                   Text(
                     "Litros",
-                    style: Core.subtitleHint,
+                    style: Constants.subtitleHint,
                   ),
                   const SizedBox(
                     width: 10.0,
                   ),
                   Text(
                     supply.litros.toStringAsFixed(2),
-                    style: Core.title.copyWith(fontWeight: FontWeight.bold),
+                    style:
+                        Constants.title.copyWith(fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
@@ -75,14 +78,15 @@ class CardCarSupply extends StatelessWidget {
                 children: [
                   Text(
                     "Valor",
-                    style: Core.subtitleHint,
+                    style: Constants.subtitleHint,
                   ),
                   const SizedBox(
                     width: 10.0,
                   ),
                   Text(
                     "R\$ ${supply.value.toStringAsFixed(2)}",
-                    style: Core.title.copyWith(fontWeight: FontWeight.bold),
+                    style:
+                        Constants.title.copyWith(fontWeight: FontWeight.bold),
                   ),
                 ],
               ),

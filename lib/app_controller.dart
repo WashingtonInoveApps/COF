@@ -1,7 +1,9 @@
 import 'package:bsu_control/app_repository.dart';
 import 'package:bsu_control/core/constants.dart';
+import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/core/db.dart';
 import 'package:bsu_control/model/car_model.dart';
+import 'package:bsu_control/model/obm_model.dart';
 import 'package:bsu_control/model/user_model.dart';
 import 'package:bsu_control/app_interface.dart';
 import 'package:mobx/mobx.dart';
@@ -38,7 +40,7 @@ abstract class _AppControllerBase with Store {
   UserModel user = UserModel();
 
   @observable
-  String unidade = Core.obms.first;
+  String unidade = Constants.obms.first;
 
   @observable
   bool isLogged = false;
@@ -60,6 +62,8 @@ abstract class _AppControllerBase with Store {
 
   @observable
   List<UserModel> users = <UserModel>[].asObservable();
+
+  List<OBMModel> obms = <OBMModel>[];
 
   // @computed
   // List<UserModel> get usersValidations => users;
@@ -125,6 +129,27 @@ abstract class _AppControllerBase with Store {
   }
 
   @action
+  Future<void> getOBMs() async {
+    loading = true;
+    final result = await repository.getOBMs();
+
+    result.sort((a, b) => a.prefix.compareTo(b.prefix));
+
+    for (final obm in result) {
+      if (obm.cias.isNotEmpty) obm.cias.sort((a, b) => a.compareTo(b));
+      if (obm.team.isNotEmpty) obm.team.sort((a, b) => a.compareTo(b));
+    }
+
+    obms
+      ..clear()
+      ..addAll(result);
+
+    loading = false;
+
+    return;
+  }
+
+  @action
   Future<bool> login({required String email, required String senha}) async {
     try {
       loading = true;
@@ -134,7 +159,9 @@ abstract class _AppControllerBase with Store {
       if (result == null) return false;
 
       user = result;
+
       await DBController.save(tag: 'user', value: result.toJson());
+      await getOBMs();
 
       isLogged = true;
       return true;

@@ -1,7 +1,6 @@
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/src/car/controller/car_controller.dart';
-import 'package:bsu_control/src/widgets/alert_message.dart';
 import 'package:bsu_control/src/widgets/car_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -60,7 +59,7 @@ class _CarsPageState extends State<CarsPage> {
                   Expanded(
                     child: Text(
                       'Veículos cadastrados',
-                      style: Core.title.copyWith(fontSize: 18),
+                      style: Constants.title.copyWith(fontSize: 18),
                     ),
                   ),
                   controller.user.admin
@@ -74,7 +73,7 @@ class _CarsPageState extends State<CarsPage> {
                                 horizontal: 15, vertical: 2),
                             child: Text(
                               "NOVO CADASTRO",
-                              style: Core.subtitle.copyWith(
+                              style: Constants.subtitle.copyWith(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold),
                             ),
@@ -83,9 +82,6 @@ class _CarsPageState extends State<CarsPage> {
                 ],
               ),
               const Divider(),
-              const SizedBox(
-                height: 10,
-              ),
               Expanded(
                 child: LayoutBuilder(builder: (context, constrained) {
                   double width = constrained.maxWidth > 500
@@ -98,8 +94,9 @@ class _CarsPageState extends State<CarsPage> {
                       child: Wrap(
                         alignment: WrapAlignment.spaceBetween,
                         children: [
-                          SizedBox(
+                          Container(
                             width: width,
+                            margin: const EdgeInsets.only(top: 20),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -111,7 +108,7 @@ class _CarsPageState extends State<CarsPage> {
                                       borderRadius: BorderRadius.circular(5)),
                                   child: Text(
                                     "OPERACIONAIS",
-                                    style: Core.titleButton,
+                                    style: Constants.titleButton,
                                   ),
                                 ),
                                 const SizedBox(
@@ -122,44 +119,25 @@ class _CarsPageState extends State<CarsPage> {
                                       ? Center(
                                           child: Text(
                                             "Ops ! Nenhum registro encontrado.",
-                                            style: Core.titleHint,
+                                            style: Constants.titleHint,
                                           ),
                                         )
                                       : Column(
                                           children: List.generate(
                                               controller.carsOPR.length,
                                               (index) => CarCard(
+                                                    options:
+                                                        controller.user.admin,
                                                     car: controller
                                                         .carsOPR[index],
                                                     onLong: () async {
-                                                      showDialog(
-                                                          context: context,
-                                                          builder:
-                                                              (context) =>
-                                                                  AlertMessage(
-                                                                    title: '',
-                                                                    message:
-                                                                        'Deseja realmente deletar o registro desse veículo ?',
-                                                                    cancel:
-                                                                        true,
-                                                                    onPressedOK: () =>
-                                                                        Navigator.of(context)
-                                                                            .pop(true),
-                                                                    onPressedCancel: () =>
-                                                                        Navigator.of(context)
-                                                                            .pop(false),
-                                                                  )).then(
-                                                          (value) async {
-                                                        if (value ?? false) {
-                                                          await carController
-                                                              .deleteCar(
-                                                                  id: controller
-                                                                          .carsOPR[
-                                                                              index]
-                                                                          .id ??
-                                                                      '');
-                                                        }
-                                                      });
+                                                      await carController
+                                                          .deleteCar(
+                                                              id: controller
+                                                                      .carsOPR[
+                                                                          index]
+                                                                      .id ??
+                                                                  '');
                                                     },
                                                     onTap: () {
                                                       Navigator.of(context).push(
@@ -172,14 +150,20 @@ class _CarsPageState extends State<CarsPage> {
                                                                         .id!,
                                                                   )));
                                                     },
+                                                    onCopy: () async {
+                                                      await carController.copy(
+                                                          car: controller
+                                                              .carsOPR[index]);
+                                                    },
                                                   )),
                                         );
                                 }),
                               ],
                             ),
                           ),
-                          SizedBox(
+                          Container(
                             width: width,
+                            margin: const EdgeInsets.only(top: 20),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -191,7 +175,7 @@ class _CarsPageState extends State<CarsPage> {
                                       borderRadius: BorderRadius.circular(5)),
                                   child: Text(
                                     "ADMINISTRATIVO",
-                                    style: Core.titleButton,
+                                    style: Constants.titleButton,
                                   ),
                                 ),
                                 const SizedBox(
@@ -202,44 +186,25 @@ class _CarsPageState extends State<CarsPage> {
                                       ? Center(
                                           child: Text(
                                             "Ops ! Nenhum registro encontrado.",
-                                            style: Core.titleHint,
+                                            style: Constants.titleHint,
                                           ),
                                         )
                                       : Column(
                                           children: List.generate(
                                               controller.carsADM.length,
                                               (index) => CarCard(
+                                                    options:
+                                                        controller.user.admin,
                                                     car: controller
                                                         .carsADM[index],
-                                                    onLong: () {
-                                                      showDialog(
-                                                          context: context,
-                                                          builder:
-                                                              (context) =>
-                                                                  AlertMessage(
-                                                                    title: '',
-                                                                    message:
-                                                                        'Deseja realmente deletar o registro desse veículo ?',
-                                                                    cancel:
-                                                                        true,
-                                                                    onPressedOK: () =>
-                                                                        Navigator.of(context)
-                                                                            .pop(true),
-                                                                    onPressedCancel: () =>
-                                                                        Navigator.of(context)
-                                                                            .pop(false),
-                                                                  )).then(
-                                                          (value) async {
-                                                        if (value ?? false) {
-                                                          await carController
-                                                              .deleteCar(
-                                                                  id: controller
-                                                                          .carsADM[
-                                                                              index]
-                                                                          .id ??
-                                                                      '');
-                                                        }
-                                                      });
+                                                    onLong: () async {
+                                                      await carController
+                                                          .deleteCar(
+                                                              id: controller
+                                                                      .carsADM[
+                                                                          index]
+                                                                      .id ??
+                                                                  '');
                                                     },
                                                     onTap: () {
                                                       Navigator.of(context).push(

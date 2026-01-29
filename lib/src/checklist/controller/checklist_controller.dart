@@ -100,7 +100,7 @@ abstract class _CheckListControllerBase with Store {
 
   @action
   setAlfa(String? value) {
-    final result = value ?? Core.alfas.first;
+    final result = value ?? Constants.alfas.first;
     checklist.alfa = result;
     alfa = result;
   }

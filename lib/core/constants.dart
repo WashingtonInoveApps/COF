@@ -2,7 +2,7 @@ import 'package:bsu_control/model/itens_changes_model.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class Core {
+class Constants {
   static final primary = Colors.green.shade800;
 
   static final title =
@@ -29,7 +29,18 @@ class Core {
     "ALFA 5",
     "ALFA 6"
   ];
-  static final carsType = ["ADMINISTRATIVO", "OPERACIONAL"];
+  static final carsFunctions = ["ADMINISTRATIVO", "OPERACIONAL"];
+
+  static final carsType = [
+    "INCÊNDIO",
+    "SALVAMENTO",
+    "RESGATE",
+    "TANQUE",
+    "ESCADA MECÂNICA",
+    "ÔNIBUS",
+    "GUINCHO",
+    "OUTROS"
+  ];
 
   static final statusType = [
     "Ar condicionado",
@@ -115,50 +126,4 @@ class Core {
     ItemModel(description: "RÁDIO DE COMUNICAÇÃO"),
     ItemModel(description: "FLANELA")
   ];
-
-  static String formatDate(DateTime date,
-      {bool shortHour = false,
-      bool monthLarge = false,
-      bool largeDay = false,
-      bool largeDayHour = false}) {
-    final days = [
-      'Segunda-feira',
-      'Terça-feira',
-      'Quarta-feira',
-      'Quinta-feira',
-      'Sexta-feira',
-      'Sábado',
-      'Domingo'
-    ];
-    final months = [
-      'Janeiro',
-      'Fevereiro',
-      'Março',
-      'Abril',
-      'Maio',
-      'Junho',
-      'Julho',
-      'Agosto',
-      'Setembro',
-      'Outubro',
-      'Novembro',
-      'Dezembro'
-    ];
-
-    if (shortHour) {
-      return "${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year} às ${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}";
-    } else if (largeDay) {
-      return "${days[date.weekday - 1]}, ${date.day.toString().padLeft(2, '0')} de ${months[date.month - 1]} de ${date.year}";
-    } else if (largeDayHour) {
-      return "${days[date.weekday - 1]}, ${date.day.toString().padLeft(2, '0')} de ${months[date.month - 1]} de ${date.year} às ${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}";
-    } else if (monthLarge) {
-      return "${months[date.month - 1]} de ${date.year}";
-    } else {
-      return "${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}";
-    }
-  }
-
-  static String formatHour(TimeOfDay hour) {
-    return '${hour.hour.toString().padLeft(2, '0')}:${hour.minute.toString().padLeft(2, '0')}';
-  }
 }
