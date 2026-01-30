@@ -31,7 +31,14 @@ class _ChecklistPageState extends State<ChecklistPage> {
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      canPop: false,
+      canPop: true,
+      onPopInvokedWithResult: (didPop, __) {
+        if (didPop) return; // já fechou, não faz nada
+
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          Navigator.of(context).pop(); // agora pode
+        });
+      },
       child: Stack(
         children: [
           BackgraundPage(

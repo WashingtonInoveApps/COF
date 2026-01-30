@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/src/pages/login_page.dart';
@@ -28,6 +30,36 @@ class AppWidget extends StatefulWidget {
 }
 
 class _AppWidgetState extends State<AppWidget> {
+  final controller = GetIt.I.get<AppController>();
+
+  late StreamSubscription carDispose;
+  late StreamSubscription checklistDispose;
+  late StreamSubscription usersDispose;
+
+  @override
+  void initState() {
+    super.initState();
+    carDispose = controller.listenCar.listen((result) {
+      controller.setCars(result);
+    });
+
+    checklistDispose = controller.listenChecklist.listen((result) {
+      controller.setCheckList(result);
+    });
+
+    usersDispose = controller.listenUsers.listen((result) {
+      controller.setUsers(result);
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    carDispose.cancel();
+    checklistDispose.cancel();
+    usersDispose.cancel();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

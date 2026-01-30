@@ -37,13 +37,16 @@ abstract class _AppControllerBase with Store {
   String version = '';
 
   @observable
+  int router = 0;
+
+  @observable
   UserModel user = UserModel();
 
   @observable
   String unidade = Constants.obms.first;
 
   @observable
-  bool isLogged = false;
+  bool menuOpen = false;
 
   @observable
   bool loading = false;
@@ -88,7 +91,16 @@ abstract class _AppControllerBase with Store {
   setVersion(String value) => version = value;
 
   @action
+  changeMenuOpen() => menuOpen = !menuOpen;
+
+  @action
   setReferenceDate(DateTime value) => date = value;
+
+  @action
+  setRouter(int value) {
+    router = value;
+    menuOpen = false;
+  }
 
   @action
   setCheckListVeicular(bool value) => checklistVeicular = value;
@@ -163,7 +175,6 @@ abstract class _AppControllerBase with Store {
       await DBController.save(tag: 'user', value: result.toJson());
       await getOBMs();
 
-      isLogged = true;
       return true;
     } catch (e) {
       loading = false;

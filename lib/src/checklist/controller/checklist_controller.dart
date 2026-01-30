@@ -1,9 +1,11 @@
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
+import 'package:bsu_control/core/validation.dart';
 import 'package:bsu_control/model/car_changes_model.dart';
 import 'package:bsu_control/model/car_model.dart';
 import 'package:bsu_control/model/check_list_model.dart';
 import 'package:bsu_control/model/itens_changes_model.dart';
+import 'package:bsu_control/model/obm_model.dart';
 import 'package:bsu_control/model/user_model.dart';
 import 'package:bsu_control/src/checklist/repository/checklist_interface.dart';
 import 'package:bsu_control/src/checklist/repository/checklist_repository.dart';
@@ -68,13 +70,28 @@ abstract class _CheckListControllerBase with Store {
   String prefix = "";
 
   @observable
+  int step = 0;
+
+  @observable
   String alfa = "";
+
+  @observable
+  String contact = "";
+
+  @observable
+  String? cia;
+
+  @observable
+  String? team;
 
   @observable
   double oil = 0.0;
 
   @observable
   double hidra = 0.0;
+
+  @observable
+  OBMModel obm = OBMModel(team: [], cias: []);
 
   @observable
   double fr = 0.0;
@@ -97,6 +114,36 @@ abstract class _CheckListControllerBase with Store {
       debugPrint('Mudou');
     }
   }
+
+  @action
+  setOBM(OBMModel? value) {
+    if (value != null) {
+      if (obm != value) {
+        obm = value;
+
+        if (obm.cias.isNotEmpty) {
+          cia = obm.cias.first;
+        } else {
+          cia = null;
+        }
+
+        if (obm.team.isNotEmpty) {
+          team = obm.team.first;
+        } else {
+          team = null;
+        }
+      }
+    }
+  }
+
+  @action
+  setCia(String? value) => cia = value;
+
+  @action
+  setTeam(String? value) => team = value;
+
+  @action
+  setContact(String? value) => contact = value ?? '';
 
   @action
   setAlfa(String? value) {
@@ -194,5 +241,14 @@ abstract class _CheckListControllerBase with Store {
     loading = false;
 
     return result;
+  }
+
+  String? validationForm() {
+    switch (step) {
+      case 0:
+        return Validation.validatorPhone(contact);
+      default:
+        return null;
+    }
   }
 }

@@ -93,11 +93,13 @@ class AppRepository extends APIClient implements IAppRepository {
 
       return null;
     } on FirebaseAuthException catch (e) {
-      throw Exception("Erro Auth: ${e.code}");
+      throw Exception(
+          "Falha na autenticação do usuário: ${e.message?.toString()}");
     } on FirebaseException catch (e) {
-      throw Exception("Erro Firestore: ${e.message}");
+      throw Exception(
+          "Falha na comunicação com banco de dados: ${e.message?.toString()}");
     } catch (e) {
-      throw Exception("Erro inesperado: $e");
+      throw Exception("Erro inesperado: ${e.toString()}");
     }
   }
 

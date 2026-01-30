@@ -93,6 +93,22 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
     });
   }
 
+  late final _$stepAtom =
+      Atom(name: '_CheckListControllerBase.step', context: context);
+
+  @override
+  int get step {
+    _$stepAtom.reportRead();
+    return super.step;
+  }
+
+  @override
+  set step(int value) {
+    _$stepAtom.reportWrite(value, super.step, () {
+      super.step = value;
+    });
+  }
+
   late final _$alfaAtom =
       Atom(name: '_CheckListControllerBase.alfa', context: context);
 
@@ -106,6 +122,54 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
   set alfa(String value) {
     _$alfaAtom.reportWrite(value, super.alfa, () {
       super.alfa = value;
+    });
+  }
+
+  late final _$contactAtom =
+      Atom(name: '_CheckListControllerBase.contact', context: context);
+
+  @override
+  String get contact {
+    _$contactAtom.reportRead();
+    return super.contact;
+  }
+
+  @override
+  set contact(String value) {
+    _$contactAtom.reportWrite(value, super.contact, () {
+      super.contact = value;
+    });
+  }
+
+  late final _$ciaAtom =
+      Atom(name: '_CheckListControllerBase.cia', context: context);
+
+  @override
+  String? get cia {
+    _$ciaAtom.reportRead();
+    return super.cia;
+  }
+
+  @override
+  set cia(String? value) {
+    _$ciaAtom.reportWrite(value, super.cia, () {
+      super.cia = value;
+    });
+  }
+
+  late final _$teamAtom =
+      Atom(name: '_CheckListControllerBase.team', context: context);
+
+  @override
+  String? get team {
+    _$teamAtom.reportRead();
+    return super.team;
+  }
+
+  @override
+  set team(String? value) {
+    _$teamAtom.reportWrite(value, super.team, () {
+      super.team = value;
     });
   }
 
@@ -138,6 +202,22 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
   set hidra(double value) {
     _$hidraAtom.reportWrite(value, super.hidra, () {
       super.hidra = value;
+    });
+  }
+
+  late final _$obmAtom =
+      Atom(name: '_CheckListControllerBase.obm', context: context);
+
+  @override
+  OBMModel get obm {
+    _$obmAtom.reportRead();
+    return super.obm;
+  }
+
+  @override
+  set obm(OBMModel value) {
+    _$obmAtom.reportWrite(value, super.obm, () {
+      super.obm = value;
     });
   }
 
@@ -212,6 +292,50 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
         name: '_CheckListControllerBase.setPrefix');
     try {
       return super.setPrefix(value);
+    } finally {
+      _$_CheckListControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setOBM(OBMModel? value) {
+    final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
+        name: '_CheckListControllerBase.setOBM');
+    try {
+      return super.setOBM(value);
+    } finally {
+      _$_CheckListControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setCia(String? value) {
+    final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
+        name: '_CheckListControllerBase.setCia');
+    try {
+      return super.setCia(value);
+    } finally {
+      _$_CheckListControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setTeam(String? value) {
+    final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
+        name: '_CheckListControllerBase.setTeam');
+    try {
+      return super.setTeam(value);
+    } finally {
+      _$_CheckListControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setContact(String? value) {
+    final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
+        name: '_CheckListControllerBase.setContact');
+    try {
+      return super.setContact(value);
     } finally {
       _$_CheckListControllerBaseActionController.endAction(_$actionInfo);
     }
@@ -324,9 +448,14 @@ loading: ${loading},
 carChanges: ${carChanges},
 itens: ${itens},
 prefix: ${prefix},
+step: ${step},
 alfa: ${alfa},
+contact: ${contact},
+cia: ${cia},
+team: ${team},
 oil: ${oil},
 hidra: ${hidra},
+obm: ${obm},
 fr: ${fr},
 arref: ${arref}
     ''';

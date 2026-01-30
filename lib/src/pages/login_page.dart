@@ -44,7 +44,7 @@ class _LoginPageState extends State<LoginPage> {
         BackgraundPage(
           login: true,
           bottom: Text(
-            'Develop by SD Washington ${controller.version}',
+            'Develop by SD BM Washington - BSU ${controller.version}',
             style: Constants.subtitle.copyWith(color: Colors.grey),
             textAlign: TextAlign.center,
           ),

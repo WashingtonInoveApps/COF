@@ -32,7 +32,6 @@ class CarCard extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  flex: 3,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -48,7 +47,8 @@ class CarCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                Expanded(
+                SizedBox(
+                  width: 140,
                   child: TextButton.icon(
                       style: TextButton.styleFrom(
                           side: BorderSide(color: car.state.color)),

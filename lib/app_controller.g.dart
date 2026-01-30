@@ -47,6 +47,22 @@ mixin _$AppController on _AppControllerBase, Store {
     });
   }
 
+  late final _$routerAtom =
+      Atom(name: '_AppControllerBase.router', context: context);
+
+  @override
+  int get router {
+    _$routerAtom.reportRead();
+    return super.router;
+  }
+
+  @override
+  set router(int value) {
+    _$routerAtom.reportWrite(value, super.router, () {
+      super.router = value;
+    });
+  }
+
   late final _$userAtom =
       Atom(name: '_AppControllerBase.user', context: context);
 
@@ -79,19 +95,19 @@ mixin _$AppController on _AppControllerBase, Store {
     });
   }
 
-  late final _$isLoggedAtom =
-      Atom(name: '_AppControllerBase.isLogged', context: context);
+  late final _$menuOpenAtom =
+      Atom(name: '_AppControllerBase.menuOpen', context: context);
 
   @override
-  bool get isLogged {
-    _$isLoggedAtom.reportRead();
-    return super.isLogged;
+  bool get menuOpen {
+    _$menuOpenAtom.reportRead();
+    return super.menuOpen;
   }
 
   @override
-  set isLogged(bool value) {
-    _$isLoggedAtom.reportWrite(value, super.isLogged, () {
-      super.isLogged = value;
+  set menuOpen(bool value) {
+    _$menuOpenAtom.reportWrite(value, super.menuOpen, () {
+      super.menuOpen = value;
     });
   }
 
@@ -261,11 +277,33 @@ mixin _$AppController on _AppControllerBase, Store {
   }
 
   @override
+  dynamic changeMenuOpen() {
+    final _$actionInfo = _$_AppControllerBaseActionController.startAction(
+        name: '_AppControllerBase.changeMenuOpen');
+    try {
+      return super.changeMenuOpen();
+    } finally {
+      _$_AppControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   dynamic setReferenceDate(DateTime value) {
     final _$actionInfo = _$_AppControllerBaseActionController.startAction(
         name: '_AppControllerBase.setReferenceDate');
     try {
       return super.setReferenceDate(value);
+    } finally {
+      _$_AppControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setRouter(int value) {
+    final _$actionInfo = _$_AppControllerBaseActionController.startAction(
+        name: '_AppControllerBase.setRouter');
+    try {
+      return super.setRouter(value);
     } finally {
       _$_AppControllerBaseActionController.endAction(_$actionInfo);
     }
@@ -319,9 +357,10 @@ mixin _$AppController on _AppControllerBase, Store {
   String toString() {
     return '''
 version: ${version},
+router: ${router},
 user: ${user},
 unidade: ${unidade},
-isLogged: ${isLogged},
+menuOpen: ${menuOpen},
 loading: ${loading},
 checklistVeicular: ${checklistVeicular},
 date: ${date},

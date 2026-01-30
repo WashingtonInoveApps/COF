@@ -5,6 +5,7 @@ import 'package:bsu_control/model/car_model.dart';
 import 'package:bsu_control/model/itens_changes_model.dart';
 import 'package:bsu_control/model/obm_model.dart';
 import 'package:bsu_control/src/widgets/alert_message.dart';
+import 'package:bsu_control/src/widgets/backgraund_page.dart';
 import 'package:bsu_control/src/widgets/car_changes_widget.dart';
 import 'package:bsu_control/src/widgets/textfield_widget.dart';
 import 'package:flutter/material.dart';
@@ -86,671 +87,521 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      top: true,
-      child: Stack(
-        children: [
-          Scaffold(
-            body: SingleChildScrollView(
-              padding: const EdgeInsets.all(15.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: InkWell(
-                      onTap: () => Navigator.of(context).pop(),
-                      child: Image.asset(
-                        'assets/cbmcecabecalho2.png',
-                        fit: BoxFit.fitHeight,
-                        height: 70,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Text(
-                    'Registro de veículo',
-                    style: Constants.title.copyWith(fontSize: 18),
-                  ),
-                  const Divider(),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Form(
-                    key: _key,
-                    child: LayoutBuilder(
-                      builder: (context, constrained) {
-                        double width = constrained.maxWidth > 500
-                            ? constrained.maxWidth * 0.48
-                            : constrained.maxWidth;
-
-                        return SizedBox(
-                          width: double.infinity,
-                          child: Wrap(
-                            alignment: WrapAlignment.spaceBetween,
-                            children: [
-                              SizedBox(
-                                width: width,
-                                child: Column(
-                                  spacing: 10,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      "ORGANIZAÇÃO",
-                                      style: Constants.subtitleHint,
-                                    ),
-                                    Container(
-                                      height: 60.0,
-                                      width: double.infinity,
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 5),
-                                      alignment: Alignment.center,
-                                      decoration: BoxDecoration(
-                                          border:
-                                              Border.all(color: Colors.grey),
-                                          color: Colors.white,
-                                          borderRadius:
-                                              BorderRadius.circular(5.0)),
-                                      child: Observer(builder: (_) {
-                                        return IgnorePointer(
-                                          ignoring: !app.user.adminFull,
-                                          child: DropdownButton<OBMModel>(
-                                              isExpanded: true,
-                                              value: controller.obm,
-                                              underline: Container(),
-                                              onChanged: controller.setOBM,
-                                              items: app.obms
-                                                  .map((e) => DropdownMenuItem(
-                                                        value: e,
-                                                        child: Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .symmetric(
-                                                                  horizontal:
-                                                                      5),
-                                                          child: Column(
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment
-                                                                    .start,
-                                                            mainAxisSize:
-                                                                MainAxisSize
-                                                                    .min,
-                                                            children: [
-                                                              Text(
-                                                                e.prefix,
-                                                                style: Constants
-                                                                    .title,
-                                                                overflow:
-                                                                    TextOverflow
-                                                                        .ellipsis,
-                                                              ),
-                                                              Text(
-                                                                e.name,
-                                                                maxLines: 1,
-                                                                overflow:
-                                                                    TextOverflow
-                                                                        .ellipsis,
-                                                                style: Constants
-                                                                    .subtitle
-                                                                    .copyWith(
-                                                                        color: Colors
-                                                                            .grey),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      ))
-                                                  .toList()),
-                                        );
-                                      }),
-                                    ),
-                                    Observer(builder: (context) {
-                                      return Visibility(
-                                          visible: (controller.cia != null),
-                                          child: Column(
-                                            spacing: 10,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                "COMPANHIA",
-                                                style: Constants.subtitleHint,
-                                              ),
-                                              Container(
-                                                height: 60.0,
-                                                width: double.infinity,
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 5),
-                                                alignment: Alignment.center,
-                                                decoration: BoxDecoration(
-                                                    border: Border.all(
-                                                        color: Colors.grey),
-                                                    color: Colors.white,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            5.0)),
-                                                child: DropdownButton<String?>(
-                                                    isExpanded: true,
-                                                    value: controller.cia,
-                                                    underline: Container(),
-                                                    onChanged:
-                                                        controller.setCia,
-                                                    items: controller.obm.cias
-                                                        .map((e) =>
-                                                            DropdownMenuItem(
-                                                              value: e,
-                                                              child: Padding(
-                                                                padding: const EdgeInsets
-                                                                    .symmetric(
-                                                                    horizontal:
-                                                                        5),
-                                                                child: Text(
-                                                                    e
-                                                                        .toUpperCase(),
-                                                                    style: Constants
-                                                                        .title),
-                                                              ),
-                                                            ))
-                                                        .toList()),
-                                              ),
-                                            ],
-                                          ));
-                                    }),
-                                    Text(
-                                      "PREFIXO",
-                                      style: Constants.subtitleHint,
-                                    ),
-                                    FieldText(
-                                      initValue: car.prefix,
-                                      hint: "EX.: RESGATE 32",
-                                      validation:
-                                          Validation.validatorPreenchimento,
-                                      onSaved: (value) =>
-                                          car.prefix = value ?? car.prefix,
-                                      upper: true,
-                                    ),
-                                    Text(
-                                      "MODELO",
-                                      style: Constants.subtitleHint,
-                                    ),
-                                    FieldText(
-                                      initValue: car.model,
-                                      hint: "EX.: RENAULT MASTER 2.3 2010",
-                                      validation:
-                                          Validation.validatorPreenchimento,
-                                      onSaved: (value) =>
-                                          car.model = value ?? car.model,
-                                      upper: true,
-                                    ),
-                                    Text(
-                                      "PLACA",
-                                      style: Constants.subtitleHint,
-                                    ),
-                                    FieldText(
-                                      initValue: car.plate,
-                                      hint: "EX.: XXX2X45",
-                                      validation:
-                                          Validation.validatorPreenchimento,
-                                      onSaved: (value) =>
-                                          car.plate = value ?? car.plate,
-                                      upper: true,
-                                    ),
-                                    Text(
-                                      "KM INICIAL",
-                                      style: Constants.subtitleHint,
-                                    ),
-                                    FieldText(
-                                      initValue: car.km.toString(),
-                                      hint: "EX.: 1234567",
-                                      inputType: TextInputType.number,
-                                      validation: Validation.validatorNumber,
-                                      onSaved: (value) =>
-                                          car.km = int.parse(value!),
-                                    ),
-                                    Text(
-                                      "MODELO DO PNEU",
-                                      style: Constants.subtitleHint,
-                                    ),
-                                    FieldText(
-                                      initValue: car.modelPneu,
-                                      hint: "EX.: 202/75 15",
-                                      validation:
-                                          Validation.validatorPreenchimento,
-                                      onSaved: (value) => car.modelPneu =
-                                          value ?? car.modelPneu,
-                                      upper: true,
-                                      mask: [maskReference],
-                                    ),
-                                    Text(
-                                      "NÚMERO DO CARTÃO",
-                                      style: Constants.subtitleHint,
-                                    ),
-                                    FieldText(
-                                      initValue: car.ticket,
-                                      hint: "EX.: 0000 0000 0000 0000",
-                                      inputType: TextInputType.number,
-                                      validation:
-                                          Validation.validatorPreenchimento,
-                                      onSaved: (value) =>
-                                          car.ticket = value ?? car.ticket,
-                                      mask: [maskCard],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              SizedBox(
-                                width: width,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      "ITENS",
-                                      style: Constants.subtitleHint,
-                                    ),
-                                    const Divider(),
-                                    const SizedBox(
-                                      height: 5,
-                                    ),
-                                    Observer(builder: (context) {
-                                      return controller.sectionsItens.isEmpty
-                                          ? Text(
-                                              'Nenhum itens do checklist encontrado.',
-                                              style: Constants.title,
-                                            )
-                                          : Column(
-                                              children: List.generate(
-                                                  controller.sectionsItens
-                                                      .length, (index) {
-                                                final section = controller
-                                                    .sectionsItens[index];
-
-                                                return Card(
-                                                  child: Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                            10.0),
-                                                    child: Column(
-                                                      children: [
-                                                        Row(
-                                                          spacing: 5,
-                                                          children: [
-                                                            Expanded(
-                                                                child: Text(
-                                                              section
-                                                                  .description,
-                                                              style: Constants
-                                                                  .title,
-                                                            )),
-                                                            InkWell(
-                                                              onTap: () => controller
-                                                                  .removeSections(
-                                                                      index),
-                                                              child:
-                                                                  CircleAvatar(
-                                                                radius: 12,
-                                                                backgroundColor:
-                                                                    Constants
-                                                                        .primary,
-                                                                child:
-                                                                    const Icon(
-                                                                  Icons.remove,
-                                                                  size: 15,
-                                                                  color: Colors
-                                                                      .white,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                            InkWell(
-                                                              onTap: () {
-                                                                showDialog(
-                                                                    context:
-                                                                        context,
-                                                                    builder:
-                                                                        (context) =>
-                                                                            Center(
-                                                                              child: SectionWidget(
-                                                                                section: section,
-                                                                                onChange: (value) {
-                                                                                  controller.editSections(index, value);
-                                                                                },
-                                                                              ),
-                                                                            ));
-                                                              },
-                                                              child:
-                                                                  CircleAvatar(
-                                                                radius: 12,
-                                                                backgroundColor:
-                                                                    Constants
-                                                                        .primary,
-                                                                child:
-                                                                    const Icon(
-                                                                  Icons.edit,
-                                                                  size: 12,
-                                                                  color: Colors
-                                                                      .white,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                            InkWell(
-                                                              onTap: () => controller
-                                                                  .expansionSections(
-                                                                      index),
-                                                              child:
-                                                                  CircleAvatar(
-                                                                radius: 12,
-                                                                backgroundColor:
-                                                                    Constants
-                                                                        .primary,
-                                                                child: Icon(
-                                                                  section.value
-                                                                      ? Icons
-                                                                          .keyboard_arrow_up_outlined
-                                                                      : Icons
-                                                                          .keyboard_arrow_down_outlined,
-                                                                  size: 20,
-                                                                  color: Colors
-                                                                      .white,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                        Visibility(
-                                                            visible:
-                                                                section.value,
-                                                            child: SizedBox(
-                                                              height: 300,
-                                                              child:
-                                                                  changesListWidget(
-                                                                      section:
-                                                                          section,
-                                                                      context:
-                                                                          context,
-                                                                      onDelete: (value) => controller.removeItensSection(
-                                                                          index,
-                                                                          value),
-                                                                      onAdd:
-                                                                          () {
-                                                                        showDialog(
-                                                                            context:
-                                                                                context,
-                                                                            builder: (context) =>
-                                                                                Center(
-                                                                                  child: ItensSectionWidget(
-                                                                                    onChange: (value) {
-                                                                                      controller.addItensSection(index, value);
-                                                                                    },
-                                                                                  ),
-                                                                                ));
-                                                                      }),
-                                                            ))
-                                                      ],
-                                                    ),
-                                                  ),
-                                                );
-                                              }),
-                                            );
-                                    }),
-                                    const SizedBox(
-                                      height: 10,
-                                    ),
-                                    Center(
-                                      child: IconButton(
-                                          onPressed: () {
-                                            showDialog(
-                                                context: context,
-                                                builder: (context) => Center(
-                                                      child: SectionWidget(
-                                                        onChange: (value) {
-                                                          controller
-                                                              .addSections(
-                                                                  value);
-                                                        },
-                                                      ),
-                                                    ));
-                                          },
-                                          style: IconButton.styleFrom(
-                                              backgroundColor:
-                                                  Constants.primary),
-                                          icon: const Icon(
-                                            Icons.add,
-                                            color: Colors.white,
-                                            size: 20,
-                                          )),
-                                    ),
-                                    const SizedBox(
-                                      height: 15,
-                                    ),
-                                    Text(
-                                      "FUNÇÃO",
-                                      style: Constants.subtitleHint,
-                                    ),
-                                    const Divider(),
-                                    const SizedBox(
-                                      height: 5,
-                                    ),
-                                    Container(
-                                      height: 60.0,
-                                      width: double.infinity,
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 5),
-                                      alignment: Alignment.center,
-                                      decoration: BoxDecoration(
-                                          border:
-                                              Border.all(color: Colors.grey),
-                                          color: Colors.white,
-                                          borderRadius:
-                                              BorderRadius.circular(5.0)),
-                                      child: Observer(builder: (_) {
-                                        return DropdownButton<String?>(
-                                            isExpanded: true,
-                                            value: controller.function,
-                                            underline: Container(),
-                                            onChanged: (value) {
-                                              controller.setFunctionCar(value);
-
-                                              FocusScope.of(context).unfocus();
-                                            },
-                                            items: Constants.carsFunctions
-                                                .map((e) => DropdownMenuItem(
-                                                      value: e,
-                                                      child: Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .symmetric(
-                                                                horizontal: 5),
-                                                        child: Text(
-                                                            e.toUpperCase(),
-                                                            style: Constants
-                                                                .title),
-                                                      ),
-                                                    ))
-                                                .toList());
-                                      }),
-                                    ),
-                                    const SizedBox(
-                                      height: 15,
-                                    ),
-                                    Text(
-                                      "TIPO DE VEÍCULO",
-                                      style: Constants.subtitleHint,
-                                    ),
-                                    const Divider(),
-                                    const SizedBox(
-                                      height: 5,
-                                    ),
-                                    Container(
-                                      height: 60.0,
-                                      width: double.infinity,
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 5),
-                                      alignment: Alignment.center,
-                                      decoration: BoxDecoration(
-                                          border:
-                                              Border.all(color: Colors.grey),
-                                          color: Colors.white,
-                                          borderRadius:
-                                              BorderRadius.circular(5.0)),
-                                      child: Observer(builder: (_) {
-                                        return DropdownButton<String?>(
-                                            isExpanded: true,
-                                            value: controller.type,
-                                            underline: Container(),
-                                            onChanged: (value) {
-                                              controller.setTypeCar(value);
-
-                                              FocusScope.of(context).unfocus();
-                                            },
-                                            items: Constants.carsType
-                                                .map((e) => DropdownMenuItem(
-                                                      value: e,
-                                                      child: Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .symmetric(
-                                                                horizontal: 5),
-                                                        child: Text(
-                                                            e.toUpperCase(),
-                                                            style: Constants
-                                                                .title),
-                                                      ),
-                                                    ))
-                                                .toList());
-                                      }),
-                                    ),
-                                    const SizedBox(
-                                      height: 20,
-                                    ),
-                                    Center(
-                                      child: Observer(builder: (_) {
-                                        final resultCar = car.copyWith(
-                                            changes: controller.carChanges
-                                                .toList()); //toList() para vê as mudanças
-
-                                        return CarChangesWidget(
-                                          car: resultCar,
-                                          remove: true,
-                                          register: true,
-                                          user: app.user,
-                                          update: true,
-                                          onChange: controller.onChangesCar,
-                                          onChangeImages: (value) {
-                                            images
-                                              ..clear()
-                                              ..addAll(value);
-                                          },
-                                        );
-                                      }),
-                                    ),
-                                    const SizedBox(
-                                      height: 15,
-                                    ),
-                                    Align(
-                                      alignment: Alignment.centerRight,
-                                      child: SizedBox(
-                                        height: 45.0,
-                                        width: 150.0,
-                                        child: ElevatedButton(
-                                            onPressed: () async {
-                                              if (_key.currentState!
-                                                  .validate()) {
-                                                _key.currentState!.save();
-
-                                                car.type = controller.type;
-                                                car.function =
-                                                    controller.function;
-                                                car.adm = controller.adm;
-                                                car.changes =
-                                                    controller.carChanges;
-                                                car.obmID =
-                                                    controller.obm.id ?? '';
-                                                car.cia = (controller.cia
-                                                        ?.toLowerCase()) ??
-                                                    (controller.obm.id ?? '');
-                                                car.itens =
-                                                    controller.sectionsItens;
-
-                                                controller
-                                                    .save(
-                                                        car: car,
-                                                        images: images)
-                                                    .then((value) async {
-                                                  await showDialog(
-                                                      context: context,
-                                                      builder: (context) =>
-                                                          AlertMessage(
-                                                              title: "Atenção",
-                                                              message:
-                                                                  "Cadastro realizado com sucesso.",
-                                                              onPressedOK: () =>
-                                                                  Navigator.of(
-                                                                          context)
-                                                                      .pop()));
-
-                                                  if (value) {
-                                                    Navigator.of(context).pop();
-                                                  }
-                                                }).catchError((err) {
-                                                  showDialog(
-                                                      context: context,
-                                                      builder: (context) =>
-                                                          AlertMessage(
-                                                              title: "Atenção",
-                                                              message: err
-                                                                  .toString(),
-                                                              onPressedOK: () =>
-                                                                  Navigator.of(
-                                                                          context)
-                                                                      .pop()));
-                                                });
-                                              }
-                                            },
-                                            child: Text(
-                                              "SALVAR",
-                                              style: Constants.titleButton,
-                                            )),
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                      height: 50,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                ],
+    return Stack(
+      children: [
+        BackgraundPage(
+          menu: false,
+          onBack: () => Navigator.of(context).pop(),
+          top: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Registro de veículo',
+                style: Constants.title.copyWith(fontSize: 18),
               ),
-            ),
+              const Divider(),
+              const SizedBox(
+                height: 10,
+              ),
+            ],
           ),
-          Observer(builder: (_) {
-            return IgnorePointer(
-              ignoring: !controller.loading,
-              child: Container(
-                color: controller.loading ? Colors.black54 : Colors.transparent,
-                child: Center(
-                    child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                      controller.loading ? Colors.white : Colors.transparent),
-                )),
+          childLeft: Column(
+            spacing: 10,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "ORGANIZAÇÃO",
+                style: Constants.subtitleHint,
               ),
-            );
-          })
-        ],
-      ),
+              Container(
+                height: 60.0,
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(horizontal: 5),
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey),
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(5.0)),
+                child: Observer(builder: (_) {
+                  return IgnorePointer(
+                    ignoring: !app.user.adminFull,
+                    child: DropdownButton<OBMModel>(
+                        isExpanded: true,
+                        value: controller.obm,
+                        underline: Container(),
+                        onChanged: controller.setOBM,
+                        items: app.obms
+                            .map((e) => DropdownMenuItem(
+                                  value: e,
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 5),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          e.prefix,
+                                          style: Constants.title,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        Text(
+                                          e.name,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: Constants.subtitle
+                                              .copyWith(color: Colors.grey),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ))
+                            .toList()),
+                  );
+                }),
+              ),
+              Observer(builder: (context) {
+                return Visibility(
+                    visible: (controller.cia != null),
+                    child: Column(
+                      spacing: 10,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "COMPANHIA",
+                          style: Constants.subtitleHint,
+                        ),
+                        Container(
+                          height: 60.0,
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(horizontal: 5),
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey),
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(5.0)),
+                          child: DropdownButton<String?>(
+                              isExpanded: true,
+                              value: controller.cia,
+                              underline: Container(),
+                              onChanged: controller.setCia,
+                              items: controller.obm.cias
+                                  .map((e) => DropdownMenuItem(
+                                        value: e,
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 5),
+                                          child: Text(e.toUpperCase(),
+                                              style: Constants.title),
+                                        ),
+                                      ))
+                                  .toList()),
+                        ),
+                      ],
+                    ));
+              }),
+              Text(
+                "PREFIXO",
+                style: Constants.subtitleHint,
+              ),
+              FieldText(
+                initValue: car.prefix,
+                hint: "EX.: RESGATE 32",
+                validation: Validation.validatorPreenchimento,
+                onSaved: (value) => car.prefix = value ?? car.prefix,
+                upper: true,
+              ),
+              Text(
+                "MODELO",
+                style: Constants.subtitleHint,
+              ),
+              FieldText(
+                initValue: car.model,
+                hint: "EX.: RENAULT MASTER 2.3 2010",
+                validation: Validation.validatorPreenchimento,
+                onSaved: (value) => car.model = value ?? car.model,
+                upper: true,
+              ),
+              Text(
+                "PLACA",
+                style: Constants.subtitleHint,
+              ),
+              FieldText(
+                initValue: car.plate,
+                hint: "EX.: XXX2X45",
+                validation: Validation.validatorPreenchimento,
+                onSaved: (value) => car.plate = value ?? car.plate,
+                upper: true,
+              ),
+              Text(
+                "KM INICIAL",
+                style: Constants.subtitleHint,
+              ),
+              FieldText(
+                initValue: car.km.toString(),
+                hint: "EX.: 1234567",
+                inputType: TextInputType.number,
+                validation: Validation.validatorNumber,
+                onSaved: (value) => car.km = int.parse(value!),
+              ),
+              Text(
+                "MODELO DO PNEU",
+                style: Constants.subtitleHint,
+              ),
+              FieldText(
+                initValue: car.modelPneu,
+                hint: "EX.: 202/75 15",
+                validation: Validation.validatorPreenchimento,
+                onSaved: (value) => car.modelPneu = value ?? car.modelPneu,
+                upper: true,
+                mask: [maskReference],
+              ),
+              Text(
+                "NÚMERO DO CARTÃO",
+                style: Constants.subtitleHint,
+              ),
+              FieldText(
+                initValue: car.ticket,
+                hint: "EX.: 0000 0000 0000 0000",
+                inputType: TextInputType.number,
+                validation: Validation.validatorPreenchimento,
+                onSaved: (value) => car.ticket = value ?? car.ticket,
+                mask: [maskCard],
+              ),
+            ],
+          ),
+          childRight: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "ITENS",
+                style: Constants.subtitleHint,
+              ),
+              const Divider(),
+              const SizedBox(
+                height: 5,
+              ),
+              Observer(builder: (context) {
+                return controller.sectionsItens.isEmpty
+                    ? Text(
+                        'Nenhum itens do checklist encontrado.',
+                        style: Constants.title,
+                      )
+                    : Column(
+                        children: List.generate(controller.sectionsItens.length,
+                            (index) {
+                          final section = controller.sectionsItens[index];
+
+                          return Card(
+                            child: Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    spacing: 5,
+                                    children: [
+                                      Expanded(
+                                          child: Text(
+                                        section.description,
+                                        style: Constants.title,
+                                      )),
+                                      InkWell(
+                                        onTap: () =>
+                                            controller.removeSections(index),
+                                        child: CircleAvatar(
+                                          radius: 12,
+                                          backgroundColor: Constants.primary,
+                                          child: const Icon(
+                                            Icons.remove,
+                                            size: 15,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                      InkWell(
+                                        onTap: () {
+                                          showDialog(
+                                              context: context,
+                                              builder: (context) => Center(
+                                                    child: SectionWidget(
+                                                      section: section,
+                                                      onChange: (value) {
+                                                        controller.editSections(
+                                                            index, value);
+                                                      },
+                                                    ),
+                                                  ));
+                                        },
+                                        child: CircleAvatar(
+                                          radius: 12,
+                                          backgroundColor: Constants.primary,
+                                          child: const Icon(
+                                            Icons.edit,
+                                            size: 12,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                      InkWell(
+                                        onTap: () =>
+                                            controller.expansionSections(index),
+                                        child: CircleAvatar(
+                                          radius: 12,
+                                          backgroundColor: Constants.primary,
+                                          child: Icon(
+                                            section.value
+                                                ? Icons
+                                                    .keyboard_arrow_up_outlined
+                                                : Icons
+                                                    .keyboard_arrow_down_outlined,
+                                            size: 20,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Visibility(
+                                      visible: section.value,
+                                      child: SizedBox(
+                                        height: 300,
+                                        child: changesListWidget(
+                                            section: section,
+                                            context: context,
+                                            onDelete: (value) =>
+                                                controller.removeItensSection(
+                                                    index, value),
+                                            onAdd: () {
+                                              showDialog(
+                                                  context: context,
+                                                  builder: (context) => Center(
+                                                        child:
+                                                            ItensSectionWidget(
+                                                          onChange: (value) {
+                                                            controller
+                                                                .addItensSection(
+                                                                    index,
+                                                                    value);
+                                                          },
+                                                        ),
+                                                      ));
+                                            }),
+                                      ))
+                                ],
+                              ),
+                            ),
+                          );
+                        }),
+                      );
+              }),
+              const SizedBox(
+                height: 10,
+              ),
+              Center(
+                child: IconButton(
+                    onPressed: () {
+                      showDialog(
+                          context: context,
+                          builder: (context) => Center(
+                                child: SectionWidget(
+                                  onChange: (value) {
+                                    controller.addSections(value);
+                                  },
+                                ),
+                              ));
+                    },
+                    style: IconButton.styleFrom(
+                        backgroundColor: Constants.primary),
+                    icon: const Icon(
+                      Icons.add,
+                      color: Colors.white,
+                      size: 20,
+                    )),
+              ),
+              const SizedBox(
+                height: 15,
+              ),
+              Text(
+                "FUNÇÃO",
+                style: Constants.subtitleHint,
+              ),
+              const Divider(),
+              const SizedBox(
+                height: 5,
+              ),
+              Container(
+                height: 60.0,
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(horizontal: 5),
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey),
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(5.0)),
+                child: Observer(builder: (_) {
+                  return DropdownButton<String?>(
+                      isExpanded: true,
+                      value: controller.function,
+                      underline: Container(),
+                      onChanged: (value) {
+                        controller.setFunctionCar(value);
+
+                        FocusScope.of(context).unfocus();
+                      },
+                      items: Constants.carsFunctions
+                          .map((e) => DropdownMenuItem(
+                                value: e,
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 5),
+                                  child: Text(e.toUpperCase(),
+                                      style: Constants.title),
+                                ),
+                              ))
+                          .toList());
+                }),
+              ),
+              const SizedBox(
+                height: 15,
+              ),
+              Text(
+                "TIPO DE VEÍCULO",
+                style: Constants.subtitleHint,
+              ),
+              const Divider(),
+              const SizedBox(
+                height: 5,
+              ),
+              Container(
+                height: 60.0,
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(horizontal: 5),
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey),
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(5.0)),
+                child: Observer(builder: (_) {
+                  return DropdownButton<String?>(
+                      isExpanded: true,
+                      value: controller.type,
+                      underline: Container(),
+                      onChanged: (value) {
+                        controller.setTypeCar(value);
+
+                        FocusScope.of(context).unfocus();
+                      },
+                      items: Constants.carsType
+                          .map((e) => DropdownMenuItem(
+                                value: e,
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 5),
+                                  child: Text(e.toUpperCase(),
+                                      style: Constants.title),
+                                ),
+                              ))
+                          .toList());
+                }),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              Center(
+                child: Observer(builder: (_) {
+                  final resultCar = car.copyWith(
+                      changes: controller.carChanges
+                          .toList()); //toList() para vê as mudanças
+
+                  return CarChangesWidget(
+                    car: resultCar,
+                    remove: true,
+                    register: true,
+                    user: app.user,
+                    update: true,
+                    onChange: controller.onChangesCar,
+                    onChangeImages: (value) {
+                      images
+                        ..clear()
+                        ..addAll(value);
+                    },
+                  );
+                }),
+              ),
+              const SizedBox(
+                height: 15,
+              ),
+              Align(
+                alignment: Alignment.centerRight,
+                child: SizedBox(
+                  height: 45.0,
+                  width: 150.0,
+                  child: ElevatedButton(
+                      onPressed: () async {
+                        if (_key.currentState!.validate()) {
+                          _key.currentState!.save();
+
+                          car.type = controller.type;
+                          car.function = controller.function;
+                          car.adm = controller.adm;
+                          car.changes = controller.carChanges;
+                          car.obmID = controller.obm.id ?? '';
+                          car.cia = (controller.cia?.toLowerCase()) ??
+                              (controller.obm.id ?? '');
+                          car.itens = controller.sectionsItens;
+
+                          controller
+                              .save(car: car, images: images)
+                              .then((value) async {
+                            await showDialog(
+                                context: context,
+                                builder: (context) => AlertMessage(
+                                    title: "Atenção",
+                                    message: "Cadastro realizado com sucesso.",
+                                    onPressedOK: () =>
+                                        Navigator.of(context).pop()));
+
+                            if (value) {
+                              Navigator.of(context).pop();
+                            }
+                          }).catchError((err) {
+                            showDialog(
+                                context: context,
+                                builder: (context) => AlertMessage(
+                                    title: "Atenção",
+                                    message: err.toString(),
+                                    onPressedOK: () =>
+                                        Navigator.of(context).pop()));
+                          });
+                        }
+                      },
+                      child: Text(
+                        "SALVAR",
+                        style: Constants.titleButton,
+                      )),
+                ),
+              ),
+              const SizedBox(
+                height: 50,
+              ),
+            ],
+          ),
+        ),
+        Observer(builder: (_) {
+          return IgnorePointer(
+            ignoring: !controller.loading,
+            child: Container(
+              color: controller.loading ? Colors.black54 : Colors.transparent,
+              child: Center(
+                  child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(
+                    controller.loading ? Colors.white : Colors.transparent),
+              )),
+            ),
+          );
+        })
+      ],
     );
   }
 }

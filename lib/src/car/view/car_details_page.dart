@@ -5,6 +5,7 @@ import 'package:bsu_control/core/validation.dart';
 import 'package:bsu_control/model/car_model.dart';
 import 'package:bsu_control/model/car_status_model.dart';
 import 'package:bsu_control/src/car/controller/car_controller.dart';
+import 'package:bsu_control/src/widgets/backgraund_page.dart';
 import 'package:bsu_control/src/widgets/car_changes_widget.dart';
 import 'package:bsu_control/src/widgets/textfield_widget.dart';
 import 'package:flutter/material.dart';
@@ -180,488 +181,342 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
           });
     }
 
-    return SafeArea(
-      top: true,
-      child: Scaffold(
-        body: Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: Column(
+    return Stack(
+      children: [
+        BackgraundPage(
+          menu: false,
+          onBack: () => Navigator.of(context).pop(),
+          childLeft: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                      child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        car.prefix,
+                        style: Constants.title.copyWith(
+                            fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                      Row(
+                        spacing: 10,
+                        children: [
+                          Text(
+                            "Quilometragem",
+                            style: Constants.titleHint,
+                          ),
+                          Text("${car.km.toString()} KM",
+                              style: Constants.title.copyWith(fontSize: 16)),
+                        ],
+                      ),
+                    ],
+                  )),
+                  controller.enable
+                      ? TextButton.icon(
+                          style: TextButton.styleFrom(
+                              padding: const EdgeInsets.all(10),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                              side: BorderSide(
+                                  color: Theme.of(context).primaryColor)),
+                          onPressed: () async {
+                            await Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => CarRegisterPage(
+                                      car: car,
+                                    )));
+                          },
+                          icon: Icon(
+                            MdiIcons.bookEdit,
+                            size: 20,
+                            color: Theme.of(context).primaryColor,
+                          ),
+                          label: Text(
+                            "Editar",
+                            style: Constants.title.copyWith(
+                                color: Theme.of(context).primaryColor),
+                          ))
+                      : Container(),
+                ],
+              ),
+              const Divider(),
               const SizedBox(
                 height: 10,
               ),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: InkWell(
-                  onTap: () => Navigator.of(context).pop(),
-                  child: Image.asset(
-                    'assets/cbmcecabecalho2.png',
-                    fit: BoxFit.fitHeight,
-                    height: 70,
-                  ),
-                ),
+              Text(
+                "Modelo",
+                style: Constants.subtitleHint,
+              ),
+              SelectableText(
+                car.model,
+                style: Constants.title.copyWith(fontSize: 16),
               ),
               const SizedBox(
-                height: 20,
+                height: 10.0,
               ),
-              Expanded(
-                child: Stack(
-                  children: [
-                    SingleChildScrollView(
-                      child: LayoutBuilder(
-                        builder: (context, constrained) {
-                          double width = constrained.maxWidth > 500
-                              ? constrained.maxWidth * 0.48
-                              : constrained.maxWidth;
-
-                          return SizedBox(
-                            width: double.infinity,
-                            child: Wrap(
-                              alignment: WrapAlignment.spaceAround,
-                              children: [
-                                SizedBox(
-                                  width: width,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          Expanded(
-                                              child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                car.prefix,
-                                                style: Constants.title.copyWith(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 16),
-                                              ),
-                                              Row(
-                                                spacing: 10,
-                                                children: [
-                                                  Text(
-                                                    "Quilometragem",
-                                                    style: Constants.titleHint,
-                                                  ),
-                                                  Text(
-                                                      "${car.km.toString()} KM",
-                                                      style: Constants.title
-                                                          .copyWith(
-                                                              fontSize: 16)),
-                                                ],
-                                              ),
-                                            ],
-                                          )),
-                                          controller.enable
-                                              ? TextButton.icon(
-                                                  style: TextButton.styleFrom(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              10),
-                                                      shape:
-                                                          RoundedRectangleBorder(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(5),
-                                                      ),
-                                                      side: BorderSide(
-                                                          color: Theme.of(
-                                                                  context)
-                                                              .primaryColor)),
-                                                  onPressed: () async {
-                                                    await Navigator.of(context)
-                                                        .push(MaterialPageRoute(
-                                                            builder: (context) =>
-                                                                CarRegisterPage(
-                                                                  car: car,
-                                                                )));
-                                                  },
-                                                  icon: Icon(
-                                                    MdiIcons.bookEdit,
-                                                    size: 20,
-                                                    color: Theme.of(context)
-                                                        .primaryColor,
-                                                  ),
-                                                  label: Text(
-                                                    "Editar",
-                                                    style: Constants.title
-                                                        .copyWith(
-                                                            color: Theme.of(
-                                                                    context)
-                                                                .primaryColor),
-                                                  ))
-                                              : Container(),
-                                        ],
-                                      ),
-                                      const Divider(),
-                                      Row(
-                                        spacing: 10,
-                                        children: [
-                                          Expanded(
-                                              child: Text(
-                                            "Troca de óleo (KM)",
-                                            style: Constants.title,
-                                          )),
-                                          Text(
-                                            car.oil.toString(),
-                                            style: Constants.title.copyWith(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 16),
-                                          ),
-                                          controller.enable
-                                              ? TextButton(
-                                                  style: TextButton.styleFrom(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              5),
-                                                      shape:
-                                                          RoundedRectangleBorder(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(5),
-                                                      ),
-                                                      side: BorderSide(
-                                                          color: Theme.of(
-                                                                  context)
-                                                              .primaryColor)),
-                                                  onPressed: () async {
-                                                    await showDialog(
-                                                        context: context,
-                                                        builder:
-                                                            (context) =>
-                                                                kmChangeWidget(
-                                                                  onUpdate:
-                                                                      (value) async {
-                                                                    await controller.updateKMOil(
-                                                                        id: car
-                                                                            .id!,
-                                                                        value:
-                                                                            value);
-                                                                    _controller
-                                                                        .clear();
-                                                                  },
-                                                                ));
-                                                  },
-                                                  child: Text(
-                                                    "Alterar",
-                                                    style: Constants.title
-                                                        .copyWith(
-                                                            color: Theme.of(
-                                                                    context)
-                                                                .primaryColor),
-                                                  ))
-                                              : Container(),
-                                        ],
-                                      ),
-                                      const SizedBox(
-                                        height: 5,
-                                      ),
-                                      Row(
-                                        spacing: 10,
-                                        children: [
-                                          Expanded(
-                                              child: Text(
-                                            "Troca do arrefecimento (KM)",
-                                            style: Constants.title,
-                                          )),
-                                          Text(
-                                            car.arref.toString(),
-                                            style: Constants.title.copyWith(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 16),
-                                          ),
-                                          controller.enable
-                                              ? TextButton(
-                                                  style: TextButton.styleFrom(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              5),
-                                                      shape:
-                                                          RoundedRectangleBorder(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(5),
-                                                      ),
-                                                      side: BorderSide(
-                                                          color: Theme.of(
-                                                                  context)
-                                                              .primaryColor)),
-                                                  onPressed: () async {
-                                                    await showDialog(
-                                                        context: context,
-                                                        builder:
-                                                            (context) =>
-                                                                kmChangeWidget(
-                                                                  onUpdate:
-                                                                      (value) async {
-                                                                    await controller.updateKMArref(
-                                                                        id: car
-                                                                            .id!,
-                                                                        value:
-                                                                            value);
-                                                                    _controller
-                                                                        .clear();
-                                                                  },
-                                                                ));
-                                                  },
-                                                  child: Text(
-                                                    "Alterar",
-                                                    style: Constants.title
-                                                        .copyWith(
-                                                            color: Theme.of(
-                                                                    context)
-                                                                .primaryColor),
-                                                  ))
-                                              : Container(),
-                                        ],
-                                      ),
-                                      const SizedBox(
-                                        height: 15.0,
-                                      ),
-                                      CarChangesWidget(
-                                        add: false,
-                                        car: car,
-                                        // initValue: car.changes,
-                                        user: app.user,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: width,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        "Informações",
-                                        style: Constants.titleHint,
-                                      ),
-                                      const Divider(),
-                                      Text(
-                                        "Modelo",
-                                        style: Constants.subtitleHint,
-                                      ),
-                                      SelectableText(
-                                        car.model,
-                                        style: Constants.title
-                                            .copyWith(fontSize: 16),
-                                      ),
-                                      const SizedBox(
-                                        height: 10.0,
-                                      ),
-                                      Text(
-                                        "Placa",
-                                        style: Constants.subtitleHint,
-                                      ),
-                                      SelectableText(
-                                        car.plate,
-                                        style: Constants.title
-                                            .copyWith(fontSize: 16),
-                                      ),
-                                      const SizedBox(
-                                        height: 10.0,
-                                      ),
-                                      Text(
-                                        "Referência do pneu",
-                                        style: Constants.subtitleHint,
-                                      ),
-                                      SelectableText(
-                                        car.modelPneu,
-                                        style: Constants.title
-                                            .copyWith(fontSize: 16),
-                                      ),
-                                      const SizedBox(
-                                        height: 10.0,
-                                      ),
-                                      controller.enable
-                                          ? Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  "Número cartão",
-                                                  style: Constants.subtitleHint,
-                                                ),
-                                                SelectableText(
-                                                  car.ticket,
-                                                  style: Constants.title
-                                                      .copyWith(fontSize: 16),
-                                                ),
-                                              ],
-                                            )
-                                          : Container(),
-                                      const SizedBox(
-                                        height: 15.0,
-                                      ),
-                                      Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.end,
-                                        children: [
-                                          Expanded(
-                                            flex: 2,
-                                            child: Text(
-                                              "Funcionamento",
-                                              style: Constants.titleHint,
-                                            ),
-                                          ),
-                                          PopupMenuButton<StatusCar>(
-                                            initialValue: car.state,
-                                            onSelected:
-                                                (StatusCar value) async {
-                                              if (value == StatusCar.baixado) {
-                                                if (car.enable) {
-                                                  showDialog(
-                                                      context: context,
-                                                      builder: (context) =>
-                                                          DescriptionStateWidget(
-                                                            user: app.user,
-                                                            onInsert:
-                                                                (result) async {
-                                                              await controller.updateStatusCar(
-                                                                  car: car.copyWith(
-                                                                      enable:
-                                                                          false,
-                                                                      state:
-                                                                          value),
-                                                                  status: result
-                                                                      .copyWith(
-                                                                          carID:
-                                                                              car.id!));
-                                                            },
-                                                          ));
-                                                }
-                                              } else {
-                                                await controller
-                                                    .updateStatusCar(
-                                                        car: car.copyWith(
-                                                            enable: true,
-                                                            state: value));
-                                              }
-                                            },
-                                            itemBuilder: (context) =>
-                                                StatusCar.values.map((state) {
-                                              return PopupMenuItem<StatusCar>(
-                                                enabled: (state != car.state),
-                                                value: state,
-                                                child: Text(
-                                                  state.label,
-                                                  style: Constants.title,
-                                                ),
-                                              );
-                                            }).toList(),
-                                            child: TextButton.icon(
-                                                style: TextButton.styleFrom(
-                                                    side: BorderSide(
-                                                        color:
-                                                            car.state.color)),
-                                                onPressed: null,
-                                                icon: Icon(
-                                                  car.state.icon,
-                                                  color: car.state.color,
-                                                  size: 20.0,
-                                                ),
-                                                label: Text(
-                                                  car.state.label,
-                                                  style: Constants.title
-                                                      .copyWith(
-                                                          color:
-                                                              car.state.color),
-                                                )),
-                                          ),
-                                        ],
-                                      ),
-                                      const Divider(),
-                                      SizedBox(
-                                        height: 250,
-                                        width: double.infinity,
-                                        child: StreamBuilder<
-                                                List<CarStatusModel>>(
-                                            stream: controller.listenStatus(
-                                                carId: car.id!),
-                                            builder: (context, snapshot) {
-                                              if (!snapshot.hasData) {
-                                                return const Center(
-                                                    child:
-                                                        LinearProgressIndicator());
-                                              } else {
-                                                final status =
-                                                    snapshot.data ?? [];
-
-                                                if (status.isEmpty) {
-                                                  return Text(
-                                                    'Nenhum registro de problemas encontrado.',
-                                                    style:
-                                                        Constants.subtitleHint,
-                                                  );
-                                                } else {
-                                                  status.sort((a, b) =>
-                                                      b.date.compareTo(a.date));
-
-                                                  return Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Text(
-                                                        "Registros de problemas",
-                                                        style: Constants
-                                                            .subtitle
-                                                            .copyWith(
-                                                                color:
-                                                                    Colors.red),
-                                                      ),
-                                                      Expanded(
-                                                        child: statusRegisters(
-                                                            status),
-                                                      ),
-                                                    ],
-                                                  );
-                                                }
-                                              }
-                                            }),
-                                      ),
-                                      const SizedBox(
-                                        height: 50.0,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
+              Text(
+                "Placa",
+                style: Constants.subtitleHint,
+              ),
+              SelectableText(
+                car.plate,
+                style: Constants.title.copyWith(fontSize: 16),
+              ),
+              const SizedBox(
+                height: 10.0,
+              ),
+              Text(
+                "Referência do pneu",
+                style: Constants.subtitleHint,
+              ),
+              SelectableText(
+                car.modelPneu,
+                style: Constants.title.copyWith(fontSize: 16),
+              ),
+              const SizedBox(
+                height: 10.0,
+              ),
+              controller.enable
+                  ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Número cartão",
+                          style: Constants.subtitleHint,
+                        ),
+                        SelectableText(
+                          car.ticket,
+                          style: Constants.title.copyWith(fontSize: 16),
+                        ),
+                      ],
+                    )
+                  : Container(),
+              const SizedBox(
+                height: 10,
+              ),
+              const Divider(),
+              Row(
+                spacing: 10,
+                children: [
+                  Expanded(
+                      child: Text(
+                    "Troca de óleo (KM)",
+                    style: Constants.title,
+                  )),
+                  Text(
+                    car.oil.toString(),
+                    style: Constants.title
+                        .copyWith(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                  controller.enable
+                      ? TextButton(
+                          style: TextButton.styleFrom(
+                              padding: const EdgeInsets.all(5),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                              side: BorderSide(
+                                  color: Theme.of(context).primaryColor)),
+                          onPressed: () async {
+                            await showDialog(
+                                context: context,
+                                builder: (context) => kmChangeWidget(
+                                      onUpdate: (value) async {
+                                        await controller.updateKMOil(
+                                            id: car.id!, value: value);
+                                        _controller.clear();
+                                      },
+                                    ));
+                          },
+                          child: Text(
+                            "Alterar",
+                            style: Constants.title.copyWith(
+                                color: Theme.of(context).primaryColor),
+                          ))
+                      : Container(),
+                ],
+              ),
+              const SizedBox(
+                height: 5,
+              ),
+              Row(
+                spacing: 10,
+                children: [
+                  Expanded(
+                      child: Text(
+                    "Troca do arrefecimento (KM)",
+                    style: Constants.title,
+                  )),
+                  Text(
+                    car.arref.toString(),
+                    style: Constants.title
+                        .copyWith(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                  controller.enable
+                      ? TextButton(
+                          style: TextButton.styleFrom(
+                              padding: const EdgeInsets.all(5),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                              side: BorderSide(
+                                  color: Theme.of(context).primaryColor)),
+                          onPressed: () async {
+                            await showDialog(
+                                context: context,
+                                builder: (context) => kmChangeWidget(
+                                      onUpdate: (value) async {
+                                        await controller.updateKMArref(
+                                            id: car.id!, value: value);
+                                        _controller.clear();
+                                      },
+                                    ));
+                          },
+                          child: Text(
+                            "Alterar",
+                            style: Constants.title.copyWith(
+                                color: Theme.of(context).primaryColor),
+                          ))
+                      : Container(),
+                ],
+              ),
+              const SizedBox(
+                height: 15.0,
+              ),
+            ],
+          ),
+          childRight: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CarChangesWidget(
+                add: false,
+                car: car,
+                // initValue: car.changes,
+                user: app.user,
+              ),
+              const SizedBox(
+                height: 15.0,
+              ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: Text(
+                      "Funcionamento",
+                      style: Constants.titleHint,
                     ),
-                    Observer(builder: (_) {
-                      return IgnorePointer(
-                        ignoring: !controller.loading,
-                        child: Container(
-                          color: controller.loading
-                              ? Colors.black54
-                              : Colors.transparent,
-                          child: Center(
-                              child: CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                                controller.loading
-                                    ? Colors.white
-                                    : Colors.transparent),
-                          )),
+                  ),
+                  PopupMenuButton<StatusCar>(
+                    initialValue: car.state,
+                    onSelected: (StatusCar value) async {
+                      if (value == StatusCar.baixado) {
+                        if (car.enable) {
+                          showDialog(
+                              context: context,
+                              builder: (context) => DescriptionStateWidget(
+                                    user: app.user,
+                                    onInsert: (result) async {
+                                      await controller.updateStatusCar(
+                                          car: car.copyWith(
+                                              enable: false, state: value),
+                                          status:
+                                              result.copyWith(carID: car.id!));
+                                    },
+                                  ));
+                        }
+                      } else {
+                        await controller.updateStatusCar(
+                            car: car.copyWith(enable: true, state: value));
+                      }
+                    },
+                    itemBuilder: (context) => StatusCar.values.map((state) {
+                      return PopupMenuItem<StatusCar>(
+                        enabled: (state != car.state),
+                        value: state,
+                        child: Text(
+                          state.label,
+                          style: Constants.title,
                         ),
                       );
-                    })
-                  ],
-                ),
+                    }).toList(),
+                    child: TextButton.icon(
+                        style: TextButton.styleFrom(
+                            side: BorderSide(color: car.state.color)),
+                        onPressed: null,
+                        icon: Icon(
+                          car.state.icon,
+                          color: car.state.color,
+                          size: 20.0,
+                        ),
+                        label: Text(
+                          car.state.label,
+                          style:
+                              Constants.title.copyWith(color: car.state.color),
+                        )),
+                  ),
+                ],
+              ),
+              const Divider(),
+              SizedBox(
+                height: 250,
+                width: double.infinity,
+                child: StreamBuilder<List<CarStatusModel>>(
+                    stream: controller.listenStatus(carId: car.id!),
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData) {
+                        return const Center(child: LinearProgressIndicator());
+                      } else {
+                        final status = snapshot.data ?? [];
+
+                        if (status.isEmpty) {
+                          return Text(
+                            'Nenhum registro de problemas encontrado.',
+                            style: Constants.subtitleHint,
+                          );
+                        } else {
+                          status.sort((a, b) => b.date.compareTo(a.date));
+
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Registros de problemas",
+                                style: Constants.subtitle
+                                    .copyWith(color: Colors.red),
+                              ),
+                              Expanded(
+                                child: statusRegisters(status),
+                              ),
+                            ],
+                          );
+                        }
+                      }
+                    }),
+              ),
+              const SizedBox(
+                height: 50.0,
               ),
             ],
           ),
         ),
-      ),
+        Observer(builder: (_) {
+          return IgnorePointer(
+            ignoring: !controller.loading,
+            child: Container(
+              color: controller.loading ? Colors.black54 : Colors.transparent,
+              child: Center(
+                  child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(
+                    controller.loading ? Colors.white : Colors.transparent),
+              )),
+            ),
+          );
+        })
+      ],
     );
   }
 }

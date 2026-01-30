@@ -1,10 +1,13 @@
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/model/obm_model.dart';
+import 'package:bsu_control/src/car/view/cars_page.dart';
+import 'package:bsu_control/src/checklist/view/checklist_register_page.dart';
+import 'package:bsu_control/src/pages/home_page.dart';
+import 'package:bsu_control/src/user/view/users_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
-
-import '../checklist/view/checklist_page.dart';
 
 class BackgraundPage extends StatefulWidget {
   final bool menu;
@@ -12,19 +15,21 @@ class BackgraundPage extends StatefulWidget {
   final Widget childLeft;
   final Widget? childRight;
   final Widget? bottom;
+  final Widget? top;
   final double maxWidth;
   final Function()? onBack;
 
-  const BackgraundPage(
-      {Key? key,
-      required this.childLeft,
-      this.childRight,
-      this.maxWidth = 1000,
-      this.menu = false,
-      this.login = false,
-      this.bottom,
-      this.onBack})
-      : super(key: key);
+  const BackgraundPage({
+    Key? key,
+    required this.childLeft,
+    this.childRight,
+    this.maxWidth = 1000,
+    this.menu = true,
+    this.login = false,
+    this.bottom,
+    this.onBack,
+    this.top,
+  }) : super(key: key);
 
   @override
   State<BackgraundPage> createState() => _BackgraundPageState();
@@ -68,33 +73,120 @@ class _BackgraundPageState extends State<BackgraundPage> {
             ),
             Visibility(
               visible: widget.menu,
-              child: Row(
-                spacing: 10,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => const ChecklistPage()));
-                      },
-                      child: Text(
-                        'Checklist',
-                        style: Constants.titleButton,
-                      )),
-                  ElevatedButton(
-                      onPressed: () {},
-                      child: Text(
-                        'Viaturas',
-                        style: Constants.titleButton,
-                      )),
-                  ElevatedButton(
-                      onPressed: () {},
-                      child: Text(
-                        'Usuários',
-                        style: Constants.titleButton,
-                      )),
-                ],
-              ),
+              child: Observer(builder: (_) {
+                return Row(
+                  spacing: 10,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    ElevatedButton(
+                        onPressed: () {
+                          if (controller.router != 0) {
+                            controller.setRouter(0);
+                            Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(
+                                    builder: (context) => const HomePage()));
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: (controller.router == 0)
+                                ? Constants.primary
+                                : Colors.grey),
+                        child: Text(
+                          'Inicío',
+                          style: Constants.titleButton,
+                        )),
+                    PopupMenuButton(
+                        onSelected: (value) {
+                          switch (value) {
+                            case 1:
+                              if (controller.router != 1) {
+                                controller.setRouter(1);
+                                // Navigator.of(context).pushReplacement(
+                                //     MaterialPageRoute(
+                                //         builder: (context) =>
+                                //             const ChecklistRegisterPage()));
+                              }
+                              break;
+                            case 2:
+                              if (controller.router != 2) {
+                                controller.setRouter(2);
+                                Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const ChecklistRegisterPage()));
+                              }
+                              break;
+                            default:
+                              return;
+                          }
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 9, horizontal: 20),
+                          decoration: BoxDecoration(
+                              color: (controller.router == 1 ||
+                                      controller.router == 2)
+                                  ? Constants.primary
+                                  : Colors.grey,
+                              borderRadius: BorderRadius.circular(5)),
+                          child: Text(
+                            'Checklist',
+                            style: Constants.titleButton,
+                          ),
+                        ),
+                        itemBuilder: (context) {
+                          return [
+                            PopupMenuItem(
+                                value: 1,
+                                child: Text(
+                                  'Meus registros',
+                                  style: Constants.title,
+                                )),
+                            PopupMenuItem(
+                                value: 2,
+                                child: Text(
+                                  'Novo registro',
+                                  style: Constants.title,
+                                )),
+                          ];
+                        }),
+                    ElevatedButton(
+                        onPressed: () {
+                          if (controller.router != 3) {
+                            controller.setRouter(3);
+                            Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(
+                                    builder: (context) => const CarsPage()));
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: (controller.router == 3)
+                                ? Constants.primary
+                                : Colors.grey),
+                        child: Text(
+                          'Viaturas',
+                          style: Constants.titleButton,
+                        )),
+                    ElevatedButton(
+                        onPressed: () {
+                          if (controller.router != 4) {
+                            controller.setRouter(4);
+                            Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(
+                                    builder: (context) => const UsersPage()));
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: (controller.router == 4)
+                                ? Constants.primary
+                                : Colors.grey),
+                        child: Text(
+                          'Usuários',
+                          style: Constants.titleButton,
+                        )),
+                  ],
+                );
+              }),
             ),
           ],
         );
@@ -104,13 +196,19 @@ class _BackgraundPageState extends State<BackgraundPage> {
       child: SafeArea(
         top: true,
         child: LayoutBuilder(builder: (context, constrained) {
-          bool modeMOBILE = constrained.maxWidth < 500;
+          bool modeMOBILE = (constrained.maxWidth > widget.maxWidth)
+              ? (widget.maxWidth <= 500)
+              : (constrained.maxWidth <= 500);
+
           double width = (modeMOBILE || widget.childRight == null)
               ? constrained.maxWidth
-              : constrained.maxWidth * 0.48;
+              : (constrained.maxWidth > widget.maxWidth)
+                  ? widget.maxWidth * 0.48
+                  : constrained.maxWidth * 0.48;
 
           return Center(
             child: Container(
+              height: double.infinity,
               width: double.infinity,
               constraints: BoxConstraints(maxWidth: widget.maxWidth),
               margin: const EdgeInsets.all(5),
@@ -118,54 +216,103 @@ class _BackgraundPageState extends State<BackgraundPage> {
               color: Colors.white,
               child: Column(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: Row(
-                      spacing: 10,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: InkWell(
-                            onTap: widget.onBack,
-                            child: Image.asset(
-                              'assets/cbmcecabecalho2.png',
-                              fit: BoxFit.fitHeight,
-                              height: 70,
+                  Expanded(
+                    child: SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      child: Column(
+                        children: [
+                          Row(
+                            spacing: 10,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Container(
+                                alignment: Alignment.centerLeft,
+                                margin: const EdgeInsets.all(10),
+                                child: InkWell(
+                                  onTap: widget.onBack,
+                                  child: Image.asset(
+                                    'assets/cbmcecabecalho2.png',
+                                    fit: BoxFit.fitHeight,
+                                    height: 70,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: Visibility(
+                                  visible: !widget.login,
+                                  child: modeMOBILE
+                                      ? widget.menu
+                                          ? Align(
+                                              alignment: Alignment.centerRight,
+                                              child: IconButton(
+                                                  style: IconButton.styleFrom(
+                                                    backgroundColor:
+                                                        Constants.primary,
+                                                  ),
+                                                  onPressed:
+                                                      controller.changeMenuOpen,
+                                                  icon: const Icon(
+                                                    Icons.menu_rounded,
+                                                    size: 20,
+                                                    color: Colors.white,
+                                                  )),
+                                            )
+                                          : Container()
+                                      : menu(),
+                                ),
+                              )
+                            ],
+                          ),
+                          (modeMOBILE && widget.menu)
+                              ? Observer(builder: (context) {
+                                  return (controller.menuOpen)
+                                      ? Column(
+                                          children: [
+                                            const Divider(),
+                                            menu(),
+                                            const Divider(),
+                                          ],
+                                        )
+                                      : Container();
+                                })
+                              : Container(),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          (widget.top == null) ? Container() : widget.top!,
+                          // Container(
+                          //   color: Colors.red,
+                          //   width: 400,
+                          //   height: 400,
+                          // ),
+                          // Container(
+                          //   color: Colors.yellow,
+                          //   width: 400,
+                          //   height: 400,
+                          // ),
+                          SizedBox(
+                            width: double.infinity,
+                            child: Wrap(
+                              alignment: WrapAlignment.spaceBetween,
+                              children: [
+                                SizedBox(
+                                  width: width,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(bottom: 20),
+                                    child: widget.childLeft,
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: width,
+                                  child: widget.childRight,
+                                )
+                              ],
                             ),
                           ),
-                        ),
-                        Expanded(
-                          child: Visibility(
-                            visible: !widget.login,
-                            child: modeMOBILE ? Container() : menu(),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Expanded(
-                      child: SingleChildScrollView(
-                    child: SizedBox(
-                      width: double.infinity,
-                      child: Wrap(
-                        alignment: WrapAlignment.spaceBetween,
-                        children: [
-                          SizedBox(
-                            width: width,
-                            child: widget.childLeft,
-                          ),
-                          SizedBox(
-                            width: width,
-                            child: widget.childRight,
-                          )
                         ],
                       ),
                     ),
-                  )),
+                  ),
                   (widget.bottom == null) ? Container() : widget.bottom!
                 ],
               ),
