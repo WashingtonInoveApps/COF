@@ -6,16 +6,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:mobx/mobx.dart';
 
-class ChecklistItensPage extends StatefulWidget {
+class ChecklistMaterialsPage extends StatefulWidget {
   final CheckListController controller;
-  const ChecklistItensPage({Key? key, required this.controller})
+  const ChecklistMaterialsPage({Key? key, required this.controller})
       : super(key: key);
 
   @override
-  State<ChecklistItensPage> createState() => _ChecklistItensPageState();
+  State<ChecklistMaterialsPage> createState() => _ChecklistMaterialsPageState();
 }
 
-class _ChecklistItensPageState extends State<ChecklistItensPage> {
+class _ChecklistMaterialsPageState extends State<ChecklistMaterialsPage> {
   late CheckListController controller;
   late ReactionDisposer _dispose;
 
@@ -60,7 +60,7 @@ class _ChecklistItensPageState extends State<ChecklistItensPage> {
                   color: Constants.primary,
                   borderRadius: BorderRadius.circular(5)),
               child: Text(
-                'ITENS',
+                'MATERIAIS',
                 style: Constants.titleButton,
               ),
             ),
@@ -72,9 +72,9 @@ class _ChecklistItensPageState extends State<ChecklistItensPage> {
               child: Wrap(
                 direction: Axis.horizontal,
                 alignment: WrapAlignment.spaceBetween,
-                children: List.generate(controller.car!.itens.length,
+                children: List.generate(controller.car!.materials.length,
                     (indexCategory) {
-                  final category = controller.car!.itens[indexCategory];
+                  final category = controller.car!.materials[indexCategory];
                   return Container(
                     width: width,
                     padding: const EdgeInsets.all(10),
@@ -110,12 +110,13 @@ class _ChecklistItensPageState extends State<ChecklistItensPage> {
                               List.generate(category.itens.length, (indexItem) {
                             final item = category.itens[indexItem];
                             final itemChange = controller
-                                .itens[indexCategory].itens[indexItem];
+                                .materials[indexCategory].itens[indexItem];
+
                             return ChacklistItemWidget(
                               item: item,
                               init: itemChange,
                               onChange: (value) {
-                                controller.changeItens(
+                                controller.changeMaterials(
                                     value, indexCategory, indexItem);
                               },
                             );
@@ -132,7 +133,7 @@ class _ChecklistItensPageState extends State<ChecklistItensPage> {
                           initValue: controller.itens[indexCategory].obs,
                           hint: "EX.: Alguma informação importante",
                           onChange: (text) {
-                            controller.changeOBSItens(text, indexCategory);
+                            controller.changeOBSMaterials(text, indexCategory);
                           },
                         ),
                       ],

@@ -65,6 +65,7 @@ class CarModel {
   StatusCar state;
 
   List<ItensChangesModel> itens;
+  List<ItensChangesModel> materials;
   List<CarChangeModel> changes;
   List<CarStatusModel> status;
   List<CarMapaModel>? mapas;
@@ -91,6 +92,7 @@ class CarModel {
       required this.changes,
       required this.status,
       required this.images,
+      required this.materials,
       this.mapas,
       this.type = "",
       this.adm = false,
@@ -104,7 +106,9 @@ class CarModel {
         "id": id,
         "prefix": prefix,
         "itens": List<dynamic>.from(itens.map((e) => e.toMap()).toList()),
-        "changes": List<dynamic>.from(changes.map((e) => e.toMap()).toList()),
+        "materials":
+            List<dynamic>.from(materials.map((e) => e.toMap()).toList()),
+        "changes": [],
         "images": [],
         "obmID": obmID,
         "cia": cia
@@ -124,6 +128,7 @@ class CarModel {
       "cia": cia,
       'state': state.name,
       'itens': itens.map((x) => x.toMap()).toList(),
+      'materials': materials.map((x) => x.toMap()).toList(),
       'changes': changes.map((x) => x.toMap()).toList(),
       'mapas': mapas?.map((x) => x.toMap()).toList(),
       "images": images.map((x) => x?.toMap()).toList(),
@@ -142,8 +147,9 @@ class CarModel {
         prefix: map['prefix'] ?? '',
         itens: List<ItensChangesModel>.from(
             map['itens']?.map((x) => ItensChangesModel.fromMap(x))),
-        changes: List<CarChangeModel>.from(
-            map['changes']?.map((x) => CarChangeModel.fromMap(x))),
+        materials: List<ItensChangesModel>.from(
+            map['materials']?.map((x) => ItensChangesModel.fromMap(x))),
+        changes: [],
         images: [],
         status: [],
         cia: map['cia'],
@@ -165,6 +171,8 @@ class CarModel {
       state: statusFromString(map['state'] as String),
       itens: List<ItensChangesModel>.from(
           map['itens']?.map((x) => ItensChangesModel.fromMap(x))),
+      materials: List<ItensChangesModel>.from(
+          map['materials']?.map((x) => ItensChangesModel.fromMap(x))),
       changes: List<CarChangeModel>.from(
           map['changes']?.map((x) => CarChangeModel.fromMap(x))),
       mapas: List<CarMapaModel>.from(
@@ -200,6 +208,7 @@ class CarModel {
     String? cia,
     String? function,
     List<ItensChangesModel>? itens,
+    List<ItensChangesModel>? materials,
     List<CarChangeModel>? changes,
     List<CarStatusModel>? status,
     List<CarMapaModel>? mapas,
@@ -224,6 +233,7 @@ class CarModel {
       cia: cia ?? this.cia,
       images: images ?? this.images,
       itens: itens ?? this.itens,
+      materials: materials ?? this.materials,
       changes: changes ?? this.changes,
       status: status ?? this.status,
       mapas: mapas ?? this.mapas,

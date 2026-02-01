@@ -1,6 +1,7 @@
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/validation.dart';
 import 'package:bsu_control/model/car_changes_model.dart';
+import 'package:bsu_control/model/car_checklist.dart';
 import 'package:bsu_control/model/car_model.dart';
 import 'package:bsu_control/model/check_list_model.dart';
 import 'package:bsu_control/model/itens_changes_model.dart';
@@ -48,7 +49,11 @@ abstract class _CheckListControllerBase with Store {
     }
 
     carChanges.addAll(car?.changes ?? []);
-    itens.addAll(car?.itens.where((i) => i.itens.isNotEmpty).toList() ?? []);
+
+    itens.addAll(List<ItensChangesModel>.from(
+        car?.itens.where((i) => i.itens.isNotEmpty).toList() ?? []));
+    materials.addAll(List<ItensChangesModel>.from(
+        car?.materials.where((i) => i.itens.isNotEmpty).toList() ?? []));
   }
 
   @observable
@@ -56,6 +61,10 @@ abstract class _CheckListControllerBase with Store {
 
   @observable
   ObservableList<ItensChangesModel> itens =
+      <ItensChangesModel>[].asObservable();
+
+  @observable
+  ObservableList<ItensChangesModel> materials =
       <ItensChangesModel>[].asObservable();
 
   @observable
@@ -68,9 +77,6 @@ abstract class _CheckListControllerBase with Store {
 
   @observable
   int step = 0;
-
-  @observable
-  String alfa = "";
 
   @observable
   String contact = "";
@@ -112,6 +118,19 @@ abstract class _CheckListControllerBase with Store {
   CarModel? car;
 
   @computed
+  bool get btFinish {
+    final materialsEmpty = car?.materials.isEmpty ?? true;
+
+    if (materialsEmpty && step == 2) {
+      return true;
+    } else if (step == 3) {
+      return true;
+    }
+
+    return false;
+  }
+
+  @computed
   List<CarModel> get cars {
     return app.cars
         .where((e) => (cia != null)
@@ -119,6 +138,9 @@ abstract class _CheckListControllerBase with Store {
             : (e.obmID.toLowerCase() == obm.id?.toLowerCase()))
         .toList();
   }
+
+  @action
+  changeDate(DateTime? value) => date = value ?? date;
 
   @action
   setPrefix(String? value) {
@@ -129,7 +151,44 @@ abstract class _CheckListControllerBase with Store {
       carChanges
         ..clear()
         ..addAll(car?.changes ?? []);
+
+      itens
+        ..clear()
+        ..addAll(processItens(car?.itens ?? []));
+
+      materials
+        ..clear()
+        ..addAll(processItens(car?.materials ?? []));
+
+      for (final category in itens) {
+        for (final item in category.itens) {
+          item.quantity = 0;
+        }
+      }
+
+      for (final category in materials) {
+        for (final item in category.itens) {
+          item.quantity = 0;
+        }
+      }
     }
+  }
+
+  List<ItensChangesModel> processItens(List<ItensChangesModel> value) {
+    List<ItensChangesModel> list = [];
+    List<ItemModel> itens = [];
+
+    for (final item in value) {
+      list.add(ItensChangesModel.fromMap(item.toMap()));
+    }
+
+    for (final category in list) {
+      for (final item in category.itens) {
+        itens.add(item.copyWith(quantity: 0));
+      }
+    }
+
+    return list;
   }
 
   @action
@@ -164,9 +223,6 @@ abstract class _CheckListControllerBase with Store {
 
   @action
   setContact(String? value) => contact = value ?? '';
-
-  @action
-  setAlfa(String? value) => alfa = value ?? alfa;
 
   @action
   setPB(String? value) => pb = value ?? pb;
@@ -207,35 +263,86 @@ abstract class _CheckListControllerBase with Store {
   }
 
   @action
-  statusExpanded(int index, bool value) {
-    final result = itens.elementAt(index);
+  changeItens(ItemModel value, int indexCategory, int indexItem) {
+    final category =
+        ItensChangesModel.fromMap(itens.elementAt(indexCategory).toMap());
 
-    result.value = value;
+    List<ItemModel> list = List.from(category.itens);
+    list.removeAt(indexItem);
+    list.insert(indexItem, value);
 
-    itens
-      ..removeAt(index)
-      ..insert(index, result);
+    itens.removeAt(indexCategory);
+    itens.insert(indexCategory, category.copyWith(itens: list));
   }
 
   @action
-  selectValueItens(bool value, int index, int indexItem) {
-    final item = itens.elementAt(index);
-    final subItem = item.itens.elementAt(indexItem);
+  changeOBSItens(String obs, int indexCategory) {
+    final category =
+        ItensChangesModel.fromMap(itens.elementAt(indexCategory).toMap());
 
-    subItem.value = value;
-    itens
-      ..removeAt(index)
-      ..insert(index, item);
+    itens.removeAt(indexCategory);
+    itens.insert(indexCategory, category.copyWith(obs: obs));
   }
 
   @action
-  Future<bool> save({required CheckListModel checkList, String? id}) async {
-    loading = true;
-    final result = await repository.save(
-        checkList: checkList, unidade: app.unidade, id: id);
-    loading = false;
+  changeMaterials(ItemModel value, int indexCategory, int indexItem) {
+    final category =
+        ItensChangesModel.fromMap(materials.elementAt(indexCategory).toMap());
 
-    return result;
+    List<ItemModel> list = List.from(category.itens);
+    list.removeAt(indexItem);
+    list.insert(indexItem, value);
+
+    materials.removeAt(indexCategory);
+    materials.insert(indexCategory, category.copyWith(itens: list));
+  }
+
+  @action
+  changeOBSMaterials(String obs, int indexCategory) {
+    final category =
+        ItensChangesModel.fromMap(materials.elementAt(indexCategory).toMap());
+
+    itens.removeAt(indexCategory);
+    itens.insert(indexCategory, category.copyWith(obs: obs));
+  }
+
+  @action
+  Future<bool> save() async {
+    try {
+      loading = true;
+
+      final checklist = CheckListModel(
+          date: date,
+          user: app.user,
+          userID: app.user.id,
+          checkCar: CarCheckList(
+            car: car!.copyWith(itens: itens, materials: materials),
+            arref: arref,
+            fr: fr,
+            fuel: fuel,
+            hidra: hidra,
+            oil: oil,
+            obs: obs,
+          ),
+          startKM: startKM,
+          prefix: prefix,
+          obs: obs,
+          team: team,
+          obmID: obm.id ?? '',
+          cia: cia?.toLowerCase() ?? '',
+          contact: contact,
+          changes: [],
+          supply: []);
+
+      final result =
+          await repository.save(checklist: checklist, changes: carChanges);
+      loading = false;
+
+      return result;
+    } catch (e) {
+      loading = false;
+      rethrow;
+    }
   }
 
   @action
@@ -276,6 +383,8 @@ abstract class _CheckListControllerBase with Store {
         }
 
         return messagesErros.isEmpty;
+      case 2:
+        return true;
       default:
         return false;
     }

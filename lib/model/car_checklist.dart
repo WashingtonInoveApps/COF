@@ -1,4 +1,6 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
+
 import 'package:bsu_control/model/car_model.dart';
 
 class CarCheckList {
@@ -47,4 +49,24 @@ class CarCheckList {
 
   factory CarCheckList.fromJson(String source) =>
       CarCheckList.fromMap(json.decode(source));
+
+  CarCheckList copyWith({
+    CarModel? car,
+    double? oil,
+    double? hidra,
+    double? fr,
+    double? arref,
+    double? fuel,
+    String? obs,
+  }) {
+    return CarCheckList(
+      car: car ?? this.car,
+      oil: oil ?? this.oil,
+      hidra: hidra ?? this.hidra,
+      fr: fr ?? this.fr,
+      arref: arref ?? this.arref,
+      fuel: fuel ?? this.fuel,
+      obs: obs ?? this.obs,
+    );
+  }
 }

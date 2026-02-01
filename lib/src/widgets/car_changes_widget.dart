@@ -22,7 +22,7 @@ class CarChangesWidget extends StatefulWidget {
   final UserModel user;
   final bool update;
   final bool register;
-  final String? checklistId;
+  final String? checklistID;
 
   final Function(List<CarChangeModel> change)? onChange;
   final Function(List<dynamic> images)? onChangeImages;
@@ -34,7 +34,7 @@ class CarChangesWidget extends StatefulWidget {
       this.add = true,
       this.remove = false,
       this.register = false,
-      this.checklistId,
+      this.checklistID,
       this.onChange,
       required this.user,
       this.update = false,
@@ -200,8 +200,8 @@ class _CarChangesWidgetState extends State<CarChangesWidget> {
 
                               if (index != -1) {
                                 final enable = (widget.remove ||
-                                    ((widget.checklistId ==
-                                            changes[index].checklistId) &&
+                                    ((widget.checklistID ==
+                                            changes[index].checklistID) &&
                                         (changes[index].value ==
                                             widget.update)));
 
@@ -226,7 +226,7 @@ class _CarChangesWidgetState extends State<CarChangesWidget> {
                                       builder: (context) => ImageChangeWidget(
                                             onSelect: (image, description) {
                                               final change = CarChangeModel(
-                                                checklistId: widget.checklistId,
+                                                checklistID: widget.checklistID,
                                                 user: widget.user,
                                                 value: widget.update,
                                                 dx: tapDx, // 🔥 SALVA PROPORCIONAL

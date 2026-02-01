@@ -116,6 +116,22 @@ mixin _$CarController on _CarControllerBase, Store {
     });
   }
 
+  late final _$sectionsMaterialsAtom =
+      Atom(name: '_CarControllerBase.sectionsMaterials', context: context);
+
+  @override
+  ObservableList<ItensChangesModel> get sectionsMaterials {
+    _$sectionsMaterialsAtom.reportRead();
+    return super.sectionsMaterials;
+  }
+
+  @override
+  set sectionsMaterials(ObservableList<ItensChangesModel> value) {
+    _$sectionsMaterialsAtom.reportWrite(value, super.sectionsMaterials, () {
+      super.sectionsMaterials = value;
+    });
+  }
+
   late final _$carChangesAtom =
       Atom(name: '_CarControllerBase.carChanges', context: context);
 
@@ -281,77 +297,154 @@ mixin _$CarController on _CarControllerBase, Store {
   }
 
   @override
-  dynamic addSections(ItensChangesModel value) {
+  dynamic addSectionsItens(ItensChangesModel value) {
     final _$actionInfo = _$_CarControllerBaseActionController.startAction(
-        name: '_CarControllerBase.addSections');
+        name: '_CarControllerBase.addSectionsItens');
     try {
-      return super.addSections(value);
+      return super.addSectionsItens(value);
     } finally {
       _$_CarControllerBaseActionController.endAction(_$actionInfo);
     }
   }
 
   @override
-  dynamic editSections(int index, ItensChangesModel value) {
+  dynamic editSectionsItens(int index, ItensChangesModel value) {
     final _$actionInfo = _$_CarControllerBaseActionController.startAction(
-        name: '_CarControllerBase.editSections');
+        name: '_CarControllerBase.editSectionsItens');
     try {
-      return super.editSections(index, value);
+      return super.editSectionsItens(index, value);
     } finally {
       _$_CarControllerBaseActionController.endAction(_$actionInfo);
     }
   }
 
   @override
-  dynamic removeSections(int index) {
+  dynamic removeSectionsItens(int index) {
     final _$actionInfo = _$_CarControllerBaseActionController.startAction(
-        name: '_CarControllerBase.removeSections');
+        name: '_CarControllerBase.removeSectionsItens');
     try {
-      return super.removeSections(index);
+      return super.removeSectionsItens(index);
     } finally {
       _$_CarControllerBaseActionController.endAction(_$actionInfo);
     }
   }
 
   @override
-  dynamic cleanSections() {
+  dynamic cleanSectionsItens() {
     final _$actionInfo = _$_CarControllerBaseActionController.startAction(
-        name: '_CarControllerBase.cleanSections');
+        name: '_CarControllerBase.cleanSectionsItens');
     try {
-      return super.cleanSections();
+      return super.cleanSectionsItens();
     } finally {
       _$_CarControllerBaseActionController.endAction(_$actionInfo);
     }
   }
 
   @override
-  dynamic expansionSections(int index) {
+  dynamic addSectionsMaterials(ItensChangesModel value) {
     final _$actionInfo = _$_CarControllerBaseActionController.startAction(
-        name: '_CarControllerBase.expansionSections');
+        name: '_CarControllerBase.addSectionsMaterials');
     try {
-      return super.expansionSections(index);
+      return super.addSectionsMaterials(value);
     } finally {
       _$_CarControllerBaseActionController.endAction(_$actionInfo);
     }
   }
 
   @override
-  dynamic addItensSection(int index, ItemModel value) {
+  dynamic editSectionsMaterials(int index, ItensChangesModel value) {
     final _$actionInfo = _$_CarControllerBaseActionController.startAction(
-        name: '_CarControllerBase.addItensSection');
+        name: '_CarControllerBase.editSectionsMaterials');
     try {
-      return super.addItensSection(index, value);
+      return super.editSectionsMaterials(index, value);
     } finally {
       _$_CarControllerBaseActionController.endAction(_$actionInfo);
     }
   }
 
   @override
-  dynamic removeItensSection(int index, int itemIndex) {
+  dynamic removeSectionsMaterials(int index) {
     final _$actionInfo = _$_CarControllerBaseActionController.startAction(
-        name: '_CarControllerBase.removeItensSection');
+        name: '_CarControllerBase.removeSectionsMaterials');
     try {
-      return super.removeItensSection(index, itemIndex);
+      return super.removeSectionsMaterials(index);
+    } finally {
+      _$_CarControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic cleanSectionsMaterials() {
+    final _$actionInfo = _$_CarControllerBaseActionController.startAction(
+        name: '_CarControllerBase.cleanSectionsMaterials');
+    try {
+      return super.cleanSectionsMaterials();
+    } finally {
+      _$_CarControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic expansionSectionsItens(int index) {
+    final _$actionInfo = _$_CarControllerBaseActionController.startAction(
+        name: '_CarControllerBase.expansionSectionsItens');
+    try {
+      return super.expansionSectionsItens(index);
+    } finally {
+      _$_CarControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic addSectionItens(int index, ItemModel value) {
+    final _$actionInfo = _$_CarControllerBaseActionController.startAction(
+        name: '_CarControllerBase.addSectionItens');
+    try {
+      return super.addSectionItens(index, value);
+    } finally {
+      _$_CarControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic removeSectionItens(int index, int itemIndex) {
+    final _$actionInfo = _$_CarControllerBaseActionController.startAction(
+        name: '_CarControllerBase.removeSectionItens');
+    try {
+      return super.removeSectionItens(index, itemIndex);
+    } finally {
+      _$_CarControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic expansionSectionsMaterials(int index) {
+    final _$actionInfo = _$_CarControllerBaseActionController.startAction(
+        name: '_CarControllerBase.expansionSectionsMaterials');
+    try {
+      return super.expansionSectionsMaterials(index);
+    } finally {
+      _$_CarControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic addSectionMaterials(int index, ItemModel value) {
+    final _$actionInfo = _$_CarControllerBaseActionController.startAction(
+        name: '_CarControllerBase.addSectionMaterials');
+    try {
+      return super.addSectionMaterials(index, value);
+    } finally {
+      _$_CarControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic removeSectionMaterials(int index, int itemIndex) {
+    final _$actionInfo = _$_CarControllerBaseActionController.startAction(
+        name: '_CarControllerBase.removeSectionMaterials');
+    try {
+      return super.removeSectionMaterials(index, itemIndex);
     } finally {
       _$_CarControllerBaseActionController.endAction(_$actionInfo);
     }
@@ -366,6 +459,7 @@ function: ${function},
 cia: ${cia},
 obm: ${obm},
 sectionsItens: ${sectionsItens},
+sectionsMaterials: ${sectionsMaterials},
 carChanges: ${carChanges},
 enable: ${enable},
 adm: ${adm}

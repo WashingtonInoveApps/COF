@@ -50,17 +50,24 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
   void initState() {
     super.initState();
     controller = CarController(app: app);
-    controller.cleanSections();
+    controller.cleanSectionsItens();
+    controller.cleanSectionsMaterials();
+
     controller.setOBM(app.obms.firstWhere((e) => e.id == app.user.obmID));
 
     if (widget.car != null) {
       controller.setTypeCar(widget.car?.type);
       controller.setFunctionCar(widget.car?.function);
-      controller.cleanSections();
+      controller.cleanSectionsItens();
+      controller.cleanSectionsMaterials();
 
       car = CarModel.copy(widget.car!);
       for (final itens in car.itens) {
-        controller.addSections(itens.copyWith(value: false));
+        controller.addSectionsItens(itens.copyWith(value: false));
+      }
+
+      for (final itens in car.materials) {
+        controller.addSectionsMaterials(itens.copyWith(value: false));
       }
 
       controller.onChangesCar(widget.car?.changes ?? []);
@@ -68,6 +75,7 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
       car = CarModel(
           images: [],
           itens: [],
+          materials: [],
           changes: [],
           status: [],
           mapas: [],
@@ -105,171 +113,174 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
               ),
             ],
           ),
-          childLeft: Column(
-            spacing: 10,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "ORGANIZAÇÃO",
-                style: Constants.subtitleHint,
-              ),
-              Container(
-                height: 60.0,
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: 5),
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey),
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(5.0)),
-                child: Observer(builder: (_) {
-                  return IgnorePointer(
-                    ignoring: !app.user.adminFull,
-                    child: DropdownButton<OBMModel>(
-                        isExpanded: true,
-                        value: controller.obm,
-                        underline: Container(),
-                        onChanged: controller.setOBM,
-                        items: app.obms
-                            .map((e) => DropdownMenuItem(
-                                  value: e,
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 5),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Text(
-                                          e.prefix,
-                                          style: Constants.title,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                        Text(
-                                          e.name,
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: Constants.subtitle
-                                              .copyWith(color: Colors.grey),
-                                        ),
-                                      ],
+          childLeft: Form(
+            key: _key,
+            child: Column(
+              spacing: 10,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "ORGANIZAÇÃO",
+                  style: Constants.subtitleHint,
+                ),
+                Container(
+                  height: 60.0,
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(horizontal: 5),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(5.0)),
+                  child: Observer(builder: (_) {
+                    return IgnorePointer(
+                      ignoring: !app.user.adminFull,
+                      child: DropdownButton<OBMModel>(
+                          isExpanded: true,
+                          value: controller.obm,
+                          underline: Container(),
+                          onChanged: controller.setOBM,
+                          items: app.obms
+                              .map((e) => DropdownMenuItem(
+                                    value: e,
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 5),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text(
+                                            e.prefix,
+                                            style: Constants.title,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                          Text(
+                                            e.name,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: Constants.subtitle
+                                                .copyWith(color: Colors.grey),
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                ))
-                            .toList()),
-                  );
+                                  ))
+                              .toList()),
+                    );
+                  }),
+                ),
+                Observer(builder: (context) {
+                  return Visibility(
+                      visible: (controller.cia != null),
+                      child: Column(
+                        spacing: 10,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "COMPANHIA",
+                            style: Constants.subtitleHint,
+                          ),
+                          Container(
+                            height: 60.0,
+                            width: double.infinity,
+                            padding: const EdgeInsets.symmetric(horizontal: 5),
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                                border: Border.all(color: Colors.grey),
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(5.0)),
+                            child: DropdownButton<String?>(
+                                isExpanded: true,
+                                value: controller.cia,
+                                underline: Container(),
+                                onChanged: controller.setCia,
+                                items: controller.obm.cias
+                                    .map((e) => DropdownMenuItem(
+                                          value: e,
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 5),
+                                            child: Text(e.toUpperCase(),
+                                                style: Constants.title),
+                                          ),
+                                        ))
+                                    .toList()),
+                          ),
+                        ],
+                      ));
                 }),
-              ),
-              Observer(builder: (context) {
-                return Visibility(
-                    visible: (controller.cia != null),
-                    child: Column(
-                      spacing: 10,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "COMPANHIA",
-                          style: Constants.subtitleHint,
-                        ),
-                        Container(
-                          height: 60.0,
-                          width: double.infinity,
-                          padding: const EdgeInsets.symmetric(horizontal: 5),
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                              border: Border.all(color: Colors.grey),
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(5.0)),
-                          child: DropdownButton<String?>(
-                              isExpanded: true,
-                              value: controller.cia,
-                              underline: Container(),
-                              onChanged: controller.setCia,
-                              items: controller.obm.cias
-                                  .map((e) => DropdownMenuItem(
-                                        value: e,
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 5),
-                                          child: Text(e.toUpperCase(),
-                                              style: Constants.title),
-                                        ),
-                                      ))
-                                  .toList()),
-                        ),
-                      ],
-                    ));
-              }),
-              Text(
-                "PREFIXO",
-                style: Constants.subtitleHint,
-              ),
-              FieldText(
-                initValue: car.prefix,
-                hint: "EX.: RESGATE 32",
-                validation: Validation.validatorPreenchimento,
-                onSaved: (value) => car.prefix = value ?? car.prefix,
-                upper: true,
-              ),
-              Text(
-                "MODELO",
-                style: Constants.subtitleHint,
-              ),
-              FieldText(
-                initValue: car.model,
-                hint: "EX.: RENAULT MASTER 2.3 2010",
-                validation: Validation.validatorPreenchimento,
-                onSaved: (value) => car.model = value ?? car.model,
-                upper: true,
-              ),
-              Text(
-                "PLACA",
-                style: Constants.subtitleHint,
-              ),
-              FieldText(
-                initValue: car.plate,
-                hint: "EX.: XXX2X45",
-                validation: Validation.validatorPreenchimento,
-                onSaved: (value) => car.plate = value ?? car.plate,
-                upper: true,
-              ),
-              Text(
-                "KM INICIAL",
-                style: Constants.subtitleHint,
-              ),
-              FieldText(
-                initValue: car.km.toString(),
-                hint: "EX.: 1234567",
-                inputType: TextInputType.number,
-                validation: Validation.validatorNumber,
-                onSaved: (value) => car.km = int.parse(value!),
-              ),
-              Text(
-                "MODELO DO PNEU",
-                style: Constants.subtitleHint,
-              ),
-              FieldText(
-                initValue: car.modelPneu,
-                hint: "EX.: 202/75 15",
-                validation: Validation.validatorPreenchimento,
-                onSaved: (value) => car.modelPneu = value ?? car.modelPneu,
-                upper: true,
-                mask: [maskReference],
-              ),
-              Text(
-                "NÚMERO DO CARTÃO",
-                style: Constants.subtitleHint,
-              ),
-              FieldText(
-                initValue: car.ticket,
-                hint: "EX.: 0000 0000 0000 0000",
-                inputType: TextInputType.number,
-                validation: Validation.validatorPreenchimento,
-                onSaved: (value) => car.ticket = value ?? car.ticket,
-                mask: [maskCard],
-              ),
-            ],
+                Text(
+                  "PREFIXO",
+                  style: Constants.subtitleHint,
+                ),
+                FieldText(
+                  initValue: car.prefix,
+                  hint: "EX.: RESGATE 32",
+                  validation: Validation.validatorPreenchimento,
+                  onSaved: (value) => car.prefix = value ?? car.prefix,
+                  upper: true,
+                ),
+                Text(
+                  "MODELO",
+                  style: Constants.subtitleHint,
+                ),
+                FieldText(
+                  initValue: car.model,
+                  hint: "EX.: RENAULT MASTER 2.3 2010",
+                  validation: Validation.validatorPreenchimento,
+                  onSaved: (value) => car.model = value ?? car.model,
+                  upper: true,
+                ),
+                Text(
+                  "PLACA",
+                  style: Constants.subtitleHint,
+                ),
+                FieldText(
+                  initValue: car.plate,
+                  hint: "EX.: XXX2X45",
+                  validation: Validation.validatorPreenchimento,
+                  onSaved: (value) => car.plate = value ?? car.plate,
+                  upper: true,
+                ),
+                Text(
+                  "KM INICIAL",
+                  style: Constants.subtitleHint,
+                ),
+                FieldText(
+                  initValue: car.km.toString(),
+                  hint: "EX.: 1234567",
+                  inputType: TextInputType.number,
+                  validation: Validation.validatorNumber,
+                  onSaved: (value) => car.km = int.parse(value!),
+                ),
+                Text(
+                  "MODELO DO PNEU",
+                  style: Constants.subtitleHint,
+                ),
+                FieldText(
+                  initValue: car.modelPneu,
+                  hint: "EX.: 202/75 15",
+                  validation: Validation.validatorPreenchimento,
+                  onSaved: (value) => car.modelPneu = value ?? car.modelPneu,
+                  upper: true,
+                  mask: [maskReference],
+                ),
+                Text(
+                  "NÚMERO DO CARTÃO",
+                  style: Constants.subtitleHint,
+                ),
+                FieldText(
+                  initValue: car.ticket,
+                  hint: "EX.: 0000 0000 0000 0000",
+                  inputType: TextInputType.number,
+                  validation: Validation.validatorPreenchimento,
+                  onSaved: (value) => car.ticket = value ?? car.ticket,
+                  mask: [maskCard],
+                ),
+              ],
+            ),
           ),
           childRight: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -307,8 +318,27 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                                         style: Constants.title,
                                       )),
                                       InkWell(
-                                        onTap: () =>
-                                            controller.removeSections(index),
+                                        onTap: () {
+                                          showDialog(
+                                              context: context,
+                                              builder: (context) => AlertMessage(
+                                                  title: 'Atenção',
+                                                  message:
+                                                      'Deseja excluir essa categoria de itens ?',
+                                                  cancel: true,
+                                                  titleOK: 'Sim',
+                                                  onPressedCancel: () =>
+                                                      Navigator.of(context)
+                                                          .pop(false),
+                                                  onPressedOK: () =>
+                                                      Navigator.of(context).pop(
+                                                          true))).then((value) {
+                                            if (value ?? false) {
+                                              controller
+                                                  .removeSectionsItens(index);
+                                            }
+                                          });
+                                        },
                                         child: CircleAvatar(
                                           radius: 12,
                                           backgroundColor: Constants.primary,
@@ -327,8 +357,9 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                                                     child: SectionWidget(
                                                       section: section,
                                                       onChange: (value) {
-                                                        controller.editSections(
-                                                            index, value);
+                                                        controller
+                                                            .editSectionsItens(
+                                                                index, value);
                                                       },
                                                     ),
                                                   ));
@@ -344,8 +375,8 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                                         ),
                                       ),
                                       InkWell(
-                                        onTap: () =>
-                                            controller.expansionSections(index),
+                                        onTap: () => controller
+                                            .expansionSectionsItens(index),
                                         child: CircleAvatar(
                                           radius: 12,
                                           backgroundColor: Constants.primary,
@@ -370,7 +401,7 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                                             section: section,
                                             context: context,
                                             onDelete: (value) =>
-                                                controller.removeItensSection(
+                                                controller.removeSectionItens(
                                                     index, value),
                                             onAdd: () {
                                               showDialog(
@@ -380,7 +411,7 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                                                             ItensSectionWidget(
                                                           onChange: (value) {
                                                             controller
-                                                                .addItensSection(
+                                                                .addSectionItens(
                                                                     index,
                                                                     value);
                                                           },
@@ -406,7 +437,7 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                           builder: (context) => Center(
                                 child: SectionWidget(
                                   onChange: (value) {
-                                    controller.addSections(value);
+                                    controller.addSectionsItens(value);
                                   },
                                 ),
                               ));
@@ -419,8 +450,171 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                       size: 20,
                     )),
               ),
+              Text(
+                "MATERIAIS",
+                style: Constants.subtitleHint,
+              ),
+              const Divider(),
               const SizedBox(
-                height: 15,
+                height: 5,
+              ),
+              Observer(builder: (context) {
+                return controller.sectionsMaterials.isEmpty
+                    ? Text(
+                        'Nenhum material encontrado.',
+                        style: Constants.title,
+                      )
+                    : Column(
+                        children: List.generate(
+                            controller.sectionsMaterials.length, (index) {
+                          final section = controller.sectionsMaterials[index];
+
+                          return Card(
+                            child: Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    spacing: 5,
+                                    children: [
+                                      Expanded(
+                                          child: Text(
+                                        section.description,
+                                        style: Constants.title,
+                                      )),
+                                      InkWell(
+                                        onTap: () {
+                                          showDialog(
+                                              context: context,
+                                              builder: (context) => AlertMessage(
+                                                  title: 'Atenção',
+                                                  message:
+                                                      'Deseja excluir essa categoria de itens ?',
+                                                  cancel: true,
+                                                  titleOK: 'Sim',
+                                                  onPressedCancel: () =>
+                                                      Navigator.of(context)
+                                                          .pop(false),
+                                                  onPressedOK: () =>
+                                                      Navigator.of(context).pop(
+                                                          true))).then((value) {
+                                            if (value ?? false) {
+                                              controller
+                                                  .removeSectionsMaterials(
+                                                      index);
+                                            }
+                                          });
+                                        },
+                                        child: CircleAvatar(
+                                          radius: 12,
+                                          backgroundColor: Constants.primary,
+                                          child: const Icon(
+                                            Icons.remove,
+                                            size: 15,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                      InkWell(
+                                        onTap: () {
+                                          showDialog(
+                                              context: context,
+                                              builder: (context) => Center(
+                                                    child: SectionWidget(
+                                                      section: section,
+                                                      onChange: (value) {
+                                                        controller
+                                                            .editSectionsMaterials(
+                                                                index, value);
+                                                      },
+                                                    ),
+                                                  ));
+                                        },
+                                        child: CircleAvatar(
+                                          radius: 12,
+                                          backgroundColor: Constants.primary,
+                                          child: const Icon(
+                                            Icons.edit,
+                                            size: 12,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                      InkWell(
+                                        onTap: () => controller
+                                            .expansionSectionsMaterials(index),
+                                        child: CircleAvatar(
+                                          radius: 12,
+                                          backgroundColor: Constants.primary,
+                                          child: Icon(
+                                            section.value
+                                                ? Icons
+                                                    .keyboard_arrow_up_outlined
+                                                : Icons
+                                                    .keyboard_arrow_down_outlined,
+                                            size: 20,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Visibility(
+                                      visible: section.value,
+                                      child: SizedBox(
+                                        height: 300,
+                                        child: changesListWidget(
+                                            section: section,
+                                            context: context,
+                                            onDelete: (value) => controller
+                                                .removeSectionMaterials(
+                                                    index, value),
+                                            onAdd: () {
+                                              showDialog(
+                                                  context: context,
+                                                  builder: (context) => Center(
+                                                        child:
+                                                            ItensSectionWidget(
+                                                          onChange: (value) {
+                                                            controller
+                                                                .addSectionMaterials(
+                                                                    index,
+                                                                    value);
+                                                          },
+                                                        ),
+                                                      ));
+                                            }),
+                                      ))
+                                ],
+                              ),
+                            ),
+                          );
+                        }),
+                      );
+              }),
+              const SizedBox(
+                height: 10,
+              ),
+              Center(
+                child: IconButton(
+                    onPressed: () {
+                      showDialog(
+                          context: context,
+                          builder: (context) => Center(
+                                child: SectionWidget(
+                                  onChange: (value) {
+                                    controller.addSectionsMaterials(value);
+                                  },
+                                ),
+                              ));
+                    },
+                    style: IconButton.styleFrom(
+                        backgroundColor: Constants.primary),
+                    icon: const Icon(
+                      Icons.add,
+                      color: Colors.white,
+                      size: 20,
+                    )),
               ),
               Text(
                 "FUNÇÃO",
@@ -539,7 +733,7 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                   width: 150.0,
                   child: ElevatedButton(
                       onPressed: () async {
-                        if (_key.currentState!.validate()) {
+                        if (_key.currentState?.validate() ?? false) {
                           _key.currentState!.save();
 
                           car.type = controller.type;
@@ -550,6 +744,7 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                           car.cia = (controller.cia?.toLowerCase()) ??
                               (controller.obm.id ?? '');
                           car.itens = controller.sectionsItens;
+                          car.materials = controller.sectionsMaterials;
 
                           controller
                               .save(car: car, images: images)

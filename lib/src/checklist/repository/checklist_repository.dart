@@ -1,8 +1,6 @@
-import 'dart:typed_data';
-
 import 'package:bsu_control/core/api_client.dart';
+import 'package:bsu_control/model/car_changes_model.dart';
 import 'package:bsu_control/src/checklist/repository/checklist_interface.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 
 import '../../../model/check_list_model.dart';
 
@@ -13,38 +11,45 @@ class CheckListRepository extends APIClient implements ICheckListRepository {
 
   @override
   Future<bool> save(
-      {required CheckListModel checkList,
-      required String unidade,
-      String? id}) async {
+      {required CheckListModel checklist,
+      required List<CarChangeModel> changes}) async {
     try {
-      var doc = colChecklist.doc(id);
-      var docCar = colCars.doc(checkList.checkCar.car.id);
+      var doc = colChecklist.doc(checklist.id);
+      var docCar = colCars.doc(checklist.checkCar.car.id);
 
-      checkList.id = doc.id;
+      checklist.id = doc.id;
+      List<CarChangeModel> checklistChanges = [];
+
       await firebase!.runTransaction((trans) async {
-        for (var change in checkList.checkCar.car.changes) {
+        for (var change in changes) {
           if (change.fileImage != null) {
-            // change.image = await saveImage(
-            //     image: change.fileImage!,
-            //     unidade: unidade,
-            //     id: checkList.checkCar.car.id!);
-            // change.checklistId = checkList.id;
+            change.image = await saveFile(
+                pathStorage: 'imagens/cars/${checklist.prefix}',
+                data: change.fileImage!,
+                filename:
+                    '${checklist.prefix}_${DateTime.now().millisecondsSinceEpoch}.png');
+
+            if (change.image == null) {
+              return Exception(
+                  'Falha ao salvar imagem da alteração do veículo.');
+            }
+
+            change.checklistID = checklist.id;
+            checklistChanges.add(change);
           }
         }
 
-        (id == null)
-            ? trans.set(doc, checkList.toMap())
-            : trans.update(doc, checkList.toMap());
+        trans.set(doc, checklist.copyWith(changes: checklistChanges).toMap());
+
         trans.update(docCar, {
-          "changes": List<dynamic>.from(
-              checkList.checkCar.car.changes.map((e) => e.toMap())),
-          "km": int.parse(checkList.startKM)
+          "changes": List<dynamic>.from(changes.map((e) => e.toMap())),
+          "km": int.parse(checklist.startKM)
         });
       });
 
       return true;
     } catch (e) {
-      return false;
+      rethrow;
     }
   }
 
@@ -70,19 +75,19 @@ class CheckListRepository extends APIClient implements ICheckListRepository {
     }
   }
 
-  Future<String> saveImage(
-      {required Uint8List image,
-      required String unidade,
-      required String id}) async {
-    String arq = "${DateTime.now().millisecondsSinceEpoch.toString()}.png";
-    TaskSnapshot upload = await FirebaseStorage.instance
-        .ref()
-        .child('imagens')
-        .child(unidade.replaceAll(' ', ""))
-        .child(id)
-        .child(arq)
-        .putData(image);
+  // Future<String> saveImage(
+  //     {required Uint8List image,
+  //     required String unidade,
+  //     required String id}) async {
+  //   String arq = "${DateTime.now().millisecondsSinceEpoch.toString()}.png";
+  //   TaskSnapshot upload = await FirebaseStorage.instance
+  //       .ref()
+  //       .child('imagens')
+  //       .child(unidade.replaceAll(' ', ""))
+  //       .child(id)
+  //       .child(arq)
+  //       .putData(image);
 
-    return await upload.ref.getDownloadURL();
-  }
+  //   return await upload.ref.getDownloadURL();
+  // }
 }

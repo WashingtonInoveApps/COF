@@ -63,6 +63,7 @@ class Core {
       if (image != null) {
         final croppedFile = await ImageCropper().cropImage(
           sourcePath: image.path,
+          compressFormat: ImageCompressFormat.png,
           aspectRatio: const CropAspectRatio(ratioX: 3, ratioY: 2),
           maxHeight: height.toInt(),
           maxWidth: width.toInt(),

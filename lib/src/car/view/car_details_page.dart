@@ -391,11 +391,12 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
           childRight: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CarChangesWidget(
-                add: false,
-                car: car,
-                // initValue: car.changes,
-                user: app.user,
+              Center(
+                child: CarChangesWidget(
+                  add: false,
+                  car: car,
+                  user: app.user,
+                ),
               ),
               const SizedBox(
                 height: 15.0,

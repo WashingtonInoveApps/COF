@@ -8,10 +8,10 @@ class CarChangeModel {
   double dy;
   String description;
   FileModel? image;
-  String? checklistId;
+  String? checklistID;
   UserModel user;
   DateTime date;
-  Uint8List? fileImage;
+  Uint8List? fileImage; //Usado apenas para salvar a data temporariamente.
   bool value;
   int indexImage;
 
@@ -19,7 +19,7 @@ class CarChangeModel {
       {required this.dx,
       required this.dy,
       this.description = "",
-      this.checklistId,
+      this.checklistID,
       this.image,
       required this.indexImage,
       required this.user,
@@ -33,7 +33,7 @@ class CarChangeModel {
       'dy': dy,
       'description': description,
       'image': image?.toMap(),
-      'checklistId': checklistId,
+      'checklistID': checklistID,
       'user': user.toMapResume(),
       'date': date.millisecondsSinceEpoch,
       'value': value,
@@ -48,7 +48,7 @@ class CarChangeModel {
       description: map['description'] ?? '',
       image: (map['image'] != null) ? FileModel.fromMap(map['image']) : null,
       indexImage: map['indexImage']?.toInt() ?? 0,
-      checklistId: map['checklistId'],
+      checklistID: map['checklistID'],
       user: UserModel.fromMapResume(map['user']),
       date: DateTime.fromMillisecondsSinceEpoch(map['date']),
       value: map['value'] ?? false,

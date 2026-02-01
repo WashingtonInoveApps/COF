@@ -9,6 +9,7 @@ class UserModel {
   String id;
   String graduation;
   String obmID;
+  String cia;
   String fullname;
 
   bool adminFull;
@@ -24,6 +25,7 @@ class UserModel {
     this.graduation = '',
     this.obmID = '',
     this.fullname = '',
+    this.cia = '',
     this.adminFull = false,
     this.admin = false,
     this.enable = false,
@@ -38,12 +40,14 @@ class UserModel {
     String? graduation,
     String? obmID,
     String? fullname,
+    String? cia,
     bool? adminFull,
     bool? admin,
     bool? enable,
   }) {
     return UserModel(
       name: name ?? this.name,
+      cia: cia ?? this.cia,
       registration: registration ?? this.registration,
       contact: contact ?? this.contact,
       email: email ?? this.email,
@@ -60,6 +64,7 @@ class UserModel {
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'name': name,
+      'cia': cia,
       'registration': registration,
       'contact': contact,
       'email': email,
@@ -78,6 +83,7 @@ class UserModel {
       'name': name,
       'registration': registration,
       'id': id,
+      'cia': cia,
       'graduation': graduation,
       'obmID': obmID,
       'fullname': fullname,
@@ -87,6 +93,7 @@ class UserModel {
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
       name: map['name'] ?? '',
+      cia: map['cia'] ?? '',
       registration: map['registration'] ?? '',
       contact: map['contact'] ?? '',
       email: map['email'] ?? '',
@@ -105,6 +112,7 @@ class UserModel {
         name: map['name'] ?? '',
         registration: map['registration'] ?? '',
         id: map['id'] ?? '',
+        cia: map['cia'] ?? '',
         graduation: map['graduation'] ?? '',
         obmID: map['obmID'] ?? '',
         fullname: map['fullname'] ?? '');
@@ -117,6 +125,6 @@ class UserModel {
 
   @override
   String toString() {
-    return 'UserModel(name: $name, registration: $registration, contact: $contact, email: $email, id: $id, graduation: $graduation, obmID: $obmID, fullname: $fullname, adminFull: $adminFull, admin: $admin, )';
+    return 'UserModel(name: $name, registration: $registration, cia: $cia, contact: $contact, email: $email, id: $id, graduation: $graduation, obmID: $obmID, fullname: $fullname, adminFull: $adminFull, admin: $admin, )';
   }
 }

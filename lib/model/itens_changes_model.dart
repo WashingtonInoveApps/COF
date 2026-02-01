@@ -78,4 +78,16 @@ class ItemModel {
   @override
   String toString() =>
       'ItemModel(description: $description, value: $value, quantity: $quantity)';
+
+  ItemModel copyWith({
+    String? description,
+    bool? value,
+    int? quantity,
+  }) {
+    return ItemModel(
+      description: description ?? this.description,
+      value: value ?? this.value,
+      quantity: quantity ?? this.quantity,
+    );
+  }
 }

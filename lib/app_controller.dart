@@ -212,7 +212,7 @@ abstract class _AppControllerBase with Store {
       final car = CarModel.copy(
           cars.firstWhere((e) => e.id == checkList.checkCar.car.id));
       final changes =
-          car.changes.where((e) => e.checklistId != checkList.id).toList();
+          car.changes.where((e) => e.checklistID != checkList.id).toList();
 
       final result = await repository.deleteChecklist(
           checklist: checkList, car: car.copyWith(changes: changes));

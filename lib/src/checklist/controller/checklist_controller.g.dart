@@ -9,6 +9,13 @@ part of 'checklist_controller.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$CheckListController on _CheckListControllerBase, Store {
+  Computed<bool>? _$btFinishComputed;
+
+  @override
+  bool get btFinish =>
+      (_$btFinishComputed ??= Computed<bool>(() => super.btFinish,
+              name: '_CheckListControllerBase.btFinish'))
+          .value;
   Computed<List<CarModel>>? _$carsComputed;
 
   @override
@@ -65,6 +72,22 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
     });
   }
 
+  late final _$materialsAtom =
+      Atom(name: '_CheckListControllerBase.materials', context: context);
+
+  @override
+  ObservableList<ItensChangesModel> get materials {
+    _$materialsAtom.reportRead();
+    return super.materials;
+  }
+
+  @override
+  set materials(ObservableList<ItensChangesModel> value) {
+    _$materialsAtom.reportWrite(value, super.materials, () {
+      super.materials = value;
+    });
+  }
+
   late final _$dateAtom =
       Atom(name: '_CheckListControllerBase.date', context: context);
 
@@ -110,22 +133,6 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
   set step(int value) {
     _$stepAtom.reportWrite(value, super.step, () {
       super.step = value;
-    });
-  }
-
-  late final _$alfaAtom =
-      Atom(name: '_CheckListControllerBase.alfa', context: context);
-
-  @override
-  String get alfa {
-    _$alfaAtom.reportRead();
-    return super.alfa;
-  }
-
-  @override
-  set alfa(String value) {
-    _$alfaAtom.reportWrite(value, super.alfa, () {
-      super.alfa = value;
     });
   }
 
@@ -341,9 +348,8 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
       AsyncAction('_CheckListControllerBase.save', context: context);
 
   @override
-  Future<bool> save({required CheckListModel checkList, String? id}) {
-    return _$saveAsyncAction
-        .run(() => super.save(checkList: checkList, id: id));
+  Future<bool> save() {
+    return _$saveAsyncAction.run(() => super.save());
   }
 
   late final _$finishAsyncAction =
@@ -365,6 +371,17 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
         name: '_CheckListControllerBase.initController');
     try {
       return super.initController(init);
+    } finally {
+      _$_CheckListControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic changeDate(DateTime? value) {
+    final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
+        name: '_CheckListControllerBase.changeDate');
+    try {
+      return super.changeDate(value);
     } finally {
       _$_CheckListControllerBaseActionController.endAction(_$actionInfo);
     }
@@ -431,17 +448,6 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
         name: '_CheckListControllerBase.setContact');
     try {
       return super.setContact(value);
-    } finally {
-      _$_CheckListControllerBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  dynamic setAlfa(String? value) {
-    final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
-        name: '_CheckListControllerBase.setAlfa');
-    try {
-      return super.setAlfa(value);
     } finally {
       _$_CheckListControllerBaseActionController.endAction(_$actionInfo);
     }
@@ -558,22 +564,44 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
   }
 
   @override
-  dynamic statusExpanded(int index, bool value) {
+  dynamic changeItens(ItemModel value, int indexCategory, int indexItem) {
     final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
-        name: '_CheckListControllerBase.statusExpanded');
+        name: '_CheckListControllerBase.changeItens');
     try {
-      return super.statusExpanded(index, value);
+      return super.changeItens(value, indexCategory, indexItem);
     } finally {
       _$_CheckListControllerBaseActionController.endAction(_$actionInfo);
     }
   }
 
   @override
-  dynamic selectValueItens(bool value, int index, int indexItem) {
+  dynamic changeOBSItens(String obs, int indexCategory) {
     final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
-        name: '_CheckListControllerBase.selectValueItens');
+        name: '_CheckListControllerBase.changeOBSItens');
     try {
-      return super.selectValueItens(value, index, indexItem);
+      return super.changeOBSItens(obs, indexCategory);
+    } finally {
+      _$_CheckListControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic changeMaterials(ItemModel value, int indexCategory, int indexItem) {
+    final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
+        name: '_CheckListControllerBase.changeMaterials');
+    try {
+      return super.changeMaterials(value, indexCategory, indexItem);
+    } finally {
+      _$_CheckListControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic changeOBSMaterials(String obs, int indexCategory) {
+    final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
+        name: '_CheckListControllerBase.changeOBSMaterials');
+    try {
+      return super.changeOBSMaterials(obs, indexCategory);
     } finally {
       _$_CheckListControllerBaseActionController.endAction(_$actionInfo);
     }
@@ -585,10 +613,10 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
 loading: ${loading},
 carChanges: ${carChanges},
 itens: ${itens},
+materials: ${materials},
 date: ${date},
 prefix: ${prefix},
 step: ${step},
-alfa: ${alfa},
 contact: ${contact},
 cia: ${cia},
 team: ${team},
@@ -602,6 +630,7 @@ obm: ${obm},
 fr: ${fr},
 arref: ${arref},
 car: ${car},
+btFinish: ${btFinish},
 cars: ${cars}
     ''';
   }
