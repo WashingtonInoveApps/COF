@@ -4,15 +4,15 @@ import 'package:syncfusion_flutter_sliders/sliders.dart';
 
 import 'package:bsu_control/core/constants.dart';
 
-class FluidsWidget extends StatelessWidget {
+class FluidsWidget extends StatefulWidget {
   final double oil;
   final double hidra;
   final double fr;
   final double arref;
-  final Function(dynamic) onOil;
-  final Function(dynamic) onHidra;
-  final Function(dynamic) onFr;
-  final Function(dynamic) onArref;
+  final Function(double) onOil;
+  final Function(double) onHidra;
+  final Function(double) onFr;
+  final Function(double) onArref;
 
   const FluidsWidget({
     Key? key,
@@ -26,73 +26,97 @@ class FluidsWidget extends StatelessWidget {
     required this.onArref,
   }) : super(key: key);
 
+  @override
+  State<FluidsWidget> createState() => _FluidsWidgetState();
+}
+
+class _FluidsWidgetState extends State<FluidsWidget> {
+  final scrollController = ScrollController();
+
+  @override
+  void dispose() {
+    super.dispose();
+    scrollController.dispose();
+  }
+
   Widget nivelContainer(
           {required String title,
           required double value,
           required Color color,
-          required Function(dynamic) onChange}) =>
-      Container(
-        padding: const EdgeInsets.all(10),
-        margin: const EdgeInsets.symmetric(horizontal: 5),
-        decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey),
-            borderRadius: BorderRadius.circular(5)),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            RotatedBox(
-              quarterTurns: 3,
-              child: Text(
-                title.toUpperCase(),
-                style: Constants.subtitle,
+          required Function(double) onChange}) =>
+      Card(
+        child: Container(
+          height: 200,
+          padding: const EdgeInsets.all(10),
+          margin: const EdgeInsets.symmetric(horizontal: 5),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              RotatedBox(
+                quarterTurns: 3,
+                child: Text(
+                  title.toUpperCase(),
+                  style: Constants.subtitle.copyWith(
+                      fontWeight: FontWeight.bold, color: Colors.grey),
+                ),
               ),
-            ),
-            SfSlider.vertical(
-              min: 1.0,
-              max: 3.0,
-              stepSize: 0.5,
-              value: value,
-              interval: 1,
-              activeColor: color,
-              inactiveColor: color.withOpacity(0.4),
-              showTicks: true,
-              minorTicksPerInterval: 1,
-              onChanged: onChange,
-            ),
-          ],
+              SfSlider.vertical(
+                min: 0.0,
+                max: 3.0,
+                stepSize: 0.5,
+                value: value,
+                interval: 1,
+                activeColor: color,
+                inactiveColor: color.withValues(alpha: 0.4),
+                showTicks: true,
+                minorTicksPerInterval: 1,
+                onChanged: (result) {
+                  onChange(result as double);
+                },
+              ),
+            ],
+          ),
         ),
       );
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
+    return Scrollbar(
+      controller: scrollController,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            nivelContainer(
-                title: 'Oléo do motor',
-                color: Colors.brown,
-                value: oil,
-                onChange: onOil),
-            nivelContainer(
-                title: 'Oléo hidraúlico',
-                color: Colors.red,
-                value: hidra,
-                onChange: onHidra),
-            nivelContainer(
-                title: 'Oléo de freio',
-                color: Colors.grey,
-                value: fr,
-                onChange: onFr),
-            nivelContainer(
-                title: 'Água radiador',
-                color: Colors.blue,
-                value: arref,
-                onChange: onArref),
-          ],
+        padding: const EdgeInsets.only(bottom: 10),
+        child: SingleChildScrollView(
+          controller: scrollController,
+          scrollDirection: Axis.horizontal,
+          physics: const BouncingScrollPhysics(),
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 10.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                nivelContainer(
+                    title: 'Óleo do motor',
+                    color: Colors.brown,
+                    value: widget.oil,
+                    onChange: widget.onOil),
+                nivelContainer(
+                    title: 'Óleo hidraúlico',
+                    color: Colors.red.shade700,
+                    value: widget.hidra,
+                    onChange: widget.onHidra),
+                nivelContainer(
+                    title: 'Óleo de freio',
+                    color: Colors.green.shade700,
+                    value: widget.fr,
+                    onChange: widget.onFr),
+                nivelContainer(
+                    title: 'Água do radiador',
+                    color: Colors.blue.shade700,
+                    value: widget.arref,
+                    onChange: widget.onArref),
+              ],
+            ),
+          ),
         ),
       ),
     );

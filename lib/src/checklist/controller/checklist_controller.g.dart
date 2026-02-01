@@ -9,25 +9,13 @@ part of 'checklist_controller.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$CheckListController on _CheckListControllerBase, Store {
-  late final _$checklistAtom =
-      Atom(name: '_CheckListControllerBase.checklist', context: context);
+  Computed<List<CarModel>>? _$carsComputed;
 
   @override
-  CheckListModel get checklist {
-    _$checklistAtom.reportRead();
-    return super.checklist;
-  }
-
-  bool _checklistIsInitialized = false;
-
-  @override
-  set checklist(CheckListModel value) {
-    _$checklistAtom.reportWrite(
-        value, _checklistIsInitialized ? super.checklist : null, () {
-      super.checklist = value;
-      _checklistIsInitialized = true;
-    });
-  }
+  List<CarModel> get cars =>
+      (_$carsComputed ??= Computed<List<CarModel>>(() => super.cars,
+              name: '_CheckListControllerBase.cars'))
+          .value;
 
   late final _$loadingAtom =
       Atom(name: '_CheckListControllerBase.loading', context: context);
@@ -74,6 +62,22 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
   set itens(ObservableList<ItensChangesModel> value) {
     _$itensAtom.reportWrite(value, super.itens, () {
       super.itens = value;
+    });
+  }
+
+  late final _$dateAtom =
+      Atom(name: '_CheckListControllerBase.date', context: context);
+
+  @override
+  DateTime get date {
+    _$dateAtom.reportRead();
+    return super.date;
+  }
+
+  @override
+  set date(DateTime value) {
+    _$dateAtom.reportWrite(value, super.date, () {
+      super.date = value;
     });
   }
 
@@ -161,15 +165,63 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
       Atom(name: '_CheckListControllerBase.team', context: context);
 
   @override
-  String? get team {
+  String get team {
     _$teamAtom.reportRead();
     return super.team;
   }
 
   @override
-  set team(String? value) {
+  set team(String value) {
     _$teamAtom.reportWrite(value, super.team, () {
       super.team = value;
+    });
+  }
+
+  late final _$pbAtom =
+      Atom(name: '_CheckListControllerBase.pb', context: context);
+
+  @override
+  String get pb {
+    _$pbAtom.reportRead();
+    return super.pb;
+  }
+
+  @override
+  set pb(String value) {
+    _$pbAtom.reportWrite(value, super.pb, () {
+      super.pb = value;
+    });
+  }
+
+  late final _$obsAtom =
+      Atom(name: '_CheckListControllerBase.obs', context: context);
+
+  @override
+  String get obs {
+    _$obsAtom.reportRead();
+    return super.obs;
+  }
+
+  @override
+  set obs(String value) {
+    _$obsAtom.reportWrite(value, super.obs, () {
+      super.obs = value;
+    });
+  }
+
+  late final _$startKMAtom =
+      Atom(name: '_CheckListControllerBase.startKM', context: context);
+
+  @override
+  String get startKM {
+    _$startKMAtom.reportRead();
+    return super.startKM;
+  }
+
+  @override
+  set startKM(String value) {
+    _$startKMAtom.reportWrite(value, super.startKM, () {
+      super.startKM = value;
     });
   }
 
@@ -202,6 +254,22 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
   set hidra(double value) {
     _$hidraAtom.reportWrite(value, super.hidra, () {
       super.hidra = value;
+    });
+  }
+
+  late final _$fuelAtom =
+      Atom(name: '_CheckListControllerBase.fuel', context: context);
+
+  @override
+  double get fuel {
+    _$fuelAtom.reportRead();
+    return super.fuel;
+  }
+
+  @override
+  set fuel(double value) {
+    _$fuelAtom.reportWrite(value, super.fuel, () {
+      super.fuel = value;
     });
   }
 
@@ -253,6 +321,22 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
     });
   }
 
+  late final _$carAtom =
+      Atom(name: '_CheckListControllerBase.car', context: context);
+
+  @override
+  CarModel? get car {
+    _$carAtom.reportRead();
+    return super.car;
+  }
+
+  @override
+  set car(CarModel? value) {
+    _$carAtom.reportWrite(value, super.car, () {
+      super.car = value;
+    });
+  }
+
   late final _$saveAsyncAction =
       AsyncAction('_CheckListControllerBase.save', context: context);
 
@@ -276,11 +360,11 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
       ActionController(name: '_CheckListControllerBase', context: context);
 
   @override
-  dynamic initController() {
+  dynamic initController(CheckListModel? init) {
     final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
         name: '_CheckListControllerBase.initController');
     try {
-      return super.initController();
+      return super.initController(init);
     } finally {
       _$_CheckListControllerBaseActionController.endAction(_$actionInfo);
     }
@@ -303,6 +387,17 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
         name: '_CheckListControllerBase.setOBM');
     try {
       return super.setOBM(value);
+    } finally {
+      _$_CheckListControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic processStep(bool value) {
+    final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
+        name: '_CheckListControllerBase.processStep');
+    try {
+      return super.processStep(value);
     } finally {
       _$_CheckListControllerBaseActionController.endAction(_$actionInfo);
     }
@@ -353,7 +448,40 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
   }
 
   @override
-  dynamic setOil(dynamic value) {
+  dynamic setPB(String? value) {
+    final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
+        name: '_CheckListControllerBase.setPB');
+    try {
+      return super.setPB(value);
+    } finally {
+      _$_CheckListControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setKMStart(String? value) {
+    final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
+        name: '_CheckListControllerBase.setKMStart');
+    try {
+      return super.setKMStart(value);
+    } finally {
+      _$_CheckListControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setOBS(String? value) {
+    final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
+        name: '_CheckListControllerBase.setOBS');
+    try {
+      return super.setOBS(value);
+    } finally {
+      _$_CheckListControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setOil(double? value) {
     final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
         name: '_CheckListControllerBase.setOil');
     try {
@@ -364,7 +492,7 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
   }
 
   @override
-  dynamic setHidra(dynamic value) {
+  dynamic setHidra(double? value) {
     final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
         name: '_CheckListControllerBase.setHidra');
     try {
@@ -375,7 +503,18 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
   }
 
   @override
-  dynamic setFR(dynamic value) {
+  dynamic setFuel(double? value) {
+    final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
+        name: '_CheckListControllerBase.setFuel');
+    try {
+      return super.setFuel(value);
+    } finally {
+      _$_CheckListControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setFR(double? value) {
     final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
         name: '_CheckListControllerBase.setFR');
     try {
@@ -386,7 +525,7 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
   }
 
   @override
-  dynamic setArref(dynamic value) {
+  dynamic setArref(double? value) {
     final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
         name: '_CheckListControllerBase.setArref');
     try {
@@ -397,7 +536,7 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
   }
 
   @override
-  dynamic addCarChanges(CarChangeModel value) {
+  dynamic addCarChanges(List<CarChangeModel> value) {
     final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
         name: '_CheckListControllerBase.addCarChanges');
     try {
@@ -443,21 +582,27 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
   @override
   String toString() {
     return '''
-checklist: ${checklist},
 loading: ${loading},
 carChanges: ${carChanges},
 itens: ${itens},
+date: ${date},
 prefix: ${prefix},
 step: ${step},
 alfa: ${alfa},
 contact: ${contact},
 cia: ${cia},
 team: ${team},
+pb: ${pb},
+obs: ${obs},
+startKM: ${startKM},
 oil: ${oil},
 hidra: ${hidra},
+fuel: ${fuel},
 obm: ${obm},
 fr: ${fr},
-arref: ${arref}
+arref: ${arref},
+car: ${car},
+cars: ${cars}
     ''';
   }
 }

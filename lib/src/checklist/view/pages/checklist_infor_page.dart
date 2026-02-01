@@ -37,9 +37,8 @@ class _CheckListInforPageState extends State<CheckListInforPage> {
     return ConstrainedBox(
       constraints: const BoxConstraints(maxWidth: 400),
       child: Column(
-        spacing: 10,
-        crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(
             height: 10,
@@ -54,8 +53,12 @@ class _CheckListInforPageState extends State<CheckListInforPage> {
               style: Constants.titleButton,
             ),
           ),
+          const SizedBox(
+            height: 10,
+          ),
           Container(
-            height: 60,
+            height: 45,
+            alignment: Alignment.centerLeft,
             width: double.infinity,
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
@@ -63,6 +66,7 @@ class _CheckListInforPageState extends State<CheckListInforPage> {
                 border: Border.all(color: Colors.grey)),
             child: Row(
               spacing: 10,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
                   'Data',
@@ -70,9 +74,7 @@ class _CheckListInforPageState extends State<CheckListInforPage> {
                 ),
                 Expanded(
                   child: Text(
-                    Core.formatDate(widget.controller.checklist.date,
-                        largeDay: true),
-                    textAlign: TextAlign.center,
+                    Core.formatDate(widget.controller.date, largeDay: true),
                   ),
                 ),
                 const Icon(
@@ -83,6 +85,9 @@ class _CheckListInforPageState extends State<CheckListInforPage> {
               ],
             ),
           ),
+          const SizedBox(
+            height: 10,
+          ),
           Text.rich(
             TextSpan(text: "ORGANIZAÇÃO ", children: [
               TextSpan(
@@ -90,8 +95,11 @@ class _CheckListInforPageState extends State<CheckListInforPage> {
             ]),
             style: Constants.subtitleHint,
           ),
+          const SizedBox(
+            height: 5,
+          ),
           Container(
-            height: 60.0,
+            height: 45.0,
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 5),
             alignment: Alignment.center,
@@ -138,9 +146,11 @@ class _CheckListInforPageState extends State<CheckListInforPage> {
             return Visibility(
                 visible: (controller.cia != null),
                 child: Column(
-                  spacing: 10,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    const SizedBox(
+                      height: 10,
+                    ),
                     Text.rich(
                       TextSpan(text: "COMPANHIA ", children: [
                         TextSpan(
@@ -149,8 +159,11 @@ class _CheckListInforPageState extends State<CheckListInforPage> {
                       ]),
                       style: Constants.subtitleHint,
                     ),
+                    const SizedBox(
+                      height: 5,
+                    ),
                     Container(
-                      height: 60.0,
+                      height: 45.0,
                       width: double.infinity,
                       padding: const EdgeInsets.symmetric(horizontal: 5),
                       alignment: Alignment.center,
@@ -180,11 +193,13 @@ class _CheckListInforPageState extends State<CheckListInforPage> {
           }),
           Observer(builder: (context) {
             return Visibility(
-                visible: (controller.team != null),
+                visible: (controller.obm.team.isNotEmpty),
                 child: Column(
-                  spacing: 10,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    const SizedBox(
+                      height: 10,
+                    ),
                     Text.rich(
                       TextSpan(text: "GUARNIÇÃO ", children: [
                         TextSpan(
@@ -193,8 +208,11 @@ class _CheckListInforPageState extends State<CheckListInforPage> {
                       ]),
                       style: Constants.subtitleHint,
                     ),
+                    const SizedBox(
+                      height: 5,
+                    ),
                     Container(
-                      height: 60.0,
+                      height: 45.0,
                       width: double.infinity,
                       padding: const EdgeInsets.symmetric(horizontal: 5),
                       alignment: Alignment.center,
@@ -213,8 +231,12 @@ class _CheckListInforPageState extends State<CheckListInforPage> {
                                     child: Padding(
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 5),
-                                      child: Text(e.toUpperCase(),
-                                          style: Constants.title),
+                                      child: Text(
+                                        e.toUpperCase(),
+                                        style: Constants.title,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
                                     ),
                                   ))
                               .toList()),
@@ -222,6 +244,9 @@ class _CheckListInforPageState extends State<CheckListInforPage> {
                   ],
                 ));
           }),
+          const SizedBox(
+            height: 10,
+          ),
           Text.rich(
             TextSpan(text: "CONTATO ", children: [
               TextSpan(
@@ -229,7 +254,11 @@ class _CheckListInforPageState extends State<CheckListInforPage> {
             ]),
             style: Constants.subtitleHint,
           ),
+          const SizedBox(
+            height: 5,
+          ),
           FieldText(
+            initValue: controller.contact,
             hint: "(85) 90000-0000",
             inputType: TextInputType.number,
             mask: [maskContact],

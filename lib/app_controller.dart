@@ -37,6 +37,9 @@ abstract class _AppControllerBase with Store {
   String version = '';
 
   @observable
+  double maxWidth = 0.0;
+
+  @observable
   int router = 0;
 
   @observable
@@ -89,6 +92,9 @@ abstract class _AppControllerBase with Store {
 
   @action
   setVersion(String value) => version = value;
+
+  @action
+  setMaxWidth(double value) => maxWidth = value;
 
   @action
   changeMenuOpen() => menuOpen = !menuOpen;

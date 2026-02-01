@@ -37,7 +37,7 @@ class CheckListCard extends StatelessWidget {
                           style: Constants.subtitleHint,
                         ),
                         Text(
-                          "${checkList.prefix} - ${checkList.alfa}",
+                          "${checkList.prefix} - ${checkList.team}",
                           style: Constants.title
                               .copyWith(fontWeight: FontWeight.bold),
                         ),
@@ -87,7 +87,7 @@ class CheckListCard extends StatelessWidget {
                           style: Constants.subtitleHint,
                         ),
                         Text(
-                          checkList.kmStart,
+                          checkList.startKM,
                           style: Constants.title
                               .copyWith(fontWeight: FontWeight.bold),
                         ),
@@ -103,7 +103,7 @@ class CheckListCard extends StatelessWidget {
                           style: Constants.subtitleHint,
                         ),
                         Text(
-                          checkList.kmFinal.isEmpty ? '--' : checkList.kmFinal,
+                          checkList.endKM.isEmpty ? '--' : checkList.endKM,
                           style: Constants.title
                               .copyWith(fontWeight: FontWeight.bold),
                         ),

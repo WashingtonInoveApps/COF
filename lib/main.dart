@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/src/pages/login_page.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 // ignore: depend_on_referenced_packages
@@ -13,8 +15,19 @@ import 'package:url_strategy/url_strategy.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Firebase.initializeApp();
-
+  if (kIsWeb) {
+    await Firebase.initializeApp(
+        options: const FirebaseOptions(
+            apiKey: "AIzaSyDPR6CYiWi1Yz3lTYB8KZ5Brlrh11eIzNQ",
+            authDomain: "bsucos-function.firebaseapp.com",
+            projectId: "bsucos-function",
+            storageBucket: "bsucos-function.firebasestorage.app",
+            messagingSenderId: "1031414772745",
+            appId: "1:1031414772745:web:0070586726a9b01f9174d8",
+            measurementId: "G-7HW3692G62"));
+  } else {
+    await Firebase.initializeApp();
+  }
   GetIt.I.registerSingleton<AppController>(
       AppController(appID: 'VBJM7eAETNS2pYWpfKLY', endpoint: '', test: true));
 
@@ -72,6 +85,13 @@ class _AppWidgetState extends State<AppWidget> {
       supportedLocales: const [
         Locale('pt'),
       ],
+      scrollBehavior: const MaterialScrollBehavior().copyWith(
+        dragDevices: {
+          PointerDeviceKind.mouse,
+          PointerDeviceKind.touch,
+          PointerDeviceKind.trackpad
+        },
+      ),
       theme: ThemeData(
           // scaffoldBackgroundColor: Core.primary,
           primaryColor: Colors.green.shade800,

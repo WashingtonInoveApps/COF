@@ -38,7 +38,7 @@ class CheckListRepository extends APIClient implements ICheckListRepository {
         trans.update(docCar, {
           "changes": List<dynamic>.from(
               checkList.checkCar.car.changes.map((e) => e.toMap())),
-          "km": int.parse(checkList.kmStart)
+          "km": int.parse(checkList.startKM)
         });
       });
 

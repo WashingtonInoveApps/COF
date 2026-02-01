@@ -35,7 +35,10 @@ class _ImageChangeWidgetState extends State<ImageChangeWidget> {
             children: [
               GestureDetector(
                   onTap: () async {
-                    Core.pickerImage(height: heightImage, width: widthImage)
+                    Core.pickerImage(
+                            context: context,
+                            height: heightImage,
+                            width: widthImage)
                         .then((result) {
                       if (result != null) {
                         image = result;
@@ -54,7 +57,8 @@ class _ImageChangeWidgetState extends State<ImageChangeWidget> {
                             image!,
                             width: widthImage,
                             height: heightImage,
-                            fit: BoxFit.contain,
+                            fit: BoxFit.cover,
+                            filterQuality: FilterQuality.high,
                           )
                         : Padding(
                             padding: const EdgeInsets.all(10.0),

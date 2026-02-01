@@ -47,6 +47,22 @@ mixin _$AppController on _AppControllerBase, Store {
     });
   }
 
+  late final _$maxWidthAtom =
+      Atom(name: '_AppControllerBase.maxWidth', context: context);
+
+  @override
+  double get maxWidth {
+    _$maxWidthAtom.reportRead();
+    return super.maxWidth;
+  }
+
+  @override
+  set maxWidth(double value) {
+    _$maxWidthAtom.reportWrite(value, super.maxWidth, () {
+      super.maxWidth = value;
+    });
+  }
+
   late final _$routerAtom =
       Atom(name: '_AppControllerBase.router', context: context);
 
@@ -277,6 +293,17 @@ mixin _$AppController on _AppControllerBase, Store {
   }
 
   @override
+  dynamic setMaxWidth(double value) {
+    final _$actionInfo = _$_AppControllerBaseActionController.startAction(
+        name: '_AppControllerBase.setMaxWidth');
+    try {
+      return super.setMaxWidth(value);
+    } finally {
+      _$_AppControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   dynamic changeMenuOpen() {
     final _$actionInfo = _$_AppControllerBaseActionController.startAction(
         name: '_AppControllerBase.changeMenuOpen');
@@ -357,6 +384,7 @@ mixin _$AppController on _AppControllerBase, Store {
   String toString() {
     return '''
 version: ${version},
+maxWidth: ${maxWidth},
 router: ${router},
 user: ${user},
 unidade: ${unidade},

@@ -7,7 +7,6 @@ import 'package:bsu_control/model/itens_changes_model.dart';
 import 'package:bsu_control/model/supply_model.dart';
 import 'package:bsu_control/model/user_model.dart';
 import 'package:bsu_control/src/checklist/view/checklist_register_page.dart';
-import 'package:bsu_control/src/widgets/backgraund_page.dart';
 import 'package:bsu_control/src/widgets/car_changes_widget.dart';
 import 'package:bsu_control/src/widgets/car_supply_widget.dart';
 import 'package:bsu_control/src/widgets/textfield_widget.dart';
@@ -44,16 +43,15 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
     super.initState();
 
     rec = autorun((_) {
-      setState(() {
-        checklist =
-            app.checkLists.firstWhere((e) => e.id == widget.checkListId);
-        checklist.enable = (checklist.enable &&
-            (checklist.user.registration == controller.user.registration));
-      });
+      // setState(() {
+      //   checklist =
+      //       app.checkLists.firstWhere((e) => e.id == widget.checkListId);
+      //   checklist.enable = (checklist.enable &&
+      //       (checklist.user.registration == controller.user.registration));
+      // });
     });
 
-    controller = CheckListController(
-        checklist: checklist, cars: app.cars, user: app.user, app: app);
+    controller = CheckListController(init: checklist, app: app);
   }
 
   @override
@@ -157,7 +155,7 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
                                                           MaterialPageRoute(
                                                               builder: (context) =>
                                                                   ChecklistRegisterPage(
-                                                                    checkList:
+                                                                    checklist:
                                                                         checklist,
                                                                   )));
                                                 },
@@ -226,7 +224,7 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
                                       children: [
                                         Expanded(
                                           child: Text(
-                                            "${checklist.prefix} - ${checklist.alfa}",
+                                            "${checklist.prefix} - ${checklist.team}",
                                             style: Constants.title.copyWith(
                                                 fontWeight: FontWeight.bold),
                                           ),
@@ -271,7 +269,7 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
                                                 width: 10.0,
                                               ),
                                               Text(
-                                                checklist.kmStart,
+                                                checklist.startKM,
                                                 style: Constants.title.copyWith(
                                                     fontWeight:
                                                         FontWeight.bold),
@@ -295,9 +293,9 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
                                                 width: 10.0,
                                               ),
                                               Text(
-                                                checklist.kmFinal.isEmpty
+                                                checklist.endKM.isEmpty
                                                     ? "---"
-                                                    : checklist.kmFinal,
+                                                    : checklist.endKM,
                                                 style: Constants.title.copyWith(
                                                     fontWeight:
                                                         FontWeight.bold),

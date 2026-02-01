@@ -268,7 +268,10 @@ class _CarChangesWidgetState extends State<CarChangesWidget> {
               : (widget.register)
                   ? InkWell(
                       onTap: () {
-                        Core.pickerImage(height: heightImage, width: widthImage)
+                        Core.pickerImage(
+                                context: context,
+                                height: heightImage,
+                                width: widthImage)
                             .then((data) {
                           if (data != null) {
                             setState(() {
@@ -341,6 +344,7 @@ class _CarChangesWidgetState extends State<CarChangesWidget> {
                                             .pop(true))).then((value) {
                                   if (value ?? false) {
                                     Core.pickerImage(
+                                            context: context,
                                             height: heightImage,
                                             width: widthImage)
                                         .then((data) {

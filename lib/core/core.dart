@@ -1,5 +1,5 @@
-import 'dart:io';
 import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:image/image.dart' as img;
 import 'package:image_cropper/image_cropper.dart';
@@ -53,25 +53,35 @@ class Core {
   }
 
   static Future<Uint8List?> pickerImage(
-      {double height = 400, double width = 600}) async {
-    final image = await ImagePicker()
-        .pickImage(source: ImageSource.gallery, imageQuality: 100);
+      {required BuildContext context,
+      double height = 400,
+      double width = 600}) async {
+    try {
+      final image = await ImagePicker()
+          .pickImage(source: ImageSource.gallery, imageQuality: 100);
 
-    if (image != null) {
-      final croppedFile = await ImageCropper().cropImage(
-        sourcePath: image.path,
-        aspectRatio: const CropAspectRatio(ratioX: 3, ratioY: 2),
-        uiSettings: [
-          AndroidUiSettings(
-            lockAspectRatio: true,
-          ),
-          IOSUiSettings(
-            aspectRatioLockEnabled: true,
-          ),
-        ],
-      );
+      if (image != null) {
+        final croppedFile = await ImageCropper().cropImage(
+          sourcePath: image.path,
+          aspectRatio: const CropAspectRatio(ratioX: 3, ratioY: 2),
+          maxHeight: height.toInt(),
+          maxWidth: width.toInt(),
+          uiSettings: [
+            AndroidUiSettings(
+              lockAspectRatio: true,
+            ),
+            IOSUiSettings(
+              aspectRatioLockEnabled: true,
+            ),
+            WebUiSettings(
+                context: context,
+                size:
+                    CropperSize(width: width.toInt(), height: height.toInt())),
+          ],
+        );
 
-      if (croppedFile != null) {
+        if (croppedFile == null) return null;
+
         final bytes = await croppedFile.readAsBytes();
         final original = img.decodeImage(bytes)!;
 
@@ -81,12 +91,12 @@ class Core {
           height: height.toInt(),
         );
 
-        final result = File("${croppedFile.path}_600x400.png")
-          ..writeAsBytesSync(img.encodePng(resized));
-        return await result.readAsBytes();
+        return Uint8List.fromList(img.encodePng(resized));
       }
-    }
 
-    return null;
+      return null;
+    } catch (e) {
+      return null;
+    }
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/model/obm_model.dart';
@@ -78,23 +80,26 @@ class _BackgraundPageState extends State<BackgraundPage> {
                   spacing: 10,
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    ElevatedButton(
-                        onPressed: () {
-                          if (controller.router != 0) {
-                            controller.setRouter(0);
-                            Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(
-                                    builder: (context) => const HomePage()));
-                          }
-                        },
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: (controller.router == 0)
-                                ? Constants.primary
-                                : Colors.grey),
-                        child: Text(
-                          'Inicío',
-                          style: Constants.titleButton,
-                        )),
+                    SizedBox(
+                      height: 35,
+                      child: ElevatedButton(
+                          onPressed: () {
+                            if (controller.router != 0) {
+                              controller.setRouter(0);
+                              Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                      builder: (context) => const HomePage()));
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: (controller.router == 0)
+                                  ? Constants.primary
+                                  : Colors.grey.shade300),
+                          child: Text(
+                            'Inicío',
+                            style: Constants.titleButton,
+                          )),
+                    ),
                     PopupMenuButton(
                         onSelected: (value) {
                           switch (value) {
@@ -121,13 +126,14 @@ class _BackgraundPageState extends State<BackgraundPage> {
                           }
                         },
                         child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 9, horizontal: 20),
+                          height: 35,
+                          alignment: Alignment.center,
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
                           decoration: BoxDecoration(
                               color: (controller.router == 1 ||
                                       controller.router == 2)
                                   ? Constants.primary
-                                  : Colors.grey,
+                                  : Colors.grey.shade300,
                               borderRadius: BorderRadius.circular(5)),
                           child: Text(
                             'Checklist',
@@ -150,40 +156,46 @@ class _BackgraundPageState extends State<BackgraundPage> {
                                 )),
                           ];
                         }),
-                    ElevatedButton(
-                        onPressed: () {
-                          if (controller.router != 3) {
-                            controller.setRouter(3);
-                            Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(
-                                    builder: (context) => const CarsPage()));
-                          }
-                        },
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: (controller.router == 3)
-                                ? Constants.primary
-                                : Colors.grey),
-                        child: Text(
-                          'Viaturas',
-                          style: Constants.titleButton,
-                        )),
-                    ElevatedButton(
-                        onPressed: () {
-                          if (controller.router != 4) {
-                            controller.setRouter(4);
-                            Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(
-                                    builder: (context) => const UsersPage()));
-                          }
-                        },
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: (controller.router == 4)
-                                ? Constants.primary
-                                : Colors.grey),
-                        child: Text(
-                          'Usuários',
-                          style: Constants.titleButton,
-                        )),
+                    SizedBox(
+                      height: 35,
+                      child: ElevatedButton(
+                          onPressed: () {
+                            if (controller.router != 3) {
+                              controller.setRouter(3);
+                              Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                      builder: (context) => const CarsPage()));
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: (controller.router == 3)
+                                  ? Constants.primary
+                                  : Colors.grey.shade300),
+                          child: Text(
+                            'Viaturas',
+                            style: Constants.titleButton,
+                          )),
+                    ),
+                    SizedBox(
+                      height: 35,
+                      child: ElevatedButton(
+                          onPressed: () {
+                            if (controller.router != 4) {
+                              controller.setRouter(4);
+                              Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                      builder: (context) => const UsersPage()));
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: (controller.router == 4)
+                                  ? Constants.primary
+                                  : Colors.grey.shade300),
+                          child: Text(
+                            'Usuários',
+                            style: Constants.titleButton,
+                          )),
+                    ),
                   ],
                 );
               }),
@@ -201,10 +213,15 @@ class _BackgraundPageState extends State<BackgraundPage> {
               : (constrained.maxWidth <= 500);
 
           double width = (modeMOBILE || widget.childRight == null)
-              ? constrained.maxWidth
-              : (constrained.maxWidth > widget.maxWidth)
-                  ? widget.maxWidth * 0.48
-                  : constrained.maxWidth * 0.48;
+              ? ((constrained.maxWidth > widget.maxWidth)
+                  ? widget.maxWidth
+                  : constrained.maxWidth)
+              : widget.maxWidth * 0.48;
+
+          controller.setMaxWidth(width);
+
+          log('ModeMOBILE: $modeMOBILE');
+          log('Width: $width');
 
           return Center(
             child: Container(

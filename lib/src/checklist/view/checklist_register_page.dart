@@ -1,17 +1,11 @@
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
-import 'package:bsu_control/core/core.dart';
-import 'package:bsu_control/core/validation.dart';
-import 'package:bsu_control/model/car_checklist.dart';
-import 'package:bsu_control/model/car_model.dart';
 import 'package:bsu_control/model/check_list_model.dart';
 import 'package:bsu_control/model/itens_changes_model.dart';
-import 'package:bsu_control/src/checklist/view/checklist_page.dart';
+import 'package:bsu_control/src/checklist/view/pages/checklist_car_page.dart';
 import 'package:bsu_control/src/checklist/view/pages/checklist_infor_page.dart';
-import 'package:bsu_control/src/checklist/view/widget/fluids_widget.dart';
-import 'package:bsu_control/src/widgets/alert_message.dart';
+import 'package:bsu_control/src/checklist/view/pages/checklist_itens_page.dart';
 import 'package:bsu_control/src/widgets/backgraund_page.dart';
-import 'package:bsu_control/src/widgets/textfield_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
@@ -19,8 +13,8 @@ import 'package:get_it/get_it.dart';
 import '../controller/checklist_controller.dart';
 
 class ChecklistRegisterPage extends StatefulWidget {
-  final CheckListModel? checkList;
-  const ChecklistRegisterPage({Key? key, this.checkList}) : super(key: key);
+  final CheckListModel? checklist;
+  const ChecklistRegisterPage({Key? key, this.checklist}) : super(key: key);
 
   @override
   State createState() => _ChecklistRegisterPageState();
@@ -28,31 +22,24 @@ class ChecklistRegisterPage extends StatefulWidget {
 
 class _ChecklistRegisterPageState extends State<ChecklistRegisterPage> {
   final app = GetIt.I.get<AppController>();
-  final _key = GlobalKey<FormState>();
-
   late CheckListController controller;
-  List<String> prefixs = ['SELECIONE O PREFIXO'];
 
   @override
   void initState() {
     super.initState();
-    prefixs = List<String>.from(prefixs..addAll(app.prefixs));
 
-    final car = CarModel.copy(app.cars.first);
-    final checkList = (widget.checkList == null)
-        ? CheckListModel(
-            checkCar: CarCheckList(car: car),
-            alfa: Constants.alfas.first,
-            prefix: prefixs.first,
-            user: app.user,
-            date: DateTime.now(),
-            supply: [])
-        : CheckListModel.copy(checklist: widget.checkList!);
+    // final checkList = (widget.checkList == null)
+    //     ? CheckListModel(
+    //         checkCar: CarCheckList(car: car),
+    //         alfa: Constants.alfas.first,
+    //         prefix: prefixs.first,
+    //         user: app.user,
+    //         date: DateTime.now(),
+    //         supply: [])
+    //     : CheckListModel.copy(checklist: widget.checkList!);
 
     controller = CheckListController(
-      checklist: checkList,
-      cars: app.cars,
-      user: app.user,
+      init: widget.checklist,
       app: app,
     );
   }
@@ -63,6 +50,8 @@ class _ChecklistRegisterPageState extends State<ChecklistRegisterPage> {
       CheckListInforPage(
         controller: controller,
       ),
+      ChecklistCarPage(controller: controller),
+      ChecklistItensPage(controller: controller)
     ];
 
     return Scaffold(
@@ -75,35 +64,88 @@ class _ChecklistRegisterPageState extends State<ChecklistRegisterPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        controller.processStep(false);
+                      },
                       style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.grey),
                       child: Text(
                         'Voltar',
                         style: Constants.titleButton,
                       )),
-                  ElevatedButton(
-                      onPressed: () {
-                        final message = controller.validationForm();
-
-                        if (message != null) {
-                          showDialog(
-                              context: context,
-                              builder: (context) => AlertMessage(
-                                  title: '',
-                                  message: message,
-                                  onPressedOK: () =>
-                                      Navigator.of(context).pop()));
-                        } else {
-                          print('proximo passo');
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: Constants.primary),
-                      child: Text(
-                        'Próximo',
-                        style: Constants.titleButton,
-                      )),
+                  Observer(builder: (_) {
+                    final enable = (controller.cars.isNotEmpty);
+                    return ElevatedButton(
+                        onPressed: enable
+                            ? () {
+                                if (controller.validationForm()) {
+                                  controller.processStep(true);
+                                } else {
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) => AlertDialog(
+                                            contentPadding:
+                                                const EdgeInsets.all(10),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(5.0),
+                                            ),
+                                            content: Column(
+                                              spacing: 10,
+                                              mainAxisSize: MainAxisSize.min,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.end,
+                                              children: [
+                                                InkWell(
+                                                    onTap: () =>
+                                                        Navigator.of(context)
+                                                            .pop(),
+                                                    child: const Icon(
+                                                      Icons.close,
+                                                      size: 20,
+                                                      color: Colors.grey,
+                                                    )),
+                                                Column(
+                                                  spacing: 10,
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: controller
+                                                      .messagesErros
+                                                      .map((err) {
+                                                    return Row(
+                                                      spacing: 10,
+                                                      children: [
+                                                        const Icon(
+                                                          Icons.error,
+                                                          color: Colors.red,
+                                                          size: 20,
+                                                        ),
+                                                        Expanded(
+                                                          child: Text(
+                                                            err,
+                                                            style:
+                                                                Constants.title,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    );
+                                                  }).toList(),
+                                                ),
+                                              ],
+                                            ),
+                                          ));
+                                }
+                              }
+                            : null,
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Constants.primary),
+                        child: Text(
+                          'Próximo',
+                          style: Constants.titleButton,
+                        ));
+                  }),
                 ],
               ),
             ),
@@ -118,10 +160,9 @@ class _ChecklistRegisterPageState extends State<ChecklistRegisterPage> {
               ],
             ),
             childLeft: Observer(builder: (_) {
-              return IndexedStack(
-                index: controller.step,
-                alignment: AlignmentGeometry.center,
-                children: steps,
+              return AnimatedSwitcher(
+                duration: const Duration(milliseconds: 300),
+                child: steps[controller.step],
               );
             }),
 

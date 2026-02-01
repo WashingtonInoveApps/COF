@@ -1,15 +1,12 @@
 import 'package:bsu_control/app_controller.dart';
-import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/validation.dart';
 import 'package:bsu_control/model/car_changes_model.dart';
 import 'package:bsu_control/model/car_model.dart';
 import 'package:bsu_control/model/check_list_model.dart';
 import 'package:bsu_control/model/itens_changes_model.dart';
 import 'package:bsu_control/model/obm_model.dart';
-import 'package:bsu_control/model/user_model.dart';
 import 'package:bsu_control/src/checklist/repository/checklist_interface.dart';
 import 'package:bsu_control/src/checklist/repository/checklist_repository.dart';
-import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
 
 part 'checklist_controller.g.dart';
@@ -18,45 +15,40 @@ part 'checklist_controller.g.dart';
 class CheckListController = _CheckListControllerBase with _$CheckListController;
 
 abstract class _CheckListControllerBase with Store {
-  final List<CarModel> cars;
-  final UserModel user;
   final AppController app;
+  final CheckListModel? init;
 
   late ICheckListRepository repository;
 
-  @observable
-  late CheckListModel checklist;
+  List<String> messagesErros = [];
 
   @observable
   bool loading = false;
 
-  _CheckListControllerBase(
-      {required this.checklist,
-      required this.cars,
-      required this.user,
-      required this.app}) {
+  _CheckListControllerBase({required this.init, required this.app}) {
     repository = CheckListRepository(
         endpoint: app.endpoint, appID: app.appID, test: app.test);
-    initController();
+    initController(init);
   }
 
-  DateTime get date => checklist.date;
-  String? get id => checklist.id;
-  String? get obs => checklist.obs;
-
   @action
-  initController() {
-    final infors = checklist.checkCar;
+  initController(CheckListModel? init) {
+    id = init?.id;
+    prefix = init?.prefix ?? 'SELECIONE';
+    oil = init?.checkCar.oil ?? 0.0;
+    hidra = init?.checkCar.hidra ?? 0.0;
+    fr = init?.checkCar.fr ?? 0.0;
+    arref = init?.checkCar.arref ?? 0.0;
+    fuel = init?.checkCar.fuel ?? 0.0;
+    team = init?.team ?? team;
+    startKM = init?.startKM ?? '';
 
-    prefix = checklist.prefix;
-    alfa = checklist.alfa;
-    oil = infors.oil;
-    hidra = infors.hidra;
-    fr = infors.fr;
-    arref = infors.arref;
+    if (init != null) {
+      car = app.cars.firstWhere((e) => e.id == init.checkCar.car.id);
+    }
 
-    carChanges.addAll(infors.car.changes);
-    itens.addAll(infors.car.itens.where((i) => i.itens.isNotEmpty).toList());
+    carChanges.addAll(car?.changes ?? []);
+    itens.addAll(car?.itens.where((i) => i.itens.isNotEmpty).toList() ?? []);
   }
 
   @observable
@@ -67,7 +59,12 @@ abstract class _CheckListControllerBase with Store {
       <ItensChangesModel>[].asObservable();
 
   @observable
+  DateTime date = DateTime.now();
+
+  @observable
   String prefix = "";
+
+  String? id;
 
   @observable
   int step = 0;
@@ -82,13 +79,25 @@ abstract class _CheckListControllerBase with Store {
   String? cia;
 
   @observable
-  String? team;
+  String team = "SELECIONE";
+
+  @observable
+  String pb = "";
+
+  @observable
+  String obs = "";
+
+  @observable
+  String startKM = "";
 
   @observable
   double oil = 0.0;
 
   @observable
   double hidra = 0.0;
+
+  @observable
+  double fuel = 0.0;
 
   @observable
   OBMModel obm = OBMModel(team: [], cias: []);
@@ -99,19 +108,27 @@ abstract class _CheckListControllerBase with Store {
   @observable
   double arref = 0.0;
 
+  @observable
+  CarModel? car;
+
+  @computed
+  List<CarModel> get cars {
+    return app.cars
+        .where((e) => (cia != null)
+            ? (e.cia.toLowerCase() == cia?.toLowerCase())
+            : (e.obmID.toLowerCase() == obm.id?.toLowerCase()))
+        .toList();
+  }
+
   @action
   setPrefix(String? value) {
-    if (value != null) {
-      final car = CarModel.copy(cars.firstWhere((c) => c.prefix == value));
-
-      checklist.checkCar.car = car;
-      checklist.prefix = car.prefix;
+    if (value != null && value != "SELECIONE") {
+      car = CarModel.copy(cars.firstWhere((c) => c.prefix == value));
       prefix = value;
 
       carChanges
         ..clear()
-        ..addAll(car.changes);
-      debugPrint('Mudou');
+        ..addAll(car?.changes ?? []);
     }
   }
 
@@ -126,13 +143,16 @@ abstract class _CheckListControllerBase with Store {
         } else {
           cia = null;
         }
-
-        if (obm.team.isNotEmpty) {
-          team = obm.team.first;
-        } else {
-          team = null;
-        }
       }
+    }
+  }
+
+  @action
+  processStep(bool value) {
+    if (value) {
+      step++;
+    } else {
+      if (step > 0) step--;
     }
   }
 
@@ -140,59 +160,49 @@ abstract class _CheckListControllerBase with Store {
   setCia(String? value) => cia = value;
 
   @action
-  setTeam(String? value) => team = value;
+  setTeam(String? value) => team = value ?? team;
 
   @action
   setContact(String? value) => contact = value ?? '';
 
   @action
-  setAlfa(String? value) {
-    final result = value ?? Constants.alfas.first;
-    checklist.alfa = result;
-    alfa = result;
-  }
-
-  setPB(String? value) => checklist.pb = value ?? '';
-  setKMStart(String? value) => checklist.kmStart = value ?? '';
-  setOBS(String? value) => checklist.obs = value ?? '';
+  setAlfa(String? value) => alfa = value ?? alfa;
 
   @action
-  setOil(dynamic value) {
-    final result = (double.parse(value.toString()));
-    checklist.checkCar.oil = result;
-    oil = value;
-  }
+  setPB(String? value) => pb = value ?? pb;
 
   @action
-  setHidra(dynamic value) {
-    final result = (double.parse(value.toString()));
-    checklist.checkCar.hidra = result;
-    hidra = value;
-  }
+  setKMStart(String? value) => startKM = value ?? startKM;
 
   @action
-  setFR(dynamic value) {
-    final result = (double.parse(value.toString()));
-    checklist.checkCar.fr = result;
-    fr = value;
-  }
+  setOBS(String? value) => obs = value ?? obs;
 
   @action
-  setArref(dynamic value) {
-    final result = (double.parse(value.toString()));
-    checklist.checkCar.arref = result;
-    arref = value;
-  }
+  setOil(double? value) => oil = value ?? oil;
 
   @action
-  addCarChanges(CarChangeModel value) {
-    checklist.checkCar.car.changes.add(value);
-    carChanges.add(value);
+  setHidra(double? value) => hidra = value ?? hidra;
+
+  @action
+  setFuel(double? value) => fuel = value ?? fuel;
+
+  @action
+  setFR(double? value) => fr = value ?? fr;
+
+  @action
+  setArref(double? value) => arref = value ?? arref;
+
+  @action
+  addCarChanges(List<CarChangeModel> value) {
+    carChanges
+      ..clear()
+      ..addAll(value);
+
+    car = car?.copyWith(changes: carChanges);
   }
 
   @action
   removeCarChanges(int index) {
-    checklist.checkCar.car.changes.removeAt(index);
     carChanges.removeAt(index);
   }
 
@@ -205,8 +215,6 @@ abstract class _CheckListControllerBase with Store {
     itens
       ..removeAt(index)
       ..insert(index, result);
-
-    checklist.checkCar.car.itens = itens;
   }
 
   @action
@@ -218,8 +226,6 @@ abstract class _CheckListControllerBase with Store {
     itens
       ..removeAt(index)
       ..insert(index, item);
-
-    checklist.checkCar.car.itens = itens;
   }
 
   @action
@@ -243,12 +249,35 @@ abstract class _CheckListControllerBase with Store {
     return result;
   }
 
-  String? validationForm() {
+  bool validationForm() {
+    messagesErros.clear();
     switch (step) {
       case 0:
-        return Validation.validatorPhone(contact);
+        if (Validation.validatorPhone(contact) != null) {
+          messagesErros.add("Insira um contato antes de prosseguir.");
+        }
+
+        if (obm.team.isNotEmpty && team == "SELECIONE") {
+          messagesErros.add("Escolha a guarnição antes de prosseguir.");
+        }
+
+        return messagesErros.isEmpty;
+      case 1:
+        if (prefix == "SELECIONE") {
+          messagesErros
+              .add("Escolha o prefixo do veiculo antes de prosseguir.");
+        }
+        if (startKM.isEmpty) {
+          messagesErros.add("Insira o KM inicial antes de prosseguir.");
+        }
+        if (oil == 0.0 || fr == 0.0 || hidra == 0.0 || arref == 0.0) {
+          messagesErros
+              .add("Verifique os níveis dos fluídos antes de prosseguir.");
+        }
+
+        return messagesErros.isEmpty;
       default:
-        return null;
+        return false;
     }
   }
 }
