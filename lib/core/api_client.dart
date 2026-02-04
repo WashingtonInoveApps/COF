@@ -66,11 +66,13 @@ class APIClient {
       String? contentType,
       bool download = false,
       String method = 'GET'}) async {
-    Map<String, dynamic> query = {'appId': appID, 'test': test};
+    Map<String, dynamic> query = {'appID': appID, 'test': test};
 
     if (params != null) {
       query.addEntries(params.entries);
     }
+
+    log(query.toString());
 
     return await dio!.request('${base ?? endpoint}/$path',
         queryParameters: query,

@@ -41,17 +41,33 @@ mixin _$UserController on _UserControllerBase, Store {
     });
   }
 
+  late final _$ciaAtom =
+      Atom(name: '_UserControllerBase.cia', context: context);
+
+  @override
+  String? get cia {
+    _$ciaAtom.reportRead();
+    return super.cia;
+  }
+
+  @override
+  set cia(String? value) {
+    _$ciaAtom.reportWrite(value, super.cia, () {
+      super.cia = value;
+    });
+  }
+
   late final _$obmAtom =
       Atom(name: '_UserControllerBase.obm', context: context);
 
   @override
-  String get obm {
+  OBMModel get obm {
     _$obmAtom.reportRead();
     return super.obm;
   }
 
   @override
-  set obm(String value) {
+  set obm(OBMModel value) {
     _$obmAtom.reportWrite(value, super.obm, () {
       super.obm = value;
     });
@@ -73,13 +89,28 @@ mixin _$UserController on _UserControllerBase, Store {
     });
   }
 
-  late final _$createAsyncAction =
-      AsyncAction('_UserControllerBase.create', context: context);
+  late final _$adminFullAtom =
+      Atom(name: '_UserControllerBase.adminFull', context: context);
 
   @override
-  Future<bool> create({required UserModel user, bool update = false}) {
-    return _$createAsyncAction
-        .run(() => super.create(user: user, update: update));
+  bool get adminFull {
+    _$adminFullAtom.reportRead();
+    return super.adminFull;
+  }
+
+  @override
+  set adminFull(bool value) {
+    _$adminFullAtom.reportWrite(value, super.adminFull, () {
+      super.adminFull = value;
+    });
+  }
+
+  late final _$saveAsyncAction =
+      AsyncAction('_UserControllerBase.save', context: context);
+
+  @override
+  Future<bool> save({required UserModel user}) {
+    return _$saveAsyncAction.run(() => super.save(user: user));
   }
 
   late final _$deleteAsyncAction =
@@ -124,7 +155,29 @@ mixin _$UserController on _UserControllerBase, Store {
   }
 
   @override
-  dynamic setOBM(String? value) {
+  dynamic setAdminFull(bool? value) {
+    final _$actionInfo = _$_UserControllerBaseActionController.startAction(
+        name: '_UserControllerBase.setAdminFull');
+    try {
+      return super.setAdminFull(value);
+    } finally {
+      _$_UserControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setCia(String? value) {
+    final _$actionInfo = _$_UserControllerBaseActionController.startAction(
+        name: '_UserControllerBase.setCia');
+    try {
+      return super.setCia(value);
+    } finally {
+      _$_UserControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setOBM(OBMModel? value) {
     final _$actionInfo = _$_UserControllerBaseActionController.startAction(
         name: '_UserControllerBase.setOBM');
     try {
@@ -139,8 +192,10 @@ mixin _$UserController on _UserControllerBase, Store {
     return '''
 loading: ${loading},
 graduation: ${graduation},
+cia: ${cia},
 obm: ${obm},
-admin: ${admin}
+admin: ${admin},
+adminFull: ${adminFull}
     ''';
   }
 }

@@ -50,27 +50,6 @@ class Constants {
     "Outros"
   ];
 
-  static final obms = [
-    "1º BBM",
-    "2º BBM",
-    "3º BBM",
-    "4º BBM",
-    "5º BBM",
-    "6º BBM",
-    "ATI",
-    "BBS",
-    "BPI",
-    "BSMAR",
-    "BSU",
-    "CBC",
-    "CBI",
-    "CEPI",
-    "CIOPS - FORTALEZA",
-    "CMCB",
-    "COMALP",
-    "DEFESA CIVIL"
-  ];
-
   static final graduations = [
     'Soldado',
     'Cabo',

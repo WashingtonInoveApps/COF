@@ -3,7 +3,6 @@ import 'dart:ui';
 
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
-import 'package:bsu_control/src/pages/login_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +10,8 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 // ignore: depend_on_referenced_packages
 import 'package:get_it/get_it.dart';
 import 'package:url_strategy/url_strategy.dart';
+
+import 'src/login/view/login_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,8 +29,11 @@ void main() async {
   } else {
     await Firebase.initializeApp();
   }
-  GetIt.I.registerSingleton<AppController>(
-      AppController(appID: 'VBJM7eAETNS2pYWpfKLY', endpoint: '', test: true));
+  GetIt.I.registerSingleton<AppController>(AppController(
+      maxWidth: 1000,
+      appID: 'VBJM7eAETNS2pYWpfKLY',
+      endpoint: 'http://localhost:3000',
+      test: true));
 
   setPathUrlStrategy();
   runApp(const AppWidget());

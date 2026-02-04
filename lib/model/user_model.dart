@@ -2,15 +2,17 @@
 import 'dart:convert';
 
 class UserModel {
+  String? id;
   String name;
   String registration;
   String contact;
   String email;
-  String id;
   String graduation;
   String obmID;
   String cia;
   String fullname;
+  String acessToken;
+  String codeVerifyPassword;
 
   bool adminFull;
   bool admin;
@@ -21,11 +23,13 @@ class UserModel {
     this.registration = '',
     this.contact = '',
     this.email = '',
-    this.id = '',
+    this.id,
     this.graduation = '',
     this.obmID = '',
     this.fullname = '',
     this.cia = '',
+    this.acessToken = '',
+    this.codeVerifyPassword = '',
     this.adminFull = false,
     this.admin = false,
     this.enable = false,
@@ -41,6 +45,8 @@ class UserModel {
     String? obmID,
     String? fullname,
     String? cia,
+    String? acessToken,
+    String? codeVerifyPassword,
     bool? adminFull,
     bool? admin,
     bool? enable,
@@ -56,6 +62,8 @@ class UserModel {
       obmID: obmID ?? this.obmID,
       fullname: fullname ?? this.fullname,
       adminFull: adminFull ?? this.adminFull,
+      acessToken: acessToken ?? this.acessToken,
+      codeVerifyPassword: codeVerifyPassword ?? this.codeVerifyPassword,
       admin: admin ?? this.admin,
       enable: enable ?? this.enable,
     );
@@ -72,6 +80,8 @@ class UserModel {
       'graduation': graduation,
       'obmID': obmID,
       'fullname': fullname,
+      'acessToken': acessToken,
+      'codeVerifyPassword': codeVerifyPassword,
       'adminFull': adminFull,
       'admin': admin,
       'enable': enable,
@@ -92,15 +102,17 @@ class UserModel {
 
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
+      id: map['id'],
       name: map['name'] ?? '',
       cia: map['cia'] ?? '',
       registration: map['registration'] ?? '',
       contact: map['contact'] ?? '',
       email: map['email'] ?? '',
-      id: map['id'] ?? '',
       graduation: map['graduation'] ?? '',
       obmID: map['obmID'] ?? '',
       fullname: map['fullname'] ?? '',
+      codeVerifyPassword: map['codeVerifyPassword'] ?? '',
+      acessToken: map['acessToken'] ?? '',
       adminFull: map['adminFull'] ?? false,
       admin: map['admin'] ?? false,
       enable: map['enable'] ?? false,
@@ -109,9 +121,9 @@ class UserModel {
 
   factory UserModel.fromMapResume(Map<String, dynamic> map) {
     return UserModel(
+        id: map['id'],
         name: map['name'] ?? '',
         registration: map['registration'] ?? '',
-        id: map['id'] ?? '',
         cia: map['cia'] ?? '',
         graduation: map['graduation'] ?? '',
         obmID: map['obmID'] ?? '',
@@ -122,9 +134,4 @@ class UserModel {
 
   factory UserModel.fromJson(String source) =>
       UserModel.fromMap(json.decode(source) as Map<String, dynamic>);
-
-  @override
-  String toString() {
-    return 'UserModel(name: $name, registration: $registration, cia: $cia, contact: $contact, email: $email, id: $id, graduation: $graduation, obmID: $obmID, fullname: $fullname, adminFull: $adminFull, admin: $admin, )';
-  }
 }

@@ -1,35 +1,46 @@
+import 'package:bsu_control/core/api_client.dart';
 import 'package:bsu_control/src/user/repository/user_interface.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../../model/user_model.dart';
 
-class UserRepository implements IUserRepository {
-  final instance = FirebaseFirestore.instance;
+class UserRepository extends APIClient implements IUserRepository {
+  UserRepository(
+      {required String endpoint, required String appID, required bool test})
+      : super(endpoint: endpoint, appID: appID, test: test);
 
   @override
-  Future<bool> create(
-      {required UserModel user, required String password}) async {
+  Future<bool> save({required UserModel user}) async {
     try {
-      final result = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: user.email, password: password);
+      if (user.id == null) {
+        final result = await FirebaseAuth.instance
+            .createUserWithEmailAndPassword(
+                email: user.email, password: '12345678');
 
-      if (result.user == null) return false;
+        if (result.user == null) {
+          throw Exception('Falha ao criar usuário com email/senha.');
+        }
 
-      user.id = result.user!.uid;
-      await instance.collection("users").doc(user.id).set(user.toMap());
-      await FirebaseAuth.instance.sendPasswordResetEmail(email: user.email);
+        final doc = colUsers.doc(result.user?.uid);
+        user.id = doc.id;
+
+        await doc.set(user.toMap());
+        await FirebaseAuth.instance.sendPasswordResetEmail(email: user.email);
+      } else {
+        final doc = colUsers.doc(user.id);
+        await doc.update(user.toMap());
+      }
 
       return true;
     } catch (e) {
-      return false;
+      rethrow;
     }
   }
 
   @override
   Future<bool> update({required UserModel user}) async {
     try {
-      await instance.collection('users').doc(user.id).update(user.toMap());
+      await colUsers.doc(user.id).update(user.toMap());
       return true;
     } catch (e) {
       return false;
@@ -39,7 +50,7 @@ class UserRepository implements IUserRepository {
   @override
   Future<bool> delete({required UserModel user}) async {
     try {
-      await instance.collection('users').doc(user.id).delete();
+      await colUsers.doc(user.id).delete();
       return true;
     } catch (e) {
       return false;

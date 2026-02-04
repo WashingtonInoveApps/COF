@@ -100,4 +100,31 @@ class Core {
       return null;
     }
   }
+
+  static Widget boldFirstName({
+    required String name,
+    required String fullName,
+    String? graduation,
+    TextStyle? normalStyle,
+    TextStyle? boldStyle,
+    TextAlign textAlign = TextAlign.start,
+  }) {
+    final normal = normalStyle ?? const TextStyle(fontSize: 16);
+    final bold = boldStyle ?? normal.copyWith(fontWeight: FontWeight.bold);
+
+    final rest = fullName.replaceFirst(name, '').trim();
+
+    return Text.rich(
+      TextSpan(
+        children: [
+          TextSpan(
+              text: (graduation == null) ? '' : "$graduation ",
+              style: normal.copyWith(color: Colors.grey)),
+          TextSpan(text: '$name ', style: bold),
+          TextSpan(text: rest, style: normal),
+        ],
+      ),
+      textAlign: textAlign,
+    );
+  }
 }

@@ -5,7 +5,6 @@ import 'package:bsu_control/model/check_list_model.dart';
 import 'package:bsu_control/model/obm_model.dart';
 import 'package:bsu_control/model/supply_model.dart';
 import 'package:bsu_control/model/user_model.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class AppRepository extends APIClient implements IAppRepository {
   AppRepository(
@@ -69,49 +68,6 @@ class AppRepository extends APIClient implements IAppRepository {
           user.id = doc.id;
           return user;
         }).toList());
-  }
-
-  @override
-  Future<UserModel?> login(
-      {required String email, required String senha}) async {
-    try {
-      var response = await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: email, password: senha);
-
-      if (response.user != null) {
-        String id = response.user!.uid;
-        final result = await colUsers.doc(id).get();
-
-        if (!result.exists || result.data() == null) {
-          throw Exception("Usuário não encontrado.");
-        }
-
-        UserModel user =
-            UserModel.fromMap(result.data() as Map<String, dynamic>);
-        return user;
-      }
-
-      return null;
-    } on FirebaseAuthException catch (e) {
-      throw Exception(
-          "Falha na autenticação do usuário: ${e.message?.toString()}");
-    } on FirebaseException catch (e) {
-      throw Exception(
-          "Falha na comunicação com banco de dados: ${e.message?.toString()}");
-    } catch (e) {
-      throw Exception("Erro inesperado: ${e.toString()}");
-    }
-  }
-
-  @override
-  Future<bool> recuperarPassword({required String email}) async {
-    try {
-      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
-
-      return true;
-    } catch (e) {
-      return false;
-    }
   }
 
   @override

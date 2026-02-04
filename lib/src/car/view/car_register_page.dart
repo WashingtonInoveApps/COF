@@ -98,8 +98,9 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
     return Stack(
       children: [
         BackgraundPage(
-          menu: false,
-          onBack: () => Navigator.of(context).pop(),
+          menu: (widget.car == null),
+          onBack:
+              (widget.car == null) ? null : () => Navigator.of(context).pop(),
           top: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -124,7 +125,7 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                   style: Constants.subtitleHint,
                 ),
                 Container(
-                  height: 60.0,
+                  height: 50.0,
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(horizontal: 5),
                   alignment: Alignment.center,
@@ -183,7 +184,7 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                             style: Constants.subtitleHint,
                           ),
                           Container(
-                            height: 60.0,
+                            height: 50.0,
                             width: double.infinity,
                             padding: const EdgeInsets.symmetric(horizontal: 5),
                             alignment: Alignment.center,

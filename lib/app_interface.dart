@@ -18,9 +18,6 @@ abstract class IAppRepository {
   Future<bool> deleteChecklist(
       {required CheckListModel checklist, required CarModel car});
 
-  Future<UserModel?> login({required String email, required String senha});
-  Future<bool> recuperarPassword({required String email});
-
   Future<bool> deleteSupply(
       {required SupplyModel supply, required CheckListModel checklist});
 }

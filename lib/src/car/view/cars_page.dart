@@ -8,7 +8,6 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 
 import 'car_details_page.dart';
-import 'car_register_page.dart';
 
 class CarsPage extends StatefulWidget {
   const CarsPage({Key? key}) : super(key: key);
@@ -33,34 +32,11 @@ class _CarsPageState extends State<CarsPage> {
       canPop: false,
       child: BackgraundPage(
         top: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Expanded(
-                  child: Text(
-                    'Veículos cadastrados',
-                    style: Constants.title.copyWith(fontSize: 18),
-                  ),
-                ),
-                controller.user.admin
-                    ? ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => const CarRegisterPage()));
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 15, vertical: 2),
-                          child: Text(
-                            "NOVO CADASTRO",
-                            style: Constants.subtitle.copyWith(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold),
-                          ),
-                        ))
-                    : Container(),
-              ],
+            Text(
+              'Veículos registrados',
+              style: Constants.title.copyWith(fontSize: 18),
             ),
             const Divider(),
             const SizedBox(

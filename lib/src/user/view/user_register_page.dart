@@ -1,13 +1,16 @@
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/validation.dart';
+import 'package:bsu_control/model/obm_model.dart';
 import 'package:bsu_control/model/user_model.dart';
-import 'package:bsu_control/src/user/repository/user_repository.dart';
+import 'package:bsu_control/src/user/view/users_page.dart';
 import 'package:bsu_control/src/widgets/alert_message.dart';
+import 'package:bsu_control/src/widgets/backgraund_page.dart';
 import 'package:bsu_control/src/widgets/textfield_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 import '../controller/user_controller.dart';
 
@@ -24,21 +27,30 @@ class _UserPageRegisterState extends State<UserPageRegister> {
   final _key = GlobalKey<FormState>();
   final app = GetIt.I.get<AppController>();
 
+  final maskRegistration = MaskTextInputFormatter(
+      mask: '###.###-#-#', type: MaskAutoCompletionType.lazy);
+
+  final maskFormatter = MaskTextInputFormatter(
+      mask: '(##) #####-####', filter: {"#": RegExp(r'[0-9]')});
+
   UserModel user = UserModel();
 
   @override
   void initState() {
     super.initState();
-    controller = UserController(app: app, repository: UserRepository());
+    controller = UserController(app: app);
+    controller
+        .setGraduation(widget.user?.graduation ?? Constants.graduations.first);
+    controller.setAdmin(widget.user?.admin ?? false);
+    controller.setAdminFull(widget.user?.adminFull ?? false);
+    controller.setOBM((widget.user?.obmID.isNotEmpty ?? false)
+        ? app.obms.firstWhere((e) => e.id == widget.user?.obmID)
+        : app.obms.first);
 
-    controller.setGraduation((widget.user?.graduation.isNotEmpty ?? false)
-        ? widget.user?.graduation
-        : Constants.graduations.first);
-
-    if (widget.user != null) user = UserModel.fromMap(widget.user!.toMap());
+    user = widget.user ?? UserModel(graduation: controller.graduation);
 
     // controller.setOBM((widget.user == null) ? Constants.obms.first : user.obm);
-    controller.setAdmin(user.admin);
+    // controller.setAdmin(user.admin);
   }
 
   @override
@@ -50,292 +62,379 @@ class _UserPageRegisterState extends State<UserPageRegister> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: [
-          // const AppBarCustom(
-          //   titlePage: 'REGISTRO DE USUÁRIO',
-          // ),
-          Expanded(
-            child: Stack(
+    return Stack(
+      children: [
+        Form(
+          key: _key,
+          child: BackgraundPage(
+            top: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SingleChildScrollView(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Form(
-                    key: _key,
-                    child: Center(
+                Text(
+                  "Registro de usuário",
+                  style: Constants.title.copyWith(fontSize: 18),
+                ),
+                const Divider(),
+                const SizedBox(
+                  height: 10.0,
+                ),
+              ],
+            ),
+            childLeft: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(
+                  height: 10.0,
+                ),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                      color: Constants.primary,
+                      borderRadius: BorderRadius.circular(5)),
+                  child: Text(
+                    'INFORMAÇÕES BÁSICAS',
+                    style: Constants.titleButton,
+                  ),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                Text(
+                  "ORGANIZAÇÃO",
+                  style: Constants.subtitleHint,
+                ),
+                const SizedBox(
+                  height: 5.0,
+                ),
+                Container(
+                  height: 50.0,
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(horizontal: 5),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(5.0)),
+                  child: Observer(builder: (_) {
+                    return DropdownButton<OBMModel>(
+                        isExpanded: true,
+                        value: controller.obm,
+                        underline: Container(),
+                        onChanged: controller.setOBM,
+                        items: app.obms
+                            .map((e) => DropdownMenuItem(
+                                  value: e,
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 5),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          e.prefix,
+                                          style: Constants.title,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        Text(
+                                          e.name,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: Constants.subtitle
+                                              .copyWith(color: Colors.grey),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ))
+                            .toList());
+                  }),
+                ),
+                Observer(builder: (context) {
+                  return Visibility(
+                      visible: (controller.cia != null),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const SizedBox(
+                            height: 10.0,
+                          ),
+                          Text(
+                            "COMPANHIA",
+                            style: Constants.subtitleHint,
+                          ),
+                          const SizedBox(
                             height: 5.0,
                           ),
-                          Text(
-                            "INFORMAÇÕES DO USUÁRIO",
-                            style: Constants.titleHint,
-                          ),
-                          const Divider(),
-                          const SizedBox(
-                            height: 10.0,
-                          ),
-                          Center(
-                            child: SizedBox(
-                              width: 400.0,
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Card(
-                                    margin: EdgeInsets.zero,
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                          border:
-                                              Border.all(color: Colors.grey),
-                                          borderRadius:
-                                              BorderRadius.circular(5)),
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 10.0),
-                                      child: Observer(builder: (_) {
-                                        return DropdownButton<String>(
-                                            value: controller.obm,
-                                            onChanged: controller.setOBM,
-                                            underline: Container(),
-                                            isExpanded: true,
-                                            items: List.generate(
-                                                Constants.obms.length,
-                                                (index) =>
-                                                    DropdownMenuItem<String>(
-                                                      value:
-                                                          Constants.obms[index],
-                                                      child: Text(
-                                                        Constants.obms[index],
-                                                        style: Constants.title,
-                                                      ),
-                                                    )));
-                                      }),
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  Card(
-                                    margin: EdgeInsets.zero,
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                          border:
-                                              Border.all(color: Colors.grey),
-                                          borderRadius:
-                                              BorderRadius.circular(5)),
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 10.0),
-                                      child: Observer(builder: (_) {
-                                        return DropdownButton<String>(
-                                            value: controller.graduation,
-                                            onChanged: controller.setGraduation,
-                                            underline: Container(),
-                                            isExpanded: true,
-                                            items: List.generate(
-                                                Constants.graduations.length,
-                                                (index) =>
-                                                    DropdownMenuItem<String>(
-                                                      value: Constants
-                                                          .graduations[index],
-                                                      child: Text(
-                                                        Constants
-                                                            .graduations[index],
-                                                        style: Constants.title,
-                                                      ),
-                                                    )));
-                                      }),
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  FieldText(
-                                    initValue: user.name,
-                                    hint: "QRA",
-                                    validation:
-                                        Validation.validatorPreenchimento,
-                                    onSaved: (text) {
-                                      user.name = text!;
-                                    },
-                                  ),
-                                  const SizedBox(
-                                    height: 15.0,
-                                  ),
-                                  FieldText(
-                                    initValue: user.registration,
-                                    inputType: TextInputType.number,
-                                    hint: "MATRÍCULA",
-                                    validation:
-                                        Validation.validatorPreenchimento,
-                                    onSaved: (text) {
-                                      user.registration = text!;
-                                    },
-                                  ),
-                                  const SizedBox(
-                                    height: 15.0,
-                                  ),
-                                  FieldText(
-                                    initValue: user.contact,
-                                    inputType: TextInputType.phone,
-                                    hint: "CONTATO WHATSAP",
-                                    validation: Validation.validatorPhone,
-                                    mask: [controller.maskFormatter],
-                                    onSaved: (text) {
-                                      user.contact = text!;
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 30.0,
-                          ),
-                          Text(
-                            "INFORMAÇÕES DE ACESSO",
-                            style: Constants.titleHint,
-                          ),
-                          const Divider(),
-                          const SizedBox(
-                            height: 10.0,
-                          ),
-                          Center(
-                            child: SizedBox(
-                              width: 400.0,
-                              child: Column(
-                                children: [
-                                  FieldText(
-                                    initValue: user.email,
-                                    inputType: TextInputType.emailAddress,
-                                    hint: "E-MAIL",
-                                    validation: Validation.validatorEmail,
-                                    // upper: false,
-                                    onSaved: (text) {
-                                      user.email = text!;
-                                    },
-                                  ),
-                                  const SizedBox(
-                                    height: 15.0,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          const Divider(),
-                          Visibility(
-                            visible: app.user.adminFull,
-                            child: Card(
-                              child: Padding(
-                                padding: const EdgeInsets.all(10.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'PAINEL ADMINISTRATIVO ( PERMISSÕES )',
-                                      style: Constants.titleHint,
-                                    ),
-                                    const Divider(),
-                                    SizedBox(
-                                      height: 50,
-                                      child: Observer(builder: (_) {
-                                        return ListView(
-                                          scrollDirection: Axis.horizontal,
-                                          children: [
-                                            Row(
-                                              children: [
-                                                Checkbox(
-                                                    value: controller.admin,
-                                                    onChanged:
-                                                        controller.setAdmin),
-                                                Text(
-                                                  'ADMIN',
-                                                  style: Constants.title,
-                                                )
-                                              ],
-                                            ),
-                                          ],
-                                        );
-                                      }),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 10.0,
-                          ),
-                          Center(
-                            child: SizedBox(
-                              height: 50.0,
-                              width: 400.0,
-                              child: ElevatedButton(
-                                onPressed: () async {
-                                  if (_key.currentState!.validate()) {
-                                    _key.currentState!.save();
-
-                                    user.graduation = controller.graduation;
-                                    // user.obm = controller.obm;
-                                    user.admin = controller.admin;
-
-                                    controller
-                                        .create(
-                                            user: user,
-                                            update: widget.user != null)
-                                        .then((value) async {
-                                      showDialog(
-                                          context: context,
-                                          builder: (context) => AlertMessage(
-                                              title: "Atenção",
-                                              message: value
-                                                  ? ((widget.user == null)
-                                                      ? "Cadastro foi realizado com sucesso, aguarde liberação."
-                                                      : "Cadastro foi alterado com sucesso.")
-                                                  : "Ops ! Falha ao realizar cadastro.",
-                                              onPressedOK: () =>
-                                                  Navigator.of(context)
-                                                      .pop())).then((_) {
-                                        if (value) Navigator.of(context).pop();
-                                      });
-                                    });
-                                  }
-                                },
-                                child: Text(
-                                  "CADASTRAR",
-                                  style: Constants.titleButton,
-                                ),
-                              ),
-                            ),
+                          Container(
+                            height: 50.0,
+                            width: double.infinity,
+                            padding: const EdgeInsets.symmetric(horizontal: 5),
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                                border: Border.all(color: Colors.grey),
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(5.0)),
+                            child: DropdownButton<String?>(
+                                isExpanded: true,
+                                value: controller.cia,
+                                underline: Container(),
+                                onChanged: controller.setCia,
+                                items: controller.obm.cias
+                                    .map((e) => DropdownMenuItem(
+                                          value: e,
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 5),
+                                            child: Text(e.toUpperCase(),
+                                                style: Constants.title),
+                                          ),
+                                        ))
+                                    .toList()),
                           ),
                         ],
+                      ));
+                }),
+                const SizedBox(
+                  height: 10,
+                ),
+                Text(
+                  "GRADUAÇÃO",
+                  style: Constants.subtitleHint,
+                ),
+                const SizedBox(
+                  height: 5.0,
+                ),
+                Container(
+                  height: 50.0,
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(horizontal: 5),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(5.0)),
+                  child: Observer(builder: (_) {
+                    return DropdownButton<String?>(
+                        isExpanded: true,
+                        value: controller.graduation,
+                        underline: Container(),
+                        onChanged: controller.setGraduation,
+                        items: Constants.graduations
+                            .map((e) => DropdownMenuItem(
+                                  value: e,
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 5),
+                                    child: Text(e.toUpperCase(),
+                                        style: Constants.title),
+                                  ),
+                                ))
+                            .toList());
+                  }),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                FieldText(
+                  initValue: user.name,
+                  hint: "EX.: Fulano",
+                  label: 'QRA',
+                  validation: Validation.validatorPreenchimento,
+                  onSaved: (text) {
+                    user.name = text!;
+                  },
+                ),
+                const SizedBox(
+                  height: 10.0,
+                ),
+                FieldText(
+                  initValue: user.name,
+                  hint: "EX.: Fulano da Silva Lima",
+                  label: 'Nome completo',
+                  validation: Validation.validatorPreenchimento,
+                  onSaved: (text) {
+                    user.fullname = text!;
+                  },
+                ),
+                const SizedBox(
+                  height: 10.0,
+                ),
+                FieldText(
+                  initValue: user.registration,
+                  hint: "Ex.: 300.000-0-0",
+                  label: 'Matrícula',
+                  mask: [maskRegistration],
+                  validation: Validation.validatorPreenchimento,
+                  onSaved: (text) {
+                    user.registration = text!;
+                  },
+                ),
+                const SizedBox(
+                  height: 10.0,
+                ),
+                FieldText(
+                  initValue: user.contact,
+                  inputType: TextInputType.phone,
+                  hint: "EX.: (85) 90000-0000",
+                  label: 'Contato',
+                  validation: Validation.validatorPhone,
+                  mask: [maskFormatter],
+                  onSaved: (text) {
+                    user.contact = text!;
+                  },
+                ),
+                const SizedBox(
+                  height: 10.0,
+                ),
+              ],
+            ),
+            childRight: Column(
+              children: [
+                const SizedBox(
+                  height: 10.0,
+                ),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                      color: Constants.primary,
+                      borderRadius: BorderRadius.circular(5)),
+                  child: Text(
+                    'INFORMAÇÕES DE ACESSO',
+                    style: Constants.titleButton,
+                  ),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                IgnorePointer(
+                  ignoring: (widget.user != null),
+                  child: FieldText(
+                    initValue: user.email,
+                    inputType: TextInputType.emailAddress,
+                    hint: "Ex.: fulano@cb.ce.gov.br",
+                    label: "E-mail",
+                    validation: Validation.validatorEmail,
+                    onSaved: (text) {
+                      user.email = text!;
+                    },
+                  ),
+                ),
+                const SizedBox(
+                  height: 10.0,
+                ),
+                Visibility(
+                  visible: app.user.admin,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          'Função Administrador',
+                          style: Constants.title,
+                        ),
+                      ),
+                      Observer(builder: (_) {
+                        return Switch(
+                            value: controller.admin,
+                            activeThumbColor: Constants.primary,
+                            onChanged: controller.setAdmin);
+                      }),
+                    ],
+                  ),
+                ),
+                Visibility(
+                  visible: app.user.adminFull,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          'Função Administrador Especial',
+                          style: Constants.title,
+                        ),
+                      ),
+                      Observer(builder: (_) {
+                        return Switch(
+                            value: controller.adminFull,
+                            activeThumbColor: Constants.primary,
+                            onChanged: controller.setAdminFull);
+                      }),
+                    ],
+                  ),
+                ),
+                const SizedBox(
+                  height: 10.0,
+                ),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: SizedBox(
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        if (_key.currentState!.validate()) {
+                          _key.currentState!.save();
+
+                          user.graduation = controller.graduation;
+                          user.obmID = controller.obm.id ?? '';
+                          user.admin = controller.admin;
+                          user.cia = controller.cia ?? '';
+                          user.adminFull = controller.adminFull;
+
+                          controller.save(user: user).then((value) async {
+                            showDialog(
+                                context: context,
+                                builder: (context) => AlertMessage(
+                                    title: "Atenção",
+                                    message:
+                                        "Cadastro realizado com sucesso. E-mail para resetar a senha enviado a caixa de entrada.",
+                                    onPressedOK: () =>
+                                        Navigator.of(context).pop())).then((_) {
+                              if (value) {
+                                app.setRouter(5);
+                                Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const UsersPage()));
+                              }
+                            });
+                          }).catchError((err) {
+                            showDialog(
+                                context: context,
+                                builder: (context) => AlertMessage(
+                                    title: "Atenção",
+                                    message: err.toString(),
+                                    onPressedOK: () =>
+                                        Navigator.of(context).pop()));
+                          });
+                        }
+                      },
+                      child: Text(
+                        "CADASTRAR",
+                        style: Constants.titleButton,
                       ),
                     ),
                   ),
                 ),
-                Observer(builder: (_) {
-                  return IgnorePointer(
-                    ignoring: !controller.loading,
-                    child: Container(
-                      color: controller.loading
-                          ? Colors.black54
-                          : Colors.transparent,
-                      child: Center(
-                          child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                            controller.loading
-                                ? Colors.white
-                                : Colors.transparent),
-                      )),
-                    ),
-                  );
-                })
               ],
             ),
           ),
-        ],
-      ),
+        ),
+        Observer(builder: (_) {
+          return IgnorePointer(
+            ignoring: !controller.loading,
+            child: Container(
+              color: controller.loading ? Colors.black54 : Colors.transparent,
+              child: Center(
+                  child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(
+                    controller.loading ? Colors.white : Colors.transparent),
+              )),
+            ),
+          );
+        })
+      ],
     );
   }
 }

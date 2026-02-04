@@ -41,6 +41,7 @@ dependencies:
   material_design_icons_flutter:
   google_fonts:
   syncfusion_flutter_sliders:
+  flutter_verification_code:
   # quds_popup_menu: ^0.0.1+1
   get_it:
   validators:

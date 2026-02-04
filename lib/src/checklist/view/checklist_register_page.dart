@@ -56,18 +56,21 @@ class _ChecklistRegisterPageState extends State<ChecklistRegisterPage> {
                 spacing: 50,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  ElevatedButton(
-                      onPressed: () {
-                        controller.processStep(false);
-                      },
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.grey),
-                      child: Text(
-                        'Voltar',
-                        style: Constants.titleButton,
-                      )),
                   Observer(builder: (_) {
-                    final enable = (controller.cars.isNotEmpty);
+                    return ElevatedButton(
+                        onPressed: (controller.step > 0)
+                            ? () {
+                                controller.processStep(false);
+                              }
+                            : null,
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.grey),
+                        child: Text(
+                          'Voltar',
+                          style: Constants.titleButton,
+                        ));
+                  }),
+                  Observer(builder: (_) {
                     return controller.btFinish
                         ? ElevatedButton(
                             onPressed: () {
@@ -91,73 +94,66 @@ class _ChecklistRegisterPageState extends State<ChecklistRegisterPage> {
                               style: Constants.titleButton,
                             ))
                         : ElevatedButton(
-                            onPressed: enable
-                                ? () {
-                                    if (controller.validationForm()) {
-                                      controller.processStep(true);
-                                    } else {
-                                      showDialog(
-                                          context: context,
-                                          builder: (context) => AlertDialog(
-                                                contentPadding:
-                                                    const EdgeInsets.all(10),
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          5.0),
-                                                ),
-                                                content: Column(
-                                                  spacing: 10,
-                                                  mainAxisSize:
-                                                      MainAxisSize.min,
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.end,
-                                                  children: [
-                                                    InkWell(
-                                                        onTap: () =>
-                                                            Navigator.of(
-                                                                    context)
-                                                                .pop(),
-                                                        child: const Icon(
-                                                          Icons.close,
-                                                          size: 20,
-                                                          color: Colors.grey,
-                                                        )),
-                                                    Column(
-                                                      spacing: 10,
-                                                      mainAxisSize:
-                                                          MainAxisSize.min,
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: controller
-                                                          .messagesErros
-                                                          .map((err) {
-                                                        return Row(
-                                                          spacing: 10,
-                                                          children: [
-                                                            const Icon(
-                                                              Icons.error,
-                                                              color: Colors.red,
-                                                              size: 20,
-                                                            ),
-                                                            Expanded(
-                                                              child: Text(
-                                                                err,
-                                                                style: Constants
-                                                                    .title,
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        );
-                                                      }).toList(),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ));
-                                    }
-                                  }
-                                : null,
+                            onPressed: () {
+                              if (controller.validationForm()) {
+                                controller.processStep(true);
+                              } else {
+                                showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                          contentPadding:
+                                              const EdgeInsets.all(10),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(5.0),
+                                          ),
+                                          content: Column(
+                                            spacing: 10,
+                                            mainAxisSize: MainAxisSize.min,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.end,
+                                            children: [
+                                              InkWell(
+                                                  onTap: () =>
+                                                      Navigator.of(context)
+                                                          .pop(),
+                                                  child: const Icon(
+                                                    Icons.close,
+                                                    size: 20,
+                                                    color: Colors.grey,
+                                                  )),
+                                              Column(
+                                                spacing: 10,
+                                                mainAxisSize: MainAxisSize.min,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: controller
+                                                    .messagesErros
+                                                    .map((err) {
+                                                  return Row(
+                                                    spacing: 10,
+                                                    children: [
+                                                      const Icon(
+                                                        Icons.error,
+                                                        color: Colors.red,
+                                                        size: 20,
+                                                      ),
+                                                      Expanded(
+                                                        child: Text(
+                                                          err,
+                                                          style:
+                                                              Constants.title,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  );
+                                                }).toList(),
+                                              ),
+                                            ],
+                                          ),
+                                        ));
+                              }
+                            },
                             style: ElevatedButton.styleFrom(
                                 backgroundColor: Constants.primary),
                             child: Text(

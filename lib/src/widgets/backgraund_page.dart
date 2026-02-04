@@ -1,11 +1,11 @@
-import 'dart:developer';
-
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/model/obm_model.dart';
+import 'package:bsu_control/src/car/view/car_register_page.dart';
 import 'package:bsu_control/src/car/view/cars_page.dart';
 import 'package:bsu_control/src/checklist/view/checklist_register_page.dart';
 import 'package:bsu_control/src/pages/home_page.dart';
+import 'package:bsu_control/src/user/view/user_register_page.dart';
 import 'package:bsu_control/src/user/view/users_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -18,14 +18,12 @@ class BackgraundPage extends StatefulWidget {
   final Widget? childRight;
   final Widget? bottom;
   final Widget? top;
-  final double maxWidth;
   final Function()? onBack;
 
   const BackgraundPage({
     Key? key,
     required this.childLeft,
     this.childRight,
-    this.maxWidth = 1000,
     this.menu = true,
     this.login = false,
     this.bottom,
@@ -156,46 +154,118 @@ class _BackgraundPageState extends State<BackgraundPage> {
                                 )),
                           ];
                         }),
-                    SizedBox(
-                      height: 35,
-                      child: ElevatedButton(
-                          onPressed: () {
-                            if (controller.router != 3) {
-                              controller.setRouter(3);
-                              Navigator.of(context).pushReplacement(
-                                  MaterialPageRoute(
-                                      builder: (context) => const CarsPage()));
-                            }
-                          },
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: (controller.router == 3)
+                    PopupMenuButton(
+                        onSelected: (value) {
+                          switch (value) {
+                            case 3:
+                              if (controller.router != 3) {
+                                controller.setRouter(3);
+                                Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const CarsPage()));
+                              }
+                              break;
+                            case 4:
+                              if (controller.router != 4) {
+                                controller.setRouter(4);
+                                Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const CarRegisterPage()));
+                              }
+                              break;
+                            default:
+                              break;
+                          }
+                        },
+                        child: Container(
+                          height: 35,
+                          alignment: Alignment.center,
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          decoration: BoxDecoration(
+                              color: (controller.router == 3 ||
+                                      controller.router == 4)
                                   ? Constants.primary
-                                  : Colors.grey.shade300),
+                                  : Colors.grey.shade300,
+                              borderRadius: BorderRadius.circular(5)),
                           child: Text(
                             'Viaturas',
                             style: Constants.titleButton,
-                          )),
-                    ),
-                    SizedBox(
-                      height: 35,
-                      child: ElevatedButton(
-                          onPressed: () {
-                            if (controller.router != 4) {
-                              controller.setRouter(4);
-                              Navigator.of(context).pushReplacement(
-                                  MaterialPageRoute(
-                                      builder: (context) => const UsersPage()));
-                            }
-                          },
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: (controller.router == 4)
+                          ),
+                        ),
+                        itemBuilder: (context) {
+                          return [
+                            PopupMenuItem(
+                                value: 3,
+                                child: Text(
+                                  'Registrados',
+                                  style: Constants.title,
+                                )),
+                            PopupMenuItem(
+                                value: 4,
+                                child: Text(
+                                  'Novo registro',
+                                  style: Constants.title,
+                                )),
+                          ];
+                        }),
+                    PopupMenuButton(
+                        onSelected: (value) {
+                          switch (value) {
+                            case 5:
+                              if (controller.router != 5) {
+                                controller.setRouter(5);
+                                Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const UsersPage()));
+                              }
+                              break;
+                            case 6:
+                              if (controller.router != 6) {
+                                controller.setRouter(6);
+                                Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const UserPageRegister()));
+                              }
+                              break;
+                            default:
+                              break;
+                          }
+                        },
+                        child: Container(
+                          height: 35,
+                          alignment: Alignment.center,
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          decoration: BoxDecoration(
+                              color: (controller.router == 5 ||
+                                      controller.router == 6)
                                   ? Constants.primary
-                                  : Colors.grey.shade300),
+                                  : Colors.grey.shade300,
+                              borderRadius: BorderRadius.circular(5)),
                           child: Text(
                             'Usuários',
                             style: Constants.titleButton,
-                          )),
-                    ),
+                          ),
+                        ),
+                        itemBuilder: (context) {
+                          return [
+                            PopupMenuItem(
+                                value: 5,
+                                child: Text(
+                                  'Registrados',
+                                  style: Constants.title,
+                                )),
+                            PopupMenuItem(
+                                value: 6,
+                                child: Text(
+                                  'Novo registro',
+                                  style: Constants.title,
+                                )),
+                          ];
+                        }),
                   ],
                 );
               }),
@@ -208,26 +278,15 @@ class _BackgraundPageState extends State<BackgraundPage> {
       child: SafeArea(
         top: true,
         child: LayoutBuilder(builder: (context, constrained) {
-          bool modeMOBILE = (constrained.maxWidth > widget.maxWidth)
-              ? (widget.maxWidth <= 500)
-              : (constrained.maxWidth <= 500);
-
-          double width = (modeMOBILE || widget.childRight == null)
-              ? ((constrained.maxWidth > widget.maxWidth)
-                  ? widget.maxWidth
-                  : constrained.maxWidth)
-              : widget.maxWidth * 0.48;
-
-          controller.setMaxWidth(width);
-
-          log('ModeMOBILE: $modeMOBILE');
-          log('Width: $width');
+          final width = controller.processWidth(
+              childRight: (widget.childRight == null),
+              constrainedMaxWidth: constrained.maxWidth);
 
           return Center(
             child: Container(
               height: double.infinity,
               width: double.infinity,
-              constraints: BoxConstraints(maxWidth: widget.maxWidth),
+              constraints: BoxConstraints(maxWidth: controller.maxWidth),
               margin: const EdgeInsets.all(5),
               padding: const EdgeInsets.all(10),
               color: Colors.white,
@@ -257,7 +316,7 @@ class _BackgraundPageState extends State<BackgraundPage> {
                               Expanded(
                                 child: Visibility(
                                   visible: !widget.login,
-                                  child: modeMOBILE
+                                  child: controller.modeMOBILE
                                       ? widget.menu
                                           ? Align(
                                               alignment: Alignment.centerRight,
@@ -280,7 +339,7 @@ class _BackgraundPageState extends State<BackgraundPage> {
                               )
                             ],
                           ),
-                          (modeMOBILE && widget.menu)
+                          (controller.modeMOBILE && widget.menu)
                               ? Observer(builder: (context) {
                                   return (controller.menuOpen)
                                       ? Column(

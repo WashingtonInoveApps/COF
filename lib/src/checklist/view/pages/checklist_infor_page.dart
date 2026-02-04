@@ -112,7 +112,7 @@ class _CheckListInforPageState extends State<CheckListInforPage> {
             height: 5,
           ),
           Container(
-            height: 45.0,
+            height: 50.0,
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 5),
             alignment: Alignment.center,
@@ -176,7 +176,7 @@ class _CheckListInforPageState extends State<CheckListInforPage> {
                       height: 5,
                     ),
                     Container(
-                      height: 45.0,
+                      height: 50.0,
                       width: double.infinity,
                       padding: const EdgeInsets.symmetric(horizontal: 5),
                       alignment: Alignment.center,
@@ -225,7 +225,7 @@ class _CheckListInforPageState extends State<CheckListInforPage> {
                       height: 5,
                     ),
                     Container(
-                      height: 45.0,
+                      height: 50.0,
                       width: double.infinity,
                       padding: const EdgeInsets.symmetric(horizontal: 5),
                       alignment: Alignment.center,

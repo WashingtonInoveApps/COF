@@ -314,7 +314,7 @@ abstract class _CheckListControllerBase with Store {
       final checklist = CheckListModel(
           date: date,
           user: app.user,
-          userID: app.user.id,
+          userID: app.user.id ?? '',
           checkCar: CarCheckList(
             car: car!.copyWith(itens: itens, materials: materials),
             arref: arref,
@@ -360,6 +360,10 @@ abstract class _CheckListControllerBase with Store {
     messagesErros.clear();
     switch (step) {
       case 0:
+        if (cars.isEmpty) {
+          messagesErros.add('Nenhum registro de veículos encontrado.');
+        }
+
         if (Validation.validatorPhone(contact) != null) {
           messagesErros.add("Insira um contato antes de prosseguir.");
         }

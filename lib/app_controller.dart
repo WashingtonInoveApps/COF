@@ -1,11 +1,10 @@
+import 'package:bsu_control/app_interface.dart';
 import 'package:bsu_control/app_repository.dart';
-import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/core/db.dart';
 import 'package:bsu_control/model/car_model.dart';
 import 'package:bsu_control/model/obm_model.dart';
 import 'package:bsu_control/model/user_model.dart';
-import 'package:bsu_control/app_interface.dart';
 import 'package:mobx/mobx.dart';
 
 import 'model/check_list_model.dart';
@@ -20,10 +19,15 @@ abstract class _AppControllerBase with Store {
   final String appID;
   final bool test;
   final String endpoint;
+  final double maxWidth;
+
   late IAppRepository repository;
 
   _AppControllerBase(
-      {required this.appID, required this.endpoint, required this.test}) {
+      {required this.appID,
+      required this.endpoint,
+      required this.test,
+      required this.maxWidth}) {
     repository = AppRepository(
       appID: appID,
       endpoint: endpoint,
@@ -37,16 +41,13 @@ abstract class _AppControllerBase with Store {
   String version = '';
 
   @observable
-  double maxWidth = 0.0;
+  double width = 0.0;
 
   @observable
   int router = 0;
 
   @observable
   UserModel user = UserModel();
-
-  @observable
-  String unidade = Constants.obms.first;
 
   @observable
   bool menuOpen = false;
@@ -56,6 +57,9 @@ abstract class _AppControllerBase with Store {
 
   @observable
   bool checklistVeicular = false;
+
+  @observable
+  bool modeMOBILE = false;
 
   @observable
   DateTime date = DateTime.now();
@@ -94,7 +98,7 @@ abstract class _AppControllerBase with Store {
   setVersion(String value) => version = value;
 
   @action
-  setMaxWidth(double value) => maxWidth = value;
+  setUser(UserModel value) => user = value;
 
   @action
   changeMenuOpen() => menuOpen = !menuOpen;
@@ -167,41 +171,11 @@ abstract class _AppControllerBase with Store {
     return;
   }
 
-  @action
-  Future<bool> login({required String email, required String senha}) async {
-    try {
-      loading = true;
-      final result = await repository.login(email: email, senha: senha);
-      loading = false;
-
-      if (result == null) return false;
-
-      user = result;
-
-      await DBController.save(tag: 'user', value: result.toJson());
-      await getOBMs();
-
-      return true;
-    } catch (e) {
-      loading = false;
-      rethrow;
-    }
-  }
-
   Future<bool> getUserDB({required String tag}) async {
     final result = await DBController.get(tag: tag);
     if (result != null) user = UserModel.fromMap(result);
 
     return result != null;
-  }
-
-  @action
-  Future<bool> recuperarPassword({required String email}) async {
-    loading = true;
-    final result = await repository.recuperarPassword(email: email);
-    loading = false;
-
-    return result;
   }
 
   @action
@@ -233,5 +207,21 @@ abstract class _AppControllerBase with Store {
         await repository.deleteSupply(supply: supply, checklist: checklist);
     loading = false;
     return result;
+  }
+
+  @action
+  double processWidth({required double constrainedMaxWidth, bool? childRight}) {
+    bool modeMOBILE = (constrainedMaxWidth > maxWidth)
+        ? (maxWidth <= 500)
+        : (constrainedMaxWidth <= 500);
+
+    double width = (modeMOBILE || !(childRight == null))
+        ? ((constrainedMaxWidth > maxWidth) ? maxWidth : constrainedMaxWidth)
+        : maxWidth * 0.48;
+
+    this.modeMOBILE = modeMOBILE;
+    this.width = width;
+
+    return width;
   }
 }

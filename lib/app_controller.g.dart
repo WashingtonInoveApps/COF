@@ -47,19 +47,19 @@ mixin _$AppController on _AppControllerBase, Store {
     });
   }
 
-  late final _$maxWidthAtom =
-      Atom(name: '_AppControllerBase.maxWidth', context: context);
+  late final _$widthAtom =
+      Atom(name: '_AppControllerBase.width', context: context);
 
   @override
-  double get maxWidth {
-    _$maxWidthAtom.reportRead();
-    return super.maxWidth;
+  double get width {
+    _$widthAtom.reportRead();
+    return super.width;
   }
 
   @override
-  set maxWidth(double value) {
-    _$maxWidthAtom.reportWrite(value, super.maxWidth, () {
-      super.maxWidth = value;
+  set width(double value) {
+    _$widthAtom.reportWrite(value, super.width, () {
+      super.width = value;
     });
   }
 
@@ -92,22 +92,6 @@ mixin _$AppController on _AppControllerBase, Store {
   set user(UserModel value) {
     _$userAtom.reportWrite(value, super.user, () {
       super.user = value;
-    });
-  }
-
-  late final _$unidadeAtom =
-      Atom(name: '_AppControllerBase.unidade', context: context);
-
-  @override
-  String get unidade {
-    _$unidadeAtom.reportRead();
-    return super.unidade;
-  }
-
-  @override
-  set unidade(String value) {
-    _$unidadeAtom.reportWrite(value, super.unidade, () {
-      super.unidade = value;
     });
   }
 
@@ -156,6 +140,22 @@ mixin _$AppController on _AppControllerBase, Store {
   set checklistVeicular(bool value) {
     _$checklistVeicularAtom.reportWrite(value, super.checklistVeicular, () {
       super.checklistVeicular = value;
+    });
+  }
+
+  late final _$modeMOBILEAtom =
+      Atom(name: '_AppControllerBase.modeMOBILE', context: context);
+
+  @override
+  bool get modeMOBILE {
+    _$modeMOBILEAtom.reportRead();
+    return super.modeMOBILE;
+  }
+
+  @override
+  set modeMOBILE(bool value) {
+    _$modeMOBILEAtom.reportWrite(value, super.modeMOBILE, () {
+      super.modeMOBILE = value;
     });
   }
 
@@ -241,24 +241,6 @@ mixin _$AppController on _AppControllerBase, Store {
     return _$getOBMsAsyncAction.run(() => super.getOBMs());
   }
 
-  late final _$loginAsyncAction =
-      AsyncAction('_AppControllerBase.login', context: context);
-
-  @override
-  Future<bool> login({required String email, required String senha}) {
-    return _$loginAsyncAction
-        .run(() => super.login(email: email, senha: senha));
-  }
-
-  late final _$recuperarPasswordAsyncAction =
-      AsyncAction('_AppControllerBase.recuperarPassword', context: context);
-
-  @override
-  Future<bool> recuperarPassword({required String email}) {
-    return _$recuperarPasswordAsyncAction
-        .run(() => super.recuperarPassword(email: email));
-  }
-
   late final _$deleteChecklistAsyncAction =
       AsyncAction('_AppControllerBase.deleteChecklist', context: context);
 
@@ -293,11 +275,11 @@ mixin _$AppController on _AppControllerBase, Store {
   }
 
   @override
-  dynamic setMaxWidth(double value) {
+  dynamic setUser(UserModel value) {
     final _$actionInfo = _$_AppControllerBaseActionController.startAction(
-        name: '_AppControllerBase.setMaxWidth');
+        name: '_AppControllerBase.setUser');
     try {
-      return super.setMaxWidth(value);
+      return super.setUser(value);
     } finally {
       _$_AppControllerBaseActionController.endAction(_$actionInfo);
     }
@@ -381,16 +363,28 @@ mixin _$AppController on _AppControllerBase, Store {
   }
 
   @override
+  double processWidth({required double constrainedMaxWidth, bool? childRight}) {
+    final _$actionInfo = _$_AppControllerBaseActionController.startAction(
+        name: '_AppControllerBase.processWidth');
+    try {
+      return super.processWidth(
+          constrainedMaxWidth: constrainedMaxWidth, childRight: childRight);
+    } finally {
+      _$_AppControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 version: ${version},
-maxWidth: ${maxWidth},
+width: ${width},
 router: ${router},
 user: ${user},
-unidade: ${unidade},
 menuOpen: ${menuOpen},
 loading: ${loading},
 checklistVeicular: ${checklistVeicular},
+modeMOBILE: ${modeMOBILE},
 date: ${date},
 cars: ${cars},
 checkLists: ${checkLists},

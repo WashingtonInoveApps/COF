@@ -1,26 +1,28 @@
 import 'package:bsu_control/app_controller.dart';
+import 'package:bsu_control/model/obm_model.dart';
 import 'package:bsu_control/src/user/repository/user_interface.dart';
+import 'package:bsu_control/src/user/repository/user_repository.dart';
 import 'package:flutter/material.dart';
-import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:mobx/mobx.dart';
 
 import '../../../model/user_model.dart';
+
 part 'user_controller.g.dart';
 
 // ignore: library_private_types_in_public_api
 class UserController = _UserControllerBase with _$UserController;
 
 abstract class _UserControllerBase with Store {
-  final IUserRepository repository;
   final AppController app;
+  late IUserRepository repository;
 
   final controllerPassword = TextEditingController();
   final controllerPasswordConfirme = TextEditingController();
 
-  var maskFormatter = MaskTextInputFormatter(
-      mask: '(##) #####-####', filter: {"#": RegExp(r'[0-9]')});
-  var maskMatricula = MaskTextInputFormatter(
-      mask: '(##) #####-####', filter: {"#": RegExp(r'[0-9]')});
+  _UserControllerBase({required this.app}) {
+    repository = UserRepository(
+        endpoint: app.endpoint, appID: app.appID, test: app.test);
+  }
 
   @observable
   bool loading = false;
@@ -29,12 +31,16 @@ abstract class _UserControllerBase with Store {
   String graduation = '';
 
   @observable
-  String obm = '';
+  String? cia;
+
+  @observable
+  OBMModel obm = OBMModel(team: [], cias: []);
 
   @observable
   bool admin = false;
 
-  _UserControllerBase({required this.app, required this.repository});
+  @observable
+  bool adminFull = false;
 
   @action
   setGraduation(String? value) => graduation = value ?? graduation;
@@ -43,19 +49,38 @@ abstract class _UserControllerBase with Store {
   setAdmin(bool? value) => admin = value ?? admin;
 
   @action
-  setOBM(String? value) => obm = value ?? obm;
+  setAdminFull(bool? value) => adminFull = value ?? adminFull;
 
   @action
-  Future<bool> create({required UserModel user, bool update = false}) async {
-    loading = true;
-    user.graduation = graduation;
+  setCia(String? value) => cia = value;
 
-    final result = update
-        ? await repository.update(user: user)
-        : await repository.create(user: user, password: '12345678');
-    loading = false;
+  @action
+  setOBM(OBMModel? value) {
+    if (value != null) {
+      if (obm != value) {
+        obm = value;
 
-    return result;
+        if (obm.cias.isNotEmpty) {
+          cia = obm.cias.first;
+        } else {
+          cia = null;
+        }
+      }
+    }
+  }
+
+  @action
+  Future<bool> save({required UserModel user}) async {
+    try {
+      loading = true;
+      final result = await repository.save(user: user);
+      loading = false;
+
+      return result;
+    } catch (e) {
+      loading = false;
+      rethrow;
+    }
   }
 
   @action
