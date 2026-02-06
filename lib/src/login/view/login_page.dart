@@ -11,7 +11,7 @@ import 'package:flutter_verification_code/flutter_verification_code.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../../core/constants.dart';
-import '../../pages/home_page.dart';
+import '../../home/home_page.dart';
 import '../controller/login_controller.dart';
 
 class LoginPage extends StatefulWidget {
@@ -43,7 +43,12 @@ class _LoginPageState extends State<LoginPage> {
       controllerEmail.text = email;
       log(email);
     }).then((value) {
-      if (value && !widget.exit) {
+      if (widget.exit) {
+        controller.setLoading(false);
+        return;
+      }
+
+      if (value) {
         Navigator.of(context).pushReplacement(
             CupertinoPageRoute(builder: (context) => const HomePage()));
       }
@@ -73,10 +78,13 @@ class _LoginPageState extends State<LoginPage> {
             color: Colors.white,
             child: Column(
               children: [
-                Image.asset(
-                  'assets/cbmcecabecalho2.png',
-                  fit: BoxFit.fitHeight,
-                  height: 70,
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Image.asset(
+                    'assets/cbmcecabecalho2.png',
+                    fit: BoxFit.fitHeight,
+                    height: 70,
+                  ),
                 ),
                 Expanded(
                   child: Center(
@@ -95,7 +103,7 @@ class _LoginPageState extends State<LoginPage> {
                             style: Constants.title.copyWith(fontSize: 16),
                           ),
                           const SizedBox(
-                            height: 10,
+                            height: 20,
                           ),
                           Observer(builder: (context) {
                             if (controller.loading) {
@@ -224,11 +232,7 @@ class _LoginPageState extends State<LoginPage> {
                                           child: ElevatedButton(
                                             child: Text(
                                               'REDEFINIR SENHA',
-                                              style: Constants.subtitle
-                                                  .copyWith(
-                                                      color: Colors.white,
-                                                      fontWeight:
-                                                          FontWeight.bold),
+                                              style: Constants.titleButton,
                                             ),
                                             onPressed: () async {
                                               if (formKEYReset.currentState

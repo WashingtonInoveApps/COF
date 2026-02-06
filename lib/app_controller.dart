@@ -210,12 +210,13 @@ abstract class _AppControllerBase with Store {
   }
 
   @action
-  double processWidth({required double constrainedMaxWidth, bool? childRight}) {
+  double processWidth(
+      {required double constrainedMaxWidth, required bool childRight}) {
     bool modeMOBILE = (constrainedMaxWidth > maxWidth)
         ? (maxWidth <= 500)
         : (constrainedMaxWidth <= 500);
 
-    double width = (modeMOBILE || !(childRight == null))
+    double width = (modeMOBILE || childRight)
         ? ((constrainedMaxWidth > maxWidth) ? maxWidth : constrainedMaxWidth)
         : maxWidth * 0.48;
 

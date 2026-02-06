@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -40,7 +41,7 @@ class Core {
     } else if (largeDay) {
       return "${days[date.weekday - 1]}, ${date.day.toString().padLeft(2, '0')} de ${months[date.month - 1]} de ${date.year}";
     } else if (largeDayHour) {
-      return "${days[date.weekday - 1]}, ${date.day.toString().padLeft(2, '0')} de ${months[date.month - 1]} de ${date.year} às ${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}";
+      return "${days[date.weekday - 1]}, ${date.day.toString().padLeft(2, '0')} de ${months[date.month - 1]} de ${date.year} às ${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}:${date.second.toString().padLeft(2, '0')}";
     } else if (monthLarge) {
       return "${months[date.month - 1]} de ${date.year}";
     } else {
@@ -125,6 +126,17 @@ class Core {
         ],
       ),
       textAlign: textAlign,
+    );
+  }
+
+  static Color corEscuraAleatoria() {
+    final random = Random();
+
+    return Color.fromARGB(
+      255,
+      random.nextInt(150), // R mais baixo
+      random.nextInt(150), // G
+      random.nextInt(150), // B
     );
   }
 }

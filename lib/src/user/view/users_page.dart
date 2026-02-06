@@ -60,9 +60,7 @@ class _UsersPageState extends State<UsersPage> {
                                         user: user,
                                       )));
                             },
-                            onDelete: () async {
-                              await controller.delete(user: app.users[index]);
-                            },
+                            onDelete: () async {},
                             onEnable: (value) async {
                               await controller.update(
                                   user: user.copyWith(enable: value));

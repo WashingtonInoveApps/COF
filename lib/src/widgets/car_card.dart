@@ -1,7 +1,7 @@
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/model/car_model.dart';
 import 'package:flutter/material.dart';
-
+import 'package:bsu_control/core/enum.dart';
 import 'alert_message.dart';
 
 class CarCard extends StatelessWidget {

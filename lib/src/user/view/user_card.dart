@@ -1,7 +1,6 @@
 import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/model/obm_model.dart';
 import 'package:bsu_control/model/user_model.dart';
-import 'package:bsu_control/src/widgets/alert_message.dart';
 import 'package:flutter/material.dart';
 
 import '../../../core/constants.dart';
@@ -77,39 +76,7 @@ class CardUser extends StatelessWidget {
                             BorderSide(color: Theme.of(context).primaryColor)),
                     onPressed: onEdit,
                     child: Text(
-                      "Alterar",
-                      style: Constants.title
-                          .copyWith(color: Theme.of(context).primaryColor),
-                    )),
-                TextButton(
-                    style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 5),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                        side:
-                            BorderSide(color: Theme.of(context).primaryColor)),
-                    onPressed: () async {
-                      showDialog(
-                          context: context,
-                          builder: (context) => AlertMessage(
-                              title: 'Atenção',
-                              message:
-                                  'Deseja excluir o registro desse usuário ?',
-                              titleOK: 'Sim',
-                              cancel: true,
-                              onPressedCancel: () =>
-                                  Navigator.of(context).pop(false),
-                              onPressedOK: () => Navigator.of(context)
-                                  .pop(true))).then((value) {
-                        if (value ?? false) {
-                          onDelete();
-                        }
-                      });
-                    },
-                    child: Text(
-                      "Excluir",
+                      "Detalhes",
                       style: Constants.title
                           .copyWith(color: Theme.of(context).primaryColor),
                     )),

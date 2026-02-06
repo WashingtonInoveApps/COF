@@ -51,7 +51,7 @@ class _ChecklistRegisterPageState extends State<ChecklistRegisterPage> {
       body: Stack(
         children: [
           BackgraundPage(
-            bottom: Center(
+            contentBottom: Center(
               child: Row(
                 spacing: 50,
                 mainAxisAlignment: MainAxisAlignment.center,

@@ -363,7 +363,8 @@ mixin _$AppController on _AppControllerBase, Store {
   }
 
   @override
-  double processWidth({required double constrainedMaxWidth, bool? childRight}) {
+  double processWidth(
+      {required double constrainedMaxWidth, required bool childRight}) {
     final _$actionInfo = _$_AppControllerBaseActionController.startAction(
         name: '_AppControllerBase.processWidth');
     try {

@@ -85,11 +85,16 @@ abstract class _UserControllerBase with Store {
 
   @action
   Future<bool> delete({required UserModel user}) async {
-    loading = true;
-    final result = await repository.delete(user: user);
-    loading = false;
+    try {
+      loading = true;
+      final result = await repository.delete(user: user);
+      loading = false;
 
-    return result;
+      return result;
+    } catch (e) {
+      loading = false;
+      rethrow;
+    }
   }
 
   @action

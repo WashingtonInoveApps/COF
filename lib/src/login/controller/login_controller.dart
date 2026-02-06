@@ -28,6 +28,8 @@ abstract class _LoginControllerBase with Store {
   @observable
   LoginState state = LoginState.done;
 
+  String userID = '';
+
   @action
   Future<bool> loginController(Function(String) onEmail) async {
     loading = true;
@@ -47,7 +49,6 @@ abstract class _LoginControllerBase with Store {
       return false;
     }
 
-    loading = false;
     return true;
   }
 
@@ -57,11 +58,9 @@ abstract class _LoginControllerBase with Store {
   @action
   Future<bool> initialization({required UserModel user}) async {
     try {
-      loading = true;
       await DBController.save(tag: 'user', value: user.toJson());
 
       if (!user.enable) {
-        loading = false;
         throw Exception('Usuário sem permissão de acesso,contate o suporte.');
       }
 
@@ -71,10 +70,9 @@ abstract class _LoginControllerBase with Store {
       await repository.updateToken(
           userID: user.id ?? '', token: user.acessToken);
 
-      loading = false;
       return true;
     } catch (e) {
-      loading = false;
+      state = LoginState.done;
       rethrow;
     }
   }
@@ -91,6 +89,8 @@ abstract class _LoginControllerBase with Store {
 
       return await initialization(user: result);
     } catch (e) {
+      loading = false;
+      state = LoginState.done;
       rethrow;
     }
   }
@@ -109,6 +109,7 @@ abstract class _LoginControllerBase with Store {
       return await initialization(user: result);
     } catch (e) {
       loading = false;
+      state = LoginState.done;
       rethrow;
     }
   }
@@ -119,18 +120,20 @@ abstract class _LoginControllerBase with Store {
   }
 
   @action
-  Future<bool> verifyCodePassword({required String code}) async {
+  Future<String?> verifyCodePassword({required String code}) async {
     try {
       loading = true;
       final result = await repository.verifyCodePassword(code: code);
       loading = false;
 
-      if (result == null) return false;
+      if (result == null) return null;
 
+      userID = result;
       state = LoginState.reset;
-      return true;
+      return result;
     } catch (e) {
       loading = false;
+      state = LoginState.done;
       rethrow;
     }
   }
@@ -139,8 +142,8 @@ abstract class _LoginControllerBase with Store {
   Future<bool> resetPassword({required String password}) async {
     try {
       loading = true;
-      final result = await repository.resetPassword(
-          password: password, userID: app.user.id ?? '');
+      final result =
+          await repository.resetPassword(password: password, userID: userID);
       loading = false;
 
       if (result) state = LoginState.done;
@@ -148,6 +151,7 @@ abstract class _LoginControllerBase with Store {
       return result;
     } catch (e) {
       loading = false;
+      state = LoginState.done;
       rethrow;
     }
   }
@@ -164,6 +168,8 @@ abstract class _LoginControllerBase with Store {
 
       return result;
     } catch (e) {
+      loading = false;
+      state = LoginState.done;
       rethrow;
     }
   }

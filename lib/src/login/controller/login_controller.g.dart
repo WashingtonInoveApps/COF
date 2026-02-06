@@ -81,7 +81,7 @@ mixin _$LoginController on _LoginControllerBase, Store {
       AsyncAction('_LoginControllerBase.verifyCodePassword', context: context);
 
   @override
-  Future<bool> verifyCodePassword({required String code}) {
+  Future<String?> verifyCodePassword({required String code}) {
     return _$verifyCodePasswordAsyncAction
         .run(() => super.verifyCodePassword(code: code));
   }
