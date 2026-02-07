@@ -70,6 +70,22 @@ mixin _$CarController on _CarControllerBase, Store {
     });
   }
 
+  late final _$fieldCarTypeVisibleAtom =
+      Atom(name: '_CarControllerBase.fieldCarTypeVisible', context: context);
+
+  @override
+  bool get fieldCarTypeVisible {
+    _$fieldCarTypeVisibleAtom.reportRead();
+    return super.fieldCarTypeVisible;
+  }
+
+  @override
+  set fieldCarTypeVisible(bool value) {
+    _$fieldCarTypeVisibleAtom.reportWrite(value, super.fieldCarTypeVisible, () {
+      super.fieldCarTypeVisible = value;
+    });
+  }
+
   late final _$ciaAtom = Atom(name: '_CarControllerBase.cia', context: context);
 
   @override
@@ -456,6 +472,7 @@ mixin _$CarController on _CarControllerBase, Store {
 loading: ${loading},
 type: ${type},
 function: ${function},
+fieldCarTypeVisible: ${fieldCarTypeVisible},
 cia: ${cia},
 obm: ${obm},
 sectionsItens: ${sectionsItens},

@@ -30,6 +30,9 @@ abstract class _CarControllerBase with Store {
   String function = '';
 
   @observable
+  bool fieldCarTypeVisible = false;
+
+  @observable
   String? cia;
 
   @observable
@@ -68,6 +71,14 @@ abstract class _CarControllerBase with Store {
   @action
   setTypeCar(String? value) {
     type = value ?? type;
+
+    print(value);
+
+    if (type == "Outros") {
+      fieldCarTypeVisible = true;
+    } else {
+      fieldCarTypeVisible = false;
+    }
   }
 
   @action
@@ -218,6 +229,13 @@ abstract class _CarControllerBase with Store {
       {required CarModel car, required List<dynamic> images}) async {
     try {
       loading = true;
+
+      for (final image in images) {
+        if (image == null) {
+          throw Exception('Insira as imagens das vistas antes de continuar.');
+        }
+      }
+
       final result = await repository.save(car: car, images: images);
       loading = false;
 

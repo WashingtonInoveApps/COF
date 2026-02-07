@@ -1,7 +1,11 @@
+import 'dart:developer';
+
 import 'package:bsu_control/app_interface.dart';
 import 'package:bsu_control/app_repository.dart';
 import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/core/db.dart';
+import 'package:bsu_control/core/enum.dart';
+import 'package:bsu_control/model/app_model.dart';
 import 'package:bsu_control/model/car_model.dart';
 import 'package:bsu_control/model/obm_model.dart';
 import 'package:bsu_control/model/user_model.dart';
@@ -37,14 +41,22 @@ abstract class _AppControllerBase with Store {
     getUserDB(tag: 'user');
   }
 
+  AppModel appModel = AppModel(carsTypes: []);
+
   @observable
-  String version = '';
+  int version = 1;
 
   @observable
   double width = 0.0;
 
   @observable
   int router = 0;
+
+  @observable
+  int limit = 10;
+
+  @observable
+  int page = 1;
 
   @observable
   UserModel user = UserModel();
@@ -56,34 +68,92 @@ abstract class _AppControllerBase with Store {
   bool loading = false;
 
   @observable
+  bool loadingCheklist = false;
+
+  @observable
   bool checklistVeicular = false;
 
   @observable
   bool modeMOBILE = false;
 
   @observable
-  DateTime date = DateTime.now();
+  DateTime dateReferenceStart = DateTime.now();
+
+  @observable
+  DateTime dateReferenceFinish = DateTime.now();
 
   @observable
   List<CarModel> cars = <CarModel>[].asObservable();
 
   @observable
-  List<CheckListModel> checkLists = <CheckListModel>[].asObservable();
+  List<CheckListModel> checklists = <CheckListModel>[].asObservable();
 
   @observable
   List<UserModel> users = <UserModel>[].asObservable();
 
   List<OBMModel> obms = <OBMModel>[];
 
-  // @computed
-  // List<UserModel> get usersValidations => users;
-
-  Stream<List<CheckListModel>> get listenChecklist => repository
-      .listenChecklist(referenceDate: Core.formatDate(date, largeDay: true));
-
   Stream<List<CarModel>> get listenCar => repository.listenCar();
 
   Stream<List<UserModel>> get listenUsers => repository.listenUsers();
+
+  @computed
+  List<String> get carsTypes {
+    if (cars.isEmpty) return ['Outros'];
+
+    List<String> types = [];
+
+    for (final car in cars) {
+      if (!types.contains(car.type)) types.add(car.type);
+    }
+
+    types.sort((a, b) => a.compareTo(b));
+    return types..add('Outros');
+  }
+
+  @computed
+  int get checklistPerformed {
+    if (checklists.isEmpty) return 0;
+
+    final now = DateTime.now();
+    final list = checklists
+        .where((e) => (e.date.day == now.day) && (e.date.month == now.month))
+        .toList();
+
+    return list.length;
+  }
+
+  @computed
+  int get checklistPendent {
+    if (checklists.isEmpty) return 0;
+
+    final carsOperating =
+        cars.where((e) => e.state == StatusCar.operando).length;
+
+    return carsOperating - checklistPerformed;
+  }
+
+  @computed
+  int get checklistChanges {
+    if (checklists.isEmpty) return 0;
+
+    final now = DateTime.now();
+    final list = checklists
+        .where((e) => (e.date.day == now.day) && (e.date.month == now.month))
+        .toList();
+
+    if (list.isEmpty) return 0;
+
+    return list
+        .map((e) => e.changes.length)
+        .reduce((value, next) => value + next);
+  }
+
+  @computed
+  List<CheckListModel> get checklistSort {
+    final list = paginate(list: checklists, page: page, limit: limit);
+    return list;
+  }
 
   @computed
   List<CarModel> get carsADM => cars.where((e) => e.adm).toList();
@@ -95,16 +165,20 @@ abstract class _AppControllerBase with Store {
   List<String> get prefixs => cars.map((e) => e.prefix).toList();
 
   @action
-  setVersion(String value) => version = value;
-
-  @action
   setUser(UserModel value) => user = value;
 
   @action
-  changeMenuOpen() => menuOpen = !menuOpen;
+  setDateRangeChecklist(
+      {required DateTime dateStart, required DateTime dateFinish}) {
+    if ((dateStart != dateReferenceStart) ||
+        (dateFinish != dateReferenceFinish)) {
+      dateReferenceStart = dateStart;
+      dateReferenceFinish = dateFinish;
+    }
+  }
 
   @action
-  setReferenceDate(DateTime value) => date = value;
+  changeMenuOpen() => menuOpen = !menuOpen;
 
   @action
   setRouter(int value) {
@@ -115,11 +189,40 @@ abstract class _AppControllerBase with Store {
   @action
   setCheckListVeicular(bool value) => checklistVeicular = value;
 
+  @observable
+  Stream<List<CheckListModel>> listenChecklist(
+      {required DateTime dateStart, required DateTime dateFinish}) {
+    loadingCheklist = true;
+
+    log('Date Start: ${Core.formatDate(dateStart)}');
+    log('Date Finish: ${Core.formatDate(dateFinish)}');
+
+    final stream = repository.listenChecklist(
+      referenceDateStart: dateStart,
+      referenceDateFinish: dateFinish,
+    );
+
+    loadingCheklist = false;
+
+    return stream;
+  }
+
   @action
   setCars(List<CarModel> value) {
     cars
       ..clear()
       ..addAll(value);
+  }
+
+  @action
+  setLimit(int? value) {
+    limit = value ?? limit;
+  }
+
+  @action
+  setPage(int value) {
+    page = value;
+    log('Page: $page');
   }
 
   @action
@@ -134,7 +237,7 @@ abstract class _AppControllerBase with Store {
   @action
   setCheckList(List<CheckListModel> value) {
     value.sort((a, b) => b.date.compareTo(a.date));
-    checkLists
+    checklists
       ..clear()
       ..addAll(value);
   }
@@ -224,5 +327,22 @@ abstract class _AppControllerBase with Store {
     this.width = width;
 
     return width;
+  }
+
+  @action
+  Future<void> initApplication() async {
+    final result = await repository.getAppModel();
+    version = result.version;
+  }
+
+  List<CheckListModel> paginate(
+      {required List<CheckListModel> list,
+      required int page,
+      required int limit}) {
+    final startIndex = (page - 1) * limit;
+
+    if (startIndex >= list.length) return [];
+
+    return list.skip(startIndex).take(limit).toList();
   }
 }

@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 // ignore: depend_on_referenced_packages
 import 'package:get_it/get_it.dart';
+import 'package:mobx/mobx.dart';
 import 'package:url_strategy/url_strategy.dart';
 
 import 'src/login/view/login_page.dart';
@@ -29,14 +30,20 @@ void main() async {
   } else {
     await Firebase.initializeApp();
   }
-  GetIt.I.registerSingleton<AppController>(AppController(
+
+  final controller = AppController(
       maxWidth: 1000,
       appID: 'VBJM7eAETNS2pYWpfKLY',
       endpoint: 'http://localhost:3000',
-      test: true));
+      test: true);
+
+  GetIt.I.registerSingleton<AppController>(controller);
 
   setPathUrlStrategy();
-  runApp(const AppWidget());
+
+  controller.initApplication().then((_) {
+    runApp(const AppWidget());
+  });
 }
 
 class AppWidget extends StatefulWidget {
@@ -52,6 +59,7 @@ class _AppWidgetState extends State<AppWidget> {
   late StreamSubscription carDispose;
   late StreamSubscription checklistDispose;
   late StreamSubscription usersDispose;
+  late ReactionDisposer reac;
 
   @override
   void initState() {
@@ -60,8 +68,14 @@ class _AppWidgetState extends State<AppWidget> {
       controller.setCars(result);
     });
 
-    checklistDispose = controller.listenChecklist.listen((result) {
-      controller.setCheckList(result);
+    reac = autorun((_) {
+      checklistDispose = controller
+          .listenChecklist(
+              dateStart: controller.dateReferenceStart,
+              dateFinish: controller.dateReferenceFinish)
+          .listen((result) {
+        controller.setCheckList(result);
+      });
     });
 
     usersDispose = controller.listenUsers.listen((result) {
@@ -75,6 +89,7 @@ class _AppWidgetState extends State<AppWidget> {
     carDispose.cancel();
     checklistDispose.cancel();
     usersDispose.cancel();
+    reac.reaction.dispose();
   }
 
   @override

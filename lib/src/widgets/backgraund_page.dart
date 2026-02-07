@@ -425,12 +425,12 @@ class _BackgraundPageState extends State<BackgraundPage> {
                           SizedBox(
                             width: double.infinity,
                             child: Wrap(
-                              alignment: WrapAlignment.spaceBetween,
+                              alignment: WrapAlignment.spaceEvenly,
                               children: [
                                 SizedBox(
                                   width: width,
                                   child: Padding(
-                                    padding: const EdgeInsets.only(bottom: 20),
+                                    padding: const EdgeInsets.only(bottom: 10),
                                     child: widget.childLeft,
                                   ),
                                 ),
@@ -441,12 +441,12 @@ class _BackgraundPageState extends State<BackgraundPage> {
                               ],
                             ),
                           ),
-                          const SizedBox(
-                            height: 10,
-                          ),
                           (widget.contentBottom == null)
                               ? Container()
-                              : widget.contentBottom!,
+                              : Padding(
+                                  padding: const EdgeInsets.only(top: 10),
+                                  child: widget.contentBottom!,
+                                ),
                         ],
                       ),
                     ),

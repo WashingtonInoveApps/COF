@@ -13,6 +13,7 @@ analyzer:
     sdk_version_since: ignore
     body_might_complete_normally_catch_error: ignore
     unused_local_variable: ignore
+    library_private_types_in_public_api: ignore
 include: package:flutter_lints/flutter.yaml
 
 linter:

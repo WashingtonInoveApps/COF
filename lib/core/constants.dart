@@ -22,17 +22,6 @@ class Constants {
 
   static final carsFunctions = ["Operacional", "Administrativo"];
 
-  static final carsType = [
-    "Incêndio",
-    "Salvamento",
-    "Resgate",
-    "Tanque",
-    "Escada mecânica",
-    "Ônibus",
-    "Guincho",
-    "Outros"
-  ];
-
   static final statusType = [
     "Ar condicionado",
     "Elétricos",

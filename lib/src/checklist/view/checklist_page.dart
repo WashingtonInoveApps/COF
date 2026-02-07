@@ -78,15 +78,16 @@ class _ChecklistPageState extends State<ChecklistPage> {
                                     lastDate: DateTime(2050))
                                 .then((value) {
                               if (value != null) {
-                                controller.setReferenceDate(value);
+                                // controller.setReferenceDate(value);
                               }
                             });
                           },
                           child: Text(
-                            Core.formatDate(
-                              controller.date,
-                              largeDay: true,
-                            ),
+                            'data',
+                            // Core.formatDate(
+                            //   controller.date,
+                            //   largeDay: true,
+                            // ),
                             style: Constants.title.copyWith(
                                 color: Theme.of(context).primaryColor),
                           ));
@@ -101,7 +102,7 @@ class _ChecklistPageState extends State<ChecklistPage> {
                   height: 5.0,
                 ),
                 Observer(builder: (_) {
-                  return controller.checkLists.isEmpty
+                  return controller.checklists.isEmpty
                       ? Center(
                           child: Text(
                             "Ops ! Nenhum registro encontrado.",
@@ -109,9 +110,9 @@ class _ChecklistPageState extends State<ChecklistPage> {
                           ),
                         )
                       : Column(
-                          children: List.generate(controller.checkLists.length,
+                          children: List.generate(controller.checklists.length,
                               (index) {
-                            final checklist = controller.checkLists[index];
+                            final checklist = controller.checklists[index];
                             final delete = controller.user.admin ||
                                 (controller.user.id == checklist.user.id &&
                                     checklist.enable);
@@ -144,7 +145,7 @@ class _ChecklistPageState extends State<ChecklistPage> {
                                 Navigator.of(context).push(MaterialPageRoute(
                                     builder: (context) => ChecklistDetailsPage(
                                         checkListId:
-                                            controller.checkLists[index].id!)));
+                                            controller.checklists[index].id!)));
                               },
                             );
                           }),

@@ -1,5 +1,9 @@
+import 'dart:developer';
+
 import 'package:bsu_control/app_interface.dart';
 import 'package:bsu_control/core/api_client.dart';
+import 'package:bsu_control/core/core.dart';
+import 'package:bsu_control/model/app_model.dart';
 import 'package:bsu_control/model/car_model.dart';
 import 'package:bsu_control/model/check_list_model.dart';
 import 'package:bsu_control/model/obm_model.dart';
@@ -40,16 +44,42 @@ class AppRepository extends APIClient implements IAppRepository {
 
   @override
   Stream<List<CheckListModel>> listenChecklist(
-      {required String referenceDate}) {
-    return colChecklist
-        .where("referenceDate", isEqualTo: referenceDate)
-        .snapshots()
-        .map((e) => e.docs.map((doc) {
-              var checkList =
-                  CheckListModel.fromMap(doc.data() as Map<String, dynamic>);
-              checkList.id = doc.id;
-              return checkList;
-            }).toList());
+      {required DateTime referenceDateStart,
+      required DateTime referenceDateFinish}) {
+    try {
+      final start = referenceDateStart.millisecondsSinceEpoch;
+      final finish = referenceDateFinish.millisecondsSinceEpoch;
+
+      if ((referenceDateStart.day == referenceDateFinish.day) &&
+          (referenceDateStart.month == referenceDateFinish.month)) {
+        log('Buscando por única data');
+        return colChecklist
+            .where('referenceDate',
+                isEqualTo: Core.formatDate(referenceDateStart))
+            .snapshots()
+            .map((e) => e.docs.map((doc) {
+                  var checkList = CheckListModel.fromMap(
+                      doc.data() as Map<String, dynamic>);
+                  checkList.id = doc.id;
+                  return checkList;
+                }).toList());
+      } else {
+        log('Buscando por intervalo de data');
+        return colChecklist
+            .where('date', isGreaterThanOrEqualTo: start)
+            .where('date', isLessThanOrEqualTo: finish)
+            .orderBy('date')
+            .snapshots()
+            .map((e) => e.docs.map((doc) {
+                  var checkList = CheckListModel.fromMap(
+                      doc.data() as Map<String, dynamic>);
+                  checkList.id = doc.id;
+                  return checkList;
+                }).toList());
+      }
+    } catch (e) {
+      return Stream.value([]);
+    }
   }
 
   @override
@@ -119,6 +149,26 @@ class AppRepository extends APIClient implements IAppRepository {
           .toList());
     } catch (e) {
       return [];
+    }
+  }
+
+  @override
+  Future<AppModel> getAppModel() async {
+    try {
+      return await docApp.get().then(
+          (result) => AppModel.fromMap(result.data() as Map<String, dynamic>));
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<bool> updateAppModel({required AppModel appData}) async {
+    try {
+      await docApp.update(appData.toMap());
+      return true;
+    } catch (e) {
+      rethrow;
     }
   }
 }

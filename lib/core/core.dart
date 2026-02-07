@@ -85,15 +85,17 @@ class Core {
         if (croppedFile == null) return null;
 
         final bytes = await croppedFile.readAsBytes();
-        final original = img.decodeImage(bytes)!;
+        // final original = img.decodeImage(bytes)!;
 
-        final resized = img.copyResize(
-          original,
-          width: width.toInt(),
-          height: height.toInt(),
-        );
+        // final resized = img.copyResize(
+        //   original,
+        //   width: width.toInt(),
+        //   height: height.toInt(),
+        // );
 
-        return Uint8List.fromList(img.encodePng(resized));
+        // return Uint8List.fromList(img.encodePng(resized));
+
+        return bytes;
       }
 
       return null;
