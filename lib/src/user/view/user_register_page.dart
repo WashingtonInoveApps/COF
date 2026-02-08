@@ -385,15 +385,14 @@ class _UserPageRegisterState extends State<UserPageRegister> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Visibility(
-                        child: TextButton(
-                            style: TextButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 10, vertical: 5),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(5),
-                                ),
-                                side: BorderSide(
-                                    color: Theme.of(context).primaryColor)),
+                        visible: (widget.user != null),
+                        child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.grey,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                            ),
                             onPressed: () async {
                               showDialog(
                                   context: context,
@@ -427,8 +426,8 @@ class _UserPageRegisterState extends State<UserPageRegister> {
                             },
                             child: Text(
                               "Excluir",
-                              style: Constants.title.copyWith(
-                                  color: Theme.of(context).primaryColor),
+                              style:
+                                  Constants.title.copyWith(color: Colors.white),
                             )),
                       ),
                       SizedBox(

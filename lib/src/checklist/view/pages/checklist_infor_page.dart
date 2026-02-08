@@ -57,47 +57,51 @@ class _CheckListInforPageState extends State<CheckListInforPage> {
           const SizedBox(
             height: 10,
           ),
-          InkWell(
-            onTap: () {
-              showDatePicker(
-                      context: context,
-                      firstDate:
-                          DateTime.now().subtract(const Duration(days: 1)),
-                      lastDate: DateTime.now())
-                  .then(controller.changeDate);
-            },
-            child: Container(
-              height: 45,
-              alignment: Alignment.centerLeft,
-              width: double.infinity,
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(5),
-                  border: Border.all(color: Colors.grey)),
-              child: Row(
-                spacing: 10,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    'Data',
-                    style: Constants.titleHint,
+          Observer(builder: (_) {
+            return IgnorePointer(
+              ignoring: controller.update,
+              child: InkWell(
+                onTap: () {
+                  showDatePicker(
+                          context: context,
+                          firstDate:
+                              DateTime.now().subtract(const Duration(days: 1)),
+                          lastDate: DateTime.now())
+                      .then(controller.changeDate);
+                },
+                child: Container(
+                  height: 45,
+                  alignment: Alignment.centerLeft,
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(5),
+                      border: Border.all(color: Colors.grey)),
+                  child: Row(
+                    spacing: 10,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Data',
+                        style: Constants.titleHint,
+                      ),
+                      Expanded(
+                        child: Text(
+                          Core.formatDate(widget.controller.date,
+                              largeDay: true),
+                        ),
+                      ),
+                      const Icon(
+                        Icons.arrow_drop_down,
+                        size: 25,
+                        color: Colors.black,
+                      )
+                    ],
                   ),
-                  Expanded(
-                    child: Observer(builder: (_) {
-                      return Text(
-                        Core.formatDate(widget.controller.date, largeDay: true),
-                      );
-                    }),
-                  ),
-                  const Icon(
-                    Icons.arrow_drop_down,
-                    size: 25,
-                    color: Colors.black,
-                  )
-                ],
+                ),
               ),
-            ),
-          ),
+            );
+          }),
           const SizedBox(
             height: 10,
           ),

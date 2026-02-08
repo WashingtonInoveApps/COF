@@ -1,5 +1,6 @@
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/core.dart';
+import 'package:bsu_control/core/enum.dart';
 import 'package:bsu_control/model/check_list_model.dart';
 import 'package:bsu_control/model/obm_model.dart';
 import 'package:flutter/material.dart';
@@ -51,6 +52,7 @@ class _ChecklistTableViewState extends State<ChecklistTableView> {
     return SfDataGrid(
       headerRowHeight: 50,
       source: dataSource,
+      verticalScrollPhysics: const ClampingScrollPhysics(),
       isScrollbarAlwaysShown: true,
       columnWidthMode: ColumnWidthMode.auto,
       gridLinesVisibility: GridLinesVisibility.horizontal,
@@ -75,7 +77,6 @@ class _ChecklistTableViewState extends State<ChecklistTableView> {
           label: header(label: 'COMPANHIA'),
         ),
         GridColumn(
-          width: 100,
           columnName: 'team',
           label: header(label: 'GUARNIÇÃO'),
         ),
@@ -86,6 +87,11 @@ class _ChecklistTableViewState extends State<ChecklistTableView> {
         GridColumn(
           columnName: 'responsable',
           label: header(label: 'RESPONSÁVEL'),
+        ),
+        GridColumn(
+          width: 180,
+          columnName: 'state',
+          label: header(label: 'STATUS'),
         ),
         GridColumn(
           width: 180,
@@ -122,6 +128,12 @@ class ChecklistDataSource extends DataGridSource {
   }) {
     _rows = checklists.map<DataGridRow>((check) {
       final obm = obms.firstWhere((e) => e.id == check.obmID);
+
+      final listStates = List<StatesChecklist>.from(check.states);
+      listStates.sort((a, b) => b.date.compareTo(a.date));
+
+      final state = listStates.first;
+
       return DataGridRow(cells: [
         DataGridCell<String>(
           columnName: 'details',
@@ -142,6 +154,7 @@ class ChecklistDataSource extends DataGridSource {
             columnName: 'responsable',
             value:
                 ('${check.user.graduation} ${check.user.name}').toUpperCase()),
+        DataGridCell<String>(columnName: 'state', value: state.state.name),
         DataGridCell<String>(
           columnName: 'contact',
           value: check.contact,
@@ -172,10 +185,10 @@ class ChecklistDataSource extends DataGridSource {
             child: InkWell(
               child: Card(
                 child: Container(
-                  width: 150,
                   padding: const EdgeInsets.all(5),
                   child: Row(
                     spacing: 5,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(MdiIcons.whatsapp, color: Colors.green),
                       Text(
@@ -213,6 +226,28 @@ class ChecklistDataSource extends DataGridSource {
                 final value = cell.value;
                 onDetails?.call(value);
               },
+            ),
+          );
+        } else if (cell.columnName == 'state') {
+          final state = EnumCore.statusChecklistFromString(cell.value);
+
+          return Center(
+            child: Container(
+              width: 150,
+              padding: const EdgeInsets.all(5),
+              decoration: BoxDecoration(
+                  color: state.color, borderRadius: BorderRadius.circular(5)),
+              child: Row(
+                spacing: 5,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(state.icon, color: Colors.white),
+                  Text(
+                    state.label,
+                    style: Constants.subtitle.copyWith(color: Colors.white),
+                  ),
+                ],
+              ),
             ),
           );
         } else {

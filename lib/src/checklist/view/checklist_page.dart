@@ -1,177 +1,176 @@
-import 'package:bsu_control/app_controller.dart';
-import 'package:bsu_control/core/constants.dart';
-import 'package:bsu_control/core/core.dart';
-import 'package:bsu_control/src/checklist/view/checklist_details_page.dart';
-import 'package:bsu_control/src/widgets/alert_message.dart';
-import 'package:bsu_control/src/widgets/backgraund_page.dart';
-import 'package:bsu_control/src/widgets/check_list_card.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:get_it/get_it.dart';
+// import 'package:bsu_control/app_controller.dart';
+// import 'package:bsu_control/core/constants.dart';
+// import 'package:bsu_control/src/checklist/view/checklist_details_page.dart';
+// import 'package:bsu_control/src/widgets/alert_message.dart';
+// import 'package:bsu_control/src/widgets/backgraund_page.dart';
+// import 'package:bsu_control/src/widgets/check_list_card.dart';
+// import 'package:flutter/material.dart';
+// import 'package:flutter_mobx/flutter_mobx.dart';
+// import 'package:get_it/get_it.dart';
 
-import 'checklist_register_page.dart';
+// import 'checklist_register_page.dart';
 
-class ChecklistPage extends StatefulWidget {
-  final bool home;
-  const ChecklistPage({Key? key, this.home = false}) : super(key: key);
+// class ChecklistPage extends StatefulWidget {
+//   final bool home;
+//   const ChecklistPage({Key? key, this.home = false}) : super(key: key);
 
-  @override
-  State createState() => _ChecklistPageState();
-}
+//   @override
+//   State createState() => _ChecklistPageState();
+// }
 
-class _ChecklistPageState extends State<ChecklistPage> {
-  final controller = GetIt.I.get<AppController>();
+// class _ChecklistPageState extends State<ChecklistPage> {
+//   final controller = GetIt.I.get<AppController>();
 
-  @override
-  void initState() {
-    super.initState();
-    controller.setCheckListVeicular(true);
-  }
+//   @override
+//   void initState() {
+//     super.initState();
+//     controller.setCheckListVeicular(true);
+//   }
 
-  @override
-  Widget build(BuildContext context) {
-    return PopScope(
-      canPop: true,
-      onPopInvokedWithResult: (didPop, __) {
-        if (didPop) return; // já fechou, não faz nada
+//   @override
+//   Widget build(BuildContext context) {
+//     return PopScope(
+//       canPop: true,
+//       onPopInvokedWithResult: (didPop, __) {
+//         if (didPop) return; // já fechou, não faz nada
 
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          Navigator.of(context).pop(); // agora pode
-        });
-      },
-      child: Stack(
-        children: [
-          BackgraundPage(
-            onBack: () => Navigator.of(context).pop(),
-            childLeft: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) =>
-                                  const ChecklistRegisterPage()));
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 15, vertical: 2),
-                          child: Text(
-                            "NOVO",
-                            style: Constants.subtitle.copyWith(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold),
-                          ),
-                        )),
-                    const Spacer(),
-                    Observer(builder: (_) {
-                      return TextButton(
-                          style: TextButton.styleFrom(
-                              side: BorderSide(
-                                  color: Theme.of(context).primaryColor)),
-                          onPressed: () async {
-                            showDatePicker(
-                                    context: context,
-                                    initialDate: DateTime.now(),
-                                    firstDate: DateTime(2021),
-                                    lastDate: DateTime(2050))
-                                .then((value) {
-                              if (value != null) {
-                                // controller.setReferenceDate(value);
-                              }
-                            });
-                          },
-                          child: Text(
-                            'data',
-                            // Core.formatDate(
-                            //   controller.date,
-                            //   largeDay: true,
-                            // ),
-                            style: Constants.title.copyWith(
-                                color: Theme.of(context).primaryColor),
-                          ));
-                    }),
-                  ],
-                ),
-                const SizedBox(
-                  height: 5.0,
-                ),
-                const Divider(),
-                const SizedBox(
-                  height: 5.0,
-                ),
-                Observer(builder: (_) {
-                  return controller.checklists.isEmpty
-                      ? Center(
-                          child: Text(
-                            "Ops ! Nenhum registro encontrado.",
-                            style: Constants.title,
-                          ),
-                        )
-                      : Column(
-                          children: List.generate(controller.checklists.length,
-                              (index) {
-                            final checklist = controller.checklists[index];
-                            final delete = controller.user.admin ||
-                                (controller.user.id == checklist.user.id &&
-                                    checklist.enable);
+//         WidgetsBinding.instance.addPostFrameCallback((_) {
+//           Navigator.of(context).pop(); // agora pode
+//         });
+//       },
+//       child: Stack(
+//         children: [
+//           BackgraundPage(
+//             onBack: () => Navigator.of(context).pop(),
+//             childLeft: Column(
+//               crossAxisAlignment: CrossAxisAlignment.start,
+//               children: [
+//                 Row(
+//                   children: [
+//                     ElevatedButton(
+//                         onPressed: () {
+//                           Navigator.of(context).push(MaterialPageRoute(
+//                               builder: (context) =>
+//                                   const ChecklistRegisterPage()));
+//                         },
+//                         child: Padding(
+//                           padding: const EdgeInsets.symmetric(
+//                               horizontal: 15, vertical: 2),
+//                           child: Text(
+//                             "NOVO",
+//                             style: Constants.subtitle.copyWith(
+//                                 color: Colors.white,
+//                                 fontWeight: FontWeight.bold),
+//                           ),
+//                         )),
+//                     const Spacer(),
+//                     Observer(builder: (_) {
+//                       return TextButton(
+//                           style: TextButton.styleFrom(
+//                               side: BorderSide(
+//                                   color: Theme.of(context).primaryColor)),
+//                           onPressed: () async {
+//                             showDatePicker(
+//                                     context: context,
+//                                     initialDate: DateTime.now(),
+//                                     firstDate: DateTime(2021),
+//                                     lastDate: DateTime(2050))
+//                                 .then((value) {
+//                               if (value != null) {
+//                                 // controller.setReferenceDate(value);
+//                               }
+//                             });
+//                           },
+//                           child: Text(
+//                             'data',
+//                             // Core.formatDate(
+//                             //   controller.date,
+//                             //   largeDay: true,
+//                             // ),
+//                             style: Constants.title.copyWith(
+//                                 color: Theme.of(context).primaryColor),
+//                           ));
+//                     }),
+//                   ],
+//                 ),
+//                 const SizedBox(
+//                   height: 5.0,
+//                 ),
+//                 const Divider(),
+//                 const SizedBox(
+//                   height: 5.0,
+//                 ),
+//                 Observer(builder: (_) {
+//                   return controller.checklists.isEmpty
+//                       ? Center(
+//                           child: Text(
+//                             "Ops ! Nenhum registro encontrado.",
+//                             style: Constants.title,
+//                           ),
+//                         )
+//                       : Column(
+//                           children: List.generate(controller.checklists.length,
+//                               (index) {
+//                             final checklist = controller.checklists[index];
+//                             final delete = controller.user.admin ||
+//                                 (controller.user.id == checklist.user.id &&
+//                                     checklist.enable);
 
-                            return CheckListCard(
-                              checkList: checklist,
-                              onDelete: delete
-                                  ? () async {
-                                      final result = await showDialog(
-                                          context: context,
-                                          builder: (context) => AlertMessage(
-                                              title: 'Atenção',
-                                              message:
-                                                  'Deseja excluir esse checklist ?',
-                                              cancel: true,
-                                              onPressedCancel: () =>
-                                                  Navigator.of(context)
-                                                      .pop(false),
-                                              onPressedOK: () =>
-                                                  Navigator.of(context)
-                                                      .pop(true)));
+//                             return CheckListCard(
+//                               checkList: checklist,
+//                               onDelete: delete
+//                                   ? () async {
+//                                       final result = await showDialog(
+//                                           context: context,
+//                                           builder: (context) => AlertMessage(
+//                                               title: 'Atenção',
+//                                               message:
+//                                                   'Deseja excluir esse checklist ?',
+//                                               cancel: true,
+//                                               onPressedCancel: () =>
+//                                                   Navigator.of(context)
+//                                                       .pop(false),
+//                                               onPressedOK: () =>
+//                                                   Navigator.of(context)
+//                                                       .pop(true)));
 
-                                      if (result ?? false) {
-                                        await controller.deleteChecklist(
-                                            checkList: checklist);
-                                      }
-                                    }
-                                  : null,
-                              onTap: () {
-                                Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) => ChecklistDetailsPage(
-                                        checkListId:
-                                            controller.checklists[index].id!)));
-                              },
-                            );
-                          }),
-                        );
-                }),
-                const SizedBox(
-                  height: 5.0,
-                ),
-              ],
-            ),
-          ),
-          Observer(builder: (_) {
-            return IgnorePointer(
-              ignoring: !controller.loading,
-              child: Container(
-                color: controller.loading ? Colors.black54 : Colors.transparent,
-                child: Center(
-                    child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                      controller.loading ? Colors.white : Colors.transparent),
-                )),
-              ),
-            );
-          }),
-        ],
-      ),
-    );
-  }
-}
+//                                       if (result ?? false) {
+//                                         await controller.deleteChecklist(
+//                                             checkList: checklist);
+//                                       }
+//                                     }
+//                                   : null,
+//                               onTap: () {
+//                                 // Navigator.of(context).push(MaterialPageRoute(
+//                                 //     builder: (context) => ChecklistDetailsPage(
+//                                 //         checkListId:
+//                                 //             controller.checklists[index].id!)));
+//                               },
+//                             );
+//                           }),
+//                         );
+//                 }),
+//                 const SizedBox(
+//                   height: 5.0,
+//                 ),
+//               ],
+//             ),
+//           ),
+//           Observer(builder: (_) {
+//             return IgnorePointer(
+//               ignoring: !controller.loading,
+//               child: Container(
+//                 color: controller.loading ? Colors.black54 : Colors.transparent,
+//                 child: Center(
+//                     child: CircularProgressIndicator(
+//                   valueColor: AlwaysStoppedAnimation<Color>(
+//                       controller.loading ? Colors.white : Colors.transparent),
+//                 )),
+//               ),
+//             );
+//           }),
+//         ],
+//       ),
+//     );
+//   }
+// }

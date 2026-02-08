@@ -10,9 +10,12 @@ abstract class IAppRepository {
   Future<bool> saveSupplies(
       {required SupplyModel supply, required CheckListModel checklist});
 
-  Stream<List<CheckListModel>> listenChecklist(
+  Stream<List<CheckListModel>> listenChecklistPeriod(
       {required DateTime referenceDateStart,
       required DateTime referenceDateFinish});
+
+  Stream<List<CheckListModel>> listenChecklistToday(
+      {required DateTime referenceDate});
 
   Stream<List<CarModel>> listenCar();
 

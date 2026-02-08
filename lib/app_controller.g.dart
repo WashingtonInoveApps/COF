@@ -16,34 +16,42 @@ mixin _$AppController on _AppControllerBase, Store {
       (_$carsTypesComputed ??= Computed<List<String>>(() => super.carsTypes,
               name: '_AppControllerBase.carsTypes'))
           .value;
-  Computed<int>? _$checklistPerformedComputed;
+  Computed<bool>? _$newRegisterComputed;
 
   @override
-  int get checklistPerformed => (_$checklistPerformedComputed ??= Computed<int>(
-          () => super.checklistPerformed,
-          name: '_AppControllerBase.checklistPerformed'))
-      .value;
-  Computed<int>? _$checklistPendentComputed;
+  bool get newRegister =>
+      (_$newRegisterComputed ??= Computed<bool>(() => super.newRegister,
+              name: '_AppControllerBase.newRegister'))
+          .value;
+  Computed<CheckListModel?>? _$checklistUserComputed;
 
   @override
-  int get checklistPendent => (_$checklistPendentComputed ??= Computed<int>(
-          () => super.checklistPendent,
-          name: '_AppControllerBase.checklistPendent'))
+  CheckListModel? get checklistUser => (_$checklistUserComputed ??=
+          Computed<CheckListModel?>(() => super.checklistUser,
+              name: '_AppControllerBase.checklistUser'))
       .value;
-  Computed<int>? _$checklistChangesComputed;
+  Computed<int>? _$checklistTodayPendentComputed;
 
   @override
-  int get checklistChanges => (_$checklistChangesComputed ??= Computed<int>(
-          () => super.checklistChanges,
-          name: '_AppControllerBase.checklistChanges'))
+  int get checklistTodayPendent => (_$checklistTodayPendentComputed ??=
+          Computed<int>(() => super.checklistTodayPendent,
+              name: '_AppControllerBase.checklistTodayPendent'))
       .value;
-  Computed<List<CheckListModel>>? _$checklistSortComputed;
+  Computed<int>? _$checklistTodayChangesComputed;
 
   @override
-  List<CheckListModel> get checklistSort => (_$checklistSortComputed ??=
-          Computed<List<CheckListModel>>(() => super.checklistSort,
-              name: '_AppControllerBase.checklistSort'))
+  int get checklistTodayChanges => (_$checklistTodayChangesComputed ??=
+          Computed<int>(() => super.checklistTodayChanges,
+              name: '_AppControllerBase.checklistTodayChanges'))
       .value;
+  Computed<List<CheckListModel>>? _$checklistPeriodSortComputed;
+
+  @override
+  List<CheckListModel> get checklistPeriodSort =>
+      (_$checklistPeriodSortComputed ??= Computed<List<CheckListModel>>(
+              () => super.checklistPeriodSort,
+              name: '_AppControllerBase.checklistPeriodSort'))
+          .value;
   Computed<List<CarModel>>? _$carsADMComputed;
 
   @override
@@ -290,19 +298,35 @@ mixin _$AppController on _AppControllerBase, Store {
     });
   }
 
-  late final _$checklistsAtom =
-      Atom(name: '_AppControllerBase.checklists', context: context);
+  late final _$checklistsPeriodAtom =
+      Atom(name: '_AppControllerBase.checklistsPeriod', context: context);
 
   @override
-  List<CheckListModel> get checklists {
-    _$checklistsAtom.reportRead();
-    return super.checklists;
+  List<CheckListModel> get checklistsPeriod {
+    _$checklistsPeriodAtom.reportRead();
+    return super.checklistsPeriod;
   }
 
   @override
-  set checklists(List<CheckListModel> value) {
-    _$checklistsAtom.reportWrite(value, super.checklists, () {
-      super.checklists = value;
+  set checklistsPeriod(List<CheckListModel> value) {
+    _$checklistsPeriodAtom.reportWrite(value, super.checklistsPeriod, () {
+      super.checklistsPeriod = value;
+    });
+  }
+
+  late final _$checklistsTodayAtom =
+      Atom(name: '_AppControllerBase.checklistsToday', context: context);
+
+  @override
+  List<CheckListModel> get checklistsToday {
+    _$checklistsTodayAtom.reportRead();
+    return super.checklistsToday;
+  }
+
+  @override
+  set checklistsToday(List<CheckListModel> value) {
+    _$checklistsTodayAtom.reportWrite(value, super.checklistsToday, () {
+      super.checklistsToday = value;
     });
   }
 
@@ -323,10 +347,10 @@ mixin _$AppController on _AppControllerBase, Store {
   }
 
   @override
-  ObservableStream<List<CheckListModel>> listenChecklist(
+  ObservableStream<List<CheckListModel>> listenChecklistPeriod(
       {required DateTime dateStart, required DateTime dateFinish}) {
-    final _$stream =
-        super.listenChecklist(dateStart: dateStart, dateFinish: dateFinish);
+    final _$stream = super
+        .listenChecklistPeriod(dateStart: dateStart, dateFinish: dateFinish);
     return ObservableStream<List<CheckListModel>>(_$stream, context: context);
   }
 
@@ -480,11 +504,22 @@ mixin _$AppController on _AppControllerBase, Store {
   }
 
   @override
-  dynamic setCheckList(List<CheckListModel> value) {
+  dynamic setChecklistPeriod(List<CheckListModel> value) {
     final _$actionInfo = _$_AppControllerBaseActionController.startAction(
-        name: '_AppControllerBase.setCheckList');
+        name: '_AppControllerBase.setChecklistPeriod');
     try {
-      return super.setCheckList(value);
+      return super.setChecklistPeriod(value);
+    } finally {
+      _$_AppControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setChecklistToday(List<CheckListModel> value) {
+    final _$actionInfo = _$_AppControllerBaseActionController.startAction(
+        name: '_AppControllerBase.setChecklistToday');
+    try {
+      return super.setChecklistToday(value);
     } finally {
       _$_AppControllerBaseActionController.endAction(_$actionInfo);
     }
@@ -520,13 +555,15 @@ modeMOBILE: ${modeMOBILE},
 dateReferenceStart: ${dateReferenceStart},
 dateReferenceFinish: ${dateReferenceFinish},
 cars: ${cars},
-checklists: ${checklists},
+checklistsPeriod: ${checklistsPeriod},
+checklistsToday: ${checklistsToday},
 users: ${users},
 carsTypes: ${carsTypes},
-checklistPerformed: ${checklistPerformed},
-checklistPendent: ${checklistPendent},
-checklistChanges: ${checklistChanges},
-checklistSort: ${checklistSort},
+newRegister: ${newRegister},
+checklistUser: ${checklistUser},
+checklistTodayPendent: ${checklistTodayPendent},
+checklistTodayChanges: ${checklistTodayChanges},
+checklistPeriodSort: ${checklistPeriodSort},
 carsADM: ${carsADM},
 carsOPR: ${carsOPR},
 prefixs: ${prefixs}

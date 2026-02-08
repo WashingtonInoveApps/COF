@@ -1,9 +1,10 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/core.dart';
+import 'package:bsu_control/src/checklist/view/checklist_details_page.dart';
+import 'package:bsu_control/src/checklist/view/checklist_register_page.dart';
 import 'package:bsu_control/src/home/controller/home_controller.dart';
 import 'package:bsu_control/src/home/view/widgets/cars_chart_widget.dart';
 import 'package:bsu_control/src/home/view/widgets/checklist_table_view.dart';
@@ -198,7 +199,8 @@ class _HomePageState extends State<HomePage> {
                                                 label: 'Checklist realizados',
                                                 icon: MdiIcons.checkAll,
                                                 color: Colors.green.shade700,
-                                                value: app.checklistPerformed);
+                                                value:
+                                                    app.checklistsToday.length);
                                           }),
                                         ),
                                         Expanded(
@@ -207,7 +209,8 @@ class _HomePageState extends State<HomePage> {
                                                 label: 'Checklist pendentes',
                                                 icon: MdiIcons.check,
                                                 color: Colors.blue.shade700,
-                                                value: app.checklistPendent);
+                                                value:
+                                                    app.checklistTodayPendent);
                                           }),
                                         ),
                                         Expanded(
@@ -217,7 +220,8 @@ class _HomePageState extends State<HomePage> {
                                                 icon:
                                                     MdiIcons.informationOutline,
                                                 color: Colors.red.shade700,
-                                                value: app.checklistChanges);
+                                                value:
+                                                    app.checklistTodayChanges);
                                           }),
                                         ),
                                       ],
@@ -233,16 +237,41 @@ class _HomePageState extends State<HomePage> {
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
                                       children: [
-                                        btCustom(
-                                            label: 'Registro',
-                                            icon: Icons.add,
-                                            color: Colors.blue.shade800,
-                                            onTap: () {}),
+                                        Observer(builder: (context) {
+                                          return app.newRegister
+                                              ? btCustom(
+                                                  label: 'Novo Registro',
+                                                  icon: Icons.add,
+                                                  color: Colors.blue.shade800,
+                                                  onTap: () {
+                                                    app.setRouter(2);
+                                                    Navigator.of(context)
+                                                        .pushReplacement(
+                                                            MaterialPageRoute(
+                                                                builder:
+                                                                    (context) =>
+                                                                        const ChecklistRegisterPage()));
+                                                  })
+                                              : btCustom(
+                                                  label: 'Ver registro',
+                                                  icon: Icons.search,
+                                                  color: Colors
+                                                      .deepPurple.shade800,
+                                                  onTap: () async {
+                                                    await Navigator.of(context)
+                                                        .push(MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                ChecklistDetailsPage(
+                                                                    checklistID: app
+                                                                        .checklistUser!
+                                                                        .id!)));
+                                                  });
+                                        }),
                                         btCustom(
                                             label: 'Novo abastecimento',
                                             icon: MdiIcons.gasStation,
                                             color: Colors.orange.shade700,
-                                            onTap: () {}),
+                                            onTap: null),
                                         btCustom(
                                             label: 'Meus registros',
                                             icon: MdiIcons.viewList,
@@ -444,9 +473,13 @@ class _HomePageState extends State<HomePage> {
                           ),
                           Observer(builder: (context) {
                             return ChartPeriodWidget(
+                              key: ValueKey(
+                                  app.checklistsPeriod.length.toString() +
+                                      app.dateReferenceStart.toString() +
+                                      app.dateReferenceFinish.toString()),
                               dateStart: app.dateReferenceStart,
                               dateFinish: app.dateReferenceFinish,
-                              checklists: app.checklists,
+                              checklists: app.checklistsPeriod,
                             );
                           })
                         ],
@@ -474,25 +507,27 @@ class _HomePageState extends State<HomePage> {
                 child: Observer(builder: (context) {
                   if (app.loadingCheklist) {
                     return const LinearProgressIndicator();
-                  } else if (app.checklists.isEmpty) {
+                  } else if (app.checklistsPeriod.isEmpty) {
                     return Text(
                       'Ops ! Nenhum registro encontrado.',
                       style: Constants.subtitleHint,
                     );
                   } else {
                     return Padding(
-                      padding: const EdgeInsets.only(top: 10),
+                      padding: const EdgeInsets.only(
+                        top: 5,
+                      ),
                       child: Column(
                         spacing: 5,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Exibindo 1 a ${app.limit} de ${app.checklists.length} entradas',
+                            'Exibindo 1 a ${app.limit} de ${app.checklistsPeriod.length} entradas',
                             style: Constants.subtitleHint,
                           ),
                           Expanded(
                             child: ChecklistTableView(
-                              values: app.checklistSort,
+                              values: app.checklistPeriodSort,
                               obms: app.obms,
                               onContact: (contact) async {
                                 final path = kIsWeb
@@ -502,8 +537,12 @@ class _HomePageState extends State<HomePage> {
                                 await launchUrlString(path,
                                     mode: LaunchMode.externalApplication);
                               },
-                              onDetails: (id) {
-                                log(id);
+                              onDetails: (id) async {
+                                await Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            ChecklistDetailsPage(
+                                                checklistID: id)));
                               },
                             ),
                           ),
@@ -561,7 +600,7 @@ class _HomePageState extends State<HomePage> {
                               Observer(builder: (context) {
                                 return PaginationWidget(
                                   page: app.page,
-                                  length: app.checklistSort.length,
+                                  length: app.checklistPeriodSort.length,
                                   onChange: app.setPage,
                                 );
                               }),

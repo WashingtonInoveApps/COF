@@ -45,7 +45,7 @@ class CarModel {
       this.obmID = "",
       this.function = '',
       this.cia = "",
-      this.state = StatusCar.operando,
+      this.state = StatusCar.reserva,
       required this.itens,
       required this.changes,
       required this.status,
@@ -126,7 +126,7 @@ class CarModel {
       obmID: map['obmID'] ?? '',
       cia: map['cia'] ?? '',
       function: map['function'] ?? '',
-      state: statusFromString(map['state'] as String),
+      state: EnumCore.statusCarFromString(map['state'] as String),
       itens: List<ItensChangesModel>.from(
           map['itens']?.map((x) => ItensChangesModel.fromMap(x))),
       materials: List<ItensChangesModel>.from(
@@ -205,11 +205,4 @@ class CarModel {
       arref: arref ?? this.arref,
     );
   }
-}
-
-StatusCar statusFromString(String value) {
-  return StatusCar.values.firstWhere(
-    (e) => e.name == value,
-    orElse: () => StatusCar.operando,
-  );
 }

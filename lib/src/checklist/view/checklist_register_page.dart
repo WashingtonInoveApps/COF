@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 
+import '../../home/home_page.dart';
 import '../controller/checklist_controller.dart';
 
 class ChecklistRegisterPage extends StatefulWidget {
@@ -47,35 +48,57 @@ class _ChecklistRegisterPageState extends State<ChecklistRegisterPage> {
       ChecklistMaterialsPage(controller: controller)
     ];
 
+    final update = (widget.checklist != null);
     return Scaffold(
       body: Stack(
         children: [
           BackgraundPage(
+            menu: !update,
+            onBack: update ? () => Navigator.of(context).pop() : null,
             contentBottom: Center(
               child: Row(
                 spacing: 50,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Observer(builder: (_) {
-                    return ElevatedButton(
-                        onPressed: (controller.step > 0)
-                            ? () {
-                                controller.processStep(false);
-                              }
-                            : null,
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.grey),
-                        child: Text(
-                          'Voltar',
-                          style: Constants.titleButton,
-                        ));
+                    return (update && controller.step == 0)
+                        ? ElevatedButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.grey),
+                            child: Text(
+                              'Cancelar',
+                              style: Constants.titleButton,
+                            ))
+                        : ElevatedButton(
+                            onPressed: (controller.step > 0)
+                                ? () {
+                                    controller.processStep(false);
+                                  }
+                                : null,
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.grey),
+                            child: Text(
+                              'Voltar',
+                              style: Constants.titleButton,
+                            ));
                   }),
                   Observer(builder: (_) {
                     return controller.btFinish
                         ? ElevatedButton(
                             onPressed: () {
                               controller.save().then((_) {
-                                print('Checklist salvo com sucesso.');
+                                if (update) {
+                                  Navigator.of(context).pop();
+                                } else {
+                                  app.setRouter(0);
+                                  Navigator.of(context).pushReplacement(
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const HomePage()));
+                                }
                               }).catchError((err) {
                                 showDialog(
                                     context: context,
@@ -90,7 +113,7 @@ class _ChecklistRegisterPageState extends State<ChecklistRegisterPage> {
                             style: ElevatedButton.styleFrom(
                                 backgroundColor: Constants.primary),
                             child: Text(
-                              'Salvar',
+                              update ? 'Alterar' : 'Salvar',
                               style: Constants.titleButton,
                             ))
                         : ElevatedButton(
@@ -168,7 +191,7 @@ class _ChecklistRegisterPageState extends State<ChecklistRegisterPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Registro de CHECKLIST',
+                  update ? 'Alteração de CHECKLIST' : 'Registro de CHECKLIST',
                   style: Constants.title.copyWith(fontSize: 18),
                 ),
                 const Divider(),

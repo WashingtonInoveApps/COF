@@ -120,6 +120,38 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
     });
   }
 
+  late final _$updateAtom =
+      Atom(name: '_CheckListControllerBase.update', context: context);
+
+  @override
+  bool get update {
+    _$updateAtom.reportRead();
+    return super.update;
+  }
+
+  @override
+  set update(bool value) {
+    _$updateAtom.reportWrite(value, super.update, () {
+      super.update = value;
+    });
+  }
+
+  late final _$enableAtom =
+      Atom(name: '_CheckListControllerBase.enable', context: context);
+
+  @override
+  bool get enable {
+    _$enableAtom.reportRead();
+    return super.enable;
+  }
+
+  @override
+  set enable(bool value) {
+    _$enableAtom.reportWrite(value, super.enable, () {
+      super.enable = value;
+    });
+  }
+
   late final _$stepAtom =
       Atom(name: '_CheckListControllerBase.step', context: context);
 
@@ -229,6 +261,22 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
   set startKM(String value) {
     _$startKMAtom.reportWrite(value, super.startKM, () {
       super.startKM = value;
+    });
+  }
+
+  late final _$endKMAtom =
+      Atom(name: '_CheckListControllerBase.endKM', context: context);
+
+  @override
+  String get endKM {
+    _$endKMAtom.reportRead();
+    return super.endKM;
+  }
+
+  @override
+  set endKM(String value) {
+    _$endKMAtom.reportWrite(value, super.endKM, () {
+      super.endKM = value;
     });
   }
 
@@ -356,10 +404,9 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
       AsyncAction('_CheckListControllerBase.finish', context: context);
 
   @override
-  Future<bool> finish(
-      {required String kmFinal, required CheckListModel checkList}) {
+  Future<bool> finish({required CheckListModel checklist, Uint8List? image}) {
     return _$finishAsyncAction
-        .run(() => super.finish(kmFinal: kmFinal, checkList: checkList));
+        .run(() => super.finish(checklist: checklist, image: image));
   }
 
   late final _$_CheckListControllerBaseActionController =
@@ -608,6 +655,17 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
   }
 
   @override
+  dynamic setLoading(bool value) {
+    final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
+        name: '_CheckListControllerBase.setLoading');
+    try {
+      return super.setLoading(value);
+    } finally {
+      _$_CheckListControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 loading: ${loading},
@@ -616,6 +674,8 @@ itens: ${itens},
 materials: ${materials},
 date: ${date},
 prefix: ${prefix},
+update: ${update},
+enable: ${enable},
 step: ${step},
 contact: ${contact},
 cia: ${cia},
@@ -623,6 +683,7 @@ team: ${team},
 pb: ${pb},
 obs: ${obs},
 startKM: ${startKM},
+endKM: ${endKM},
 oil: ${oil},
 hidra: ${hidra},
 fuel: ${fuel},

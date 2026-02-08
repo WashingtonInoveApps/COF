@@ -86,7 +86,10 @@ abstract class _AppControllerBase with Store {
   List<CarModel> cars = <CarModel>[].asObservable();
 
   @observable
-  List<CheckListModel> checklists = <CheckListModel>[].asObservable();
+  List<CheckListModel> checklistsPeriod = <CheckListModel>[].asObservable();
+
+  @observable
+  List<CheckListModel> checklistsToday = <CheckListModel>[].asObservable();
 
   @observable
   List<UserModel> users = <UserModel>[].asObservable();
@@ -112,46 +115,49 @@ abstract class _AppControllerBase with Store {
   }
 
   @computed
-  int get checklistPerformed {
-    if (checklists.isEmpty) return 0;
+  bool get newRegister {
+    if (checklistUser == null) return true;
 
-    final now = DateTime.now();
-    final list = checklists
-        .where((e) => (e.date.day == now.day) && (e.date.month == now.month))
-        .toList();
+    if (!(checklistUser?.enable ?? false)) return true;
 
-    return list.length;
+    return false;
   }
 
   @computed
-  int get checklistPendent {
-    if (checklists.isEmpty) return 0;
+  CheckListModel? get checklistUser {
+    if (checklistsToday.isEmpty) return null;
+
+    final list = checklistsToday.where((e) => e.userID == user.id).toList();
+
+    if (list.isEmpty) return null;
+
+    list.sort((a, b) => a.date.compareTo(b.date));
+
+    return list.last;
+  }
+
+  @computed
+  int get checklistTodayPendent {
+    if (checklistsToday.isEmpty) return 0;
 
     final carsOperating =
         cars.where((e) => e.state == StatusCar.operando).length;
 
-    return carsOperating - checklistPerformed;
+    return (carsOperating - checklistsToday.length);
   }
 
   @computed
-  int get checklistChanges {
-    if (checklists.isEmpty) return 0;
+  int get checklistTodayChanges {
+    if (checklistsToday.isEmpty) return 0;
 
-    final now = DateTime.now();
-    final list = checklists
-        .where((e) => (e.date.day == now.day) && (e.date.month == now.month))
-        .toList();
-
-    if (list.isEmpty) return 0;
-
-    return list
+    return checklistsToday
         .map((e) => e.changes.length)
         .reduce((value, next) => value + next);
   }
 
   @computed
-  List<CheckListModel> get checklistSort {
-    final list = paginate(list: checklists, page: page, limit: limit);
+  List<CheckListModel> get checklistPeriodSort {
+    final list = paginate(list: checklistsPeriod, page: page, limit: limit);
     return list;
   }
 
@@ -189,15 +195,22 @@ abstract class _AppControllerBase with Store {
   @action
   setCheckListVeicular(bool value) => checklistVeicular = value;
 
+  Stream<List<CheckListModel>> listenChecklistToday() {
+    final dateReference = Core.getOperationalDay(DateTime.now());
+
+    log('Data Operacional: ${Core.formatDate(dateReference)}');
+    return repository.listenChecklistToday(referenceDate: dateReference);
+  }
+
   @observable
-  Stream<List<CheckListModel>> listenChecklist(
+  Stream<List<CheckListModel>> listenChecklistPeriod(
       {required DateTime dateStart, required DateTime dateFinish}) {
     loadingCheklist = true;
 
     log('Date Start: ${Core.formatDate(dateStart)}');
     log('Date Finish: ${Core.formatDate(dateFinish)}');
 
-    final stream = repository.listenChecklist(
+    final stream = repository.listenChecklistPeriod(
       referenceDateStart: dateStart,
       referenceDateFinish: dateFinish,
     );
@@ -235,9 +248,17 @@ abstract class _AppControllerBase with Store {
   }
 
   @action
-  setCheckList(List<CheckListModel> value) {
+  setChecklistPeriod(List<CheckListModel> value) {
     value.sort((a, b) => b.date.compareTo(a.date));
-    checklists
+    checklistsPeriod
+      ..clear()
+      ..addAll(value);
+  }
+
+  @action
+  setChecklistToday(List<CheckListModel> value) {
+    value.sort((a, b) => a.date.compareTo(b.date));
+    checklistsToday
       ..clear()
       ..addAll(value);
   }

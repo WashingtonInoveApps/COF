@@ -7,12 +7,12 @@ import 'package:bsu_control/core/constants.dart';
 
 class FuelWidget extends StatefulWidget {
   final double fuel;
-  final Function(double) onChange;
+  final Function(double)? onChange;
 
   const FuelWidget({
     Key? key,
     required this.fuel,
-    required this.onChange,
+    this.onChange,
   }) : super(key: key);
 
   @override
@@ -49,7 +49,7 @@ class _FuelWidgetState extends State<FuelWidget> {
                       showTicks: true,
                       minorTicksPerInterval: 1,
                       onChanged: (result) {
-                        widget.onChange(result as double);
+                        widget.onChange?.call(result as double);
                       },
                     ),
                   ],

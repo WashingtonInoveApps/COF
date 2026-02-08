@@ -57,7 +57,8 @@ class _AppWidgetState extends State<AppWidget> {
   final controller = GetIt.I.get<AppController>();
 
   late StreamSubscription carDispose;
-  late StreamSubscription checklistDispose;
+  late StreamSubscription checklistPeriodDispose;
+  late StreamSubscription checklistTodayDispose;
   late StreamSubscription usersDispose;
   late ReactionDisposer reac;
 
@@ -68,13 +69,17 @@ class _AppWidgetState extends State<AppWidget> {
       controller.setCars(result);
     });
 
+    checklistTodayDispose = controller.listenChecklistToday().listen((result) {
+      controller.setChecklistToday(result);
+    });
+
     reac = autorun((_) {
-      checklistDispose = controller
-          .listenChecklist(
+      checklistPeriodDispose = controller
+          .listenChecklistPeriod(
               dateStart: controller.dateReferenceStart,
               dateFinish: controller.dateReferenceFinish)
           .listen((result) {
-        controller.setCheckList(result);
+        controller.setChecklistPeriod(result);
       });
     });
 
@@ -86,10 +91,12 @@ class _AppWidgetState extends State<AppWidget> {
   @override
   void dispose() {
     super.dispose();
-    carDispose.cancel();
-    checklistDispose.cancel();
-    usersDispose.cancel();
     reac.reaction.dispose();
+
+    carDispose.cancel();
+    checklistPeriodDispose.cancel();
+    usersDispose.cancel();
+    checklistTodayDispose.cancel();
   }
 
   @override

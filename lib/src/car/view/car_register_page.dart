@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/validation.dart';
@@ -97,7 +95,6 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
 
   @override
   Widget build(BuildContext context) {
-    log(app.carsTypes.join(';'));
     return Stack(
       children: [
         Form(

@@ -58,11 +58,11 @@ dependencies:
   mobx: 
   flutter_mobx:
   cached_network_image:
-  # package_info_plus: ^4.2.0
-  flutter_custom_clippers:
+  signature: ^6.3.0
+  # flutter_custom_clippers:
   syncfusion_flutter_charts: ^32.2.3
   syncfusion_flutter_datagrid: ^32.2.3
-  pluto_menu_bar:
+  # pluto_menu_bar:
   url_strategy:
   url_launcher: 
   universal_html:

@@ -116,7 +116,11 @@ class _ChecklistItensPageState extends State<ChecklistItensPage> {
                               init: itemChange,
                               onChange: (value) {
                                 controller.changeItens(
-                                    value, indexCategory, indexItem);
+                                    value.copyWith(
+                                        quantity: item.quantity,
+                                        quantityMarked: value.quantity),
+                                    indexCategory,
+                                    indexItem);
                               },
                             );
                           }),

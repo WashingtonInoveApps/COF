@@ -43,7 +43,7 @@ class AppRepository extends APIClient implements IAppRepository {
   }
 
   @override
-  Stream<List<CheckListModel>> listenChecklist(
+  Stream<List<CheckListModel>> listenChecklistPeriod(
       {required DateTime referenceDateStart,
       required DateTime referenceDateFinish}) {
     try {
@@ -77,6 +77,23 @@ class AppRepository extends APIClient implements IAppRepository {
                   return checkList;
                 }).toList());
       }
+    } catch (e) {
+      return Stream.value([]);
+    }
+  }
+
+  @override
+  Stream<List<CheckListModel>> listenChecklistToday(
+      {required DateTime referenceDate}) {
+    try {
+      log('Buscando checklist diário');
+      return colChecklist
+          .where('referenceDate', isEqualTo: Core.formatDate(referenceDate))
+          .snapshots()
+          .map((e) => e.docs
+              .map((doc) =>
+                  CheckListModel.fromMap(doc.data() as Map<String, dynamic>))
+              .toList());
     } catch (e) {
       return Stream.value([]);
     }

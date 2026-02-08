@@ -72,8 +72,6 @@ abstract class _CarControllerBase with Store {
   setTypeCar(String? value) {
     type = value ?? type;
 
-    print(value);
-
     if (type == "Outros") {
       fieldCarTypeVisible = true;
     } else {

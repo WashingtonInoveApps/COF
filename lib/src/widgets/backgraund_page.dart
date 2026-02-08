@@ -1,13 +1,11 @@
-import 'dart:developer';
-
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/model/obm_model.dart';
 import 'package:bsu_control/src/car/view/car_register_page.dart';
 import 'package:bsu_control/src/car/view/cars_page.dart';
 import 'package:bsu_control/src/checklist/view/checklist_register_page.dart';
-import 'package:bsu_control/src/login/view/login_page.dart';
 import 'package:bsu_control/src/home/home_page.dart';
+import 'package:bsu_control/src/login/view/login_page.dart';
 import 'package:bsu_control/src/user/view/user_register_page.dart';
 import 'package:bsu_control/src/user/view/users_page.dart';
 import 'package:flutter/material.dart';
@@ -346,7 +344,6 @@ class _BackgraundPageState extends State<BackgraundPage> {
               childRight: (widget.childRight == null),
               constrainedMaxWidth: constrained.maxWidth);
 
-          log(width.toString());
           return Center(
             child: Container(
               height: double.infinity,
@@ -425,7 +422,7 @@ class _BackgraundPageState extends State<BackgraundPage> {
                           SizedBox(
                             width: double.infinity,
                             child: Wrap(
-                              alignment: WrapAlignment.spaceEvenly,
+                              alignment: WrapAlignment.spaceAround,
                               children: [
                                 SizedBox(
                                   width: width,

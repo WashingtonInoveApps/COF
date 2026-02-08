@@ -1,6 +1,6 @@
 import 'package:bsu_control/app_controller.dart';
-import 'package:bsu_control/model/dashboard_model.dart';
 import 'package:mobx/mobx.dart';
+
 part 'home_controller.g.dart';
 
 class HomeController = _HomeControllerBase with _$HomeController;
@@ -14,6 +14,9 @@ abstract class _HomeControllerBase with Store {
   bool loading = false;
 
   @observable
+  bool isOperacionalToday = true;
+
+  @observable
   DateTime date = DateTime.now();
 
   @observable
@@ -22,11 +25,10 @@ abstract class _HomeControllerBase with Store {
   @observable
   DateTime dateReferenceFinish = DateTime.now();
 
-  @observable
-  DashboardModel dashboard = DashboardModel();
-
   @action
-  setDate(DateTime value) => date = value;
+  setDate(DateTime value) {
+    date = value;
+  }
 
   @action
   setDateStart(DateTime? value) {

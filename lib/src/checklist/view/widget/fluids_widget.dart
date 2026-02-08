@@ -9,10 +9,10 @@ class FluidsWidget extends StatefulWidget {
   final double hidra;
   final double fr;
   final double arref;
-  final Function(double) onOil;
-  final Function(double) onHidra;
-  final Function(double) onFr;
-  final Function(double) onArref;
+  final Function(double)? onOil;
+  final Function(double)? onHidra;
+  final Function(double)? onFr;
+  final Function(double)? onArref;
 
   const FluidsWidget({
     Key? key,
@@ -20,10 +20,10 @@ class FluidsWidget extends StatefulWidget {
     required this.hidra,
     required this.fr,
     required this.arref,
-    required this.onOil,
-    required this.onHidra,
-    required this.onFr,
-    required this.onArref,
+    this.onOil,
+    this.onHidra,
+    this.onFr,
+    this.onArref,
   }) : super(key: key);
 
   @override
@@ -82,6 +82,8 @@ class _FluidsWidgetState extends State<FluidsWidget> {
   @override
   Widget build(BuildContext context) {
     return Scrollbar(
+      thumbVisibility: true,
+      trackVisibility: true,
       controller: scrollController,
       child: Padding(
         padding: const EdgeInsets.only(bottom: 10),
@@ -89,7 +91,7 @@ class _FluidsWidgetState extends State<FluidsWidget> {
           controller: scrollController,
           scrollDirection: Axis.horizontal,
           physics: const BouncingScrollPhysics(),
-          child: Container(
+          child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 10.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -98,22 +100,22 @@ class _FluidsWidgetState extends State<FluidsWidget> {
                     title: 'Óleo do motor',
                     color: Colors.brown,
                     value: widget.oil,
-                    onChange: widget.onOil),
+                    onChange: (value) => widget.onOil?.call(value)),
                 nivelContainer(
                     title: 'Óleo hidraúlico',
                     color: Colors.red.shade700,
                     value: widget.hidra,
-                    onChange: widget.onHidra),
+                    onChange: (value) => widget.onHidra?.call(value)),
                 nivelContainer(
                     title: 'Óleo de freio',
                     color: Colors.green.shade700,
                     value: widget.fr,
-                    onChange: widget.onFr),
+                    onChange: (value) => widget.onFr?.call(value)),
                 nivelContainer(
                     title: 'Água do radiador',
                     color: Colors.blue.shade700,
                     value: widget.arref,
-                    onChange: widget.onArref),
+                    onChange: (value) => widget.onArref?.call(value)),
               ],
             ),
           ),

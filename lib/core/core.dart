@@ -2,7 +2,7 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:image/image.dart' as img;
+// import 'package:image/image.dart' as img;
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -141,4 +141,26 @@ class Core {
       random.nextInt(150), // B
     );
   }
+
+  //Criado com auxílio do ChatGPT
+  static DateTime getOperationalDay(DateTime now) {
+    final today8am = DateTime(now.year, now.month, now.day, 8);
+
+    if (now.isBefore(today8am)) {
+      // Ainda faz parte do dia operacional de ontem
+      final yesterday = now.subtract(const Duration(days: 1));
+      return DateTime(yesterday.year, yesterday.month, yesterday.day);
+    } else {
+      // Já estamos no dia operacional de hoje
+      return DateTime(now.year, now.month, now.day);
+    }
+  }
+
+  // static bool isOperationalDay(DateTime referenceDate) {
+  //   final nowOpDay = getOperationalDay(DateTime.now());
+
+  //   return referenceDate.year == nowOpDay.year &&
+  //       referenceDate.month == nowOpDay.month &&
+  //       referenceDate.day == nowOpDay.day;
+  // }
 }

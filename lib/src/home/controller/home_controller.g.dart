@@ -25,6 +25,22 @@ mixin _$HomeController on _HomeControllerBase, Store {
     });
   }
 
+  late final _$isOperacionalTodayAtom =
+      Atom(name: '_HomeControllerBase.isOperacionalToday', context: context);
+
+  @override
+  bool get isOperacionalToday {
+    _$isOperacionalTodayAtom.reportRead();
+    return super.isOperacionalToday;
+  }
+
+  @override
+  set isOperacionalToday(bool value) {
+    _$isOperacionalTodayAtom.reportWrite(value, super.isOperacionalToday, () {
+      super.isOperacionalToday = value;
+    });
+  }
+
   late final _$dateAtom =
       Atom(name: '_HomeControllerBase.date', context: context);
 
@@ -73,22 +89,6 @@ mixin _$HomeController on _HomeControllerBase, Store {
     });
   }
 
-  late final _$dashboardAtom =
-      Atom(name: '_HomeControllerBase.dashboard', context: context);
-
-  @override
-  DashboardModel get dashboard {
-    _$dashboardAtom.reportRead();
-    return super.dashboard;
-  }
-
-  @override
-  set dashboard(DashboardModel value) {
-    _$dashboardAtom.reportWrite(value, super.dashboard, () {
-      super.dashboard = value;
-    });
-  }
-
   late final _$_HomeControllerBaseActionController =
       ActionController(name: '_HomeControllerBase', context: context);
 
@@ -129,10 +129,10 @@ mixin _$HomeController on _HomeControllerBase, Store {
   String toString() {
     return '''
 loading: ${loading},
+isOperacionalToday: ${isOperacionalToday},
 date: ${date},
 dateReferenceStart: ${dateReferenceStart},
-dateReferenceFinish: ${dateReferenceFinish},
-dashboard: ${dashboard}
+dateReferenceFinish: ${dateReferenceFinish}
     ''';
   }
 }

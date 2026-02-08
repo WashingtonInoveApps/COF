@@ -2,6 +2,7 @@ import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/core/enum.dart';
 import 'package:bsu_control/model/car_model.dart';
+import 'package:bsu_control/model/details_cars_model.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -9,8 +10,10 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 class CarsChart extends StatefulWidget {
   final List<String> carsTypes;
   final List<CarModel> cars;
+  final Function(List<DetailsCarsModel>)? onDetails;
 
-  const CarsChart({Key? key, required this.cars, required this.carsTypes})
+  const CarsChart(
+      {Key? key, required this.cars, required this.carsTypes, this.onDetails})
       : super(key: key);
 
   @override
@@ -20,7 +23,7 @@ class CarsChart extends StatefulWidget {
 class _CarsChartState extends State<CarsChart> {
   final scrollController = ScrollController();
 
-  List<_CarsInforDataChart> inforsCars = [];
+  List<DetailsCarsModel> inforsCars = [];
   List<_ChartData> data = [];
 
   void processCharts() {
@@ -59,12 +62,15 @@ class _CarsChartState extends State<CarsChart> {
           }
         }
 
-        inforsCars.add(_CarsInforDataChart(
-            label: type,
-            color: Core.corEscuraAleatoria(),
-            operating: operatingType,
-            lowered: loweredType,
-            reserve: reserveType));
+        if (cars.isNotEmpty) {
+          inforsCars.add(DetailsCarsModel(
+              label: type,
+              color: Core.corEscuraAleatoria(),
+              operating: operatingType,
+              lowered: loweredType,
+              reserve: reserveType,
+              cars: cars));
+        }
       }
     }
 
@@ -127,9 +133,26 @@ class _CarsChartState extends State<CarsChart> {
                 Positioned(
                   top: 0,
                   left: 0,
-                  child: Text(
-                    'DETALHES DA FROTA ( ${Core.formatDate(DateTime.now(), largeDay: true)} )',
-                    style: Constants.subtitleHint,
+                  right: 0,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          'DETALHES DA FROTA ( ${Core.formatDate(DateTime.now(), largeDay: true)} )',
+                          style: Constants.subtitleHint,
+                        ),
+                      ),
+                      (widget.onDetails == null)
+                          ? Container()
+                          : IconButton(
+                              onPressed: () =>
+                                  widget.onDetails?.call(inforsCars),
+                              icon: const Icon(
+                                Icons.info,
+                                color: Colors.grey,
+                                size: 25,
+                              ))
+                    ],
                   ),
                 ),
                 Positioned(
@@ -145,13 +168,13 @@ class _CarsChartState extends State<CarsChart> {
                             .reduce((value, next) => value + next)
                             .toString(),
                         style: Constants.title.copyWith(
-                          fontSize: 26,
+                          fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       Text(
                         'Viaturas',
-                        style: Constants.title,
+                        style: Constants.subtitle,
                       )
                     ],
                   ),
@@ -183,6 +206,7 @@ class _CarsChartState extends State<CarsChart> {
             const Divider(),
             SizedBox(
               height: 80,
+              width: double.infinity,
               child: Scrollbar(
                 thumbVisibility: true,
                 trackVisibility: true,
@@ -262,19 +286,4 @@ class _ChartData {
   Color color;
 
   _ChartData(this.label, this.value, this.color);
-}
-
-class _CarsInforDataChart {
-  final String label;
-  final int operating;
-  final int reserve;
-  final int lowered;
-  final Color color;
-
-  _CarsInforDataChart(
-      {required this.label,
-      required this.color,
-      required this.operating,
-      required this.reserve,
-      required this.lowered});
 }

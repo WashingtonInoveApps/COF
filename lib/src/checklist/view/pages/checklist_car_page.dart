@@ -103,25 +103,28 @@ class _ChecklistCarPageState extends State<ChecklistCarPage> {
                             controller.cars.map((e) => e.prefix).toList()
                               ..add('SELECIONE'));
 
-                        return DropdownButton<String>(
-                            isExpanded: true,
-                            value: controller.prefix,
-                            underline: Container(),
-                            onChanged: controller.setPrefix,
-                            items: prefixs
-                                .map((e) => DropdownMenuItem(
-                                      value: e,
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 5),
-                                        child: Text(
-                                          e,
-                                          style: Constants.title,
-                                          overflow: TextOverflow.ellipsis,
+                        return IgnorePointer(
+                          ignoring: controller.update,
+                          child: DropdownButton<String>(
+                              isExpanded: true,
+                              value: controller.prefix,
+                              underline: Container(),
+                              onChanged: controller.setPrefix,
+                              items: prefixs
+                                  .map((e) => DropdownMenuItem(
+                                        value: e,
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 5),
+                                          child: Text(
+                                            e,
+                                            style: Constants.title,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
                                         ),
-                                      ),
-                                    ))
-                                .toList());
+                                      ))
+                                  .toList()),
+                        );
                       }),
                     ),
                     const SizedBox(
@@ -206,6 +209,7 @@ class _ChecklistCarPageState extends State<ChecklistCarPage> {
                             : Padding(
                                 padding: const EdgeInsets.only(bottom: 10),
                                 child: CarChangesWidget(
+                                  remove: true,
                                   checklistID: controller.id,
                                   car: controller.car!,
                                   user: controller.app.user,

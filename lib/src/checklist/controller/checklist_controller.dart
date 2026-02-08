@@ -1,4 +1,7 @@
+import 'dart:typed_data';
+
 import 'package:bsu_control/app_controller.dart';
+import 'package:bsu_control/core/enum.dart';
 import 'package:bsu_control/core/validation.dart';
 import 'package:bsu_control/model/car_changes_model.dart';
 import 'package:bsu_control/model/car_checklist.dart';
@@ -9,6 +12,8 @@ import 'package:bsu_control/model/obm_model.dart';
 import 'package:bsu_control/src/checklist/repository/checklist_interface.dart';
 import 'package:bsu_control/src/checklist/repository/checklist_repository.dart';
 import 'package:mobx/mobx.dart';
+
+import '../../../model/supply_model.dart';
 
 part 'checklist_controller.g.dart';
 
@@ -32,8 +37,17 @@ abstract class _CheckListControllerBase with Store {
     initController(init);
   }
 
+  Stream<CheckListModel> streamChecklistByID({required String checklistID}) {
+    return repository.streamChecklistByID(checklistID: checklistID);
+  }
+
   @action
   initController(CheckListModel? init) {
+    itens.clear();
+    materials.clear();
+
+    update = (init != null);
+
     id = init?.id;
     prefix = init?.prefix ?? 'SELECIONE';
     oil = init?.checkCar.oil ?? 0.0;
@@ -43,17 +57,27 @@ abstract class _CheckListControllerBase with Store {
     fuel = init?.checkCar.fuel ?? 0.0;
     team = init?.team ?? team;
     startKM = init?.startKM ?? '';
+    endKM = init?.endKM ?? '';
+    contact = init?.contact ?? '';
+    date = init?.date ?? date;
+    obs = init?.obs ?? '';
+    enable = init?.enable ?? true;
+    states = init?.states ??
+        [StatesChecklist(state: StateChecklist.inprogress, date: date)];
+    supplies = init?.supply ?? [];
 
     if (init != null) {
       car = app.cars.firstWhere((e) => e.id == init.checkCar.car.id);
+
+      itens.addAll(List<ItensChangesModel>.from(init.checkCar.car.itens));
+      materials
+          .addAll(List<ItensChangesModel>.from(init.checkCar.car.materials));
+    } else {
+      itens.addAll(List<ItensChangesModel>.from(car?.itens ?? []));
+      materials.addAll(List<ItensChangesModel>.from(car?.materials ?? []));
     }
 
     carChanges.addAll(car?.changes ?? []);
-
-    itens.addAll(List<ItensChangesModel>.from(
-        car?.itens.where((i) => i.itens.isNotEmpty).toList() ?? []));
-    materials.addAll(List<ItensChangesModel>.from(
-        car?.materials.where((i) => i.itens.isNotEmpty).toList() ?? []));
   }
 
   @observable
@@ -67,11 +91,21 @@ abstract class _CheckListControllerBase with Store {
   ObservableList<ItensChangesModel> materials =
       <ItensChangesModel>[].asObservable();
 
+  List<StatesChecklist> states = [];
+
+  List<SupplyModel> supplies = [];
+
   @observable
   DateTime date = DateTime.now();
 
   @observable
   String prefix = "";
+
+  @observable
+  bool update = false;
+
+  @observable
+  bool enable = true;
 
   String? id;
 
@@ -95,6 +129,9 @@ abstract class _CheckListControllerBase with Store {
 
   @observable
   String startKM = "";
+
+  @observable
+  String endKM = "";
 
   @observable
   double oil = 0.0;
@@ -268,6 +305,7 @@ abstract class _CheckListControllerBase with Store {
         ItensChangesModel.fromMap(itens.elementAt(indexCategory).toMap());
 
     List<ItemModel> list = List.from(category.itens);
+
     list.removeAt(indexItem);
     list.insert(indexItem, value);
 
@@ -290,6 +328,7 @@ abstract class _CheckListControllerBase with Store {
         ItensChangesModel.fromMap(materials.elementAt(indexCategory).toMap());
 
     List<ItemModel> list = List.from(category.itens);
+
     list.removeAt(indexItem);
     list.insert(indexItem, value);
 
@@ -307,11 +346,15 @@ abstract class _CheckListControllerBase with Store {
   }
 
   @action
+  setLoading(bool value) => loading = value;
+
+  @action
   Future<bool> save() async {
     try {
       loading = true;
 
       final checklist = CheckListModel(
+          id: id,
           date: date,
           user: app.user,
           userID: app.user.id ?? '',
@@ -324,15 +367,19 @@ abstract class _CheckListControllerBase with Store {
             oil: oil,
             obs: obs,
           ),
+          enable: enable,
           startKM: startKM,
+          endKM: endKM,
           prefix: prefix,
           obs: obs,
           team: team,
+          state: StateChecklist.inprogress,
           obmID: obm.id ?? '',
           cia: cia?.toLowerCase() ?? '',
           contact: contact,
           changes: [],
-          supply: []);
+          states: states,
+          supply: supplies);
 
       final result =
           await repository.save(checklist: checklist, changes: carChanges);
@@ -347,13 +394,28 @@ abstract class _CheckListControllerBase with Store {
 
   @action
   Future<bool> finish(
-      {required String kmFinal, required CheckListModel checkList}) async {
-    loading = true;
-    final result =
-        await repository.finish(kmFinal: kmFinal, checkList: checkList);
-    loading = false;
+      {required CheckListModel checklist, Uint8List? image}) async {
+    try {
+      final now = DateTime.now();
+      final states = List<StatesChecklist>.from(checklist.states);
 
-    return result;
+      final state = StatesChecklist(state: StateChecklist.completed, date: now);
+      states.add(state);
+
+      final result = await repository.finish(
+          checklist: checklist.copyWith(
+              state: state.state,
+              states: states,
+              dateFinish: now,
+              enable: false),
+          image: image);
+
+      loading = false;
+      return result;
+    } catch (e) {
+      loading = false;
+      rethrow;
+    }
   }
 
   bool validationForm() {

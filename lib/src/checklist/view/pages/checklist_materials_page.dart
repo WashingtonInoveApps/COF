@@ -117,7 +117,11 @@ class _ChecklistMaterialsPageState extends State<ChecklistMaterialsPage> {
                               init: itemChange,
                               onChange: (value) {
                                 controller.changeMaterials(
-                                    value, indexCategory, indexItem);
+                                    value.copyWith(
+                                        quantity: item.quantity,
+                                        quantityMarked: value.quantity),
+                                    indexCategory,
+                                    indexItem);
                               },
                             );
                           }),
@@ -130,7 +134,7 @@ class _ChecklistMaterialsPageState extends State<ChecklistMaterialsPage> {
                           height: 10,
                         ),
                         FieldText(
-                          initValue: controller.itens[indexCategory].obs,
+                          initValue: controller.materials[indexCategory].obs,
                           hint: "EX.: Alguma informação importante",
                           onChange: (text) {
                             controller.changeOBSMaterials(text, indexCategory);

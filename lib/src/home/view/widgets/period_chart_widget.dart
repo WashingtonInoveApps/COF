@@ -59,14 +59,17 @@ class ChartPeriodWidget extends StatelessWidget {
               style: Constants.subtitleHint,
             ),
             Text(
-              '( ${Core.formatDate(dateStart)} - ${Core.formatDate(dateFinish)} )',
+              ((dateStart.day == dateFinish.day) &&
+                      (dateStart.month == dateFinish.month))
+                  ? '( ${Core.formatDate(dateStart)} )'
+                  : '( ${Core.formatDate(dateStart)} - ${Core.formatDate(dateFinish)} )',
               style: Constants.subtitleHint,
             ),
             const SizedBox(
               height: 5,
             ),
             SizedBox(
-              height: 270,
+              height: 248,
               child: SfCartesianChart(
                 legend: const Legend(
                     isVisible: true, position: LegendPosition.bottom),
