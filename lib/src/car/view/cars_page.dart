@@ -1,12 +1,18 @@
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
+import 'package:bsu_control/model/car_model.dart';
+import 'package:bsu_control/model/car_status_model.dart';
 import 'package:bsu_control/src/car/controller/car_controller.dart';
+import 'package:bsu_control/src/car/view/widgets/car_chats_problem_widget.dart';
+import 'package:bsu_control/src/car/view/widgets/cars_table_view.dart';
 import 'package:bsu_control/src/widgets/backgraund_page.dart';
-import 'package:bsu_control/src/widgets/car_card.dart';
+import 'package:bsu_control/src/widgets/cars_chart_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
+import 'package:mobx/mobx.dart';
 
+import '../../widgets/pagination_widget.dart';
 import 'car_details_page.dart';
 
 class CarsPage extends StatefulWidget {
@@ -19,11 +25,38 @@ class CarsPage extends StatefulWidget {
 class _CarsPageState extends State<CarsPage> {
   final controller = GetIt.I.get<AppController>();
   late CarController carController;
+  late ReactionDisposer rec;
+
+  List<CarModel> cars = [];
 
   @override
   void initState() {
     super.initState();
     carController = CarController(app: controller);
+
+    rec = autorun((_) {
+      setState(() {
+        if (controller.user.adminFull) {
+          cars
+            ..clear()
+            ..addAll(List<CarModel>.from(controller.cars));
+        } else {
+          cars
+            ..clear()
+            ..addAll(controller.cars
+                .where((e) => e.obmID == controller.user.obmID)
+                .toList());
+        }
+
+        carController.setCars(cars);
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    rec();
   }
 
   @override
@@ -31,113 +64,153 @@ class _CarsPageState extends State<CarsPage> {
     return PopScope(
       canPop: false,
       child: BackgraundPage(
-        top: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        childLeft: Column(
           children: [
-            Text(
-              'Veículos registrados',
-              style: Constants.title.copyWith(fontSize: 18),
+            SizedBox(
+              width: double.infinity,
+              child: Wrap(
+                alignment: WrapAlignment.spaceEvenly,
+                children: [
+                  SizedBox(
+                    width: controller.maxWidth * 0.45,
+                    child: Column(
+                      spacing: 5,
+                      children: [
+                        SizedBox(
+                          height: 305,
+                          child: CarsChart(
+                            cars: cars,
+                            carsTypes: controller.carsTypes,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    width: controller.maxWidth * 0.46,
+                    child: Column(
+                      spacing: 5,
+                      children: [
+                        StreamBuilder<List<CarStatusModel>>(
+                            stream: carController.listenStatusGeral(),
+                            builder: (context, snapshort) {
+                              if (!snapshort.hasData) {
+                                return const Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              } else {
+                                final status = snapshort.data ?? [];
+                                return SizedBox(
+                                    height: 305,
+                                    width: double.infinity,
+                                    child: CarChartProblems(status: status));
+                              }
+                            })
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
-            const Divider(),
             const SizedBox(
               height: 10,
             ),
-          ],
-        ),
-        childLeft: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
+            SizedBox(
               width: double.infinity,
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                  color: Colors.blue, borderRadius: BorderRadius.circular(5)),
-              child: Text(
-                "Operacionais",
-                style: Constants.titleButton,
-              ),
-            ),
-            const SizedBox(
-              height: 10.0,
-            ),
-            Observer(builder: (_) {
-              return controller.carsOPR.isEmpty
-                  ? Center(
-                      child: Text(
-                        "Ops ! Nenhum registro encontrado.",
-                        style: Constants.titleHint,
-                      ),
-                    )
-                  : Column(
-                      children: List.generate(
-                          controller.carsOPR.length,
-                          (index) => CarCard(
-                                options: controller.user.admin,
-                                car: controller.carsOPR[index],
-                                onLong: () async {
-                                  await carController.deleteCar(
-                                      id: controller.carsOPR[index].id ?? '');
-                                },
-                                onTap: () {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (context) => CarDetailsPage(
-                                            carID:
-                                                controller.carsOPR[index].id!,
-                                          )));
-                                },
-                                onCopy: () async {
-                                  await carController.copy(
-                                      car: controller.carsOPR[index]);
-                                },
-                              )),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Veículos registrados',
+                    style: Constants.title,
+                  ),
+                  const Divider(),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  Observer(builder: (_) {
+                    return Text(
+                      'Exibindo 1 a ${carController.limit} de ${cars.length} entradas',
+                      style: Constants.subtitleHint,
                     );
-            }),
-          ],
-        ),
-        childRight: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                  color: Colors.blue, borderRadius: BorderRadius.circular(5)),
-              child: Text(
-                "Administrativos",
-                style: Constants.titleButton,
-              ),
-            ),
-            const SizedBox(
-              height: 10.0,
-            ),
-            Observer(builder: (_) {
-              return controller.carsADM.isEmpty
-                  ? Center(
-                      child: Text(
-                        "Ops ! Nenhum registro encontrado.",
-                        style: Constants.titleHint,
-                      ),
-                    )
-                  : Column(
-                      children: List.generate(
-                          controller.carsADM.length,
-                          (index) => CarCard(
-                                options: controller.user.admin,
-                                car: controller.carsADM[index],
-                                onLong: () async {
-                                  await carController.deleteCar(
-                                      id: controller.carsADM[index].id ?? '');
-                                },
-                                onTap: () {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (context) => CarDetailsPage(
-                                            carID:
-                                                controller.carsADM[index].id!,
-                                          )));
-                                },
-                              )),
+                  }),
+                  Observer(builder: (_) {
+                    final cars = carController.carsSorts;
+                    return CarsTableView(
+                      values: cars,
+                      obms: controller.obms,
+                      onDetails: (id) {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => CarDetailsPage(
+                                  carID: id,
+                                )));
+                      },
                     );
-            }),
+                  }),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Row(
+                    children: [
+                      Text(
+                        'Mostrar',
+                        style: Constants.subtitleHint,
+                      ),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      Container(
+                        height: 40.0,
+                        width: 65,
+                        padding: const EdgeInsets.symmetric(horizontal: 5),
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey),
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(5.0)),
+                        child: Observer(builder: (_) {
+                          return DropdownButton<int>(
+                              isExpanded: true,
+                              value: carController.limit,
+                              underline: Container(),
+                              onChanged: carController.setLimit,
+                              items: [10, 25, 50, 75, 100]
+                                  .map((e) => DropdownMenuItem(
+                                        value: e,
+                                        child: Padding(
+                                          padding:
+                                              const EdgeInsets.only(left: 5),
+                                          child: Text(
+                                            e.toString(),
+                                            style: Constants.subtitle,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                      ))
+                                  .toList());
+                        }),
+                      ),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      Text(
+                        'entradas',
+                        style: Constants.subtitleHint,
+                      ),
+                      const Spacer(),
+                      Observer(builder: (context) {
+                        return PaginationWidget(
+                          limit: carController.limit,
+                          page: carController.page,
+                          length: cars.length,
+                          onChange: carController.setPage,
+                        );
+                      }),
+                    ],
+                  )
+                ],
+              ),
+            )
           ],
         ),
       ),

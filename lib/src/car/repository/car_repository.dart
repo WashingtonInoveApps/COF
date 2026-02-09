@@ -16,15 +16,24 @@ class CarRepository extends APIClient implements ICarRepository {
   @override
   Stream<List<CarStatusModel>> listenStatusCar({required String carId}) {
     try {
-      return colCars
-          .doc(carId)
-          .collection("status")
-          .snapshots()
-          .map((e) => e.docs.map((doc) {
-                var carStatu = CarStatusModel.fromMap(doc.data());
-                carStatu.id = doc.id;
-                return carStatu;
-              }).toList());
+      return colStatusCars.where('carID', isEqualTo: carId).snapshots().map(
+          (e) => e
+              .docs
+              .map((doc) =>
+                  CarStatusModel.fromMap(doc.data() as Map<String, dynamic>))
+              .toList());
+    } catch (e) {
+      return Stream.value([]);
+    }
+  }
+
+  @override
+  Stream<List<CarStatusModel>> listenStatusCarGeral() {
+    try {
+      return colStatusCars.snapshots().map((e) => e.docs
+          .map((doc) =>
+              CarStatusModel.fromMap(doc.data() as Map<String, dynamic>))
+          .toList());
     } catch (e) {
       return Stream.value([]);
     }
@@ -84,11 +93,11 @@ class CarRepository extends APIClient implements ICarRepository {
   }
 
   @override
-  Future<bool> updateStatusCar(
+  Future<bool> saveStatusCar(
       {required CarModel car, CarStatusModel? status}) async {
     try {
       final docCar = colCars.doc(car.id);
-      final docStatus = docCar.collection('status').doc();
+      final docStatus = colStatusCars.doc();
 
       await firebase!.runTransaction((trans) async {
         if (status != null) {
@@ -123,7 +132,7 @@ class CarRepository extends APIClient implements ICarRepository {
 
       return true;
     } catch (e) {
-      return false;
+      rethrow;
     }
   }
 

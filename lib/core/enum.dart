@@ -5,6 +5,8 @@ enum StatusCar { operando, reserva, baixado }
 
 enum StateChecklist { inprogress, completed, expired }
 
+enum StateCarProblems { airconditioning, pneu, mechanics, electric, others }
+
 extension CarStateLabel on StatusCar {
   String get label {
     switch (this) {
@@ -14,6 +16,40 @@ extension CarStateLabel on StatusCar {
         return "Reserva";
       case StatusCar.baixado:
         return "Baixado";
+    }
+  }
+}
+
+extension StateCarProblemsLabel on StateCarProblems {
+  String get label {
+    switch (this) {
+      case StateCarProblems.airconditioning:
+        return "Ar condicionado";
+      case StateCarProblems.electric:
+        return "Elétricos";
+      case StateCarProblems.mechanics:
+        return "Mecânicos";
+      case StateCarProblems.pneu:
+        return "Pneus";
+      case StateCarProblems.others:
+        return "Outros";
+    }
+  }
+}
+
+extension StateCarProblemsColor on StateCarProblems {
+  Color get color {
+    switch (this) {
+      case StateCarProblems.airconditioning:
+        return Colors.blue.shade700;
+      case StateCarProblems.electric:
+        return Colors.green;
+      case StateCarProblems.mechanics:
+        return Colors.orange;
+      case StateCarProblems.pneu:
+        return Colors.brown;
+      case StateCarProblems.others:
+        return Colors.red;
     }
   }
 }
@@ -95,6 +131,13 @@ class EnumCore {
     return StateChecklist.values.firstWhere(
       (e) => e.name == value,
       orElse: () => StateChecklist.inprogress,
+    );
+  }
+
+  static StateCarProblems stateCarProblemsFromString(String value) {
+    return StateCarProblems.values.firstWhere(
+      (e) => e.name == value,
+      orElse: () => StateCarProblems.others,
     );
   }
 }

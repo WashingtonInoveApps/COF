@@ -91,7 +91,7 @@ abstract class _LoginControllerBase with Store {
     } catch (e) {
       loading = false;
       state = LoginState.done;
-      rethrow;
+      return false;
     }
   }
 

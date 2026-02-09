@@ -22,13 +22,13 @@ class Constants {
 
   static final carsFunctions = ["Operacional", "Administrativo"];
 
-  static final statusType = [
-    "Ar condicionado",
-    "Elétricos",
-    "Mecânicos",
-    "Pneu",
-    "Outros"
-  ];
+  // static final statusType = [
+  //   "Ar condicionado",
+  //   "Elétricos",
+  //   "Mecânicos",
+  //   "Pneu",
+  //   "Outros"
+  // ];
 
   static final graduations = [
     'Soldado',

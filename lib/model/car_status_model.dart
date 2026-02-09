@@ -1,11 +1,12 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
+import 'package:bsu_control/core/enum.dart';
 import 'package:bsu_control/model/user_model.dart';
 
 class CarStatusModel {
   String? id;
-  String type;
+  StateCarProblems type;
   String carID;
   String description;
   DateTime date;
@@ -16,7 +17,7 @@ class CarStatusModel {
 
   CarStatusModel(
       {this.id,
-      this.type = "",
+      this.type = StateCarProblems.others,
       this.description = "",
       this.carID = '',
       required this.date,
@@ -28,7 +29,7 @@ class CarStatusModel {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'type': type,
+      'type': type.name,
       'carID': carID,
       'description': description,
       'date': date.millisecondsSinceEpoch,
@@ -42,7 +43,7 @@ class CarStatusModel {
   factory CarStatusModel.fromMap(Map<String, dynamic> map) {
     return CarStatusModel(
       id: map['id'],
-      type: map['type'] ?? '',
+      type: EnumCore.stateCarProblemsFromString(map['type']),
       carID: map['carID'] ?? '',
       description: map['description'] ?? '',
       date: DateTime.fromMillisecondsSinceEpoch(map['date']),
@@ -63,7 +64,7 @@ class CarStatusModel {
 
   CarStatusModel copyWith({
     String? id,
-    String? type,
+    StateCarProblems? type,
     String? carID,
     String? description,
     DateTime? date,

@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
+import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/model/car_changes_model.dart';
 import 'package:bsu_control/model/itens_changes_model.dart';
 import 'package:bsu_control/model/obm_model.dart';
@@ -36,6 +39,15 @@ abstract class _CarControllerBase with Store {
   String? cia;
 
   @observable
+  ObservableList<CarModel> cars = <CarModel>[].asObservable();
+
+  @observable
+  int limit = 10;
+
+  @observable
+  int page = 1;
+
+  @observable
   OBMModel obm = OBMModel(team: [], cias: []);
 
   @observable
@@ -53,6 +65,14 @@ abstract class _CarControllerBase with Store {
   bool get enable => app.user.admin;
 
   @computed
+  List<CarModel> get carsSorts {
+    final list = Core.paginate(list: cars, page: page, limit: limit);
+
+    log('Cars sort:${list.length}');
+    return List<CarModel>.from(list);
+  }
+
+  @computed
   bool get adm => function == Constants.carsFunctions.first;
 
   _CarControllerBase({required this.app}) {
@@ -62,6 +82,10 @@ abstract class _CarControllerBase with Store {
 
   Stream<List<CarStatusModel>> listenStatus({required String carId}) {
     return repository.listenStatusCar(carId: carId);
+  }
+
+  Stream<List<CarStatusModel>> listenStatusGeral() {
+    return repository.listenStatusCarGeral();
   }
 
   Stream<List<CarMapaModel>> listenMapas({required String carId}) {
@@ -77,6 +101,24 @@ abstract class _CarControllerBase with Store {
     } else {
       fieldCarTypeVisible = false;
     }
+  }
+
+  @action
+  setCars(List<CarModel> values) {
+    cars
+      ..clear()
+      ..addAll(values);
+  }
+
+  @action
+  setLimit(int? value) {
+    limit = value ?? limit;
+    page = 1;
+  }
+
+  @action
+  setPage(int value) {
+    page = value;
   }
 
   @action
@@ -286,10 +328,10 @@ abstract class _CarControllerBase with Store {
   }
 
   @action
-  Future<bool> updateStatusCar(
+  Future<bool> saveStatusCar(
       {required CarModel car, CarStatusModel? status}) async {
     loading = true;
-    final result = await repository.updateStatusCar(car: car, status: status);
+    final result = await repository.saveStatusCar(car: car, status: status);
     loading = false;
 
     return result;
@@ -325,10 +367,15 @@ abstract class _CarControllerBase with Store {
 
   @action
   Future<bool> deleteCar({required String id}) async {
-    loading = true;
-    final result = await repository.deleteCar(id: id);
+    try {
+      loading = true;
+      final result = await repository.deleteCar(id: id);
 
-    loading = false;
-    return result;
+      loading = false;
+      return result;
+    } catch (e) {
+      loading = false;
+      rethrow;
+    }
   }
 }

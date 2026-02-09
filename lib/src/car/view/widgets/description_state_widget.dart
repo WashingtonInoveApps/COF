@@ -1,4 +1,5 @@
 import 'package:bsu_control/core/constants.dart';
+import 'package:bsu_control/core/enum.dart';
 import 'package:bsu_control/core/validation.dart';
 import 'package:bsu_control/model/car_status_model.dart';
 import 'package:bsu_control/model/user_model.dart';
@@ -17,7 +18,7 @@ class DescriptionStateWidget extends StatefulWidget {
 }
 
 class _DescriptionStateWidgetState extends State<DescriptionStateWidget> {
-  String _status = Constants.statusType.first;
+  StateCarProblems state = StateCarProblems.others;
 
   final _controllerDesc = TextEditingController();
   final _controllerLocal = TextEditingController();
@@ -48,24 +49,25 @@ class _DescriptionStateWidgetState extends State<DescriptionStateWidget> {
                 decoration: BoxDecoration(
                     border: Border.all(color: Colors.grey),
                     borderRadius: BorderRadius.circular(5)),
-                child: DropdownButton<String>(
-                    value: _status,
+                child: DropdownButton<StateCarProblems>(
+                    value: state,
                     onChanged: (value) {
                       setState(() {
-                        _status = value ?? Constants.statusType.first;
+                        state = value ?? state;
                       });
                     },
                     underline: Container(),
                     isExpanded: true,
-                    items: List.generate(
-                        Constants.statusType.length,
-                        (index) => DropdownMenuItem<String>(
-                              value: Constants.statusType[index],
-                              child: Text(
-                                Constants.statusType[index],
-                                style: Constants.title,
-                              ),
-                            ))),
+                    items:
+                        List.generate(StateCarProblems.values.length, (index) {
+                      return DropdownMenuItem<StateCarProblems>(
+                        value: StateCarProblems.values[index],
+                        child: Text(
+                          StateCarProblems.values[index].label,
+                          style: Constants.title,
+                        ),
+                      );
+                    })),
               ),
               const SizedBox(
                 height: 10.0,
@@ -98,7 +100,7 @@ class _DescriptionStateWidgetState extends State<DescriptionStateWidget> {
                           widget.onInsert(CarStatusModel(
                               date: DateTime.now(),
                               user: widget.user,
-                              type: _status,
+                              type: state,
                               description: _controllerDesc.text,
                               local: _controllerLocal.text,
                               value: false));

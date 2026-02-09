@@ -1,38 +1,32 @@
 import 'package:bsu_control/core/constants.dart';
-import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/core/enum.dart';
-import 'package:bsu_control/model/check_list_model.dart';
+import 'package:bsu_control/model/car_model.dart';
 import 'package:bsu_control/model/obm_model.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
-class ChecklistTableView extends StatefulWidget {
-  final List<CheckListModel> values;
+class CarsTableView extends StatefulWidget {
+  final List<CarModel> values;
   final List<OBMModel> obms;
-  final Function(String)? onContact;
   final Function(String)? onDetails;
-  const ChecklistTableView(
-      {Key? key,
-      required this.values,
-      required this.obms,
-      this.onContact,
-      this.onDetails})
+  const CarsTableView(
+      {Key? key, required this.values, required this.obms, this.onDetails})
       : super(key: key);
 
   @override
-  State<ChecklistTableView> createState() => _ChecklistTableViewState();
+  State<CarsTableView> createState() => _CarsTableViewState();
 }
 
-class _ChecklistTableViewState extends State<ChecklistTableView> {
-  late ChecklistDataSource dataSource;
+class _CarsTableViewState extends State<CarsTableView> {
+  late CarsDataSource dataSource;
+
   @override
   void initState() {
     super.initState();
-    dataSource = ChecklistDataSource(
-        checklists: widget.values,
+    dataSource = CarsDataSource(
+        cars: widget.values,
         obms: widget.obms,
-        onContact: widget.onContact,
         onDetails: widget.onDetails,
         onSortChanged: () {
           setState(() {});
@@ -40,7 +34,7 @@ class _ChecklistTableViewState extends State<ChecklistTableView> {
   }
 
   @override
-  void didUpdateWidget(covariant ChecklistTableView oldWidget) {
+  void didUpdateWidget(covariant CarsTableView oldWidget) {
     super.didUpdateWidget(oldWidget);
     dataSource.updateData(widget.values, widget.obms);
   }
@@ -49,7 +43,6 @@ class _ChecklistTableViewState extends State<ChecklistTableView> {
   Widget build(BuildContext context) {
     header({required String label, String? columnName}) {
       final isActive = dataSource.sortColumn == columnName;
-
       return Container(
         alignment: Alignment.center,
         margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 2),
@@ -93,7 +86,7 @@ class _ChecklistTableViewState extends State<ChecklistTableView> {
       source: dataSource,
       verticalScrollPhysics: const ClampingScrollPhysics(),
       isScrollbarAlwaysShown: true,
-      columnWidthMode: ColumnWidthMode.auto,
+      columnWidthMode: ColumnWidthMode.lastColumnFill,
       gridLinesVisibility: GridLinesVisibility.horizontal,
       headerGridLinesVisibility: GridLinesVisibility.horizontal,
       columns: [
@@ -103,9 +96,8 @@ class _ChecklistTableViewState extends State<ChecklistTableView> {
           label: Container(),
         ),
         GridColumn(
-          width: 100,
-          columnName: 'data',
-          label: header(label: 'DATA'),
+          columnName: 'prefix',
+          label: header(label: 'PREFIXO'),
         ),
         GridColumn(
           columnName: 'obm',
@@ -116,37 +108,26 @@ class _ChecklistTableViewState extends State<ChecklistTableView> {
           label: header(label: 'COMPANHIA', columnName: 'cia'),
         ),
         GridColumn(
-          columnName: 'team',
-          label: header(label: 'GUARNIÇÃO', columnName: 'team'),
+          columnName: 'plate',
+          label: header(
+            label: 'PLACA',
+          ),
         ),
         GridColumn(
-          columnName: 'viatura',
-          label: header(label: 'VIATURA'),
+          columnName: 'function',
+          label: header(label: 'FUNÇÃO', columnName: 'function'),
         ),
         GridColumn(
-          columnName: 'responsable',
-          label: header(label: 'RESPONSÁVEL'),
+          columnName: 'km',
+          label: header(label: 'KM'),
         ),
         GridColumn(
-          width: 180,
+          width: 150,
           columnName: 'state',
           label: header(label: 'STATUS', columnName: 'state'),
         ),
         GridColumn(
-          width: 180,
-          columnName: 'contact',
-          label: header(label: 'CONTATO'),
-        ),
-        GridColumn(
-          columnName: 'kmStart',
-          label: header(label: 'KM INICIAL'),
-        ),
-        GridColumn(
-          columnName: 'kmFinish',
-          label: header(label: 'KM FINAL'),
-        ),
-        GridColumn(
-          width: 150,
+          width: 120,
           columnName: 'changes',
           label: header(label: 'ALTERAÇÕES', columnName: 'changes'),
         ),
@@ -155,10 +136,8 @@ class _ChecklistTableViewState extends State<ChecklistTableView> {
   }
 }
 
-class ChecklistDataSource extends DataGridSource {
-  final Function(String contact)? onContact;
+class CarsDataSource extends DataGridSource {
   final Function(String id)? onDetails;
-
   final VoidCallback? onSortChanged;
 
   String? sortColumn;
@@ -196,47 +175,24 @@ class ChecklistDataSource extends DataGridSource {
     onSortChanged?.call();
   }
 
-  void updateData(List<CheckListModel> checklists, List<OBMModel> obms) {
-    _rows = checklists.map<DataGridRow>((check) {
-      final obm = obms.firstWhere((e) => e.id == check.obmID);
-
-      final listStates = List<StatesChecklist>.from(check.states);
-      listStates.sort((a, b) => b.date.compareTo(a.date));
-
-      final state = listStates.first;
+  void updateData(List<CarModel> cars, List<OBMModel> obms) {
+    _rows = cars.map<DataGridRow>((car) {
+      final obm = obms.firstWhere((e) => e.id == car.obmID);
 
       return DataGridRow(cells: [
-        DataGridCell<String>(
-          columnName: 'details',
-          value: check.id,
-        ),
-        DataGridCell<String>(
-          columnName: 'data',
-          value: Core.formatDate(check.date),
-        ),
+        DataGridCell<String>(columnName: 'details', value: car.id),
+        DataGridCell<String>(columnName: 'prefix', value: car.prefix),
         DataGridCell<String>(
             columnName: 'obm', value: obm.prefix.toUpperCase()),
-        DataGridCell<String>(columnName: 'cia', value: check.cia.toUpperCase()),
+        DataGridCell<String>(columnName: 'cia', value: car.cia.toUpperCase()),
+        DataGridCell<String>(columnName: 'plate', value: car.plate),
+        DataGridCell<String>(columnName: 'function', value: car.function),
+        DataGridCell<String>(columnName: 'km', value: car.km.toString()),
+        DataGridCell<String>(columnName: 'state', value: car.state.name),
         DataGridCell<String>(
-            columnName: 'team', value: check.team.toUpperCase()),
-        DataGridCell<String>(
-            columnName: 'viatura', value: check.prefix.toUpperCase()),
-        DataGridCell<String>(
-            columnName: 'responsable',
-            value:
-                ('${check.user.graduation} ${check.user.name}').toUpperCase()),
-        DataGridCell<String>(columnName: 'state', value: state.state.name),
-        DataGridCell<String>(
-          columnName: 'contact',
-          value: check.contact,
+          columnName: 'changes',
+          value: car.changes.length.toString().padLeft(2, '0'),
         ),
-        DataGridCell<String>(columnName: 'kmStart', value: check.startKM),
-        DataGridCell<String>(
-            columnName: 'kmFinish',
-            value: check.endKM.isEmpty ? ' - ' : check.endKM),
-        DataGridCell<String>(
-            columnName: 'changes',
-            value: check.changes.length.toString().padLeft(2, '0')),
       ]);
     }).toList();
 
@@ -244,53 +200,36 @@ class ChecklistDataSource extends DataGridSource {
     notifyListeners();
   }
 
-  ChecklistDataSource({
-    required List<CheckListModel> checklists,
+  CarsDataSource({
+    required List<CarModel> cars,
     required List<OBMModel> obms,
-    this.onContact,
-    this.onDetails,
     this.onSortChanged,
+    this.onDetails,
   }) {
-    _rows = checklists.map<DataGridRow>((check) {
-      final obm = obms.firstWhere((e) => e.id == check.obmID);
-
-      final listStates = List<StatesChecklist>.from(check.states);
-      listStates.sort((a, b) => b.date.compareTo(a.date));
-
-      final state = listStates.first;
+    _rows = cars.map<DataGridRow>((car) {
+      final obm = obms.firstWhere((e) => e.id == car.obmID);
 
       return DataGridRow(cells: [
         DataGridCell<String>(
           columnName: 'details',
-          value: check.id,
+          value: car.id,
         ),
         DataGridCell<String>(
-          columnName: 'data',
-          value: Core.formatDate(check.date),
+          columnName: 'prefix',
+          value: car.prefix,
         ),
         DataGridCell<String>(
             columnName: 'obm', value: obm.prefix.toUpperCase()),
-        DataGridCell<String>(columnName: 'cia', value: check.cia.toUpperCase()),
+        DataGridCell<String>(columnName: 'cia', value: car.cia.toUpperCase()),
         DataGridCell<String>(
-            columnName: 'team', value: check.team.toUpperCase()),
-        DataGridCell<String>(
-            columnName: 'viatura', value: check.prefix.toUpperCase()),
-        DataGridCell<String>(
-            columnName: 'responsable',
-            value:
-                ('${check.user.graduation} ${check.user.name}').toUpperCase()),
-        DataGridCell<String>(columnName: 'state', value: state.state.name),
-        DataGridCell<String>(
-          columnName: 'contact',
-          value: check.contact,
+          columnName: 'function',
+          value: car.function,
         ),
-        DataGridCell<String>(columnName: 'kmStart', value: check.startKM),
-        DataGridCell<String>(
-            columnName: 'kmFinish',
-            value: check.endKM.isEmpty ? ' - ' : check.endKM),
+        DataGridCell<String>(columnName: 'km', value: car.km.toString()),
+        DataGridCell<String>(columnName: 'state', value: car.state.name),
         DataGridCell<String>(
             columnName: 'changes',
-            value: check.changes.length.toString().padLeft(2, '0')),
+            value: car.changes.length.toString().padLeft(2, '0')),
       ]);
     }).toList();
   }
@@ -305,38 +244,7 @@ class ChecklistDataSource extends DataGridSource {
     return DataGridRowAdapter(
       cells: row.getCells().map((cell) {
         /// 🔹 COLUNA DE AÇÃO
-        if (cell.columnName == 'contact') {
-          return Center(
-            child: InkWell(
-              child: Card(
-                child: Container(
-                  padding: const EdgeInsets.all(5),
-                  child: Row(
-                    spacing: 5,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(MdiIcons.whatsapp, color: Colors.green),
-                      Text(
-                        cell.value,
-                        style: Constants.title,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              onTap: () {
-                final value = cell.value;
-                final contact = value
-                    .replaceAll(' ', '')
-                    .replaceAll('(', '')
-                    .replaceAll(')', '')
-                    .replaceAll('-', '');
-
-                onContact?.call(contact);
-              },
-            ),
-          );
-        } else if (cell.columnName == 'details') {
+        if (cell.columnName == 'details') {
           return Center(
             child: InkWell(
               child: Card(
@@ -354,7 +262,7 @@ class ChecklistDataSource extends DataGridSource {
             ),
           );
         } else if (cell.columnName == 'state') {
-          final state = EnumCore.statusChecklistFromString(cell.value);
+          final state = EnumCore.statusCarFromString(cell.value);
 
           return Center(
             child: Container(

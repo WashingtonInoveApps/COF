@@ -15,6 +15,13 @@ mixin _$CarController on _CarControllerBase, Store {
   bool get enable => (_$enableComputed ??=
           Computed<bool>(() => super.enable, name: '_CarControllerBase.enable'))
       .value;
+  Computed<List<CarModel>>? _$carsSortsComputed;
+
+  @override
+  List<CarModel> get carsSorts =>
+      (_$carsSortsComputed ??= Computed<List<CarModel>>(() => super.carsSorts,
+              name: '_CarControllerBase.carsSorts'))
+          .value;
   Computed<bool>? _$admComputed;
 
   @override
@@ -98,6 +105,54 @@ mixin _$CarController on _CarControllerBase, Store {
   set cia(String? value) {
     _$ciaAtom.reportWrite(value, super.cia, () {
       super.cia = value;
+    });
+  }
+
+  late final _$carsAtom =
+      Atom(name: '_CarControllerBase.cars', context: context);
+
+  @override
+  ObservableList<CarModel> get cars {
+    _$carsAtom.reportRead();
+    return super.cars;
+  }
+
+  @override
+  set cars(ObservableList<CarModel> value) {
+    _$carsAtom.reportWrite(value, super.cars, () {
+      super.cars = value;
+    });
+  }
+
+  late final _$limitAtom =
+      Atom(name: '_CarControllerBase.limit', context: context);
+
+  @override
+  int get limit {
+    _$limitAtom.reportRead();
+    return super.limit;
+  }
+
+  @override
+  set limit(int value) {
+    _$limitAtom.reportWrite(value, super.limit, () {
+      super.limit = value;
+    });
+  }
+
+  late final _$pageAtom =
+      Atom(name: '_CarControllerBase.page', context: context);
+
+  @override
+  int get page {
+    _$pageAtom.reportRead();
+    return super.page;
+  }
+
+  @override
+  set page(int value) {
+    _$pageAtom.reportWrite(value, super.page, () {
+      super.page = value;
     });
   }
 
@@ -198,14 +253,13 @@ mixin _$CarController on _CarControllerBase, Store {
         .run(() => super.updateKMArref(id: id, value: value));
   }
 
-  late final _$updateStatusCarAsyncAction =
-      AsyncAction('_CarControllerBase.updateStatusCar', context: context);
+  late final _$saveStatusCarAsyncAction =
+      AsyncAction('_CarControllerBase.saveStatusCar', context: context);
 
   @override
-  Future<bool> updateStatusCar(
-      {required CarModel car, CarStatusModel? status}) {
-    return _$updateStatusCarAsyncAction
-        .run(() => super.updateStatusCar(car: car, status: status));
+  Future<bool> saveStatusCar({required CarModel car, CarStatusModel? status}) {
+    return _$saveStatusCarAsyncAction
+        .run(() => super.saveStatusCar(car: car, status: status));
   }
 
   late final _$deleteStatusCarAsyncAction =
@@ -252,6 +306,39 @@ mixin _$CarController on _CarControllerBase, Store {
         name: '_CarControllerBase.setTypeCar');
     try {
       return super.setTypeCar(value);
+    } finally {
+      _$_CarControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setCars(List<CarModel> values) {
+    final _$actionInfo = _$_CarControllerBaseActionController.startAction(
+        name: '_CarControllerBase.setCars');
+    try {
+      return super.setCars(values);
+    } finally {
+      _$_CarControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setLimit(int? value) {
+    final _$actionInfo = _$_CarControllerBaseActionController.startAction(
+        name: '_CarControllerBase.setLimit');
+    try {
+      return super.setLimit(value);
+    } finally {
+      _$_CarControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setPage(int value) {
+    final _$actionInfo = _$_CarControllerBaseActionController.startAction(
+        name: '_CarControllerBase.setPage');
+    try {
+      return super.setPage(value);
     } finally {
       _$_CarControllerBaseActionController.endAction(_$actionInfo);
     }
@@ -474,11 +561,15 @@ type: ${type},
 function: ${function},
 fieldCarTypeVisible: ${fieldCarTypeVisible},
 cia: ${cia},
+cars: ${cars},
+limit: ${limit},
+page: ${page},
 obm: ${obm},
 sectionsItens: ${sectionsItens},
 sectionsMaterials: ${sectionsMaterials},
 carChanges: ${carChanges},
 enable: ${enable},
+carsSorts: ${carsSorts},
 adm: ${adm}
     ''';
   }

@@ -51,7 +51,7 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
   @override
   void dispose() {
     super.dispose();
-    rec.reaction.dispose();
+    rec();
     _controller.dispose();
   }
 
@@ -94,94 +94,6 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-    Widget statusRegisters(List<CarStatusModel> status) {
-      return ListView.separated(
-          shrinkWrap: true,
-          physics: const ClampingScrollPhysics(),
-          padding: const EdgeInsets.all(5),
-          itemCount: status.length,
-          separatorBuilder: (_, __) => const Divider(),
-          itemBuilder: (context, index) {
-            return Container(
-              width: double.infinity,
-              margin: const EdgeInsets.only(bottom: 5.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          Core.formatDate(status[index].date,
-                              largeDayHour: true),
-                          style: Constants.subtitleHint,
-                        ),
-                        Text(
-                          status[index].description,
-                          style: Constants.subtitle,
-                        ),
-                        Row(
-                          spacing: 10,
-                          children: [
-                            Text(
-                              "${status[index].user.graduation} ${status[index].user.name}",
-                              style: Constants.subtitleHint,
-                            ),
-                            // InkWell(
-                            //     onTap: () {},
-                            //     child: Text(
-                            //       'Ver detalhes',
-                            //       style: Constants.subtitle
-                            //           .copyWith(color: Colors.blue),
-                            //     )),
-                          ],
-                        ),
-                        Visibility(
-                          visible: status[index].local.isNotEmpty,
-                          child: Text(
-                            status[index].local,
-                            style: Constants.subtitleHint,
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                  Visibility(
-                    visible: (index == 0),
-                    child: IconButton(
-                        onPressed: () async {
-                          showDialog(
-                              context: context,
-                              builder: (context) => AlertMessage(
-                                    title: '',
-                                    message:
-                                        'Deseja deletar esse registro do estado de funcionamento ?',
-                                    cancel: true,
-                                    onPressedOK: () =>
-                                        Navigator.of(context).pop(true),
-                                    onPressedCancel: () =>
-                                        Navigator.of(context).pop(false),
-                                  )).then((value) async {
-                            if (value ?? false) {
-                              await controller.deleteStatusCar(
-                                  car: car.copyWith(
-                                      enable: true, state: StatusCar.reserva),
-                                  status: status[index]);
-                            }
-                          });
-                        },
-                        icon: const Icon(
-                          Icons.delete,
-                          size: 20,
-                          color: Colors.grey,
-                        )),
-                  ),
-                ],
-              ),
-            );
-          });
-    }
-
     return Stack(
       children: [
         BackgraundPage(
@@ -385,7 +297,7 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                 ],
               ),
               const SizedBox(
-                height: 15.0,
+                height: 10.0,
               ),
             ],
           ),
@@ -422,7 +334,7 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                               builder: (context) => DescriptionStateWidget(
                                     user: app.user,
                                     onInsert: (result) async {
-                                      await controller.updateStatusCar(
+                                      await controller.saveStatusCar(
                                           car: car.copyWith(
                                               enable: false, state: value),
                                           status:
@@ -431,7 +343,7 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                                   ));
                         }
                       } else {
-                        await controller.updateStatusCar(
+                        await controller.saveStatusCar(
                             car: car.copyWith(enable: true, state: value));
                       }
                     },
@@ -464,7 +376,6 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
               ),
               const Divider(),
               SizedBox(
-                height: 250,
                 width: double.infinity,
                 child: StreamBuilder<List<CarStatusModel>>(
                     stream: controller.listenStatus(carId: car.id!),
@@ -490,14 +401,122 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                                 style: Constants.subtitle
                                     .copyWith(color: Colors.red),
                               ),
-                              Expanded(
-                                child: statusRegisters(status),
-                              ),
+                              statusRegisters(
+                                  context: context,
+                                  status: status,
+                                  onDelete: (value) async {
+                                    await controller.deleteStatusCar(
+                                        car: car.copyWith(
+                                            enable: true,
+                                            state: StatusCar.reserva),
+                                        status: value);
+                                  }),
                             ],
                           );
                         }
                       }
                     }),
+              ),
+              const SizedBox(
+                height: 10.0,
+              ),
+              Row(
+                spacing: 10,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  SizedBox(
+                    width: 80.0,
+                    child: TextButton(
+                        style: TextButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadiusGeometry.circular(5)),
+                            side: BorderSide(
+                                color: Theme.of(context).primaryColor)),
+                        onPressed: () {
+                          showDialog(
+                              context: context,
+                              builder: (context) => AlertMessage(
+                                    title: '',
+                                    message:
+                                        'Deseja deletar o registro desse veículo ?',
+                                    cancel: true,
+                                    titleOK: 'Sim',
+                                    onPressedOK: () =>
+                                        Navigator.of(context).pop(true),
+                                    onPressedCancel: () =>
+                                        Navigator.of(context).pop(false),
+                                  )).then((value) {
+                            if (value ?? false) {
+                              controller
+                                  .deleteCar(id: car.id ?? '')
+                                  .then((value) {
+                                Navigator.of(context).pop();
+                              }).catchError((err) {
+                                showDialog(
+                                    context: context,
+                                    builder: (context) => AlertMessage(
+                                          title: 'Atenção',
+                                          message: err.toString(),
+                                          onPressedOK: () =>
+                                              Navigator.of(context).pop(),
+                                        ));
+                              });
+                            }
+                          });
+                        },
+                        child: Text(
+                          "Excluir",
+                          style: Constants.subtitle.copyWith(
+                              color: Theme.of(context).primaryColor,
+                              fontWeight: FontWeight.bold),
+                        )),
+                  ),
+                  SizedBox(
+                    width: 80.0,
+                    child: TextButton(
+                        style: TextButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadiusGeometry.circular(5)),
+                            side: BorderSide(
+                                color: Theme.of(context).primaryColor)),
+                        onPressed: () {
+                          showDialog(
+                              context: context,
+                              builder: (context) => AlertMessage(
+                                    title: '',
+                                    message:
+                                        'Deseja criar uma copia atual desse veiculo ?',
+                                    cancel: true,
+                                    titleOK: 'Sim',
+                                    onPressedOK: () =>
+                                        Navigator.of(context).pop(true),
+                                    onPressedCancel: () =>
+                                        Navigator.of(context).pop(false),
+                                  )).then((value) async {
+                            if (value ?? false) {
+                              controller.copy(car: car).then((value) {
+                                Navigator.of(context).pop();
+                              }).catchError((err) {
+                                showDialog(
+                                    context: context,
+                                    builder: (context) => AlertMessage(
+                                          title: 'Atenção',
+                                          message: err.toString(),
+                                          onPressedOK: () =>
+                                              Navigator.of(context).pop(),
+                                        ));
+                              });
+                            }
+                          });
+                        },
+                        child: Text(
+                          "Copiar",
+                          style: Constants.subtitle.copyWith(
+                              color: Theme.of(context).primaryColor,
+                              fontWeight: FontWeight.bold),
+                        )),
+                  ),
+                ],
               ),
               const SizedBox(
                 height: 50.0,
@@ -521,4 +540,92 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
       ],
     );
   }
+}
+
+Widget statusRegisters(
+    {required BuildContext context,
+    required List<CarStatusModel> status,
+    required Function(CarStatusModel) onDelete}) {
+  return Column(
+    children: List.generate(status.length, (index) {
+      return Container(
+        width: double.infinity,
+        margin: const EdgeInsets.only(bottom: 5.0),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    Core.formatDate(status[index].date, largeDayHour: true),
+                    style: Constants.subtitleHint,
+                  ),
+                  Text(
+                    status[index].description,
+                    style: Constants.subtitle,
+                  ),
+                  Row(
+                    spacing: 10,
+                    children: [
+                      Text(
+                        "${status[index].user.graduation} ${status[index].user.name}",
+                        style: Constants.subtitleHint,
+                      ),
+                      // InkWell(
+                      //     onTap: () {},
+                      //     child: Text(
+                      //       'Ver detalhes',
+                      //       style: Constants.subtitle
+                      //           .copyWith(color: Colors.blue),
+                      //     )),
+                    ],
+                  ),
+                  Visibility(
+                    visible: status[index].local.isNotEmpty,
+                    child: Text(
+                      status[index].local,
+                      style: Constants.subtitleHint,
+                    ),
+                  )
+                ],
+              ),
+            ),
+            Visibility(
+              visible: (index == 0),
+              child: IconButton(
+                  onPressed: () async {
+                    showDialog(
+                        context: context,
+                        builder: (context) => AlertMessage(
+                              title: '',
+                              message:
+                                  'Deseja deletar esse registro do estado de funcionamento ?',
+                              cancel: true,
+                              onPressedOK: () =>
+                                  Navigator.of(context).pop(true),
+                              onPressedCancel: () =>
+                                  Navigator.of(context).pop(false),
+                            )).then((value) async {
+                      if (value ?? false) {
+                        onDelete(status[index]);
+                        // await controller.deleteStatusCar(
+                        //     car: car.copyWith(
+                        //         enable: true, state: StatusCar.reserva),
+                        //     status: status[index]);
+                      }
+                    });
+                  },
+                  icon: const Icon(
+                    Icons.delete,
+                    size: 20,
+                    color: Colors.grey,
+                  )),
+            ),
+          ],
+        ),
+      );
+    }).expand((widget) => [widget, const Divider()]).toList()
+      ..removeLast(),
+  );
 }

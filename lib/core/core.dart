@@ -156,6 +156,13 @@ class Core {
     }
   }
 
+  static List<dynamic> paginate(
+      {required List<dynamic> list, required int page, required int limit}) {
+    final start = (page - 1) * limit;
+    final end = (start + limit) > list.length ? list.length : start + limit;
+    return list.sublist(start, end);
+  }
+
   // static bool isOperationalDay(DateTime referenceDate) {
   //   final nowOpDay = getOperationalDay(DateTime.now());
 

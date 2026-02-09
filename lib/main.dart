@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
+import 'package:bsu_control/core/core.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -56,15 +57,21 @@ class AppWidget extends StatefulWidget {
 class _AppWidgetState extends State<AppWidget> {
   final controller = GetIt.I.get<AppController>();
 
-  late StreamSubscription carDispose;
-  late StreamSubscription checklistPeriodDispose;
-  late StreamSubscription checklistTodayDispose;
-  late StreamSubscription usersDispose;
+  StreamSubscription? checklistPeriodDispose;
+  StreamSubscription? carDispose;
+  StreamSubscription? checklistTodayDispose;
+  StreamSubscription? usersDispose;
+
   late ReactionDisposer reac;
 
   @override
   void initState() {
     super.initState();
+
+    final dateStart = Core.getOperationalDay(DateTime.now());
+    controller.setDateRangeChecklist(
+        dateStart: dateStart, dateFinish: dateStart);
+
     carDispose = controller.listenCar.listen((result) {
       controller.setCars(result);
     });
@@ -74,6 +81,8 @@ class _AppWidgetState extends State<AppWidget> {
     });
 
     reac = autorun((_) {
+      checklistPeriodDispose?.cancel();
+
       checklistPeriodDispose = controller
           .listenChecklistPeriod(
               dateStart: controller.dateReferenceStart,
@@ -91,12 +100,12 @@ class _AppWidgetState extends State<AppWidget> {
   @override
   void dispose() {
     super.dispose();
-    reac.reaction.dispose();
+    reac();
 
-    carDispose.cancel();
-    checklistPeriodDispose.cancel();
-    usersDispose.cancel();
-    checklistTodayDispose.cancel();
+    carDispose?.cancel();
+    checklistPeriodDispose?.cancel();
+    usersDispose?.cancel();
+    checklistTodayDispose?.cancel();
   }
 
   @override

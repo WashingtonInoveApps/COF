@@ -2,17 +2,24 @@ import 'package:bsu_control/core/constants.dart';
 import 'package:flutter/material.dart';
 
 ///Criado com auxílio do ChatGPT
-class PaginationWidget extends StatelessWidget {
+class PaginationWidget extends StatefulWidget {
   final int page;
+  final int limit;
   final int length;
   final Function(int) onChange;
   const PaginationWidget(
       {Key? key,
       required this.page,
       required this.length,
-      required this.onChange})
+      required this.onChange,
+      required this.limit})
       : super(key: key);
 
+  @override
+  State<PaginationWidget> createState() => _PaginationWidgetState();
+}
+
+class _PaginationWidgetState extends State<PaginationWidget> {
   List<dynamic> buildPages(int current, int length, {int window = 1}) {
     final pages = <dynamic>[];
 
@@ -37,32 +44,34 @@ class PaginationWidget extends StatelessWidget {
     return pages;
   }
 
+  Widget pageButton(dynamic item, int current, Function(int) onChange) {
+    final isDots = item == '...';
+    final isActive = item == current;
+
+    return InkWell(
+      onTap: isDots ? null : () => onChange(item),
+      child: CircleAvatar(
+        radius: 15,
+        backgroundColor: isActive ? Constants.primary : Colors.grey.shade400,
+        child: Text(
+          item.toString().padLeft(2, '0'),
+          style: Constants.subtitle.copyWith(color: Colors.white),
+        ),
+      ),
+    );
+  }
+
+  int get totalPages => (widget.length / widget.limit).ceil();
+
   @override
   Widget build(BuildContext context) {
-    Widget pageButton(dynamic item, int current, Function(int) onChange) {
-      final isDots = item == '...';
-      final isActive = item == current;
-
-      return InkWell(
-        onTap: isDots ? null : () => onChange(item),
-        child: CircleAvatar(
-          radius: 15,
-          backgroundColor: isActive ? Constants.primary : Colors.grey.shade400,
-          child: Text(
-            item.toString().padLeft(2, '0'),
-            style: Constants.subtitle.copyWith(color: Colors.white),
-          ),
-        ),
-      );
-    }
-
-    final enableBack = page > 1;
-    final enableNext = page < length;
+    final enableBack = widget.page > 1;
+    final enableNext = widget.page < totalPages;
     return Row(
       spacing: 2,
       children: [
         InkWell(
-          onTap: enableBack ? () => onChange(page - 1) : null,
+          onTap: enableBack ? () => widget.onChange(widget.page - 1) : null,
           child: CircleAvatar(
             radius: 18,
             backgroundColor:
@@ -77,14 +86,14 @@ class PaginationWidget extends StatelessWidget {
         const SizedBox(
           width: 1,
         ),
-        ...buildPages(page, length).map((item) {
-          return pageButton(item, page, onChange);
+        ...buildPages(widget.page, totalPages).map((item) {
+          return pageButton(item, widget.page, widget.onChange);
         }),
         const SizedBox(
           width: 1,
         ),
         InkWell(
-          onTap: enableNext ? () => onChange(page + 1) : null,
+          onTap: enableNext ? () => widget.onChange(widget.page + 1) : null,
           child: CircleAvatar(
             radius: 18,
             backgroundColor:

@@ -157,8 +157,9 @@ abstract class _AppControllerBase with Store {
 
   @computed
   List<CheckListModel> get checklistPeriodSort {
-    final list = paginate(list: checklistsPeriod, page: page, limit: limit);
-    return list;
+    final list =
+        Core.paginate(list: checklistsPeriod, page: page, limit: limit);
+    return List<CheckListModel>.from(list);
   }
 
   @computed
@@ -235,7 +236,6 @@ abstract class _AppControllerBase with Store {
   @action
   setPage(int value) {
     page = value;
-    log('Page: $page');
   }
 
   @action
@@ -354,16 +354,5 @@ abstract class _AppControllerBase with Store {
   Future<void> initApplication() async {
     final result = await repository.getAppModel();
     version = result.version;
-  }
-
-  List<CheckListModel> paginate(
-      {required List<CheckListModel> list,
-      required int page,
-      required int limit}) {
-    final startIndex = (page - 1) * limit;
-
-    if (startIndex >= list.length) return [];
-
-    return list.skip(startIndex).take(limit).toList();
   }
 }

@@ -6,9 +6,9 @@ import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/src/checklist/view/checklist_details_page.dart';
 import 'package:bsu_control/src/checklist/view/checklist_register_page.dart';
 import 'package:bsu_control/src/home/controller/home_controller.dart';
-import 'package:bsu_control/src/home/view/widgets/cars_chart_widget.dart';
 import 'package:bsu_control/src/home/view/widgets/checklist_table_view.dart';
 import 'package:bsu_control/src/widgets/backgraund_page.dart';
+import 'package:bsu_control/src/widgets/cars_chart_widget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -16,7 +16,7 @@ import 'package:get_it/get_it.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
-import 'view/widgets/pagination_widget.dart';
+import '../widgets/pagination_widget.dart';
 import 'view/widgets/period_chart_widget.dart';
 
 class HomePage extends StatefulWidget {
@@ -53,98 +53,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    Widget btCustom(
-        {required String label,
-        required IconData icon,
-        required Color color,
-        required Function()? onTap}) {
-      return InkWell(
-        onTap: onTap,
-        child: Container(
-          alignment: Alignment.center,
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              color: (onTap == null) ? Colors.grey.shade300 : color),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                icon,
-                size: 25,
-                color: Colors.white,
-              ),
-              ...label
-                  .split(' ')
-                  .map((e) => Text(
-                        e,
-                        textAlign: TextAlign.center,
-                        style: Constants.title.copyWith(color: Colors.white),
-                      ))
-                  .toList()
-            ],
-          ),
-        ),
-      );
-    }
-
-    Widget cardInfor(
-        {required String label,
-        required IconData icon,
-        required Color color,
-        required int value}) {
-      return IntrinsicHeight(
-        child: Row(
-          spacing: 5,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-              alignment: Alignment.center,
-              margin: const EdgeInsets.all(5),
-              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 20),
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(5), color: color),
-              child: Icon(
-                icon,
-                size: 20,
-                color: Colors.white,
-              ),
-            ),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(
-                    height: 5,
-                  ),
-                  ...label
-                      .split(' ')
-                      .map((e) => Text(
-                            e.toUpperCase(),
-                            textAlign: TextAlign.center,
-                            style:
-                                Constants.subtitle.copyWith(color: Colors.grey),
-                          ))
-                      .toList(),
-                  Text(
-                    value.toString().padLeft(2, '0'),
-                    style: Constants.title.copyWith(
-                        color: Colors.black,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(
-                    height: 5,
-                  )
-                ],
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-
     return PopScope(
         canPop: false,
         child: BackgraundPage(
@@ -599,8 +507,9 @@ class _HomePageState extends State<HomePage> {
                               const Spacer(),
                               Observer(builder: (context) {
                                 return PaginationWidget(
+                                  limit: app.limit,
                                   page: app.page,
-                                  length: app.checklistPeriodSort.length,
+                                  length: app.checklistsPeriod.length,
                                   onChange: app.setPage,
                                 );
                               }),
@@ -616,4 +525,95 @@ class _HomePageState extends State<HomePage> {
           ),
         ));
   }
+}
+
+Widget cardInfor(
+    {required String label,
+    required IconData icon,
+    required Color color,
+    required int value}) {
+  return IntrinsicHeight(
+    child: Row(
+      spacing: 5,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Container(
+          alignment: Alignment.center,
+          margin: const EdgeInsets.all(5),
+          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 20),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(5), color: color),
+          child: Icon(
+            icon,
+            size: 20,
+            color: Colors.white,
+          ),
+        ),
+        Expanded(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(
+                height: 5,
+              ),
+              ...label
+                  .split(' ')
+                  .map((e) => Text(
+                        e.toUpperCase(),
+                        textAlign: TextAlign.center,
+                        style: Constants.subtitle.copyWith(color: Colors.grey),
+                      ))
+                  .toList(),
+              Text(
+                value.toString().padLeft(2, '0'),
+                style: Constants.title.copyWith(
+                    color: Colors.black,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(
+                height: 5,
+              )
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+Widget btCustom(
+    {required String label,
+    required IconData icon,
+    required Color color,
+    required Function()? onTap}) {
+  return InkWell(
+    onTap: onTap,
+    child: Container(
+      alignment: Alignment.center,
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: (onTap == null) ? Colors.grey.shade300 : color),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
+            size: 25,
+            color: Colors.white,
+          ),
+          ...label
+              .split(' ')
+              .map((e) => Text(
+                    e,
+                    textAlign: TextAlign.center,
+                    style: Constants.title.copyWith(color: Colors.white),
+                  ))
+              .toList()
+        ],
+      ),
+    ),
+  );
 }
