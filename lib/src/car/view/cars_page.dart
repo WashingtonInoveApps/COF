@@ -2,11 +2,14 @@ import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/model/car_model.dart';
 import 'package:bsu_control/model/car_status_model.dart';
+import 'package:bsu_control/model/check_list_model.dart';
 import 'package:bsu_control/src/car/controller/car_controller.dart';
 import 'package:bsu_control/src/car/view/widgets/car_chats_problem_widget.dart';
 import 'package:bsu_control/src/car/view/widgets/cars_table_view.dart';
 import 'package:bsu_control/src/widgets/backgraund_page.dart';
 import 'package:bsu_control/src/widgets/cars_chart_widget.dart';
+import 'package:bsu_control/src/widgets/images_changes_view_widget.dart';
+import 'package:bsu_control/src/widgets/textfield_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
@@ -14,6 +17,7 @@ import 'package:mobx/mobx.dart';
 
 import '../../widgets/pagination_widget.dart';
 import 'car_details_page.dart';
+import 'widgets/car_chart_km_month_widget.dart';
 
 class CarsPage extends StatefulWidget {
   const CarsPage({Key? key}) : super(key: key);
@@ -24,6 +28,8 @@ class CarsPage extends StatefulWidget {
 
 class _CarsPageState extends State<CarsPage> {
   final controller = GetIt.I.get<AppController>();
+  final searchController = TextEditingController();
+
   late CarController carController;
   late ReactionDisposer rec;
 
@@ -33,6 +39,7 @@ class _CarsPageState extends State<CarsPage> {
   void initState() {
     super.initState();
     carController = CarController(app: controller);
+    carController.setDateKmByMonth(DateTime.now());
 
     rec = autorun((_) {
       setState(() {
@@ -56,6 +63,7 @@ class _CarsPageState extends State<CarsPage> {
   @override
   void dispose() {
     super.dispose();
+    searchController.dispose();
     rec();
   }
 
@@ -65,6 +73,7 @@ class _CarsPageState extends State<CarsPage> {
       canPop: false,
       child: BackgraundPage(
         childLeft: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
               width: double.infinity,
@@ -91,21 +100,48 @@ class _CarsPageState extends State<CarsPage> {
                     child: Column(
                       spacing: 5,
                       children: [
-                        StreamBuilder<List<CarStatusModel>>(
-                            stream: carController.listenStatusGeral(),
-                            builder: (context, snapshort) {
-                              if (!snapshort.hasData) {
-                                return const Center(
-                                  child: CircularProgressIndicator(),
-                                );
-                              } else {
-                                final status = snapshort.data ?? [];
-                                return SizedBox(
-                                    height: 305,
-                                    width: double.infinity,
-                                    child: CarChartProblems(status: status));
-                              }
-                            })
+                        Card(
+                          child: Container(
+                            height: 300,
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(10),
+                            child: StreamBuilder<List<CarStatusModel>>(
+                                stream: carController.listenStatusGeral(),
+                                builder: (context, snapshort) {
+                                  if (!snapshort.hasData) {
+                                    return const Center(
+                                      child: CircularProgressIndicator(),
+                                    );
+                                  } else {
+                                    final status = snapshort.data ?? [];
+                                    return CarChartProblems(status: status);
+                                  }
+                                }),
+                          ),
+                        ),
+                        Observer(builder: (context) {
+                          return Card(
+                            child: Container(
+                              height: 300,
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(10),
+                              child: FutureBuilder<List<CheckListModel>>(
+                                  future: carController.getCheckListByMonth(
+                                      date: carController.dateKmByMonth),
+                                  builder: (context, snapshot) {
+                                    if (!snapshot.hasData) {
+                                      return const Center(
+                                        child: CircularProgressIndicator(),
+                                      );
+                                    } else {
+                                      final checklists = snapshot.data ?? [];
+                                      return CarChartKmByMonth(
+                                          checklists: checklists);
+                                    }
+                                  }),
+                            ),
+                          );
+                        })
                       ],
                     ),
                   ),
@@ -117,99 +153,128 @@ class _CarsPageState extends State<CarsPage> {
             ),
             SizedBox(
               width: double.infinity,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: Wrap(
+                crossAxisAlignment: WrapCrossAlignment.end,
+                alignment: WrapAlignment.spaceBetween,
+                direction: Axis.horizontal,
                 children: [
                   Text(
                     'Veículos registrados',
                     style: Constants.title,
                   ),
-                  const Divider(),
-                  const SizedBox(
-                    height: 5,
-                  ),
-                  Observer(builder: (_) {
-                    return Text(
-                      'Exibindo 1 a ${carController.limit} de ${cars.length} entradas',
-                      style: Constants.subtitleHint,
-                    );
-                  }),
-                  Observer(builder: (_) {
-                    final cars = carController.carsSorts;
-                    return CarsTableView(
-                      values: cars,
-                      obms: controller.obms,
-                      onDetails: (id) {
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => CarDetailsPage(
-                                  carID: id,
-                                )));
+                  Container(
+                    width: double.infinity,
+                    alignment: Alignment.centerRight,
+                    constraints: const BoxConstraints(maxWidth: 300),
+                    child: FieldText(
+                      search: true,
+                      controller: searchController,
+                      hint: 'Ex.: Digite algo para pesquisar',
+                      onChange: carController.onChangeFilter,
+                      onClear: () {
+                        searchController.clear();
+                        carController.onChangeFilter('');
                       },
-                    );
-                  }),
-                  const SizedBox(
-                    height: 10,
+                    ),
                   ),
-                  Row(
-                    children: [
-                      Text(
-                        'Mostrar',
-                        style: Constants.subtitleHint,
-                      ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      Container(
-                        height: 40.0,
-                        width: 65,
-                        padding: const EdgeInsets.symmetric(horizontal: 5),
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey),
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(5.0)),
-                        child: Observer(builder: (_) {
-                          return DropdownButton<int>(
-                              isExpanded: true,
-                              value: carController.limit,
-                              underline: Container(),
-                              onChanged: carController.setLimit,
-                              items: [10, 25, 50, 75, 100]
-                                  .map((e) => DropdownMenuItem(
-                                        value: e,
-                                        child: Padding(
-                                          padding:
-                                              const EdgeInsets.only(left: 5),
-                                          child: Text(
-                                            e.toString(),
-                                            style: Constants.subtitle,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ),
-                                      ))
-                                  .toList());
-                        }),
-                      ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      Text(
-                        'entradas',
-                        style: Constants.subtitleHint,
-                      ),
-                      const Spacer(),
-                      Observer(builder: (context) {
-                        return PaginationWidget(
-                          limit: carController.limit,
-                          page: carController.page,
-                          length: cars.length,
-                          onChange: carController.setPage,
-                        );
-                      }),
-                    ],
-                  )
                 ],
               ),
+            ),
+            const Divider(),
+            const SizedBox(
+              height: 5,
+            ),
+            Observer(builder: (_) {
+              return Text(
+                'Exibindo 1 a ${carController.carsSorts.length} de ${cars.length} entradas',
+                style: Constants.subtitleHint,
+              );
+            }),
+            const SizedBox(
+              height: 5,
+            ),
+            Observer(builder: (_) {
+              final cars = carController.carsSorts;
+              return CarsTableView(
+                values: cars,
+                obms: controller.obms,
+                onChanges: (changes) {
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          contentPadding: const EdgeInsets.all(10),
+                          content: ImagesChangesViewWidget(changes: changes),
+                        );
+                      });
+                },
+                onDetails: (id) {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => CarDetailsPage(
+                            carID: id,
+                          )));
+                },
+              );
+            }),
+            const SizedBox(
+              height: 10,
+            ),
+            Row(
+              children: [
+                Text(
+                  'Mostrar',
+                  style: Constants.subtitleHint,
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                Container(
+                  height: 40.0,
+                  width: 65,
+                  padding: const EdgeInsets.symmetric(horizontal: 5),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(5.0)),
+                  child: Observer(builder: (_) {
+                    return DropdownButton<int>(
+                        isExpanded: true,
+                        value: carController.limit,
+                        underline: Container(),
+                        onChanged: carController.setLimit,
+                        items: [10, 25, 50, 75, 100]
+                            .map((e) => DropdownMenuItem(
+                                  value: e,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 5),
+                                    child: Text(
+                                      e.toString(),
+                                      style: Constants.subtitle,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ))
+                            .toList());
+                  }),
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                Text(
+                  'entradas',
+                  style: Constants.subtitleHint,
+                ),
+                const Spacer(),
+                Observer(builder: (context) {
+                  return PaginationWidget(
+                    limit: carController.limit,
+                    page: carController.page,
+                    length: cars.length,
+                    onChange: carController.setPage,
+                  );
+                }),
+              ],
             )
           ],
         ),

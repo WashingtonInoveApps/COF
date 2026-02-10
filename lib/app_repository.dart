@@ -47,8 +47,17 @@ class AppRepository extends APIClient implements IAppRepository {
       {required DateTime referenceDateStart,
       required DateTime referenceDateFinish}) {
     try {
-      final start = referenceDateStart.millisecondsSinceEpoch;
-      final finish = referenceDateFinish.millisecondsSinceEpoch;
+      final start = referenceDateStart
+          .copyWith(
+              hour: 0, second: 0, minute: 0, millisecond: 0, microsecond: 0)
+          .millisecondsSinceEpoch;
+      final finish = referenceDateFinish
+          .copyWith(
+            hour: 23,
+            second: 59,
+            minute: 59,
+          )
+          .millisecondsSinceEpoch;
 
       if ((referenceDateStart.day == referenceDateFinish.day) &&
           (referenceDateStart.month == referenceDateFinish.month)) {
@@ -70,12 +79,15 @@ class AppRepository extends APIClient implements IAppRepository {
             .where('date', isLessThanOrEqualTo: finish)
             .orderBy('date')
             .snapshots()
-            .map((e) => e.docs.map((doc) {
-                  var checkList = CheckListModel.fromMap(
-                      doc.data() as Map<String, dynamic>);
-                  checkList.id = doc.id;
-                  return checkList;
-                }).toList());
+            .map((e) {
+          log(e.docs.length.toString());
+          return e.docs.map((doc) {
+            var checkList =
+                CheckListModel.fromMap(doc.data() as Map<String, dynamic>);
+            checkList.id = doc.id;
+            return checkList;
+          }).toList();
+        });
       }
     } catch (e) {
       return Stream.value([]);

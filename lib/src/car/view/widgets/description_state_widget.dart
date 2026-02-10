@@ -21,7 +21,7 @@ class _DescriptionStateWidgetState extends State<DescriptionStateWidget> {
   StateCarProblems state = StateCarProblems.others;
 
   final _controllerDesc = TextEditingController();
-  final _controllerLocal = TextEditingController();
+  // final _controllerLocal = TextEditingController();
   final _key = GlobalKey<FormState>();
 
   @override
@@ -29,7 +29,7 @@ class _DescriptionStateWidgetState extends State<DescriptionStateWidget> {
     super.dispose();
 
     _controllerDesc.dispose();
-    _controllerLocal.dispose();
+    // _controllerLocal.dispose();
   }
 
   @override
@@ -78,9 +78,6 @@ class _DescriptionStateWidgetState extends State<DescriptionStateWidget> {
                 hint: "Ex: Vazamento de aguá pelo radiador",
                 validation: Validation.validatorPreenchimento,
               ),
-              // const SizedBox(
-              //   height: 10.0,
-              // ),
               // FieldText(
               //   controller: _controllerLocal,
               //   label: 'Onde se encontra',
@@ -102,7 +99,7 @@ class _DescriptionStateWidgetState extends State<DescriptionStateWidget> {
                               user: widget.user,
                               type: state,
                               description: _controllerDesc.text,
-                              local: _controllerLocal.text,
+                              local: '', //_controllerLocal.text,
                               value: false));
                         }
                       },

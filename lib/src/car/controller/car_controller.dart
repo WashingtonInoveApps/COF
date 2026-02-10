@@ -3,7 +3,9 @@ import 'dart:developer';
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/core.dart';
+import 'package:bsu_control/core/enum.dart';
 import 'package:bsu_control/model/car_changes_model.dart';
+import 'package:bsu_control/model/check_list_model.dart';
 import 'package:bsu_control/model/itens_changes_model.dart';
 import 'package:bsu_control/model/obm_model.dart';
 import 'package:bsu_control/src/car/repository/car_interface.dart';
@@ -30,6 +32,9 @@ abstract class _CarControllerBase with Store {
   String type = '';
 
   @observable
+  DateTime dateKmByMonth = DateTime.now();
+
+  @observable
   String function = '';
 
   @observable
@@ -37,6 +42,9 @@ abstract class _CarControllerBase with Store {
 
   @observable
   String? cia;
+
+  @observable
+  String filter = '';
 
   @observable
   ObservableList<CarModel> cars = <CarModel>[].asObservable();
@@ -66,10 +74,21 @@ abstract class _CarControllerBase with Store {
 
   @computed
   List<CarModel> get carsSorts {
-    final list = Core.paginate(list: cars, page: page, limit: limit);
+    if (filter.isNotEmpty) {
+      final filtered = cars
+          .where((e) =>
+              (e.prefix.toLowerCase().contains(filter.toLowerCase()) ||
+                  (e.cia.toLowerCase().contains(filter.toLowerCase())) ||
+                  (e.type.toLowerCase().contains(filter.toLowerCase())) ||
+                  (e.state.label.toLowerCase().contains(filter.toLowerCase()))))
+          .toList();
 
-    log('Cars sort:${list.length}');
-    return List<CarModel>.from(list);
+      final list = Core.paginate(list: filtered, page: page, limit: limit);
+      return List<CarModel>.from(list);
+    } else {
+      final list = Core.paginate(list: cars, page: page, limit: limit);
+      return List<CarModel>.from(list);
+    }
   }
 
   @computed
@@ -90,6 +109,19 @@ abstract class _CarControllerBase with Store {
 
   Stream<List<CarMapaModel>> listenMapas({required String carId}) {
     return repository.listenMapas(carId: carId);
+  }
+
+  Future<List<CheckListModel>> getCheckListByMonth(
+      {required DateTime date}) async {
+    return await repository.getChecklistByMonth(reference: date);
+  }
+
+  @action
+  onChangeFilter(String? value) {
+    filter = value ?? '';
+    page = 1;
+
+    log("Filter: $filter");
   }
 
   @action
@@ -138,6 +170,13 @@ abstract class _CarControllerBase with Store {
           cia = null;
         }
       }
+    }
+  }
+
+  @action
+  Future<void> setDateKmByMonth(DateTime? value) async {
+    if (value != dateKmByMonth && value != null) {
+      dateKmByMonth = value;
     }
   }
 

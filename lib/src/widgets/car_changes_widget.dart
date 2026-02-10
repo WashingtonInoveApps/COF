@@ -12,6 +12,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 
 import '../../model/file_model.dart';
 import 'image_change_widget.dart';
+import 'images_changes_view_widget.dart';
 
 class CarChangesWidget extends StatefulWidget {
   final int region;
@@ -106,8 +107,8 @@ class _CarChangesWidgetState extends State<CarChangesWidget> {
                           builder: (context) {
                             return AlertDialog(
                               contentPadding: const EdgeInsets.all(10),
-                              content: imagesChangesView(
-                                  context: context, changes: changes),
+                              content:
+                                  ImagesChangesViewWidget(changes: changes),
                             );
                           });
                     },
@@ -442,125 +443,6 @@ class _CarChangesWidgetState extends State<CarChangesWidget> {
       ),
     );
   }
-}
-
-Widget imagesChangesView(
-    {required BuildContext context, required List<CarChangeModel> changes}) {
-  const double height = 120;
-  const double width = 170;
-
-  final list = List<CarChangeModel>.from(changes);
-  list.sort((a, b) => b.date.compareTo(a.date));
-
-  return SingleChildScrollView(
-    child: Column(
-      children: [
-        Align(
-          alignment: Alignment.centerRight,
-          child: InkWell(
-            onTap: () => Navigator.of(context).pop(),
-            child: CircleAvatar(
-                radius: 15,
-                backgroundColor: Colors.black45,
-                child: Icon(
-                  MdiIcons.close,
-                  size: 20,
-                  color: Colors.white,
-                )),
-          ),
-        ),
-        const SizedBox(
-          height: 10,
-        ),
-        Column(
-          children: List.generate(list.length, (index) {
-            final change = list[index];
-            return Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Stack(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadiusGeometry.circular(5),
-                      child: change.fileImage != null
-                          ? Image.memory(
-                              change.fileImage!,
-                              height: height,
-                              width: width,
-                              fit: BoxFit.fill,
-                            )
-                          : kIsWeb
-                              ? Image.network(
-                                  change.image?.url ?? '',
-                                  height: height,
-                                  width: width,
-                                  fit: BoxFit.fill,
-                                )
-                              : CachedNetworkImage(
-                                  imageUrl: change.image?.url ?? '',
-                                  height: height,
-                                  width: width,
-                                  progressIndicatorBuilder:
-                                      (context, url, downloadProgress) =>
-                                          Center(
-                                    child: CircularProgressIndicator(
-                                        color: Constants.primary,
-                                        value: downloadProgress.progress),
-                                  ),
-                                  errorWidget: (context, url, error) =>
-                                      const Center(
-                                          child: Icon(
-                                    Icons.error,
-                                    size: 60.0,
-                                  )),
-                                  fit: BoxFit.fill,
-                                ),
-                    ),
-                    Positioned(
-                      top: 5,
-                      left: 5,
-                      child: CircleAvatar(
-                        radius: 12,
-                        backgroundColor: Colors.black45,
-                        child: Text(
-                          ((list.length) - index).toString().padLeft(2, '0'),
-                          style:
-                              Constants.subtitle.copyWith(color: Colors.white),
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        change.description,
-                        style: Constants.title,
-                      ),
-                      Text(
-                        "${change.user.graduation} ${change.user.name} - ${change.user.registration}",
-                        style: Constants.subtitleHint,
-                      ),
-                      Text(
-                        Core.formatDate(change.date, largeDay: true),
-                        style: Constants.subtitleHint,
-                      ),
-                    ],
-                  ),
-                )
-              ],
-            );
-          }).expand((widget) => [widget, const Divider()]).toList()
-            ..removeLast(),
-        )
-      ],
-    ),
-  );
 }
 
 Widget menuView({required int indexImage, required Function(int) onChange}) {

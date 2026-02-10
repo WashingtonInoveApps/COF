@@ -1,5 +1,6 @@
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/enum.dart';
+import 'package:bsu_control/model/car_changes_model.dart';
 import 'package:bsu_control/model/car_model.dart';
 import 'package:bsu_control/model/obm_model.dart';
 import 'package:flutter/material.dart';
@@ -10,8 +11,13 @@ class CarsTableView extends StatefulWidget {
   final List<CarModel> values;
   final List<OBMModel> obms;
   final Function(String)? onDetails;
+  final Function(List<CarChangeModel>)? onChanges;
   const CarsTableView(
-      {Key? key, required this.values, required this.obms, this.onDetails})
+      {Key? key,
+      required this.values,
+      required this.obms,
+      this.onDetails,
+      this.onChanges})
       : super(key: key);
 
   @override
@@ -28,6 +34,10 @@ class _CarsTableViewState extends State<CarsTableView> {
         cars: widget.values,
         obms: widget.obms,
         onDetails: widget.onDetails,
+        onChanges: (id) {
+          final car = widget.values.firstWhere((e) => e.id == id);
+          widget.onChanges?.call(car.changes);
+        },
         onSortChanged: () {
           setState(() {});
         });
@@ -114,6 +124,10 @@ class _CarsTableViewState extends State<CarsTableView> {
           ),
         ),
         GridColumn(
+          columnName: 'type',
+          label: header(label: 'TIPO', columnName: 'type'),
+        ),
+        GridColumn(
           columnName: 'function',
           label: header(label: 'FUNÇÃO', columnName: 'function'),
         ),
@@ -138,6 +152,7 @@ class _CarsTableViewState extends State<CarsTableView> {
 
 class CarsDataSource extends DataGridSource {
   final Function(String id)? onDetails;
+  final Function(String id)? onChanges;
   final VoidCallback? onSortChanged;
 
   String? sortColumn;
@@ -186,12 +201,13 @@ class CarsDataSource extends DataGridSource {
             columnName: 'obm', value: obm.prefix.toUpperCase()),
         DataGridCell<String>(columnName: 'cia', value: car.cia.toUpperCase()),
         DataGridCell<String>(columnName: 'plate', value: car.plate),
+        DataGridCell<String>(columnName: 'type', value: car.type),
         DataGridCell<String>(columnName: 'function', value: car.function),
         DataGridCell<String>(columnName: 'km', value: car.km.toString()),
         DataGridCell<String>(columnName: 'state', value: car.state.name),
         DataGridCell<String>(
           columnName: 'changes',
-          value: car.changes.length.toString().padLeft(2, '0'),
+          value: '${car.changes.length}/${car.id}',
         ),
       ]);
     }).toList();
@@ -205,6 +221,7 @@ class CarsDataSource extends DataGridSource {
     required List<OBMModel> obms,
     this.onSortChanged,
     this.onDetails,
+    this.onChanges,
   }) {
     _rows = cars.map<DataGridRow>((car) {
       final obm = obms.firstWhere((e) => e.id == car.obmID);
@@ -221,6 +238,8 @@ class CarsDataSource extends DataGridSource {
         DataGridCell<String>(
             columnName: 'obm', value: obm.prefix.toUpperCase()),
         DataGridCell<String>(columnName: 'cia', value: car.cia.toUpperCase()),
+        DataGridCell<String>(columnName: 'plate', value: car.plate),
+        DataGridCell<String>(columnName: 'type', value: car.type),
         DataGridCell<String>(
           columnName: 'function',
           value: car.function,
@@ -228,8 +247,7 @@ class CarsDataSource extends DataGridSource {
         DataGridCell<String>(columnName: 'km', value: car.km.toString()),
         DataGridCell<String>(columnName: 'state', value: car.state.name),
         DataGridCell<String>(
-            columnName: 'changes',
-            value: car.changes.length.toString().padLeft(2, '0')),
+            columnName: 'changes', value: '${car.changes.length}/${car.id}'),
       ]);
     }).toList();
   }
@@ -278,6 +296,56 @@ class CarsDataSource extends DataGridSource {
                   Text(
                     state.label,
                     style: Constants.subtitle.copyWith(color: Colors.white),
+                  ),
+                ],
+              ),
+            ),
+          );
+        } else if (cell.columnName == 'changes') {
+          final list = cell.value.toString().split('/');
+
+          final changesLength = list.first;
+          final id = list.last;
+
+          return Center(
+            child: Container(
+              width: 150,
+              padding: const EdgeInsets.all(5),
+              child: Row(
+                spacing: 5,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: Center(
+                      child: Text(
+                        changesLength.padLeft(2, '0'),
+                        style: Constants.title,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: (int.parse(changesLength) > 0)
+                        ? Center(
+                            child: InkWell(
+                              child: Card(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius:
+                                        BorderRadiusGeometry.circular(100)),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(5.0),
+                                  child: Icon(
+                                    Icons.list_alt_rounded,
+                                    size: 20,
+                                    color: Constants.primary,
+                                  ),
+                                ),
+                              ),
+                              onTap: () async {
+                                onChanges?.call(id);
+                              },
+                            ),
+                          )
+                        : Container(),
                   ),
                 ],
               ),

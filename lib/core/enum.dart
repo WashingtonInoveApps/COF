@@ -5,7 +5,17 @@ enum StatusCar { operando, reserva, baixado }
 
 enum StateChecklist { inprogress, completed, expired }
 
-enum StateCarProblems { airconditioning, pneu, mechanics, electric, others }
+enum StateCarProblems {
+  airconditioning,
+  pneu,
+  cooling,
+  brake,
+  engine,
+  injection,
+  mechanics,
+  electric,
+  others
+}
 
 extension CarStateLabel on StatusCar {
   String get label {
@@ -31,6 +41,14 @@ extension StateCarProblemsLabel on StateCarProblems {
         return "Mecânicos";
       case StateCarProblems.pneu:
         return "Pneus";
+      case StateCarProblems.brake:
+        return "Freios";
+      case StateCarProblems.cooling:
+        return "Arrefecimento";
+      case StateCarProblems.engine:
+        return "Motor";
+      case StateCarProblems.injection:
+        return "Injeção eletrônica";
       case StateCarProblems.others:
         return "Outros";
     }
@@ -48,6 +66,14 @@ extension StateCarProblemsColor on StateCarProblems {
         return Colors.orange;
       case StateCarProblems.pneu:
         return Colors.brown;
+      case StateCarProblems.brake:
+        return Colors.yellowAccent;
+      case StateCarProblems.cooling:
+        return Colors.blueGrey;
+      case StateCarProblems.engine:
+        return Colors.deepPurple;
+      case StateCarProblems.injection:
+        return Colors.pink;
       case StateCarProblems.others:
         return Colors.red;
     }

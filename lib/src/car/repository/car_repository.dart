@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:bsu_control/core/api_client.dart';
+import 'package:bsu_control/model/check_list_model.dart';
 import 'package:bsu_control/model/file_model.dart';
 import 'package:bsu_control/src/car/repository/car_interface.dart';
 
@@ -205,6 +206,24 @@ class CarRepository extends APIClient implements ICarRepository {
       return true;
     } catch (e) {
       rethrow;
+    }
+  }
+
+  @override
+  Future<List<CheckListModel>> getChecklistByMonth(
+      {required DateTime reference}) async {
+    try {
+      return await colChecklist
+          .where('referenceMonth',
+              isEqualTo:
+                  "${reference.month.toString().padLeft(2, '0')}/${reference.year}")
+          .get()
+          .then((result) => result.docs
+              .map((e) =>
+                  CheckListModel.fromMap(e.data() as Map<String, dynamic>))
+              .toList());
+    } catch (e) {
+      return [];
     }
   }
 }

@@ -9,6 +9,7 @@ import 'package:bsu_control/src/home/controller/home_controller.dart';
 import 'package:bsu_control/src/home/view/widgets/checklist_table_view.dart';
 import 'package:bsu_control/src/widgets/backgraund_page.dart';
 import 'package:bsu_control/src/widgets/cars_chart_widget.dart';
+import 'package:bsu_control/src/widgets/images_changes_view_widget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -39,6 +40,8 @@ class _HomePageState extends State<HomePage> {
 
     controller.setDateStart(app.dateReferenceStart);
     controller.setDateFinish(app.dateReferenceFinish);
+    app.setDateRangeChecklist(
+        dateStart: app.dateReferenceStart, dateFinish: app.dateReferenceFinish);
 
     timer = Timer.periodic(const Duration(seconds: 1), (_) {
       controller.setDate(DateTime.now());
@@ -193,9 +196,12 @@ class _HomePageState extends State<HomePage> {
                             ),
                           ),
                           Observer(builder: (_) {
-                            return CarsChart(
-                              cars: app.cars,
-                              carsTypes: app.carsTypes,
+                            return SizedBox(
+                              height: 320,
+                              child: CarsChart(
+                                cars: app.cars,
+                                carsTypes: app.carsTypes,
+                              ),
                             );
                           }),
                         ],
@@ -335,10 +341,8 @@ class _HomePageState extends State<HomePage> {
                                               controller.setDateFinish(date);
 
                                               app.setDateRangeChecklist(
-                                                  dateStart: controller
-                                                      .dateReferenceStart,
-                                                  dateFinish: controller
-                                                      .dateReferenceFinish);
+                                                  dateStart: date,
+                                                  dateFinish: date);
                                             },
                                             style: ElevatedButton.styleFrom(
                                                 backgroundColor:
@@ -380,14 +384,17 @@ class _HomePageState extends State<HomePage> {
                             ),
                           ),
                           Observer(builder: (context) {
-                            return ChartPeriodWidget(
-                              key: ValueKey(
-                                  app.checklistsPeriod.length.toString() +
-                                      app.dateReferenceStart.toString() +
-                                      app.dateReferenceFinish.toString()),
-                              dateStart: app.dateReferenceStart,
-                              dateFinish: app.dateReferenceFinish,
-                              checklists: app.checklistsPeriod,
+                            return SizedBox(
+                              height: 340,
+                              child: ChartPeriodWidget(
+                                key: ValueKey(
+                                    app.checklistsPeriod.length.toString() +
+                                        app.dateReferenceStart.toString() +
+                                        app.dateReferenceFinish.toString()),
+                                dateStart: app.dateReferenceStart,
+                                dateFinish: app.dateReferenceFinish,
+                                checklists: app.checklistsPeriod,
+                              ),
                             );
                           })
                         ],
@@ -430,7 +437,7 @@ class _HomePageState extends State<HomePage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Exibindo 1 a ${app.limit} de ${app.checklistsPeriod.length} entradas',
+                            'Exibindo 1 a ${app.checklistPeriodSort.length} de ${app.checklistsPeriod.length} entradas',
                             style: Constants.subtitleHint,
                           ),
                           Expanded(
@@ -451,6 +458,18 @@ class _HomePageState extends State<HomePage> {
                                         builder: (context) =>
                                             ChecklistDetailsPage(
                                                 checklistID: id)));
+                              },
+                              onChanges: (changes) {
+                                showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return AlertDialog(
+                                        contentPadding:
+                                            const EdgeInsets.all(10),
+                                        content: ImagesChangesViewWidget(
+                                            changes: changes),
+                                      );
+                                    });
                               },
                             ),
                           ),

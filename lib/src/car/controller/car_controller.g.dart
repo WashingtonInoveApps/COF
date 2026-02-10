@@ -61,6 +61,22 @@ mixin _$CarController on _CarControllerBase, Store {
     });
   }
 
+  late final _$dateKmByMonthAtom =
+      Atom(name: '_CarControllerBase.dateKmByMonth', context: context);
+
+  @override
+  DateTime get dateKmByMonth {
+    _$dateKmByMonthAtom.reportRead();
+    return super.dateKmByMonth;
+  }
+
+  @override
+  set dateKmByMonth(DateTime value) {
+    _$dateKmByMonthAtom.reportWrite(value, super.dateKmByMonth, () {
+      super.dateKmByMonth = value;
+    });
+  }
+
   late final _$functionAtom =
       Atom(name: '_CarControllerBase.function', context: context);
 
@@ -105,6 +121,22 @@ mixin _$CarController on _CarControllerBase, Store {
   set cia(String? value) {
     _$ciaAtom.reportWrite(value, super.cia, () {
       super.cia = value;
+    });
+  }
+
+  late final _$filterAtom =
+      Atom(name: '_CarControllerBase.filter', context: context);
+
+  @override
+  String get filter {
+    _$filterAtom.reportRead();
+    return super.filter;
+  }
+
+  @override
+  set filter(String value) {
+    _$filterAtom.reportWrite(value, super.filter, () {
+      super.filter = value;
     });
   }
 
@@ -219,6 +251,15 @@ mixin _$CarController on _CarControllerBase, Store {
     });
   }
 
+  late final _$setDateKmByMonthAsyncAction =
+      AsyncAction('_CarControllerBase.setDateKmByMonth', context: context);
+
+  @override
+  Future<void> setDateKmByMonth(DateTime? value) {
+    return _$setDateKmByMonthAsyncAction
+        .run(() => super.setDateKmByMonth(value));
+  }
+
   late final _$saveAsyncAction =
       AsyncAction('_CarControllerBase.save', context: context);
 
@@ -299,6 +340,17 @@ mixin _$CarController on _CarControllerBase, Store {
 
   late final _$_CarControllerBaseActionController =
       ActionController(name: '_CarControllerBase', context: context);
+
+  @override
+  dynamic onChangeFilter(String? value) {
+    final _$actionInfo = _$_CarControllerBaseActionController.startAction(
+        name: '_CarControllerBase.onChangeFilter');
+    try {
+      return super.onChangeFilter(value);
+    } finally {
+      _$_CarControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
 
   @override
   dynamic setTypeCar(String? value) {
@@ -558,9 +610,11 @@ mixin _$CarController on _CarControllerBase, Store {
     return '''
 loading: ${loading},
 type: ${type},
+dateKmByMonth: ${dateKmByMonth},
 function: ${function},
 fieldCarTypeVisible: ${fieldCarTypeVisible},
 cia: ${cia},
+filter: ${filter},
 cars: ${cars},
 limit: ${limit},
 page: ${page},

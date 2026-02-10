@@ -68,8 +68,8 @@ class ChartPeriodWidget extends StatelessWidget {
             const SizedBox(
               height: 5,
             ),
-            SizedBox(
-              height: 248,
+            Expanded(
+              // height: 248,
               child: SfCartesianChart(
                 legend: const Legend(
                     isVisible: true, position: LegendPosition.bottom),

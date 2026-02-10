@@ -92,6 +92,7 @@ class _CarsChartState extends State<CarsChart> {
   @override
   Widget build(BuildContext context) {
     processCharts();
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(10.0),
@@ -187,87 +188,97 @@ class _CarsChartState extends State<CarsChart> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: data.map((state) {
-                return Row(
-                  spacing: 10,
-                  children: [
-                    Icon(
-                      MdiIcons.circle,
-                      color: state.color,
-                      size: 20,
-                    ),
-                    Text(
-                      state.label,
-                      style: Constants.subtitle,
-                    )
-                  ],
+                return Expanded(
+                  child: Row(
+                    spacing: 10,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        MdiIcons.circle,
+                        color: state.color,
+                        size: 20,
+                      ),
+                      Text.rich(
+                        TextSpan(text: '${state.label} ', children: [
+                          TextSpan(
+                              text:
+                                  '( ${((state.value / widget.cars.length) * 100).toString()}% )',
+                              style: Constants.subtitleHint)
+                        ]),
+                        style: Constants.subtitle,
+                      ),
+                    ],
+                  ),
                 );
               }).toList(),
             ),
             const Divider(),
-            SizedBox(
-              height: 80,
-              width: double.infinity,
-              child: Scrollbar(
-                thumbVisibility: true,
-                trackVisibility: true,
-                thickness: 10,
-                controller: scrollController,
-                child: SingleChildScrollView(
-                  physics: const ClampingScrollPhysics(),
+            Expanded(
+              child: SizedBox(
+                // height: 80,
+                width: double.infinity,
+                child: Scrollbar(
+                  thumbVisibility: true,
+                  trackVisibility: true,
+                  thickness: 10,
                   controller: scrollController,
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 20),
-                    child: Column(
-                      children: inforsCars.map((infor) {
-                        return Row(
-                          spacing: 10,
-                          children: [
-                            Expanded(
-                              flex: 2,
-                              child: Text(
-                                infor.label,
-                                style: Constants.title,
+                  child: SingleChildScrollView(
+                    physics: const ClampingScrollPhysics(),
+                    controller: scrollController,
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 20),
+                      child: Column(
+                        children: inforsCars.map((infor) {
+                          return Row(
+                            spacing: 10,
+                            children: [
+                              Expanded(
+                                flex: 2,
+                                child: Text(
+                                  infor.label,
+                                  style: Constants.title,
+                                ),
                               ),
-                            ),
-                            Expanded(
-                              child: Row(
-                                spacing: 5,
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  Icon(
-                                    Icons.circle,
-                                    color: Colors.green.shade700,
-                                    size: 15,
-                                  ),
-                                  Text(
-                                    infor.operating.toString(),
-                                    style: Constants.title,
-                                  ),
-                                  Icon(
-                                    Icons.circle,
-                                    color: Colors.orange.shade700,
-                                    size: 15,
-                                  ),
-                                  Text(
-                                    infor.reserve.toString(),
-                                    style: Constants.title,
-                                  ),
-                                  Icon(
-                                    Icons.circle,
-                                    color: Colors.red.shade700,
-                                    size: 15,
-                                  ),
-                                  Text(
-                                    infor.lowered.toString(),
-                                    style: Constants.title,
-                                  ),
-                                ],
+                              Expanded(
+                                child: Row(
+                                  spacing: 5,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Icon(
+                                      Icons.circle,
+                                      color: Colors.green.shade700,
+                                      size: 15,
+                                    ),
+                                    Text(
+                                      infor.operating.toString(),
+                                      style: Constants.title,
+                                    ),
+                                    Icon(
+                                      Icons.circle,
+                                      color: Colors.orange.shade700,
+                                      size: 15,
+                                    ),
+                                    Text(
+                                      infor.reserve.toString(),
+                                      style: Constants.title,
+                                    ),
+                                    Icon(
+                                      Icons.circle,
+                                      color: Colors.red.shade700,
+                                      size: 15,
+                                    ),
+                                    Text(
+                                      infor.lowered.toString(),
+                                      style: Constants.title,
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
-                        );
-                      }).toList(),
+                            ],
+                          );
+                        }).toList(),
+                      ),
                     ),
                   ),
                 ),

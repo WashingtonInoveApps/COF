@@ -132,7 +132,7 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
                                 )),
                             ElevatedButton(
                                 onPressed: () async {
-                                  showModalBottomSheet(
+                                  await showModalBottomSheet(
                                       context: context,
                                       isScrollControlled: true,
                                       backgroundColor: Colors.transparent,
@@ -160,7 +160,7 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
                                                     await signatureController
                                                         .toPngBytes();
 
-                                                controller
+                                                await controller
                                                     .finish(
                                                         checklist:
                                                             checklist.copyWith(

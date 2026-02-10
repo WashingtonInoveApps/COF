@@ -177,11 +177,8 @@ abstract class _AppControllerBase with Store {
   @action
   setDateRangeChecklist(
       {required DateTime dateStart, required DateTime dateFinish}) {
-    if ((dateStart != dateReferenceStart) ||
-        (dateFinish != dateReferenceFinish)) {
-      dateReferenceStart = dateStart;
-      dateReferenceFinish = dateFinish;
-    }
+    dateReferenceStart = dateStart;
+    dateReferenceFinish = dateFinish;
   }
 
   @action

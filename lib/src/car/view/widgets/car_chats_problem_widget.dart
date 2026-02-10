@@ -32,41 +32,38 @@ class CarChartProblems extends StatelessWidget {
   Widget build(BuildContext context) {
     final data = buildPieData(status);
 
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Column(
-          spacing: 10,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'DETALHES DE DEFEITOS',
-              style: Constants.subtitleHint,
-            ),
-            Expanded(
-              child: SfCircularChart(
-                legend: const Legend(
-                    isVisible: true,
-                    position: LegendPosition.bottom,
-                    orientation: LegendItemOrientation.horizontal),
-                series: <CircularSeries>[
-                  PieSeries<PieData, String>(
-                    dataSource: data,
-                    xValueMapper: (PieData data, _) => data.label,
-                    yValueMapper: (PieData data, _) => data.count,
-                    pointColorMapper: (data, _) => data.color,
-                    legendIconType: LegendIconType.circle,
-                    dataLabelSettings: DataLabelSettings(
-                        isVisible: true,
-                        textStyle: Constants.title.copyWith(
-                            color: Colors.white, fontWeight: FontWeight.bold)),
-                  ),
-                ],
-              ),
-            ),
-          ],
+    return Column(
+      spacing: 10,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'HISTÓRICO DE DEFEITOS',
+          style: Constants.subtitleHint,
         ),
-      ),
+        Expanded(
+          child: SfCircularChart(
+            legend: const Legend(
+                isVisible: true,
+                position: LegendPosition.bottom,
+                orientation: LegendItemOrientation.horizontal),
+            series: <CircularSeries>[
+              PieSeries<PieData, String>(
+                dataSource: data,
+                xValueMapper: (PieData data, _) => data.label,
+                yValueMapper: (PieData data, _) => data.count,
+                pointColorMapper: (data, _) => data.color,
+                dataLabelMapper: (data, _) =>
+                    '${((data.count / status.length) * 100).toString()}%',
+                legendIconType: LegendIconType.circle,
+                dataLabelSettings: DataLabelSettings(
+                    isVisible: true,
+                    textStyle:
+                        Constants.subtitle.copyWith(color: Colors.white)),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

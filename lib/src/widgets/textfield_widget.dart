@@ -7,6 +7,7 @@ class FieldText extends StatefulWidget {
   final List<TextInputFormatter>? mask;
   final TextEditingController? controller;
   final String? Function(String? text)? validation;
+  final Function()? onClear;
   final String? label;
   final TextInputType inputType;
   final String? hint;
@@ -32,7 +33,8 @@ class FieldText extends StatefulWidget {
       this.borderRadius = 5.0,
       this.obscure = false,
       this.search = false,
-      this.upper = false})
+      this.upper = false,
+      this.onClear})
       : super(key: key);
 
   @override
@@ -47,12 +49,24 @@ class _FieldTextState extends State<FieldText> {
 
     return Container(
       decoration: BoxDecoration(
-          color: Colors.white, borderRadius: BorderRadius.circular(5)),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(5),
+      ),
       child: TextFormField(
         style: Constants.title,
         initialValue: widget.initValue,
         decoration: InputDecoration(
             prefixIcon: widget.search ? const Icon(Icons.search) : null,
+            suffixIcon: (widget.onClear == null)
+                ? null
+                : IconButton(
+                    icon: const Icon(
+                      Icons.refresh,
+                      size: 20,
+                      color: Colors.grey,
+                    ),
+                    onPressed: widget.onClear,
+                  ),
             border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(widget.borderRadius),
                 borderSide: const BorderSide(color: Colors.black)),

@@ -1,3 +1,5 @@
+import 'package:bsu_control/model/check_list_model.dart';
+
 import '../../../model/car_mapa_model.dart';
 import '../../../model/car_model.dart';
 import '../../../model/car_status_model.dart';
@@ -21,4 +23,7 @@ abstract class ICarRepository {
 
   Future<bool> deleteCarMapa({required String id});
   Future<bool> insertMapaCar({required CarMapaModel mapa});
+
+  Future<List<CheckListModel>> getChecklistByMonth(
+      {required DateTime reference});
 }

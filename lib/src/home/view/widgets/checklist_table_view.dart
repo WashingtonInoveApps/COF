@@ -1,6 +1,7 @@
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/core/enum.dart';
+import 'package:bsu_control/model/car_changes_model.dart';
 import 'package:bsu_control/model/check_list_model.dart';
 import 'package:bsu_control/model/obm_model.dart';
 import 'package:flutter/material.dart';
@@ -12,12 +13,15 @@ class ChecklistTableView extends StatefulWidget {
   final List<OBMModel> obms;
   final Function(String)? onContact;
   final Function(String)? onDetails;
+  final Function(List<CarChangeModel>)? onChanges;
+
   const ChecklistTableView(
       {Key? key,
       required this.values,
       required this.obms,
       this.onContact,
-      this.onDetails})
+      this.onDetails,
+      this.onChanges})
       : super(key: key);
 
   @override
@@ -34,6 +38,10 @@ class _ChecklistTableViewState extends State<ChecklistTableView> {
         obms: widget.obms,
         onContact: widget.onContact,
         onDetails: widget.onDetails,
+        onChanges: (id) {
+          final checklist = widget.values.firstWhere((e) => e.id == id);
+          widget.onChanges?.call(checklist.changes);
+        },
         onSortChanged: () {
           setState(() {});
         });
@@ -158,6 +166,7 @@ class _ChecklistTableViewState extends State<ChecklistTableView> {
 class ChecklistDataSource extends DataGridSource {
   final Function(String contact)? onContact;
   final Function(String id)? onDetails;
+  final Function(String id)? onChanges;
 
   final VoidCallback? onSortChanged;
 
@@ -236,7 +245,7 @@ class ChecklistDataSource extends DataGridSource {
             value: check.endKM.isEmpty ? ' - ' : check.endKM),
         DataGridCell<String>(
             columnName: 'changes',
-            value: check.changes.length.toString().padLeft(2, '0')),
+            value: '${check.changes.length}/${check.id}'),
       ]);
     }).toList();
 
@@ -250,6 +259,7 @@ class ChecklistDataSource extends DataGridSource {
     this.onContact,
     this.onDetails,
     this.onSortChanged,
+    this.onChanges,
   }) {
     _rows = checklists.map<DataGridRow>((check) {
       final obm = obms.firstWhere((e) => e.id == check.obmID);
@@ -290,7 +300,7 @@ class ChecklistDataSource extends DataGridSource {
             value: check.endKM.isEmpty ? ' - ' : check.endKM),
         DataGridCell<String>(
             columnName: 'changes',
-            value: check.changes.length.toString().padLeft(2, '0')),
+            value: '${check.changes.length}/${check.id}'),
       ]);
     }).toList();
   }
@@ -370,6 +380,56 @@ class ChecklistDataSource extends DataGridSource {
                   Text(
                     state.label,
                     style: Constants.subtitle.copyWith(color: Colors.white),
+                  ),
+                ],
+              ),
+            ),
+          );
+        } else if (cell.columnName == 'changes') {
+          final list = cell.value.toString().split('/');
+
+          final changesLength = list.first;
+          final id = list.last;
+
+          return Center(
+            child: Container(
+              width: 150,
+              padding: const EdgeInsets.all(5),
+              child: Row(
+                spacing: 5,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: Center(
+                      child: Text(
+                        changesLength.padLeft(2, '0'),
+                        style: Constants.title,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: (int.parse(changesLength) > 0)
+                        ? Center(
+                            child: InkWell(
+                              child: Card(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius:
+                                        BorderRadiusGeometry.circular(100)),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(5.0),
+                                  child: Icon(
+                                    Icons.list_alt_rounded,
+                                    size: 20,
+                                    color: Constants.primary,
+                                  ),
+                                ),
+                              ),
+                              onTap: () async {
+                                onChanges?.call(id);
+                              },
+                            ),
+                          )
+                        : Container(),
                   ),
                 ],
               ),

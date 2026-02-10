@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:ui';
 
 import 'package:bsu_control/app_controller.dart';
@@ -88,6 +89,7 @@ class _AppWidgetState extends State<AppWidget> {
               dateStart: controller.dateReferenceStart,
               dateFinish: controller.dateReferenceFinish)
           .listen((result) {
+        log('Checklist: ${result.length}');
         controller.setChecklistPeriod(result);
       });
     });
