@@ -9,6 +9,15 @@ part of 'home_controller.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$HomeController on _HomeControllerBase, Store {
+  Computed<List<CheckListModel>>? _$checklistPeriodSortComputed;
+
+  @override
+  List<CheckListModel> get checklistPeriodSort =>
+      (_$checklistPeriodSortComputed ??= Computed<List<CheckListModel>>(
+              () => super.checklistPeriodSort,
+              name: '_HomeControllerBase.checklistPeriodSort'))
+          .value;
+
   late final _$loadingAtom =
       Atom(name: '_HomeControllerBase.loading', context: context);
 
@@ -38,6 +47,22 @@ mixin _$HomeController on _HomeControllerBase, Store {
   set isOperacionalToday(bool value) {
     _$isOperacionalTodayAtom.reportWrite(value, super.isOperacionalToday, () {
       super.isOperacionalToday = value;
+    });
+  }
+
+  late final _$checklistsPeriodAtom =
+      Atom(name: '_HomeControllerBase.checklistsPeriod', context: context);
+
+  @override
+  List<CheckListModel> get checklistsPeriod {
+    _$checklistsPeriodAtom.reportRead();
+    return super.checklistsPeriod;
+  }
+
+  @override
+  set checklistsPeriod(List<CheckListModel> value) {
+    _$checklistsPeriodAtom.reportWrite(value, super.checklistsPeriod, () {
+      super.checklistsPeriod = value;
     });
   }
 
@@ -89,8 +114,104 @@ mixin _$HomeController on _HomeControllerBase, Store {
     });
   }
 
+  late final _$filterAtom =
+      Atom(name: '_HomeControllerBase.filter', context: context);
+
+  @override
+  String get filter {
+    _$filterAtom.reportRead();
+    return super.filter;
+  }
+
+  @override
+  set filter(String value) {
+    _$filterAtom.reportWrite(value, super.filter, () {
+      super.filter = value;
+    });
+  }
+
+  late final _$limitAtom =
+      Atom(name: '_HomeControllerBase.limit', context: context);
+
+  @override
+  int get limit {
+    _$limitAtom.reportRead();
+    return super.limit;
+  }
+
+  @override
+  set limit(int value) {
+    _$limitAtom.reportWrite(value, super.limit, () {
+      super.limit = value;
+    });
+  }
+
+  late final _$pageAtom =
+      Atom(name: '_HomeControllerBase.page', context: context);
+
+  @override
+  int get page {
+    _$pageAtom.reportRead();
+    return super.page;
+  }
+
+  @override
+  set page(int value) {
+    _$pageAtom.reportWrite(value, super.page, () {
+      super.page = value;
+    });
+  }
+
   late final _$_HomeControllerBaseActionController =
       ActionController(name: '_HomeControllerBase', context: context);
+
+  @override
+  Stream<List<CheckListModel>> listenChecklistPeriod(
+      {required DateTime dateStart, required DateTime dateFinish}) {
+    final _$actionInfo = _$_HomeControllerBaseActionController.startAction(
+        name: '_HomeControllerBase.listenChecklistPeriod');
+    try {
+      return super
+          .listenChecklistPeriod(dateStart: dateStart, dateFinish: dateFinish);
+    } finally {
+      _$_HomeControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setLoading(bool value) {
+    final _$actionInfo = _$_HomeControllerBaseActionController.startAction(
+        name: '_HomeControllerBase.setLoading');
+    try {
+      return super.setLoading(value);
+    } finally {
+      _$_HomeControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setDateRangeChecklist(
+      {required DateTime dateStart, required DateTime dateFinish}) {
+    final _$actionInfo = _$_HomeControllerBaseActionController.startAction(
+        name: '_HomeControllerBase.setDateRangeChecklist');
+    try {
+      return super
+          .setDateRangeChecklist(dateStart: dateStart, dateFinish: dateFinish);
+    } finally {
+      _$_HomeControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setChecklistPeriod(List<CheckListModel> value) {
+    final _$actionInfo = _$_HomeControllerBaseActionController.startAction(
+        name: '_HomeControllerBase.setChecklistPeriod');
+    try {
+      return super.setChecklistPeriod(value);
+    } finally {
+      _$_HomeControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
 
   @override
   dynamic setDate(DateTime value) {
@@ -104,22 +225,33 @@ mixin _$HomeController on _HomeControllerBase, Store {
   }
 
   @override
-  dynamic setDateStart(DateTime? value) {
+  dynamic onChangeFilter(String? value) {
     final _$actionInfo = _$_HomeControllerBaseActionController.startAction(
-        name: '_HomeControllerBase.setDateStart');
+        name: '_HomeControllerBase.onChangeFilter');
     try {
-      return super.setDateStart(value);
+      return super.onChangeFilter(value);
     } finally {
       _$_HomeControllerBaseActionController.endAction(_$actionInfo);
     }
   }
 
   @override
-  dynamic setDateFinish(DateTime? value) {
+  dynamic setLimit(int? value) {
     final _$actionInfo = _$_HomeControllerBaseActionController.startAction(
-        name: '_HomeControllerBase.setDateFinish');
+        name: '_HomeControllerBase.setLimit');
     try {
-      return super.setDateFinish(value);
+      return super.setLimit(value);
+    } finally {
+      _$_HomeControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setPage(int value) {
+    final _$actionInfo = _$_HomeControllerBaseActionController.startAction(
+        name: '_HomeControllerBase.setPage');
+    try {
+      return super.setPage(value);
     } finally {
       _$_HomeControllerBaseActionController.endAction(_$actionInfo);
     }
@@ -130,9 +262,14 @@ mixin _$HomeController on _HomeControllerBase, Store {
     return '''
 loading: ${loading},
 isOperacionalToday: ${isOperacionalToday},
+checklistsPeriod: ${checklistsPeriod},
 date: ${date},
 dateReferenceStart: ${dateReferenceStart},
-dateReferenceFinish: ${dateReferenceFinish}
+dateReferenceFinish: ${dateReferenceFinish},
+filter: ${filter},
+limit: ${limit},
+page: ${page},
+checklistPeriodSort: ${checklistPeriodSort}
     ''';
   }
 }

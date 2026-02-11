@@ -53,10 +53,10 @@ abstract class _AppControllerBase with Store {
   int router = 0;
 
   @observable
-  int limit = 10;
+  DateTime dateStartConfig = DateTime.now().subtract(const Duration(days: 1));
 
   @observable
-  int page = 1;
+  DateTime dateFinishConfig = DateTime.now();
 
   @observable
   UserModel user = UserModel();
@@ -67,8 +67,8 @@ abstract class _AppControllerBase with Store {
   @observable
   bool loading = false;
 
-  @observable
-  bool loadingCheklist = false;
+  // @observable
+  // bool loadingCheklist = false;
 
   @observable
   bool checklistVeicular = false;
@@ -76,18 +76,15 @@ abstract class _AppControllerBase with Store {
   @observable
   bool modeMOBILE = false;
 
-  @observable
-  DateTime dateReferenceStart =
-      DateTime.now().subtract(const Duration(days: 1));
+  // @observable
+  // DateTime dateReferenceStart =
+  //     DateTime.now().subtract(const Duration(days: 1));
 
-  @observable
-  DateTime dateReferenceFinish = DateTime.now();
+  // @observable
+  // DateTime dateReferenceFinish = DateTime.now();
 
   @observable
   List<CarModel> cars = <CarModel>[].asObservable();
-
-  @observable
-  List<CheckListModel> checklistsPeriod = <CheckListModel>[].asObservable();
 
   @observable
   List<CheckListModel> checklistsToday = <CheckListModel>[].asObservable();
@@ -157,13 +154,6 @@ abstract class _AppControllerBase with Store {
   }
 
   @computed
-  List<CheckListModel> get checklistPeriodSort {
-    final list =
-        Core.paginate(list: checklistsPeriod, page: page, limit: limit);
-    return List<CheckListModel>.from(list);
-  }
-
-  @computed
   List<CarModel> get carsADM => cars.where((e) => e.adm).toList();
 
   @computed
@@ -200,14 +190,23 @@ abstract class _AppControllerBase with Store {
   }
 
   @action
-  setUser(UserModel value) => user = value;
+  setDateStartConfig(DateTime? value) {
+    dateStartConfig = value ?? dateStartConfig;
+  }
 
   @action
-  setDateRangeChecklist(
-      {required DateTime dateStart, required DateTime dateFinish}) {
-    dateReferenceStart = dateStart;
-    dateReferenceFinish = dateFinish;
+  setDateFinishConfig(DateTime? value) {
+    dateFinishConfig = value ?? dateFinishConfig;
   }
+
+  @action
+  void cleanExibitionConfig() {
+    dateStartConfig = DateTime.now().subtract(const Duration(days: 1));
+    dateFinishConfig = DateTime.now();
+  }
+
+  @action
+  setUser(UserModel value) => user = value;
 
   @action
   changeMenuOpen() => menuOpen = !menuOpen;
@@ -228,24 +227,6 @@ abstract class _AppControllerBase with Store {
     return repository.listenChecklistToday(referenceDate: dateReference);
   }
 
-  @observable
-  Stream<List<CheckListModel>> listenChecklistPeriod(
-      {required DateTime dateStart, required DateTime dateFinish}) {
-    loadingCheklist = true;
-
-    log('Date Start: ${Core.formatDate(dateStart)}');
-    log('Date Finish: ${Core.formatDate(dateFinish)}');
-
-    final stream = repository.listenChecklistPeriod(
-      referenceDateStart: dateStart,
-      referenceDateFinish: dateFinish,
-    );
-
-    loadingCheklist = false;
-
-    return stream;
-  }
-
   @action
   setCars(List<CarModel> value) {
     cars
@@ -253,15 +234,15 @@ abstract class _AppControllerBase with Store {
       ..addAll(value);
   }
 
-  @action
-  setLimit(int? value) {
-    limit = value ?? limit;
-  }
+  // @action
+  // setLimit(int? value) {
+  //   limit = value ?? limit;
+  // }
 
-  @action
-  setPage(int value) {
-    page = value;
-  }
+  // @action
+  // setPage(int value) {
+  //   page = value;
+  // }
 
   @action
   setUsers(List<UserModel> value) {
@@ -270,14 +251,6 @@ abstract class _AppControllerBase with Store {
       ..addAll(value);
 
     users.sort((a, b) => a.name.compareTo(b.name));
-  }
-
-  @action
-  setChecklistPeriod(List<CheckListModel> value) {
-    value.sort((a, b) => b.date.compareTo(a.date));
-    checklistsPeriod
-      ..clear()
-      ..addAll(value);
   }
 
   @action
@@ -325,27 +298,6 @@ abstract class _AppControllerBase with Store {
     if (result != null) user = UserModel.fromMap(result);
 
     return result != null;
-  }
-
-  @action
-  Future<bool> deleteChecklist({required CheckListModel checkList}) async {
-    try {
-      loading = true;
-
-      final car = CarModel.copy(
-          cars.firstWhere((e) => e.id == checkList.checkCar.car.id));
-      final changes =
-          car.changes.where((e) => e.checklistID != checkList.id).toList();
-
-      final result = await repository.deleteChecklist(
-          checklist: checkList, car: car.copyWith(changes: changes));
-      loading = false;
-
-      return result;
-    } catch (e) {
-      loading = false;
-      return false;
-    }
   }
 
   @action

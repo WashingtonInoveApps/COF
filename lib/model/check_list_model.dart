@@ -20,6 +20,7 @@ class CheckListModel {
   String? id;
   String obs;
   String cia;
+  String obm;
   String contact;
   String obmID;
   FileModel? signature;
@@ -39,6 +40,7 @@ class CheckListModel {
       required this.supply,
       required this.changes,
       required this.states,
+      required this.obm,
       this.signature,
       this.userID = '',
       this.pb = "",
@@ -68,6 +70,7 @@ class CheckListModel {
       'prefix': prefix,
       'startKM': startKM,
       'endKM': endKM,
+      'obm': obm,
       'id': id,
       'userID': userID,
       'state': state.name,
@@ -93,6 +96,7 @@ class CheckListModel {
       team: map['team'] ?? '',
       userID: map['userID'] ?? '',
       cia: map['cia'] ?? '',
+      obm: map['obm'] ?? '',
       signature: (map['signature'] == null)
           ? null
           : FileModel.fromMap(map['signature']),
@@ -139,6 +143,7 @@ class CheckListModel {
       String? userID,
       String? id,
       String? obs,
+      String? obm,
       FileModel? signature,
       String? cia,
       String? contact,
@@ -161,6 +166,7 @@ class CheckListModel {
       endKM: endKM ?? this.endKM,
       userID: userID ?? this.userID,
       id: id ?? this.id,
+      obm: obm ?? this.obm,
       state: state ?? this.state,
       signature: signature ?? this.signature,
       states: states ?? this.states,

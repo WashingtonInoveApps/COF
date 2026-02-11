@@ -1,4 +1,5 @@
 import 'package:bsu_control/app_controller.dart';
+import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/model/obm_model.dart';
 import 'package:bsu_control/src/user/repository/user_interface.dart';
 import 'package:bsu_control/src/user/repository/user_repository.dart';
@@ -32,6 +33,13 @@ abstract class _UserControllerBase with Store {
 
   @observable
   String? cia;
+  @observable
+  String filter = '';
+  @observable
+  int limit = 10;
+
+  @observable
+  int page = 1;
 
   @observable
   OBMModel obm = OBMModel(team: [], cias: []);
@@ -41,6 +49,57 @@ abstract class _UserControllerBase with Store {
 
   @observable
   bool adminFull = false;
+
+  @computed
+  List<UserModel> get usersOBM {
+    if (app.user.adminFull) {
+      return List<UserModel>.from(app.users);
+    } else if (app.user.admin) {
+      return List<UserModel>.from(
+          app.users.where((e) => e.obmID == app.user.obmID).toList());
+    } else {
+      return List<UserModel>.from(app.users
+          .where((e) => e.cia.toLowerCase() == app.user.cia.toLowerCase())
+          .toList());
+    }
+  }
+
+  @computed
+  List<UserModel> get usersSorts {
+    if (filter.isNotEmpty) {
+      final filtered = usersOBM
+          .where((e) => (e.fullname
+                  .toLowerCase()
+                  .contains(filter.toLowerCase()) ||
+              (e.cia.toLowerCase().contains(filter.toLowerCase())) ||
+              (e.graduation.toLowerCase().contains(filter.toLowerCase())) ||
+              (e.registration.toLowerCase().contains(filter.toLowerCase()))))
+          .toList();
+
+      final list = Core.paginate(list: filtered, page: page, limit: limit);
+      return List<UserModel>.from(list);
+    } else {
+      final list = Core.paginate(list: usersOBM, page: page, limit: limit);
+      return List<UserModel>.from(list);
+    }
+  }
+
+  @action
+  onChangeFilter(String? value) {
+    filter = value ?? '';
+    page = 1;
+  }
+
+  @action
+  setLimit(int? value) {
+    limit = value ?? limit;
+    page = 1;
+  }
+
+  @action
+  setPage(int value) {
+    page = value;
+  }
 
   @action
   setGraduation(String? value) => graduation = value ?? graduation;

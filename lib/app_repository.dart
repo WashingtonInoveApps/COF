@@ -43,58 +43,6 @@ class AppRepository extends APIClient implements IAppRepository {
   }
 
   @override
-  Stream<List<CheckListModel>> listenChecklistPeriod(
-      {required DateTime referenceDateStart,
-      required DateTime referenceDateFinish}) {
-    try {
-      final start = referenceDateStart
-          .copyWith(
-              hour: 0, second: 0, minute: 0, millisecond: 0, microsecond: 0)
-          .millisecondsSinceEpoch;
-      final finish = referenceDateFinish
-          .copyWith(
-            hour: 23,
-            second: 59,
-            minute: 59,
-          )
-          .millisecondsSinceEpoch;
-
-      if ((referenceDateStart.day == referenceDateFinish.day) &&
-          (referenceDateStart.month == referenceDateFinish.month)) {
-        log('Buscando por única data');
-        return colChecklist
-            .where('referenceDate',
-                isEqualTo: Core.formatDate(referenceDateStart))
-            .snapshots()
-            .map((e) => e.docs.map((doc) {
-                  var checkList = CheckListModel.fromMap(
-                      doc.data() as Map<String, dynamic>);
-                  checkList.id = doc.id;
-                  return checkList;
-                }).toList());
-      } else {
-        log('Buscando por intervalo de data');
-        return colChecklist
-            .where('date', isGreaterThanOrEqualTo: start)
-            .where('date', isLessThanOrEqualTo: finish)
-            .orderBy('date')
-            .snapshots()
-            .map((e) {
-          log(e.docs.length.toString());
-          return e.docs.map((doc) {
-            var checkList =
-                CheckListModel.fromMap(doc.data() as Map<String, dynamic>);
-            checkList.id = doc.id;
-            return checkList;
-          }).toList();
-        });
-      }
-    } catch (e) {
-      return Stream.value([]);
-    }
-  }
-
-  @override
   Stream<List<CheckListModel>> listenChecklistToday(
       {required DateTime referenceDate}) {
     try {
@@ -127,24 +75,6 @@ class AppRepository extends APIClient implements IAppRepository {
           user.id = doc.id;
           return user;
         }).toList());
-  }
-
-  @override
-  Future<bool> deleteChecklist(
-      {required CheckListModel checklist, required CarModel car}) async {
-    try {
-      var docCheckList = colChecklist.doc(checklist.id);
-      var docCar = colCars.doc(car.id);
-
-      await firebase!.runTransaction((trans) async {
-        trans.delete(docCheckList);
-        trans.update(docCar, car.toMap());
-      });
-
-      return true;
-    } catch (e) {
-      return false;
-    }
   }
 
   @override

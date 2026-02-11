@@ -1,14 +1,20 @@
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
+import 'package:bsu_control/model/obm_model.dart';
 import 'package:bsu_control/model/user_model.dart';
-import 'package:bsu_control/src/user/view/user_card.dart';
 import 'package:bsu_control/src/user/view/user_register_page.dart';
 import 'package:bsu_control/src/widgets/backgraund_page.dart';
+import 'package:bsu_control/src/widgets/limit_table_widget.dart';
+import 'package:bsu_control/src/widgets/pagination_widget.dart';
+import 'package:bsu_control/src/widgets/textfield_widget.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 import '../controller/user_controller.dart';
+import 'widgets/users_table_view.dart';
 
 class UsersPage extends StatefulWidget {
   const UsersPage({Key? key}) : super(key: key);
@@ -19,15 +25,21 @@ class UsersPage extends StatefulWidget {
 
 class _UsersPageState extends State<UsersPage> {
   late UserController controller;
-  final app = GetIt.I.get<AppController>();
 
-  UserModel user = UserModel();
+  final searchController = TextEditingController();
+  final app = GetIt.I.get<AppController>();
 
   @override
   void initState() {
     super.initState();
     controller = UserController(app: app);
     controller.setGraduation(Constants.graduations.first);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    searchController.dispose();
   }
 
   @override
@@ -38,36 +50,117 @@ class _UsersPageState extends State<UsersPage> {
           childLeft: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                "Usuários",
-                style: Constants.title.copyWith(fontSize: 18),
+              SizedBox(
+                width: double.infinity,
+                child: Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.end,
+                  alignment: WrapAlignment.spaceBetween,
+                  direction: Axis.horizontal,
+                  children: [
+                    Text(
+                      'Usuários',
+                      style: Constants.title.copyWith(fontSize: 18),
+                    ),
+                    Observer(builder: (_) {
+                      return Container(
+                        margin: const EdgeInsets.only(top: 10),
+                        width: app.modeMOBILE ? double.infinity : 350,
+                        alignment: Alignment.centerRight,
+                        child: FieldText(
+                          search: true,
+                          controller: searchController,
+                          hint: 'Ex.: Digite algo para pesquisar',
+                          onChange: controller.onChangeFilter,
+                          onClear: () {
+                            searchController.clear();
+                            controller.onChangeFilter('');
+                          },
+                        ),
+                      );
+                    }),
+                  ],
+                ),
               ),
-              const Divider(),
-              Observer(
-                  builder: (context) => Column(
-                        children: List.generate(app.users.length, (index) {
-                          final user = app.users[index];
-                          final obm =
-                              app.obms.firstWhere((e) => e.id == user.obmID);
+              app.modeMOBILE ? Container() : const Divider(),
+              const SizedBox(
+                height: 10,
+              ),
+              Text(
+                'Exibindo 1 a ${controller.usersSorts.length} de ${controller.usersOBM.length} entradas',
+                style: Constants.subtitleHint,
+              ),
+              Observer(builder: (context) {
+                final users = List<UserModel>.from(controller.usersSorts);
+                final obms = List<OBMModel>.from(app.obms);
+                return UsersTableView(
+                  values: users,
+                  obms: obms,
+                  onContact: (contact) async {
+                    final path = kIsWeb
+                        ? "https://wa.me/+55$contact/?text=${Uri.encodeFull('Olá, tudo bem ?')}"
+                        : "whatsapp://send?phone=+55$contact&text=${Uri.encodeFull('Olá, tudo bem ?')}";
 
-                          return CardUser(
-                            obm: obm,
-                            user: user,
-                            onEdit: () {
-                              app.setRouter(6);
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => UserPageRegister(
-                                        user: user,
-                                      )));
-                            },
-                            onDelete: () async {},
-                            onEnable: (value) async {
-                              await controller.update(
-                                  user: user.copyWith(enable: value));
-                            },
-                          );
-                        }),
-                      ))
+                    await launchUrlString(path,
+                        mode: LaunchMode.externalApplication);
+                  },
+                  onDetails: (user) {
+                    app.setRouter(6);
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => UserPageRegister(
+                              user: user,
+                            )));
+                  },
+                  onEnable: (user) async {
+                    await controller.update(user: user);
+                  },
+                );
+              }
+                  // Column(
+                  //       children: List.generate(app.users.length, (index) {
+                  //         final user = app.users[index];
+                  //         final obm =
+                  //             app.obms.firstWhere((e) => e.id == user.obmID);
+
+                  //         return CardUser(
+                  //           obm: obm,
+                  //           user: user,
+                  //           onEdit: () {
+                  //             app.setRouter(6);
+                  //             Navigator.of(context).push(MaterialPageRoute(
+                  //                 builder: (context) => UserPageRegister(
+                  //                       user: user,
+                  //                     )));
+                  //           },
+                  //           onDelete: () async {},
+                  //           onEnable: (value) async {
+                  //             await controller.update(
+                  //                 user: user.copyWith(enable: value));
+                  //           },
+                  //         );
+                  //       }),
+                  //     )
+
+                  ),
+              const SizedBox(
+                height: 10,
+              ),
+              Row(
+                children: [
+                  Observer(builder: (_) {
+                    return LimitTableWidget(
+                        limit: controller.limit, onChange: controller.setLimit);
+                  }),
+                  const Spacer(),
+                  Observer(builder: (context) {
+                    return PaginationWidget(
+                      limit: controller.limit,
+                      page: controller.page,
+                      length: controller.usersSorts.length,
+                      onChange: controller.setPage,
+                    );
+                  }),
+                ],
+              )
             ],
           ),
         ),

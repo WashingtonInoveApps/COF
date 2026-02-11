@@ -377,9 +377,11 @@ class ChecklistDataSource extends DataGridSource {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(state.icon, color: Colors.white),
-                  Text(
-                    state.label,
-                    style: Constants.subtitle.copyWith(color: Colors.white),
+                  Expanded(
+                    child: Text(
+                      state.label,
+                      style: Constants.subtitle.copyWith(color: Colors.white),
+                    ),
                   ),
                 ],
               ),

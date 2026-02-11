@@ -44,14 +44,6 @@ mixin _$AppController on _AppControllerBase, Store {
           Computed<int>(() => super.checklistTodayChanges,
               name: '_AppControllerBase.checklistTodayChanges'))
       .value;
-  Computed<List<CheckListModel>>? _$checklistPeriodSortComputed;
-
-  @override
-  List<CheckListModel> get checklistPeriodSort =>
-      (_$checklistPeriodSortComputed ??= Computed<List<CheckListModel>>(
-              () => super.checklistPeriodSort,
-              name: '_AppControllerBase.checklistPeriodSort'))
-          .value;
   Computed<List<CarModel>>? _$carsADMComputed;
 
   @override
@@ -129,35 +121,35 @@ mixin _$AppController on _AppControllerBase, Store {
     });
   }
 
-  late final _$limitAtom =
-      Atom(name: '_AppControllerBase.limit', context: context);
+  late final _$dateStartConfigAtom =
+      Atom(name: '_AppControllerBase.dateStartConfig', context: context);
 
   @override
-  int get limit {
-    _$limitAtom.reportRead();
-    return super.limit;
+  DateTime get dateStartConfig {
+    _$dateStartConfigAtom.reportRead();
+    return super.dateStartConfig;
   }
 
   @override
-  set limit(int value) {
-    _$limitAtom.reportWrite(value, super.limit, () {
-      super.limit = value;
+  set dateStartConfig(DateTime value) {
+    _$dateStartConfigAtom.reportWrite(value, super.dateStartConfig, () {
+      super.dateStartConfig = value;
     });
   }
 
-  late final _$pageAtom =
-      Atom(name: '_AppControllerBase.page', context: context);
+  late final _$dateFinishConfigAtom =
+      Atom(name: '_AppControllerBase.dateFinishConfig', context: context);
 
   @override
-  int get page {
-    _$pageAtom.reportRead();
-    return super.page;
+  DateTime get dateFinishConfig {
+    _$dateFinishConfigAtom.reportRead();
+    return super.dateFinishConfig;
   }
 
   @override
-  set page(int value) {
-    _$pageAtom.reportWrite(value, super.page, () {
-      super.page = value;
+  set dateFinishConfig(DateTime value) {
+    _$dateFinishConfigAtom.reportWrite(value, super.dateFinishConfig, () {
+      super.dateFinishConfig = value;
     });
   }
 
@@ -209,22 +201,6 @@ mixin _$AppController on _AppControllerBase, Store {
     });
   }
 
-  late final _$loadingCheklistAtom =
-      Atom(name: '_AppControllerBase.loadingCheklist', context: context);
-
-  @override
-  bool get loadingCheklist {
-    _$loadingCheklistAtom.reportRead();
-    return super.loadingCheklist;
-  }
-
-  @override
-  set loadingCheklist(bool value) {
-    _$loadingCheklistAtom.reportWrite(value, super.loadingCheklist, () {
-      super.loadingCheklist = value;
-    });
-  }
-
   late final _$checklistVeicularAtom =
       Atom(name: '_AppControllerBase.checklistVeicular', context: context);
 
@@ -257,38 +233,6 @@ mixin _$AppController on _AppControllerBase, Store {
     });
   }
 
-  late final _$dateReferenceStartAtom =
-      Atom(name: '_AppControllerBase.dateReferenceStart', context: context);
-
-  @override
-  DateTime get dateReferenceStart {
-    _$dateReferenceStartAtom.reportRead();
-    return super.dateReferenceStart;
-  }
-
-  @override
-  set dateReferenceStart(DateTime value) {
-    _$dateReferenceStartAtom.reportWrite(value, super.dateReferenceStart, () {
-      super.dateReferenceStart = value;
-    });
-  }
-
-  late final _$dateReferenceFinishAtom =
-      Atom(name: '_AppControllerBase.dateReferenceFinish', context: context);
-
-  @override
-  DateTime get dateReferenceFinish {
-    _$dateReferenceFinishAtom.reportRead();
-    return super.dateReferenceFinish;
-  }
-
-  @override
-  set dateReferenceFinish(DateTime value) {
-    _$dateReferenceFinishAtom.reportWrite(value, super.dateReferenceFinish, () {
-      super.dateReferenceFinish = value;
-    });
-  }
-
   late final _$carsAtom =
       Atom(name: '_AppControllerBase.cars', context: context);
 
@@ -302,22 +246,6 @@ mixin _$AppController on _AppControllerBase, Store {
   set cars(List<CarModel> value) {
     _$carsAtom.reportWrite(value, super.cars, () {
       super.cars = value;
-    });
-  }
-
-  late final _$checklistsPeriodAtom =
-      Atom(name: '_AppControllerBase.checklistsPeriod', context: context);
-
-  @override
-  List<CheckListModel> get checklistsPeriod {
-    _$checklistsPeriodAtom.reportRead();
-    return super.checklistsPeriod;
-  }
-
-  @override
-  set checklistsPeriod(List<CheckListModel> value) {
-    _$checklistsPeriodAtom.reportWrite(value, super.checklistsPeriod, () {
-      super.checklistsPeriod = value;
     });
   }
 
@@ -353,14 +281,6 @@ mixin _$AppController on _AppControllerBase, Store {
     });
   }
 
-  @override
-  ObservableStream<List<CheckListModel>> listenChecklistPeriod(
-      {required DateTime dateStart, required DateTime dateFinish}) {
-    final _$stream = super
-        .listenChecklistPeriod(dateStart: dateStart, dateFinish: dateFinish);
-    return ObservableStream<List<CheckListModel>>(_$stream, context: context);
-  }
-
   late final _$saveSuppliesAsyncAction =
       AsyncAction('_AppControllerBase.saveSupplies', context: context);
 
@@ -377,15 +297,6 @@ mixin _$AppController on _AppControllerBase, Store {
   @override
   Future<void> getOBMs() {
     return _$getOBMsAsyncAction.run(() => super.getOBMs());
-  }
-
-  late final _$deleteChecklistAsyncAction =
-      AsyncAction('_AppControllerBase.deleteChecklist', context: context);
-
-  @override
-  Future<bool> deleteChecklist({required CheckListModel checkList}) {
-    return _$deleteChecklistAsyncAction
-        .run(() => super.deleteChecklist(checkList: checkList));
   }
 
   late final _$deleteSupplyAsyncAction =
@@ -410,24 +321,44 @@ mixin _$AppController on _AppControllerBase, Store {
       ActionController(name: '_AppControllerBase', context: context);
 
   @override
-  dynamic setUser(UserModel value) {
+  dynamic setDateStartConfig(DateTime? value) {
     final _$actionInfo = _$_AppControllerBaseActionController.startAction(
-        name: '_AppControllerBase.setUser');
+        name: '_AppControllerBase.setDateStartConfig');
     try {
-      return super.setUser(value);
+      return super.setDateStartConfig(value);
     } finally {
       _$_AppControllerBaseActionController.endAction(_$actionInfo);
     }
   }
 
   @override
-  dynamic setDateRangeChecklist(
-      {required DateTime dateStart, required DateTime dateFinish}) {
+  dynamic setDateFinishConfig(DateTime? value) {
     final _$actionInfo = _$_AppControllerBaseActionController.startAction(
-        name: '_AppControllerBase.setDateRangeChecklist');
+        name: '_AppControllerBase.setDateFinishConfig');
     try {
-      return super
-          .setDateRangeChecklist(dateStart: dateStart, dateFinish: dateFinish);
+      return super.setDateFinishConfig(value);
+    } finally {
+      _$_AppControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void cleanExibitionConfig() {
+    final _$actionInfo = _$_AppControllerBaseActionController.startAction(
+        name: '_AppControllerBase.cleanExibitionConfig');
+    try {
+      return super.cleanExibitionConfig();
+    } finally {
+      _$_AppControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setUser(UserModel value) {
+    final _$actionInfo = _$_AppControllerBaseActionController.startAction(
+        name: '_AppControllerBase.setUser');
+    try {
+      return super.setUser(value);
     } finally {
       _$_AppControllerBaseActionController.endAction(_$actionInfo);
     }
@@ -478,44 +409,11 @@ mixin _$AppController on _AppControllerBase, Store {
   }
 
   @override
-  dynamic setLimit(int? value) {
-    final _$actionInfo = _$_AppControllerBaseActionController.startAction(
-        name: '_AppControllerBase.setLimit');
-    try {
-      return super.setLimit(value);
-    } finally {
-      _$_AppControllerBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  dynamic setPage(int value) {
-    final _$actionInfo = _$_AppControllerBaseActionController.startAction(
-        name: '_AppControllerBase.setPage');
-    try {
-      return super.setPage(value);
-    } finally {
-      _$_AppControllerBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
   dynamic setUsers(List<UserModel> value) {
     final _$actionInfo = _$_AppControllerBaseActionController.startAction(
         name: '_AppControllerBase.setUsers');
     try {
       return super.setUsers(value);
-    } finally {
-      _$_AppControllerBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  dynamic setChecklistPeriod(List<CheckListModel> value) {
-    final _$actionInfo = _$_AppControllerBaseActionController.startAction(
-        name: '_AppControllerBase.setChecklistPeriod');
-    try {
-      return super.setChecklistPeriod(value);
     } finally {
       _$_AppControllerBaseActionController.endAction(_$actionInfo);
     }
@@ -551,18 +449,14 @@ mixin _$AppController on _AppControllerBase, Store {
 version: ${version},
 width: ${width},
 router: ${router},
-limit: ${limit},
-page: ${page},
+dateStartConfig: ${dateStartConfig},
+dateFinishConfig: ${dateFinishConfig},
 user: ${user},
 menuOpen: ${menuOpen},
 loading: ${loading},
-loadingCheklist: ${loadingCheklist},
 checklistVeicular: ${checklistVeicular},
 modeMOBILE: ${modeMOBILE},
-dateReferenceStart: ${dateReferenceStart},
-dateReferenceFinish: ${dateReferenceFinish},
 cars: ${cars},
-checklistsPeriod: ${checklistsPeriod},
 checklistsToday: ${checklistsToday},
 users: ${users},
 carsTypes: ${carsTypes},
@@ -570,7 +464,6 @@ newRegister: ${newRegister},
 checklistUser: ${checklistUser},
 checklistTodayPendent: ${checklistTodayPendent},
 checklistTodayChanges: ${checklistTodayChanges},
-checklistPeriodSort: ${checklistPeriodSort},
 carsADM: ${carsADM},
 carsOPR: ${carsOPR},
 prefixs: ${prefixs},

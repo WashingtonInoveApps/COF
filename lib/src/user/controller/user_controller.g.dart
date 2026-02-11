@@ -9,6 +9,21 @@ part of 'user_controller.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$UserController on _UserControllerBase, Store {
+  Computed<List<UserModel>>? _$usersOBMComputed;
+
+  @override
+  List<UserModel> get usersOBM =>
+      (_$usersOBMComputed ??= Computed<List<UserModel>>(() => super.usersOBM,
+              name: '_UserControllerBase.usersOBM'))
+          .value;
+  Computed<List<UserModel>>? _$usersSortsComputed;
+
+  @override
+  List<UserModel> get usersSorts => (_$usersSortsComputed ??=
+          Computed<List<UserModel>>(() => super.usersSorts,
+              name: '_UserControllerBase.usersSorts'))
+      .value;
+
   late final _$loadingAtom =
       Atom(name: '_UserControllerBase.loading', context: context);
 
@@ -54,6 +69,54 @@ mixin _$UserController on _UserControllerBase, Store {
   set cia(String? value) {
     _$ciaAtom.reportWrite(value, super.cia, () {
       super.cia = value;
+    });
+  }
+
+  late final _$filterAtom =
+      Atom(name: '_UserControllerBase.filter', context: context);
+
+  @override
+  String get filter {
+    _$filterAtom.reportRead();
+    return super.filter;
+  }
+
+  @override
+  set filter(String value) {
+    _$filterAtom.reportWrite(value, super.filter, () {
+      super.filter = value;
+    });
+  }
+
+  late final _$limitAtom =
+      Atom(name: '_UserControllerBase.limit', context: context);
+
+  @override
+  int get limit {
+    _$limitAtom.reportRead();
+    return super.limit;
+  }
+
+  @override
+  set limit(int value) {
+    _$limitAtom.reportWrite(value, super.limit, () {
+      super.limit = value;
+    });
+  }
+
+  late final _$pageAtom =
+      Atom(name: '_UserControllerBase.page', context: context);
+
+  @override
+  int get page {
+    _$pageAtom.reportRead();
+    return super.page;
+  }
+
+  @override
+  set page(int value) {
+    _$pageAtom.reportWrite(value, super.page, () {
+      super.page = value;
     });
   }
 
@@ -133,6 +196,39 @@ mixin _$UserController on _UserControllerBase, Store {
       ActionController(name: '_UserControllerBase', context: context);
 
   @override
+  dynamic onChangeFilter(String? value) {
+    final _$actionInfo = _$_UserControllerBaseActionController.startAction(
+        name: '_UserControllerBase.onChangeFilter');
+    try {
+      return super.onChangeFilter(value);
+    } finally {
+      _$_UserControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setLimit(int? value) {
+    final _$actionInfo = _$_UserControllerBaseActionController.startAction(
+        name: '_UserControllerBase.setLimit');
+    try {
+      return super.setLimit(value);
+    } finally {
+      _$_UserControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setPage(int value) {
+    final _$actionInfo = _$_UserControllerBaseActionController.startAction(
+        name: '_UserControllerBase.setPage');
+    try {
+      return super.setPage(value);
+    } finally {
+      _$_UserControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   dynamic setGraduation(String? value) {
     final _$actionInfo = _$_UserControllerBaseActionController.startAction(
         name: '_UserControllerBase.setGraduation');
@@ -193,9 +289,14 @@ mixin _$UserController on _UserControllerBase, Store {
 loading: ${loading},
 graduation: ${graduation},
 cia: ${cia},
+filter: ${filter},
+limit: ${limit},
+page: ${page},
 obm: ${obm},
 admin: ${admin},
-adminFull: ${adminFull}
+adminFull: ${adminFull},
+usersOBM: ${usersOBM},
+usersSorts: ${usersSorts}
     ''';
   }
 }

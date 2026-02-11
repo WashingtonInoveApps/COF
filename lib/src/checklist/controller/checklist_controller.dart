@@ -375,6 +375,7 @@ abstract class _CheckListControllerBase with Store {
           team: team,
           state: StateChecklist.inprogress,
           obmID: obm.id ?? '',
+          obm: obm.prefix,
           cia: cia?.toLowerCase() ?? '',
           contact: contact,
           changes: [],

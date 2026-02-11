@@ -215,7 +215,8 @@ class _CarsChartState extends State<CarsChart> {
                                                                 .grey.shade200,
                                                           )
                                                         ])
-                                                    .toList(),
+                                                    .toList()
+                                                  ..removeLast(),
                                               )
                                             ],
                                           ),

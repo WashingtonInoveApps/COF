@@ -9,6 +9,7 @@ import 'package:bsu_control/src/car/view/widgets/cars_table_view.dart';
 import 'package:bsu_control/src/widgets/backgraund_page.dart';
 import 'package:bsu_control/src/widgets/cars_chart_widget.dart';
 import 'package:bsu_control/src/widgets/images_changes_view_widget.dart';
+import 'package:bsu_control/src/widgets/limit_table_widget.dart';
 import 'package:bsu_control/src/widgets/textfield_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -264,50 +265,11 @@ class _CarsPageState extends State<CarsPage> {
             ),
             Row(
               children: [
-                Text(
-                  'Mostrar',
-                  style: Constants.subtitleHint,
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                Container(
-                  height: 40.0,
-                  width: 65,
-                  padding: const EdgeInsets.symmetric(horizontal: 5),
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey),
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(5.0)),
-                  child: Observer(builder: (_) {
-                    return DropdownButton<int>(
-                        isExpanded: true,
-                        value: carController.limit,
-                        underline: Container(),
-                        onChanged: carController.setLimit,
-                        items: [10, 25, 50, 75, 100]
-                            .map((e) => DropdownMenuItem(
-                                  value: e,
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(left: 5),
-                                    child: Text(
-                                      e.toString(),
-                                      style: Constants.subtitle,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                ))
-                            .toList());
-                  }),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                Text(
-                  'entradas',
-                  style: Constants.subtitleHint,
-                ),
+                Observer(builder: (_) {
+                  return LimitTableWidget(
+                      limit: carController.limit,
+                      onChange: carController.setLimit);
+                }),
                 const Spacer(),
                 Observer(builder: (context) {
                   return PaginationWidget(
