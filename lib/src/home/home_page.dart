@@ -68,7 +68,9 @@ class _HomePageState extends State<HomePage> {
                   alignment: WrapAlignment.spaceEvenly,
                   children: [
                     SizedBox(
-                      width: app.maxWidth * 0.45,
+                      width: (app.modeMOBILE
+                          ? double.infinity
+                          : app.maxWidth * 0.45),
                       child: Column(
                         spacing: 5,
                         children: [
@@ -197,10 +199,11 @@ class _HomePageState extends State<HomePage> {
                           ),
                           Observer(builder: (_) {
                             return SizedBox(
-                              height: 320,
+                              height: 245,
                               child: CarsChart(
-                                cars: app.cars,
+                                cars: app.carsUsers,
                                 carsTypes: app.carsTypes,
+                                legends: false,
                               ),
                             );
                           }),
@@ -208,13 +211,15 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                     SizedBox(
-                      width: app.maxWidth * 0.46,
+                      width: (app.modeMOBILE
+                          ? double.infinity
+                          : app.maxWidth * 0.46),
                       child: Column(
                         spacing: 5,
                         children: [
                           Card(
                             child: Padding(
-                              padding: const EdgeInsets.all(10.0),
+                              padding: const EdgeInsets.all(10),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -234,7 +239,6 @@ class _HomePageState extends State<HomePage> {
                                       ),
                                     ],
                                   ),
-                                  const Divider(),
                                   const SizedBox(
                                     height: 5,
                                   ),
@@ -385,7 +389,7 @@ class _HomePageState extends State<HomePage> {
                           ),
                           Observer(builder: (context) {
                             return SizedBox(
-                              height: 340,
+                              height: 300,
                               child: ChartPeriodWidget(
                                 key: ValueKey(
                                     app.checklistsPeriod.length.toString() +
@@ -559,7 +563,7 @@ Widget cardInfor(
         Container(
           alignment: Alignment.center,
           margin: const EdgeInsets.all(5),
-          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 25),
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(5), color: color),
           child: Icon(
@@ -611,7 +615,7 @@ Widget btCustom(
     onTap: onTap,
     child: Container(
       alignment: Alignment.center,
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           color: (onTap == null) ? Colors.grey.shade300 : color),

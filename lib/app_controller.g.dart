@@ -73,6 +73,13 @@ mixin _$AppController on _AppControllerBase, Store {
       (_$prefixsComputed ??= Computed<List<String>>(() => super.prefixs,
               name: '_AppControllerBase.prefixs'))
           .value;
+  Computed<List<CarModel>>? _$carsUsersComputed;
+
+  @override
+  List<CarModel> get carsUsers =>
+      (_$carsUsersComputed ??= Computed<List<CarModel>>(() => super.carsUsers,
+              name: '_AppControllerBase.carsUsers'))
+          .value;
 
   late final _$versionAtom =
       Atom(name: '_AppControllerBase.version', context: context);
@@ -566,7 +573,8 @@ checklistTodayChanges: ${checklistTodayChanges},
 checklistPeriodSort: ${checklistPeriodSort},
 carsADM: ${carsADM},
 carsOPR: ${carsOPR},
-prefixs: ${prefixs}
+prefixs: ${prefixs},
+carsUsers: ${carsUsers}
     ''';
   }
 }

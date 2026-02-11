@@ -18,6 +18,7 @@ import 'package:mobx/mobx.dart';
 import '../../widgets/pagination_widget.dart';
 import 'car_details_page.dart';
 import 'widgets/car_chart_km_month_widget.dart';
+import 'widgets/chart_cars_tendencies_widget.dart';
 
 class CarsPage extends StatefulWidget {
   const CarsPage({Key? key}) : super(key: key);
@@ -33,8 +34,6 @@ class _CarsPageState extends State<CarsPage> {
   late CarController carController;
   late ReactionDisposer rec;
 
-  List<CarModel> cars = [];
-
   @override
   void initState() {
     super.initState();
@@ -42,21 +41,7 @@ class _CarsPageState extends State<CarsPage> {
     carController.setDateKmByMonth(DateTime.now());
 
     rec = autorun((_) {
-      setState(() {
-        if (controller.user.adminFull) {
-          cars
-            ..clear()
-            ..addAll(List<CarModel>.from(controller.cars));
-        } else {
-          cars
-            ..clear()
-            ..addAll(controller.cars
-                .where((e) => e.obmID == controller.user.obmID)
-                .toList());
-        }
-
-        carController.setCars(cars);
-      });
+      carController.setCars(List<CarModel>.from(controller.carsUsers));
     });
   }
 
@@ -81,48 +66,31 @@ class _CarsPageState extends State<CarsPage> {
                 alignment: WrapAlignment.spaceEvenly,
                 children: [
                   SizedBox(
-                    width: controller.maxWidth * 0.45,
+                    width: (controller.modeMOBILE
+                        ? double.infinity
+                        : controller.maxWidth * 0.45),
                     child: Column(
                       spacing: 5,
                       children: [
                         SizedBox(
-                          height: 305,
-                          child: CarsChart(
-                            cars: cars,
-                            carsTypes: controller.carsTypes,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    width: controller.maxWidth * 0.46,
-                    child: Column(
-                      spacing: 5,
-                      children: [
-                        Card(
-                          child: Container(
-                            height: 300,
-                            width: double.infinity,
-                            padding: const EdgeInsets.all(10),
-                            child: StreamBuilder<List<CarStatusModel>>(
-                                stream: carController.listenStatusGeral(),
-                                builder: (context, snapshort) {
-                                  if (!snapshort.hasData) {
-                                    return const Center(
-                                      child: CircularProgressIndicator(),
-                                    );
-                                  } else {
-                                    final status = snapshort.data ?? [];
-                                    return CarChartProblems(status: status);
-                                  }
-                                }),
-                          ),
+                          height: 230,
+                          child: Observer(builder: (_) {
+                            final cars =
+                                List<CarModel>.from(carController.cars);
+                            final types =
+                                List<String>.from(controller.carsTypes);
+
+                            return CarsChart(
+                              cars: cars,
+                              carsTypes: types,
+                              legends: false,
+                            );
+                          }),
                         ),
                         Observer(builder: (context) {
                           return Card(
                             child: Container(
-                              height: 300,
+                              height: 328,
                               width: double.infinity,
                               padding: const EdgeInsets.all(10),
                               child: FutureBuilder<List<CheckListModel>>(
@@ -135,13 +103,86 @@ class _CarsPageState extends State<CarsPage> {
                                       );
                                     } else {
                                       final checklists = snapshot.data ?? [];
+
                                       return CarChartKmByMonth(
-                                          checklists: checklists);
+                                        referenceDate:
+                                            carController.dateKmByMonth,
+                                        checklists: checklists,
+                                        onChangeDate:
+                                            carController.setDateKmByMonth,
+                                      );
                                     }
                                   }),
                             ),
                           );
                         })
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    width: (controller.modeMOBILE
+                        ? double.infinity
+                        : controller.maxWidth * 0.45),
+                    child: Column(
+                      spacing: 5,
+                      children: [
+                        Card(
+                          child: Container(
+                            height: 290,
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(10),
+                            child: Observer(builder: (_) {
+                              return StreamBuilder<List<CarStatusModel>>(
+                                  stream: carController.listenStatusGeral(
+                                      date: carController
+                                          .referenceYearTendencies),
+                                  builder: (context, snapshot) {
+                                    if (!snapshot.hasData) {
+                                      return const Center(
+                                        child: CircularProgressIndicator(),
+                                      );
+                                    } else {
+                                      final status = snapshot.data ?? [];
+                                      return CarChartTendencies(
+                                        reference: carController
+                                            .referenceYearTendencies,
+                                        status: status,
+                                        onChangeDate: carController
+                                            .setReferenceYearTendencies,
+                                      );
+                                    }
+                                  });
+                            }),
+                          ),
+                        ),
+                        Card(
+                          child: Container(
+                            height: 260,
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(10),
+                            child: Observer(builder: (_) {
+                              return StreamBuilder<List<CarStatusModel>>(
+                                  stream: carController.listenStatusGeral(
+                                      date: carController.referenceYearProblem),
+                                  builder: (context, snapshot) {
+                                    if (!snapshot.hasData) {
+                                      return const Center(
+                                        child: CircularProgressIndicator(),
+                                      );
+                                    } else {
+                                      final status = snapshot.data ?? [];
+                                      return CarChartProblems(
+                                        reference:
+                                            carController.referenceYearProblem,
+                                        status: status,
+                                        onChangeDate: carController
+                                            .setReferenceYearProblem,
+                                      );
+                                    }
+                                  });
+                            }),
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -162,31 +203,33 @@ class _CarsPageState extends State<CarsPage> {
                     'Veículos registrados',
                     style: Constants.title,
                   ),
-                  Container(
-                    width: double.infinity,
-                    alignment: Alignment.centerRight,
-                    constraints: const BoxConstraints(maxWidth: 300),
-                    child: FieldText(
-                      search: true,
-                      controller: searchController,
-                      hint: 'Ex.: Digite algo para pesquisar',
-                      onChange: carController.onChangeFilter,
-                      onClear: () {
-                        searchController.clear();
-                        carController.onChangeFilter('');
-                      },
-                    ),
-                  ),
+                  Observer(builder: (_) {
+                    return Container(
+                      margin: const EdgeInsets.only(top: 10),
+                      width: controller.modeMOBILE ? double.infinity : 350,
+                      alignment: Alignment.centerRight,
+                      child: FieldText(
+                        search: true,
+                        controller: searchController,
+                        hint: 'Ex.: Digite algo para pesquisar',
+                        onChange: carController.onChangeFilter,
+                        onClear: () {
+                          searchController.clear();
+                          carController.onChangeFilter('');
+                        },
+                      ),
+                    );
+                  }),
                 ],
               ),
             ),
-            const Divider(),
+            controller.modeMOBILE ? Container() : const Divider(),
             const SizedBox(
-              height: 5,
+              height: 10,
             ),
             Observer(builder: (_) {
               return Text(
-                'Exibindo 1 a ${carController.carsSorts.length} de ${cars.length} entradas',
+                'Exibindo 1 a ${carController.carsSorts.length} de ${carController.cars.length} entradas',
                 style: Constants.subtitleHint,
               );
             }),
@@ -194,7 +237,7 @@ class _CarsPageState extends State<CarsPage> {
               height: 5,
             ),
             Observer(builder: (_) {
-              final cars = carController.carsSorts;
+              final cars = List<CarModel>.from(carController.carsSorts);
               return CarsTableView(
                 values: cars,
                 obms: controller.obms,
@@ -270,7 +313,7 @@ class _CarsPageState extends State<CarsPage> {
                   return PaginationWidget(
                     limit: carController.limit,
                     page: carController.page,
-                    length: cars.length,
+                    length: carController.cars.length,
                     onChange: carController.setPage,
                   );
                 }),

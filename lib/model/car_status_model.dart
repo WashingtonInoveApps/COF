@@ -6,20 +6,24 @@ import 'package:bsu_control/model/user_model.dart';
 
 class CarStatusModel {
   String? id;
-  StateCarProblems type;
+  StateCarProblems? type;
   String carID;
   String description;
   DateTime date;
+  String referenceYear;
   bool value;
   UserModel user;
   List<CarStatusDetailsModel>? details;
+  StatusCar state;
   String local;
 
   CarStatusModel(
       {this.id,
-      this.type = StateCarProblems.others,
+      this.type,
+      this.state = StatusCar.baixado,
       this.description = "",
       this.carID = '',
+      this.referenceYear = '',
       required this.date,
       this.details,
       this.value = false,
@@ -29,11 +33,13 @@ class CarStatusModel {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'type': type.name,
+      'type': type?.name,
+      'state': state.name,
       'carID': carID,
       'description': description,
       'date': date.millisecondsSinceEpoch,
       'value': value,
+      'referenceYear': date.year.toString(),
       'user': user.toMapResume(),
       'details': details?.map((e) => e.toMap()).toList(),
       'local': local,
@@ -43,9 +49,13 @@ class CarStatusModel {
   factory CarStatusModel.fromMap(Map<String, dynamic> map) {
     return CarStatusModel(
       id: map['id'],
-      type: EnumCore.stateCarProblemsFromString(map['type']),
+      type: (map['type'] == null)
+          ? null
+          : EnumCore.stateCarProblemsFromString(map['type']),
       carID: map['carID'] ?? '',
+      referenceYear: map['referenceYear'] ?? '',
       description: map['description'] ?? '',
+      state: EnumCore.statusCarFromString(map['state'] as String),
       date: DateTime.fromMillisecondsSinceEpoch(map['date']),
       value: map['value'] ?? false,
       user: UserModel.fromMapResume(map['user']),
@@ -71,6 +81,7 @@ class CarStatusModel {
     bool? value,
     UserModel? user,
     String? local,
+    StatusCar? state,
   }) {
     return CarStatusModel(
       id: id ?? this.id,
@@ -78,6 +89,7 @@ class CarStatusModel {
       carID: carID ?? this.carID,
       description: description ?? this.description,
       date: date ?? this.date,
+      state: state ?? this.state,
       value: value ?? this.value,
       user: user ?? this.user,
       local: local ?? this.local,

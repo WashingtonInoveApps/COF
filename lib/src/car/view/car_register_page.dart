@@ -1,5 +1,6 @@
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
+import 'package:bsu_control/core/enum.dart';
 import 'package:bsu_control/core/validation.dart';
 import 'package:bsu_control/model/car_model.dart';
 import 'package:bsu_control/model/itens_changes_model.dart';
@@ -79,6 +80,7 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
           changes: [],
           status: [],
           mapas: [],
+          state: StatusCar.waiting,
           function: Constants.carsFunctions.first,
           type: app.carsTypes.first);
 

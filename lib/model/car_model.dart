@@ -45,7 +45,7 @@ class CarModel {
       this.obmID = "",
       this.function = '',
       this.cia = "",
-      this.state = StatusCar.reserva,
+      this.state = StatusCar.waiting,
       required this.itens,
       required this.changes,
       required this.status,

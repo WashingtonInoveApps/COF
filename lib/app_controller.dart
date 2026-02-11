@@ -77,7 +77,8 @@ abstract class _AppControllerBase with Store {
   bool modeMOBILE = false;
 
   @observable
-  DateTime dateReferenceStart = DateTime.now();
+  DateTime dateReferenceStart =
+      DateTime.now().subtract(const Duration(days: 1));
 
   @observable
   DateTime dateReferenceFinish = DateTime.now();
@@ -171,6 +172,33 @@ abstract class _AppControllerBase with Store {
   @computed
   List<String> get prefixs => cars.map((e) => e.prefix).toList();
 
+  @computed
+  List<CarModel> get carsUsers {
+    if (user.adminFull) {
+      return List<CarModel>.from(cars);
+    } else if (user.admin) {
+      return List<CarModel>.from(
+          cars.where((e) => e.obmID == user.obmID).toList());
+    } else {
+      return List<CarModel>.from(cars
+          .where((e) => e.cia.toLowerCase() == user.cia.toLowerCase())
+          .toList());
+    }
+  }
+
+  List<CheckListModel> getChecklistUser({required List<CheckListModel> list}) {
+    if (user.adminFull) {
+      return List<CheckListModel>.from(list);
+    } else if (user.admin) {
+      return List<CheckListModel>.from(
+          list.where((e) => e.obmID == user.obmID).toList());
+    } else {
+      return List<CheckListModel>.from(list
+          .where((e) => e.cia.toLowerCase() == user.cia.toLowerCase())
+          .toList());
+    }
+  }
+
   @action
   setUser(UserModel value) => user = value;
 
@@ -257,7 +285,7 @@ abstract class _AppControllerBase with Store {
     value.sort((a, b) => a.date.compareTo(b.date));
     checklistsToday
       ..clear()
-      ..addAll(value);
+      ..addAll(getChecklistUser(list: value));
   }
 
   @action

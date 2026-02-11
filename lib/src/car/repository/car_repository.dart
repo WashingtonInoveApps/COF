@@ -29,12 +29,15 @@ class CarRepository extends APIClient implements ICarRepository {
   }
 
   @override
-  Stream<List<CarStatusModel>> listenStatusCarGeral() {
+  Stream<List<CarStatusModel>> listenStatusCarGeral({required DateTime date}) {
     try {
-      return colStatusCars.snapshots().map((e) => e.docs
-          .map((doc) =>
-              CarStatusModel.fromMap(doc.data() as Map<String, dynamic>))
-          .toList());
+      return colStatusCars
+          .where('referenceYear', isEqualTo: date.year.toString())
+          .snapshots()
+          .map((e) => e.docs
+              .map((doc) =>
+                  CarStatusModel.fromMap(doc.data() as Map<String, dynamic>))
+              .toList());
     } catch (e) {
       return Stream.value([]);
     }

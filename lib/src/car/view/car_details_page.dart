@@ -337,14 +337,26 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                                       await controller.saveStatusCar(
                                           car: car.copyWith(
                                               enable: false, state: value),
-                                          status:
-                                              result.copyWith(carID: car.id!));
+                                          status: result.copyWith(
+                                              carID: car.id!, state: value));
                                     },
                                   ));
                         }
                       } else {
-                        await controller.saveStatusCar(
-                            car: car.copyWith(enable: true, state: value));
+                        if (value == StatusCar.waiting) {
+                          await controller.saveStatusCar(
+                              car: car.copyWith(enable: true, state: value));
+                        } else {
+                          await controller.saveStatusCar(
+                              car: car.copyWith(enable: true, state: value),
+                              status: CarStatusModel(
+                                  date: DateTime.now(),
+                                  user: app.user,
+                                  carID: car.id ?? '',
+                                  description: value.label,
+                                  state: value,
+                                  value: true));
+                        }
                       }
                     },
                     itemBuilder: (context) => StatusCar.values.map((state) {
@@ -393,26 +405,15 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                         } else {
                           status.sort((a, b) => b.date.compareTo(a.date));
 
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Registros de problemas",
-                                style: Constants.subtitle
-                                    .copyWith(color: Colors.red),
-                              ),
-                              statusRegisters(
-                                  context: context,
-                                  status: status,
-                                  onDelete: (value) async {
-                                    await controller.deleteStatusCar(
-                                        car: car.copyWith(
-                                            enable: true,
-                                            state: StatusCar.reserva),
-                                        status: value);
-                                  }),
-                            ],
-                          );
+                          return statusRegisters(
+                              context: context,
+                              status: status,
+                              onDelete: (value) async {
+                                await controller.deleteStatusCar(
+                                    car: car.copyWith(
+                                        enable: true, state: StatusCar.waiting),
+                                    status: value);
+                              });
                         }
                       }
                     }),
@@ -548,6 +549,7 @@ Widget statusRegisters(
     required Function(CarStatusModel) onDelete}) {
   return Column(
     children: List.generate(status.length, (index) {
+      final state = status[index];
       return Container(
         width: double.infinity,
         margin: const EdgeInsets.only(bottom: 5.0),
@@ -557,19 +559,26 @@ Widget statusRegisters(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Visibility(
+                    visible: !state.value,
+                    child: Text(
+                      "Registros de problemas",
+                      style: Constants.subtitle.copyWith(color: Colors.red),
+                    ),
+                  ),
                   Text(
-                    Core.formatDate(status[index].date, largeDayHour: true),
+                    Core.formatDate(state.date, largeDayHour: true),
                     style: Constants.subtitleHint,
                   ),
                   Text(
-                    status[index].description,
+                    state.description,
                     style: Constants.subtitle,
                   ),
                   Row(
                     spacing: 10,
                     children: [
                       Text(
-                        "${status[index].user.graduation} ${status[index].user.name}",
+                        "${state.user.graduation} ${state.user.name}",
                         style: Constants.subtitleHint,
                       ),
                       // InkWell(
@@ -582,9 +591,9 @@ Widget statusRegisters(
                     ],
                   ),
                   Visibility(
-                    visible: status[index].local.isNotEmpty,
+                    visible: state.local.isNotEmpty,
                     child: Text(
-                      status[index].local,
+                      state.local,
                       style: Constants.subtitleHint,
                     ),
                   )
@@ -592,7 +601,7 @@ Widget statusRegisters(
               ),
             ),
             Visibility(
-              visible: (index == 0),
+              visible: (index == 0 && !state.value),
               child: IconButton(
                   onPressed: () async {
                     showDialog(
@@ -608,7 +617,7 @@ Widget statusRegisters(
                                   Navigator.of(context).pop(false),
                             )).then((value) async {
                       if (value ?? false) {
-                        onDelete(status[index]);
+                        onDelete(state);
                         // await controller.deleteStatusCar(
                         //     car: car.copyWith(
                         //         enable: true, state: StatusCar.reserva),

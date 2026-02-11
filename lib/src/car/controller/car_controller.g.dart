@@ -140,6 +140,40 @@ mixin _$CarController on _CarControllerBase, Store {
     });
   }
 
+  late final _$referenceYearProblemAtom =
+      Atom(name: '_CarControllerBase.referenceYearProblem', context: context);
+
+  @override
+  DateTime get referenceYearProblem {
+    _$referenceYearProblemAtom.reportRead();
+    return super.referenceYearProblem;
+  }
+
+  @override
+  set referenceYearProblem(DateTime value) {
+    _$referenceYearProblemAtom.reportWrite(value, super.referenceYearProblem,
+        () {
+      super.referenceYearProblem = value;
+    });
+  }
+
+  late final _$referenceYearTendenciesAtom = Atom(
+      name: '_CarControllerBase.referenceYearTendencies', context: context);
+
+  @override
+  DateTime get referenceYearTendencies {
+    _$referenceYearTendenciesAtom.reportRead();
+    return super.referenceYearTendencies;
+  }
+
+  @override
+  set referenceYearTendencies(DateTime value) {
+    _$referenceYearTendenciesAtom
+        .reportWrite(value, super.referenceYearTendencies, () {
+      super.referenceYearTendencies = value;
+    });
+  }
+
   late final _$carsAtom =
       Atom(name: '_CarControllerBase.cars', context: context);
 
@@ -203,6 +237,22 @@ mixin _$CarController on _CarControllerBase, Store {
     });
   }
 
+  late final _$statusGeralAtom =
+      Atom(name: '_CarControllerBase.statusGeral', context: context);
+
+  @override
+  ObservableList<CarStatusModel> get statusGeral {
+    _$statusGeralAtom.reportRead();
+    return super.statusGeral;
+  }
+
+  @override
+  set statusGeral(ObservableList<CarStatusModel> value) {
+    _$statusGeralAtom.reportWrite(value, super.statusGeral, () {
+      super.statusGeral = value;
+    });
+  }
+
   late final _$sectionsItensAtom =
       Atom(name: '_CarControllerBase.sectionsItens', context: context);
 
@@ -255,7 +305,7 @@ mixin _$CarController on _CarControllerBase, Store {
       AsyncAction('_CarControllerBase.setDateKmByMonth', context: context);
 
   @override
-  Future<void> setDateKmByMonth(DateTime? value) {
+  Future<void> setDateKmByMonth(DateTime value) {
     return _$setDateKmByMonthAsyncAction
         .run(() => super.setDateKmByMonth(value));
   }
@@ -342,6 +392,17 @@ mixin _$CarController on _CarControllerBase, Store {
       ActionController(name: '_CarControllerBase', context: context);
 
   @override
+  dynamic setStatusGeral(List<CarStatusModel> list) {
+    final _$actionInfo = _$_CarControllerBaseActionController.startAction(
+        name: '_CarControllerBase.setStatusGeral');
+    try {
+      return super.setStatusGeral(list);
+    } finally {
+      _$_CarControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   dynamic onChangeFilter(String? value) {
     final _$actionInfo = _$_CarControllerBaseActionController.startAction(
         name: '_CarControllerBase.onChangeFilter');
@@ -369,6 +430,28 @@ mixin _$CarController on _CarControllerBase, Store {
         name: '_CarControllerBase.setCars');
     try {
       return super.setCars(values);
+    } finally {
+      _$_CarControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setReferenceYearProblem(DateTime? value) {
+    final _$actionInfo = _$_CarControllerBaseActionController.startAction(
+        name: '_CarControllerBase.setReferenceYearProblem');
+    try {
+      return super.setReferenceYearProblem(value);
+    } finally {
+      _$_CarControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setReferenceYearTendencies(DateTime? value) {
+    final _$actionInfo = _$_CarControllerBaseActionController.startAction(
+        name: '_CarControllerBase.setReferenceYearTendencies');
+    try {
+      return super.setReferenceYearTendencies(value);
     } finally {
       _$_CarControllerBaseActionController.endAction(_$actionInfo);
     }
@@ -615,10 +698,13 @@ function: ${function},
 fieldCarTypeVisible: ${fieldCarTypeVisible},
 cia: ${cia},
 filter: ${filter},
+referenceYearProblem: ${referenceYearProblem},
+referenceYearTendencies: ${referenceYearTendencies},
 cars: ${cars},
 limit: ${limit},
 page: ${page},
 obm: ${obm},
+statusGeral: ${statusGeral},
 sectionsItens: ${sectionsItens},
 sectionsMaterials: ${sectionsMaterials},
 carChanges: ${carChanges},

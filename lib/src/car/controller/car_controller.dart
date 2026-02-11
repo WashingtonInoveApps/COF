@@ -47,6 +47,12 @@ abstract class _CarControllerBase with Store {
   String filter = '';
 
   @observable
+  DateTime referenceYearProblem = DateTime.now();
+
+  @observable
+  DateTime referenceYearTendencies = DateTime.now();
+
+  @observable
   ObservableList<CarModel> cars = <CarModel>[].asObservable();
 
   @observable
@@ -57,6 +63,10 @@ abstract class _CarControllerBase with Store {
 
   @observable
   OBMModel obm = OBMModel(team: [], cias: []);
+
+  @observable
+  ObservableList<CarStatusModel> statusGeral =
+      <CarStatusModel>[].asObservable();
 
   @observable
   ObservableList<ItensChangesModel> sectionsItens =
@@ -103,8 +113,8 @@ abstract class _CarControllerBase with Store {
     return repository.listenStatusCar(carId: carId);
   }
 
-  Stream<List<CarStatusModel>> listenStatusGeral() {
-    return repository.listenStatusCarGeral();
+  Stream<List<CarStatusModel>> listenStatusGeral({required DateTime date}) {
+    return repository.listenStatusCarGeral(date: date);
   }
 
   Stream<List<CarMapaModel>> listenMapas({required String carId}) {
@@ -114,6 +124,17 @@ abstract class _CarControllerBase with Store {
   Future<List<CheckListModel>> getCheckListByMonth(
       {required DateTime date}) async {
     return await repository.getChecklistByMonth(reference: date);
+  }
+
+  @action
+  setStatusGeral(List<CarStatusModel> list) {
+    list.sort((a, b) => a.date.compareTo(b.date));
+
+    statusGeral
+      ..clear()
+      ..addAll(list);
+
+    log('Status Geral: ${statusGeral.length}');
   }
 
   @action
@@ -140,6 +161,22 @@ abstract class _CarControllerBase with Store {
     cars
       ..clear()
       ..addAll(values);
+  }
+
+  @action
+  setReferenceYearProblem(DateTime? value) {
+    if (value != null) {
+      referenceYearProblem = value;
+      log('Date Problem: ${Core.formatDate(referenceYearProblem)}');
+    }
+  }
+
+  @action
+  setReferenceYearTendencies(DateTime? value) {
+    if (value != null) {
+      referenceYearTendencies = value;
+      log('Date Tendencies: ${Core.formatDate(referenceYearTendencies)}');
+    }
   }
 
   @action
@@ -174,8 +211,8 @@ abstract class _CarControllerBase with Store {
   }
 
   @action
-  Future<void> setDateKmByMonth(DateTime? value) async {
-    if (value != dateKmByMonth && value != null) {
+  Future<void> setDateKmByMonth(DateTime value) async {
+    if (value != dateKmByMonth) {
       dateKmByMonth = value;
     }
   }
@@ -335,6 +372,7 @@ abstract class _CarControllerBase with Store {
               km: 0,
               arref: 0,
               oil: 0,
+              state: StatusCar.waiting,
               status: [],
               changes: [],
               mapas: []));

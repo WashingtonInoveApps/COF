@@ -10,10 +10,15 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 class CarsChart extends StatefulWidget {
   final List<String> carsTypes;
   final List<CarModel> cars;
+  final bool legends;
   final Function(List<DetailsCarsModel>)? onDetails;
 
   const CarsChart(
-      {Key? key, required this.cars, required this.carsTypes, this.onDetails})
+      {Key? key,
+      required this.cars,
+      required this.carsTypes,
+      this.onDetails,
+      this.legends = true})
       : super(key: key);
 
   @override
@@ -23,28 +28,12 @@ class CarsChart extends StatefulWidget {
 class _CarsChartState extends State<CarsChart> {
   final scrollController = ScrollController();
 
-  List<DetailsCarsModel> inforsCars = [];
-  List<_ChartData> data = [];
-
-  void processCharts() {
-    int operating = 0;
-    int reserve = 0;
-    int lowered = 0;
+  List<DetailsCarsModel> processInforsCars({required List<CarModel> cars}) {
+    List<DetailsCarsModel> inforsCars = [];
 
     if (widget.cars.isNotEmpty) {
-      for (final car in widget.cars) {
-        if (car.state == StatusCar.operando) {
-          operating++;
-        } else if (car.state == StatusCar.reserva) {
-          reserve++;
-        } else {
-          lowered++;
-        }
-
-        // if (!types.contains(car.type)) types.add(car.type);
-      }
-
       inforsCars.clear();
+
       for (final type in widget.carsTypes) {
         final cars = widget.cars.where((e) => e.type == type).toList();
 
@@ -53,12 +42,14 @@ class _CarsChartState extends State<CarsChart> {
         int loweredType = 0;
 
         for (final car in cars) {
-          if (car.state == StatusCar.operando) {
-            operatingType++;
-          } else if (car.state == StatusCar.reserva) {
-            reserveType++;
-          } else {
-            loweredType++;
+          if (car.state != StatusCar.waiting) {
+            if (car.state == StatusCar.operando) {
+              operatingType++;
+            } else if (car.state == StatusCar.reserva) {
+              reserveType++;
+            } else {
+              loweredType++;
+            }
           }
         }
 
@@ -74,6 +65,38 @@ class _CarsChartState extends State<CarsChart> {
       }
     }
 
+    return inforsCars;
+  }
+
+  List<_ChartData> processDataCharts({required List<CarModel> cars}) {
+    List<_ChartData> data = [];
+
+    int operating = 0;
+    int reserve = 0;
+    int lowered = 0;
+
+    if (widget.cars.isNotEmpty) {
+      for (final type in widget.carsTypes) {
+        final cars = widget.cars.where((e) => e.type == type).toList();
+
+        int operatingType = 0;
+        int reserveType = 0;
+        int loweredType = 0;
+
+        for (final car in cars) {
+          if (car.state != StatusCar.waiting) {
+            if (car.state == StatusCar.operando) {
+              operating++;
+            } else if (car.state == StatusCar.reserva) {
+              reserve++;
+            } else {
+              lowered++;
+            }
+          }
+        }
+      }
+    }
+
     data
       ..clear()
       ..addAll([
@@ -81,6 +104,8 @@ class _CarsChartState extends State<CarsChart> {
         _ChartData('Reservas', reserve, Colors.orange.shade700),
         _ChartData('Baixadas', lowered, Colors.red.shade700)
       ]);
+
+    return data;
   }
 
   @override
@@ -91,7 +116,8 @@ class _CarsChartState extends State<CarsChart> {
 
   @override
   Widget build(BuildContext context) {
-    processCharts();
+    final data = processDataCharts(cars: widget.cars);
+    final inforsCars = processInforsCars(cars: widget.cars);
 
     return Card(
       child: Padding(
@@ -107,27 +133,23 @@ class _CarsChartState extends State<CarsChart> {
                   child: Align(
                     alignment: Alignment.topCenter,
                     heightFactor: 0.5,
-                    child: SizedBox(
-                      height: 272,
-                      child: SfCircularChart(
-                        series: <CircularSeries>[
-                          DoughnutSeries<_ChartData, String>(
-                            dataSource:
-                                data.where((e) => (e.value > 0)).toList(),
-                            xValueMapper: (d, _) => d.label,
-                            yValueMapper: (d, _) => d.value,
-                            pointColorMapper: (d, _) => d.color,
-                            startAngle: -90, // 🔥 COMEÇA EMBAIXO
-                            endAngle: 90, // 🔥 TERMINA EM CIMA (180°)
-                            innerRadius: '65%',
-                            dataLabelSettings: DataLabelSettings(
-                                isVisible: true,
-                                textStyle: Constants.title.copyWith(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold)),
-                          ),
-                        ],
-                      ),
+                    child: SfCircularChart(
+                      series: <CircularSeries>[
+                        DoughnutSeries<_ChartData, String>(
+                          dataSource: data.where((e) => (e.value > 0)).toList(),
+                          xValueMapper: (d, _) => d.label,
+                          yValueMapper: (d, _) => d.value,
+                          pointColorMapper: (d, _) => d.color,
+                          startAngle: -90, // 🔥 COMEÇA EMBAIXO
+                          endAngle: 90, // 🔥 TERMINA EM CIMA (180°)
+                          innerRadius: '65%',
+                          dataLabelSettings: DataLabelSettings(
+                              isVisible: true,
+                              textStyle: Constants.title.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold)),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -143,15 +165,69 @@ class _CarsChartState extends State<CarsChart> {
                           style: Constants.subtitleHint,
                         ),
                       ),
-                      (widget.onDetails == null)
+                      (widget.legends || widget.cars.isEmpty)
                           ? Container()
                           : IconButton(
-                              onPressed: () =>
-                                  widget.onDetails?.call(inforsCars),
+                              onPressed: () {
+                                showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return AlertDialog(
+                                        contentPadding:
+                                            const EdgeInsets.all(10),
+                                        content: SingleChildScrollView(
+                                          child: Column(
+                                            children: [
+                                              Align(
+                                                alignment:
+                                                    Alignment.centerRight,
+                                                child: InkWell(
+                                                  onTap: () =>
+                                                      Navigator.of(context)
+                                                          .pop(),
+                                                  child: CircleAvatar(
+                                                      radius: 15,
+                                                      backgroundColor:
+                                                          Colors.black45,
+                                                      child: Icon(
+                                                        MdiIcons.close,
+                                                        size: 20,
+                                                        color: Colors.white,
+                                                      )),
+                                                ),
+                                              ),
+                                              const SizedBox(
+                                                height: 10,
+                                              ),
+                                              Column(
+                                                children: List.generate(
+                                                        inforsCars.length,
+                                                        (index) {
+                                                  final infor =
+                                                      inforsCars[index];
+
+                                                  return detailsWidget(infor);
+                                                })
+                                                    .expand((widget) => [
+                                                          widget,
+                                                          Divider(
+                                                            color: Colors
+                                                                .grey.shade200,
+                                                          )
+                                                        ])
+                                                    .toList(),
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    });
+                              },
+                              tooltip: 'Detalhes da frota',
                               icon: const Icon(
                                 Icons.info,
+                                size: 20,
                                 color: Colors.grey,
-                                size: 25,
                               ))
                     ],
                   ),
@@ -201,10 +277,13 @@ class _CarsChartState extends State<CarsChart> {
                       Text.rich(
                         TextSpan(text: '${state.label} ', children: [
                           TextSpan(
-                              text:
-                                  '( ${((state.value / widget.cars.length) * 100).toString()}% )',
-                              style: Constants.subtitleHint)
+                            text: widget.cars.isEmpty
+                                ? ''
+                                : '( ${((state.value / widget.cars.length) * 100).toString()}% )',
+                            style: Constants.subtitleHint,
+                          )
                         ]),
+                        overflow: TextOverflow.ellipsis,
                         style: Constants.subtitle,
                       ),
                     ],
@@ -212,83 +291,93 @@ class _CarsChartState extends State<CarsChart> {
                 );
               }).toList(),
             ),
-            const Divider(),
-            Expanded(
-              child: SizedBox(
-                // height: 80,
-                width: double.infinity,
-                child: Scrollbar(
-                  thumbVisibility: true,
-                  trackVisibility: true,
-                  thickness: 10,
-                  controller: scrollController,
-                  child: SingleChildScrollView(
-                    physics: const ClampingScrollPhysics(),
-                    controller: scrollController,
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 20),
-                      child: Column(
-                        children: inforsCars.map((infor) {
-                          return Row(
-                            spacing: 10,
-                            children: [
-                              Expanded(
-                                flex: 2,
-                                child: Text(
-                                  infor.label,
-                                  style: Constants.title,
+            (widget.legends && widget.cars.isNotEmpty)
+                ? Expanded(
+                    child: Column(
+                      children: [
+                        const Divider(),
+                        Expanded(
+                          child: SizedBox(
+                            width: double.infinity,
+                            child: Scrollbar(
+                              thumbVisibility: true,
+                              trackVisibility: true,
+                              thickness: 10,
+                              controller: scrollController,
+                              child: SingleChildScrollView(
+                                physics: const ClampingScrollPhysics(),
+                                controller: scrollController,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(right: 20),
+                                  child: Column(
+                                    children: inforsCars.map((infor) {
+                                      return detailsWidget(infor);
+                                    }).toList(),
+                                  ),
                                 ),
                               ),
-                              Expanded(
-                                child: Row(
-                                  spacing: 5,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    Icon(
-                                      Icons.circle,
-                                      color: Colors.green.shade700,
-                                      size: 15,
-                                    ),
-                                    Text(
-                                      infor.operating.toString(),
-                                      style: Constants.title,
-                                    ),
-                                    Icon(
-                                      Icons.circle,
-                                      color: Colors.orange.shade700,
-                                      size: 15,
-                                    ),
-                                    Text(
-                                      infor.reserve.toString(),
-                                      style: Constants.title,
-                                    ),
-                                    Icon(
-                                      Icons.circle,
-                                      color: Colors.red.shade700,
-                                      size: 15,
-                                    ),
-                                    Text(
-                                      infor.lowered.toString(),
-                                      style: Constants.title,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          );
-                        }).toList(),
-                      ),
+                            ),
+                          ),
+                        )
+                      ],
                     ),
-                  ),
-                ),
-              ),
-            )
+                  )
+                : Container()
           ],
         ),
       ),
     );
   }
+}
+
+Widget detailsWidget(DetailsCarsModel infor) {
+  return Row(
+    spacing: 10,
+    children: [
+      Expanded(
+        flex: 2,
+        child: Text(
+          infor.label,
+          style: Constants.title,
+        ),
+      ),
+      Expanded(
+        child: Row(
+          spacing: 5,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Icon(
+              Icons.circle,
+              color: Colors.green.shade700,
+              size: 15,
+            ),
+            Text(
+              infor.operating.toString(),
+              style: Constants.title,
+            ),
+            Icon(
+              Icons.circle,
+              color: Colors.orange.shade700,
+              size: 15,
+            ),
+            Text(
+              infor.reserve.toString(),
+              style: Constants.title,
+            ),
+            Icon(
+              Icons.circle,
+              color: Colors.red.shade700,
+              size: 15,
+            ),
+            Text(
+              infor.lowered.toString(),
+              style: Constants.title,
+            ),
+          ],
+        ),
+      ),
+    ],
+  );
 }
 
 class _ChartData {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
-enum StatusCar { operando, reserva, baixado }
+enum StatusCar { operando, reserva, baixado, waiting }
 
 enum StateChecklist { inprogress, completed, expired }
 
@@ -26,6 +26,8 @@ extension CarStateLabel on StatusCar {
         return "Reserva";
       case StatusCar.baixado:
         return "Baixado";
+      case StatusCar.waiting:
+        return "Em espera";
     }
   }
 }
@@ -115,6 +117,9 @@ extension CarStateColor on StatusCar {
         return Colors.orange;
       case StatusCar.baixado:
         return Colors.red;
+
+      case StatusCar.waiting:
+        return Colors.grey;
     }
   }
 }
@@ -128,6 +133,8 @@ extension CarStateIcon on StatusCar {
         return Icons.info_rounded;
       case StatusCar.baixado:
         return MdiIcons.closeCircle;
+      case StatusCar.waiting:
+        return MdiIcons.clockTimeEight;
     }
   }
 }

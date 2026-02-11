@@ -17,7 +17,7 @@ abstract class ICarRepository {
       {required CarModel car, required CarStatusModel status});
 
   Stream<List<CarStatusModel>> listenStatusCar({required String carId});
-  Stream<List<CarStatusModel>> listenStatusCarGeral();
+  Stream<List<CarStatusModel>> listenStatusCarGeral({required DateTime date});
 
   Stream<List<CarMapaModel>> listenMapas({required String carId});
 

@@ -44,8 +44,8 @@ class _DescriptionStateWidgetState extends State<DescriptionStateWidget> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5),
+                height: 50,
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
                 decoration: BoxDecoration(
                     border: Border.all(color: Colors.grey),
                     borderRadius: BorderRadius.circular(5)),
@@ -72,11 +72,14 @@ class _DescriptionStateWidgetState extends State<DescriptionStateWidget> {
               const SizedBox(
                 height: 10.0,
               ),
-              FieldText(
-                controller: _controllerDesc,
-                label: 'Descrição',
-                hint: "Ex: Vazamento de aguá pelo radiador",
-                validation: Validation.validatorPreenchimento,
+              SizedBox(
+                height: 50,
+                child: FieldText(
+                  controller: _controllerDesc,
+                  label: 'Descrição',
+                  hint: "Ex: Vazamento de aguá pelo radiador",
+                  validation: Validation.validatorPreenchimento,
+                ),
               ),
               // FieldText(
               //   controller: _controllerLocal,
