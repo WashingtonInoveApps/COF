@@ -40,12 +40,12 @@ abstract class _UserControllerBase with Store {
     managerOperational = value?.managerOperational ?? false;
     managerFleet = value?.managerFleet ?? false;
 
-    obm = app.obms.first;
-    cia = value?.cia ?? obm.cias.first;
-
     if (value != null) {
       obm = app.obms.firstWhere((e) => e.id == value.obmID);
       cia = value.cia;
+    } else {
+      obm = app.obms.firstWhere((e) => e.id == app.user.obmID);
+      cia = obm.cias.first;
     }
   }
 
@@ -196,7 +196,11 @@ abstract class _UserControllerBase with Store {
   Future<bool> save({required UserModel user}) async {
     try {
       loading = true;
-      final result = await repository.save(user: user);
+
+      final result = (init != null)
+          ? await repository.update(user: user)
+          : await repository.save(user: user);
+
       loading = false;
 
       return result;

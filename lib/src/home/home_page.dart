@@ -28,7 +28,7 @@ import 'package:url_launcher/url_launcher_string.dart';
 import '../widgets/pagination_widget.dart';
 import 'view/widgets/period_chart_widget.dart';
 
-const versionCodeSystem = 1;
+const versionCodeSystem = 3;
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);

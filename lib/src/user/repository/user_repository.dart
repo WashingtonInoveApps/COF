@@ -11,10 +11,19 @@ class UserRepository extends APIClient implements IUserRepository {
   @override
   Future<bool> save({required UserModel user}) async {
     try {
-      final doc = colUsers.doc(user.id);
+      final doc = colUsers.doc();
       user.id = doc.id;
 
+      final usersData =
+          await colUsers.where('email', isEqualTo: user.email).get();
+
+      if (usersData.docs.isNotEmpty) {
+        return throw Exception(
+            'Já tem um usuário cadastrado com esse email, tente recuperar a senha.');
+      }
+
       await doc.set(user.toMap());
+
       return true;
     } catch (e) {
       rethrow;
