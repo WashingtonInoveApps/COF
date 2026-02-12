@@ -275,55 +275,57 @@ class _CarsChartState extends State<CarsChart> {
                         color: state.color,
                         size: 20,
                       ),
-                      Text.rich(
-                        TextSpan(text: '${state.label} ', children: [
-                          TextSpan(
-                            text: widget.cars.isEmpty
-                                ? ''
-                                : '( ${((state.value / widget.cars.length) * 100).toString()}% )',
-                            style: Constants.subtitleHint,
-                          )
-                        ]),
-                        overflow: TextOverflow.ellipsis,
-                        style: Constants.subtitle,
+                      Expanded(
+                        child: Text.rich(
+                          TextSpan(text: '${state.label} ', children: [
+                            TextSpan(
+                              text: widget.cars.isEmpty
+                                  ? ''
+                                  : '( ${((state.value / widget.cars.length) * 100).toString()}% )',
+                              style: Constants.subtitleHint,
+                            )
+                          ]),
+                          overflow: TextOverflow.ellipsis,
+                          style: Constants.subtitle,
+                        ),
                       ),
                     ],
                   ),
                 );
               }).toList(),
             ),
-            (widget.legends && widget.cars.isNotEmpty)
-                ? Expanded(
-                    child: Column(
-                      children: [
-                        const Divider(),
-                        Expanded(
-                          child: SizedBox(
-                            width: double.infinity,
-                            child: Scrollbar(
-                              thumbVisibility: true,
-                              trackVisibility: true,
-                              thickness: 10,
-                              controller: scrollController,
-                              child: SingleChildScrollView(
-                                physics: const ClampingScrollPhysics(),
-                                controller: scrollController,
-                                child: Padding(
-                                  padding: const EdgeInsets.only(right: 20),
-                                  child: Column(
-                                    children: inforsCars.map((infor) {
-                                      return detailsWidget(infor);
-                                    }).toList(),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  )
-                : Container()
+            // (widget.legends && widget.cars.isNotEmpty)
+            //     ? Expanded(
+            //         child: Column(
+            //           children: [
+            //             const Divider(),
+            //             Expanded(
+            //               child: SizedBox(
+            //                 width: double.infinity,
+            //                 child: Scrollbar(
+            //                   thumbVisibility: true,
+            //                   trackVisibility: true,
+            //                   thickness: 10,
+            //                   controller: scrollController,
+            //                   child: SingleChildScrollView(
+            //                     physics: const ClampingScrollPhysics(),
+            //                     controller: scrollController,
+            //                     child: Padding(
+            //                       padding: const EdgeInsets.only(right: 20),
+            //                       child: Column(
+            //                         children: inforsCars.map((infor) {
+            //                           return detailsWidget(infor);
+            //                         }).toList(),
+            //                       ),
+            //                     ),
+            //                   ),
+            //                 ),
+            //               ),
+            //             )
+            //           ],
+            //         ),
+            //       )
+            //     : Container()
           ],
         ),
       ),

@@ -23,6 +23,14 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
       (_$carsComputed ??= Computed<List<CarModel>>(() => super.cars,
               name: '_CheckListControllerBase.cars'))
           .value;
+  Computed<List<CheckListModel>>? _$myChecklistUserSortComputed;
+
+  @override
+  List<CheckListModel> get myChecklistUserSort =>
+      (_$myChecklistUserSortComputed ??= Computed<List<CheckListModel>>(
+              () => super.myChecklistUserSort,
+              name: '_CheckListControllerBase.myChecklistUserSort'))
+          .value;
 
   late final _$loadingAtom =
       Atom(name: '_CheckListControllerBase.loading', context: context);
@@ -72,6 +80,22 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
     });
   }
 
+  late final _$myChecklistUserAtom =
+      Atom(name: '_CheckListControllerBase.myChecklistUser', context: context);
+
+  @override
+  ObservableList<CheckListModel> get myChecklistUser {
+    _$myChecklistUserAtom.reportRead();
+    return super.myChecklistUser;
+  }
+
+  @override
+  set myChecklistUser(ObservableList<CheckListModel> value) {
+    _$myChecklistUserAtom.reportWrite(value, super.myChecklistUser, () {
+      super.myChecklistUser = value;
+    });
+  }
+
   late final _$materialsAtom =
       Atom(name: '_CheckListControllerBase.materials', context: context);
 
@@ -101,6 +125,86 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
   set date(DateTime value) {
     _$dateAtom.reportWrite(value, super.date, () {
       super.date = value;
+    });
+  }
+
+  late final _$dateReferenceStartAtom = Atom(
+      name: '_CheckListControllerBase.dateReferenceStart', context: context);
+
+  @override
+  DateTime get dateReferenceStart {
+    _$dateReferenceStartAtom.reportRead();
+    return super.dateReferenceStart;
+  }
+
+  @override
+  set dateReferenceStart(DateTime value) {
+    _$dateReferenceStartAtom.reportWrite(value, super.dateReferenceStart, () {
+      super.dateReferenceStart = value;
+    });
+  }
+
+  late final _$dateReferenceFinishAtom = Atom(
+      name: '_CheckListControllerBase.dateReferenceFinish', context: context);
+
+  @override
+  DateTime get dateReferenceFinish {
+    _$dateReferenceFinishAtom.reportRead();
+    return super.dateReferenceFinish;
+  }
+
+  @override
+  set dateReferenceFinish(DateTime value) {
+    _$dateReferenceFinishAtom.reportWrite(value, super.dateReferenceFinish, () {
+      super.dateReferenceFinish = value;
+    });
+  }
+
+  late final _$dateStartConfigAtom =
+      Atom(name: '_CheckListControllerBase.dateStartConfig', context: context);
+
+  @override
+  DateTime get dateStartConfig {
+    _$dateStartConfigAtom.reportRead();
+    return super.dateStartConfig;
+  }
+
+  @override
+  set dateStartConfig(DateTime value) {
+    _$dateStartConfigAtom.reportWrite(value, super.dateStartConfig, () {
+      super.dateStartConfig = value;
+    });
+  }
+
+  late final _$dateFinishConfigAtom =
+      Atom(name: '_CheckListControllerBase.dateFinishConfig', context: context);
+
+  @override
+  DateTime get dateFinishConfig {
+    _$dateFinishConfigAtom.reportRead();
+    return super.dateFinishConfig;
+  }
+
+  @override
+  set dateFinishConfig(DateTime value) {
+    _$dateFinishConfigAtom.reportWrite(value, super.dateFinishConfig, () {
+      super.dateFinishConfig = value;
+    });
+  }
+
+  late final _$dateMyChecklistAtom =
+      Atom(name: '_CheckListControllerBase.dateMyChecklist', context: context);
+
+  @override
+  DateTime get dateMyChecklist {
+    _$dateMyChecklistAtom.reportRead();
+    return super.dateMyChecklist;
+  }
+
+  @override
+  set dateMyChecklist(DateTime value) {
+    _$dateMyChecklistAtom.reportWrite(value, super.dateMyChecklist, () {
+      super.dateMyChecklist = value;
     });
   }
 
@@ -280,6 +384,54 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
     });
   }
 
+  late final _$filterAtom =
+      Atom(name: '_CheckListControllerBase.filter', context: context);
+
+  @override
+  String get filter {
+    _$filterAtom.reportRead();
+    return super.filter;
+  }
+
+  @override
+  set filter(String value) {
+    _$filterAtom.reportWrite(value, super.filter, () {
+      super.filter = value;
+    });
+  }
+
+  late final _$limitAtom =
+      Atom(name: '_CheckListControllerBase.limit', context: context);
+
+  @override
+  int get limit {
+    _$limitAtom.reportRead();
+    return super.limit;
+  }
+
+  @override
+  set limit(int value) {
+    _$limitAtom.reportWrite(value, super.limit, () {
+      super.limit = value;
+    });
+  }
+
+  late final _$pageAtom =
+      Atom(name: '_CheckListControllerBase.page', context: context);
+
+  @override
+  int get page {
+    _$pageAtom.reportRead();
+    return super.page;
+  }
+
+  @override
+  set page(int value) {
+    _$pageAtom.reportWrite(value, super.page, () {
+      super.page = value;
+    });
+  }
+
   late final _$oilAtom =
       Atom(name: '_CheckListControllerBase.oil', context: context);
 
@@ -429,6 +581,107 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
         name: '_CheckListControllerBase.changeDate');
     try {
       return super.changeDate(value);
+    } finally {
+      _$_CheckListControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setDateMyChecklist(DateTime? value) {
+    final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
+        name: '_CheckListControllerBase.setDateMyChecklist');
+    try {
+      return super.setDateMyChecklist(value);
+    } finally {
+      _$_CheckListControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setDateRangeChecklist(
+      {required DateTime dateStart, required DateTime dateFinish}) {
+    final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
+        name: '_CheckListControllerBase.setDateRangeChecklist');
+    try {
+      return super
+          .setDateRangeChecklist(dateStart: dateStart, dateFinish: dateFinish);
+    } finally {
+      _$_CheckListControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void cleanExibitionConfig() {
+    final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
+        name: '_CheckListControllerBase.cleanExibitionConfig');
+    try {
+      return super.cleanExibitionConfig();
+    } finally {
+      _$_CheckListControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setDateStartConfig(DateTime? value) {
+    final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
+        name: '_CheckListControllerBase.setDateStartConfig');
+    try {
+      return super.setDateStartConfig(value);
+    } finally {
+      _$_CheckListControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setDateFinishConfig(DateTime? value) {
+    final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
+        name: '_CheckListControllerBase.setDateFinishConfig');
+    try {
+      return super.setDateFinishConfig(value);
+    } finally {
+      _$_CheckListControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setMyChecklistUser(List<CheckListModel> value) {
+    final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
+        name: '_CheckListControllerBase.setMyChecklistUser');
+    try {
+      return super.setMyChecklistUser(value);
+    } finally {
+      _$_CheckListControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic onChangeFilter(String? value) {
+    final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
+        name: '_CheckListControllerBase.onChangeFilter');
+    try {
+      return super.onChangeFilter(value);
+    } finally {
+      _$_CheckListControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setLimit(int? value) {
+    final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
+        name: '_CheckListControllerBase.setLimit');
+    try {
+      return super.setLimit(value);
+    } finally {
+      _$_CheckListControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setPage(int value) {
+    final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
+        name: '_CheckListControllerBase.setPage');
+    try {
+      return super.setPage(value);
     } finally {
       _$_CheckListControllerBaseActionController.endAction(_$actionInfo);
     }
@@ -671,8 +924,14 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
 loading: ${loading},
 carChanges: ${carChanges},
 itens: ${itens},
+myChecklistUser: ${myChecklistUser},
 materials: ${materials},
 date: ${date},
+dateReferenceStart: ${dateReferenceStart},
+dateReferenceFinish: ${dateReferenceFinish},
+dateStartConfig: ${dateStartConfig},
+dateFinishConfig: ${dateFinishConfig},
+dateMyChecklist: ${dateMyChecklist},
 prefix: ${prefix},
 update: ${update},
 enable: ${enable},
@@ -684,6 +943,9 @@ pb: ${pb},
 obs: ${obs},
 startKM: ${startKM},
 endKM: ${endKM},
+filter: ${filter},
+limit: ${limit},
+page: ${page},
 oil: ${oil},
 hidra: ${hidra},
 fuel: ${fuel},
@@ -692,7 +954,8 @@ fr: ${fr},
 arref: ${arref},
 car: ${car},
 btFinish: ${btFinish},
-cars: ${cars}
+cars: ${cars},
+myChecklistUserSort: ${myChecklistUserSort}
     ''';
   }
 }

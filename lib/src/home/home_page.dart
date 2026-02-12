@@ -6,10 +6,13 @@ import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/model/check_list_model.dart';
 import 'package:bsu_control/src/checklist/view/checklist_details_page.dart';
 import 'package:bsu_control/src/checklist/view/checklist_register_page.dart';
+import 'package:bsu_control/src/checklist/view/my_checklist_page.dart';
 import 'package:bsu_control/src/home/controller/home_controller.dart';
-import 'package:bsu_control/src/home/view/widgets/checklist_table_view.dart';
+import 'package:bsu_control/src/widgets/card_infor_widget.dart';
+import 'package:bsu_control/src/widgets/checklist_table_view.dart';
 import 'package:bsu_control/src/widgets/backgraund_page.dart';
 import 'package:bsu_control/src/widgets/cars_chart_widget.dart';
+import 'package:bsu_control/src/widgets/config_view_widget.dart';
 import 'package:bsu_control/src/widgets/images_changes_view_widget.dart';
 import 'package:bsu_control/src/widgets/limit_table_widget.dart';
 import 'package:bsu_control/src/widgets/textfield_widget.dart';
@@ -61,6 +64,7 @@ class _HomePageState extends State<HomePage> {
               dateFinish: controller.dateReferenceFinish)
           .listen((result) {
         controller.setChecklistPeriod(result);
+        controller.setLoading(false);
       });
     });
   }
@@ -68,8 +72,9 @@ class _HomePageState extends State<HomePage> {
   @override
   void dispose() {
     super.dispose();
-    timer.cancel();
     rec();
+
+    timer.cancel();
     subscription.cancel();
     searchController.dispose();
   }
@@ -87,6 +92,7 @@ class _HomePageState extends State<HomePage> {
                   SizedBox(
                     width: double.infinity,
                     child: Wrap(
+                      direction: Axis.horizontal,
                       alignment: WrapAlignment.spaceEvenly,
                       children: [
                         SizedBox(
@@ -132,38 +138,41 @@ class _HomePageState extends State<HomePage> {
                                             Expanded(
                                               child:
                                                   Observer(builder: (context) {
-                                                return cardInfor(
+                                                return CardInfoWidget(
                                                     label:
                                                         'Checklist realizados',
                                                     icon: MdiIcons.checkAll,
                                                     color:
                                                         Colors.green.shade700,
-                                                    value: app.checklistsToday
-                                                        .length);
+                                                    value: app
+                                                        .checklistsToday.length
+                                                        .toDouble());
                                               }),
                                             ),
                                             Expanded(
                                               child:
                                                   Observer(builder: (context) {
-                                                return cardInfor(
+                                                return CardInfoWidget(
                                                     label:
                                                         'Checklist pendentes',
                                                     icon: MdiIcons.check,
                                                     color: Colors.blue.shade700,
                                                     value: app
-                                                        .checklistTodayPendent);
+                                                        .checklistTodayPendent
+                                                        .toDouble());
                                               }),
                                             ),
                                             Expanded(
                                               child:
                                                   Observer(builder: (context) {
-                                                return cardInfor(
+                                                return CardInfoWidget(
                                                     label: 'Novas alterações',
                                                     icon: MdiIcons
                                                         .informationOutline,
                                                     color: Colors.red.shade700,
                                                     value: app
-                                                        .checklistTodayChanges);
+                                                        .checklistTodayChanges
+                                                        .toDouble());
                                               }),
                                             ),
                                           ],
@@ -220,7 +229,14 @@ class _HomePageState extends State<HomePage> {
                                                 label: 'Meus registros',
                                                 icon: MdiIcons.viewList,
                                                 color: Colors.green.shade700,
-                                                onTap: () {}),
+                                                onTap: () {
+                                                  app.setRouter(1);
+                                                  Navigator.of(context)
+                                                      .pushReplacement(
+                                                          MaterialPageRoute(
+                                                              builder: (context) =>
+                                                                  const MyChecklistPage()));
+                                                }),
                                           ],
                                         ),
                                       ),
@@ -248,178 +264,26 @@ class _HomePageState extends State<HomePage> {
                           child: Column(
                             spacing: 5,
                             children: [
-                              Card(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(10),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        spacing: 5,
-                                        children: [
-                                          const Icon(
-                                            Icons.settings,
-                                            color: Colors.grey,
-                                            size: 20,
-                                          ),
-                                          Expanded(
-                                            child: Text(
-                                              'Configuração de exibição',
-                                              style: Constants.titleHint,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(
-                                        height: 5,
-                                      ),
-                                      InkWell(
-                                        onTap: () {
-                                          showDatePicker(
-                                                  context: context,
-                                                  initialDate: controller
-                                                      .dateReferenceStart,
-                                                  firstDate: DateTime.now()
-                                                      .subtract(const Duration(
-                                                          days: 10)),
-                                                  lastDate: DateTime.now())
-                                              .then(app.setDateStartConfig);
-                                        },
-                                        child: Container(
-                                          width: double.infinity,
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 5, horizontal: 10),
-                                          decoration: BoxDecoration(
-                                              border: Border.all(
-                                                  color: Colors.grey),
-                                              borderRadius:
-                                                  BorderRadius.circular(5)),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                'Data inicial',
-                                                style: Constants.subtitleHint,
-                                              ),
-                                              Observer(builder: (_) {
-                                                return Text(
-                                                  Core.formatDate(
-                                                      app.dateStartConfig,
-                                                      largeDay: true),
-                                                  style: Constants.title,
-                                                );
-                                              }),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(
-                                        height: 10,
-                                      ),
-                                      InkWell(
-                                        onTap: () {
-                                          showDatePicker(
-                                                  context: context,
-                                                  initialDate: controller
-                                                      .dateReferenceFinish,
-                                                  firstDate: DateTime.now()
-                                                      .subtract(const Duration(
-                                                          days: 10)),
-                                                  lastDate: DateTime.now())
-                                              .then(app.setDateFinishConfig);
-                                        },
-                                        child: Container(
-                                          width: double.infinity,
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 5, horizontal: 10),
-                                          decoration: BoxDecoration(
-                                              border: Border.all(
-                                                  color: Colors.grey),
-                                              borderRadius:
-                                                  BorderRadius.circular(5)),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                'Data final',
-                                                style: Constants.subtitleHint,
-                                              ),
-                                              Observer(builder: (_) {
-                                                return Text(
-                                                  Core.formatDate(
-                                                      app.dateFinishConfig,
-                                                      largeDay: true),
-                                                  style: Constants.title,
-                                                );
-                                              }),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(
-                                        height: 10,
-                                      ),
-                                      Row(
-                                        spacing: 10,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          SizedBox(
-                                            height: 35,
-                                            child: ElevatedButton.icon(
-                                                onPressed: () {
-                                                  app.cleanExibitionConfig();
+                              Observer(builder: (_) {
+                                return ConfigViewWidget(
+                                  dateStart: app.dateStartConfig,
+                                  dateFinish: app.dateFinishConfig,
+                                  onDateStart: app.setDateStartConfig,
+                                  onDateFinish: app.setDateFinishConfig,
+                                  onReset: () {
+                                    app.cleanExibitionConfig();
 
-                                                  controller
-                                                      .setDateRangeChecklist(
-                                                          dateStart: app
-                                                              .dateStartConfig,
-                                                          dateFinish: app
-                                                              .dateFinishConfig);
-                                                },
-                                                style: ElevatedButton.styleFrom(
-                                                    backgroundColor:
-                                                        Colors.grey.shade400),
-                                                icon: Icon(
-                                                  MdiIcons.delete,
-                                                  color: Colors.white,
-                                                  size: 20,
-                                                ),
-                                                label: Text(
-                                                  'Limpar',
-                                                  style: Constants.titleButton,
-                                                )),
-                                          ),
-                                          SizedBox(
-                                            height: 35,
-                                            child: ElevatedButton.icon(
-                                                onPressed: () {
-                                                  controller
-                                                      .setDateRangeChecklist(
-                                                          dateStart: app
-                                                              .dateStartConfig,
-                                                          dateFinish: app
-                                                              .dateFinishConfig);
-                                                },
-                                                icon: Icon(
-                                                  MdiIcons.filter,
-                                                  color: Colors.white,
-                                                  size: 20,
-                                                ),
-                                                label: Text(
-                                                  'Aplicar',
-                                                  style: Constants.titleButton,
-                                                )),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
+                                    controller.setDateRangeChecklist(
+                                        dateStart: app.dateStartConfig,
+                                        dateFinish: app.dateFinishConfig);
+                                  },
+                                  onChange: () {
+                                    controller.setDateRangeChecklist(
+                                        dateStart: app.dateStartConfig,
+                                        dateFinish: app.dateFinishConfig);
+                                  },
+                                );
+                              }),
                               Observer(builder: (context) {
                                 final list = List<CheckListModel>.from(
                                     controller.checklistsPeriod);
@@ -448,15 +312,17 @@ class _HomePageState extends State<HomePage> {
                       alignment: WrapAlignment.spaceBetween,
                       direction: Axis.horizontal,
                       children: [
-                        Text.rich(
-                          TextSpan(text: 'Registros ', children: [
-                            TextSpan(
-                                text:
-                                    '${Core.formatDate(controller.dateReferenceStart)} - ${Core.formatDate(controller.dateReferenceFinish)}',
-                                style: Constants.subtitleHint)
-                          ]),
-                          style: Constants.title.copyWith(fontSize: 18),
-                        ),
+                        Observer(builder: (_) {
+                          return Text.rich(
+                            TextSpan(text: 'Registros ', children: [
+                              TextSpan(
+                                  text:
+                                      '${Core.formatDate(controller.dateReferenceStart)} - ${Core.formatDate(controller.dateReferenceFinish)}',
+                                  style: Constants.subtitleHint)
+                            ]),
+                            style: Constants.title.copyWith(fontSize: 18),
+                          );
+                        }),
                         Observer(builder: (_) {
                           return IgnorePointer(
                             ignoring: controller.checklistPeriodSort.isEmpty,
@@ -489,7 +355,7 @@ class _HomePageState extends State<HomePage> {
                     height: 450,
                     child: Observer(builder: (context) {
                       if (controller.loading) {
-                        return const LinearProgressIndicator();
+                        return const Center(child: LinearProgressIndicator());
                       } else if (controller.checklistPeriodSort.isEmpty) {
                         return Text(
                           'Ops ! Nenhum registro encontrado.',
@@ -586,61 +452,61 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-Widget cardInfor(
-    {required String label,
-    required IconData icon,
-    required Color color,
-    required int value}) {
-  return IntrinsicHeight(
-    child: Row(
-      spacing: 5,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Container(
-          alignment: Alignment.center,
-          margin: const EdgeInsets.all(5),
-          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 25),
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(5), color: color),
-          child: Icon(
-            icon,
-            size: 20,
-            color: Colors.white,
-          ),
-        ),
-        Expanded(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(
-                height: 5,
-              ),
-              ...label
-                  .split(' ')
-                  .map((e) => Text(
-                        e.toUpperCase(),
-                        textAlign: TextAlign.center,
-                        style: Constants.subtitle.copyWith(color: Colors.grey),
-                      ))
-                  .toList(),
-              Text(
-                value.toString().padLeft(2, '0'),
-                style: Constants.title.copyWith(
-                    color: Colors.black,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(
-                height: 5,
-              )
-            ],
-          ),
-        ),
-      ],
-    ),
-  );
-}
+// Widget cardInfor(
+//     {required String label,
+//     required IconData icon,
+//     required Color color,
+//     required int value}) {
+//   return IntrinsicHeight(
+//     child: Row(
+//       spacing: 5,
+//       crossAxisAlignment: CrossAxisAlignment.center,
+//       children: [
+//         Container(
+//           alignment: Alignment.center,
+//           margin: const EdgeInsets.all(5),
+//           padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 25),
+//           decoration: BoxDecoration(
+//               borderRadius: BorderRadius.circular(5), color: color),
+//           child: Icon(
+//             icon,
+//             size: 20,
+//             color: Colors.white,
+//           ),
+//         ),
+//         Expanded(
+//           child: Column(
+//             mainAxisAlignment: MainAxisAlignment.center,
+//             crossAxisAlignment: CrossAxisAlignment.start,
+//             children: [
+//               const SizedBox(
+//                 height: 5,
+//               ),
+//               ...label
+//                   .split(' ')
+//                   .map((e) => Text(
+//                         e.toUpperCase(),
+//                         textAlign: TextAlign.center,
+//                         style: Constants.subtitle.copyWith(color: Colors.grey),
+//                       ))
+//                   .toList(),
+//               Text(
+//                 value.toString().padLeft(2, '0'),
+//                 style: Constants.title.copyWith(
+//                     color: Colors.black,
+//                     fontSize: 20,
+//                     fontWeight: FontWeight.bold),
+//               ),
+//               const SizedBox(
+//                 height: 5,
+//               )
+//             ],
+//           ),
+//         ),
+//       ],
+//     ),
+//   );
+// }
 
 Widget btCustom(
     {required String label,

@@ -3,7 +3,9 @@ import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/model/obm_model.dart';
 import 'package:bsu_control/src/car/view/car_register_page.dart';
 import 'package:bsu_control/src/car/view/cars_page.dart';
+import 'package:bsu_control/src/checklist/view/checklist_page.dart';
 import 'package:bsu_control/src/checklist/view/checklist_register_page.dart';
+import 'package:bsu_control/src/checklist/view/my_checklist_page.dart';
 import 'package:bsu_control/src/home/home_page.dart';
 import 'package:bsu_control/src/login/view/login_page.dart';
 import 'package:bsu_control/src/user/view/user_register_page.dart';
@@ -120,11 +122,14 @@ class _BackgraundPageState extends State<BackgraundPage> {
             Visibility(
               visible: widget.menu,
               child: Observer(builder: (_) {
-                return Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
+                return Wrap(
+                  spacing: 5,
+                  runSpacing: 5,
+                  direction: Axis.horizontal,
                   children: [
                     SizedBox(
                       height: 35,
+                      width: 120,
                       child: ElevatedButton(
                           onPressed: () {
                             if (controller.router != 0) {
@@ -143,84 +148,100 @@ class _BackgraundPageState extends State<BackgraundPage> {
                             style: Constants.titleButton,
                           )),
                     ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    PopupMenuButton(
-                        onSelected: (value) {
-                          switch (value) {
-                            case 1:
-                              if (controller.router != 1) {
-                                controller.setRouter(1);
-                                // Navigator.of(context).pushReplacement(
-                                //     MaterialPageRoute(
-                                //         builder: (context) =>
-                                //             const ChecklistRegisterPage()));
-                              }
-                              break;
-                            case 2:
-                              if (controller.router != 2) {
-                                controller.setRouter(2);
-                                Navigator.of(context).pushReplacement(
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            const ChecklistRegisterPage()));
-                              }
-                              break;
-                            default:
-                              return;
-                          }
-                        },
-                        child: Container(
-                          height: 35,
-                          alignment: Alignment.center,
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          decoration: BoxDecoration(
-                              color: (controller.router == 1 ||
-                                      controller.router == 2)
-                                  ? Constants.primary
-                                  : Colors.grey.shade300,
-                              borderRadius: BorderRadius.circular(5)),
-                          child: Text(
-                            'Checklist',
-                            style: Constants.titleButton,
+                    SizedBox(
+                      width: 120,
+                      child: PopupMenuButton(
+                          onSelected: (value) {
+                            switch (value) {
+                              case 1:
+                                if (controller.router != 1) {
+                                  controller.setRouter(1);
+                                  Navigator.of(context).pushReplacement(
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const ChecklistPage()));
+                                }
+                                break;
+                              case 2:
+                                if (controller.router != 2) {
+                                  controller.setRouter(2);
+                                  Navigator.of(context).pushReplacement(
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const MyChecklistPage()));
+                                }
+                                break;
+                              case 3:
+                                if (controller.router != 3) {
+                                  controller.setRouter(3);
+                                  Navigator.of(context).pushReplacement(
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const ChecklistRegisterPage()));
+                                }
+                                break;
+                              default:
+                                return;
+                            }
+                          },
+                          child: Container(
+                            height: 35,
+                            alignment: Alignment.center,
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            decoration: BoxDecoration(
+                                color: (controller.router == 1 ||
+                                        controller.router == 2 ||
+                                        controller.router == 3)
+                                    ? Constants.primary
+                                    : Colors.grey.shade300,
+                                borderRadius: BorderRadius.circular(5)),
+                            child: Text(
+                              'Checklist',
+                              style: Constants.titleButton,
+                            ),
                           ),
-                        ),
-                        itemBuilder: (context) {
-                          return [
-                            PopupMenuItem(
-                                value: 1,
-                                child: Text(
-                                  'Meus registros',
-                                  style: Constants.title,
-                                )),
-                            PopupMenuItem(
-                                value: 2,
-                                child: Text(
-                                  'Novo registro',
-                                  style: Constants.title,
-                                )),
-                          ];
-                        }),
+                          itemBuilder: (context) {
+                            return [
+                              PopupMenuItem(
+                                  value: 1,
+                                  child: Text(
+                                    'Registrados',
+                                    style: Constants.title,
+                                  )),
+                              PopupMenuItem(
+                                  value: 2,
+                                  child: Text(
+                                    'Meus registros',
+                                    style: Constants.title,
+                                  )),
+                              PopupMenuItem(
+                                  value: 3,
+                                  child: Text(
+                                    'Novo registro',
+                                    style: Constants.title,
+                                  )),
+                            ];
+                          }),
+                    ),
                     Visibility(
                       visible: controller.user.admin,
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 10),
+                      child: SizedBox(
+                        width: 120,
                         child: PopupMenuButton(
                             onSelected: (value) {
                               switch (value) {
-                                case 3:
-                                  if (controller.router != 3) {
-                                    controller.setRouter(3);
+                                case 4:
+                                  if (controller.router != 4) {
+                                    controller.setRouter(4);
                                     Navigator.of(context).pushReplacement(
                                         MaterialPageRoute(
                                             builder: (context) =>
                                                 const CarsPage()));
                                   }
                                   break;
-                                case 4:
-                                  if (controller.router != 4) {
-                                    controller.setRouter(4);
+                                case 5:
+                                  if (controller.router != 5) {
+                                    controller.setRouter(5);
                                     Navigator.of(context).pushReplacement(
                                         MaterialPageRoute(
                                             builder: (context) =>
@@ -237,8 +258,8 @@ class _BackgraundPageState extends State<BackgraundPage> {
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 20),
                               decoration: BoxDecoration(
-                                  color: (controller.router == 3 ||
-                                          controller.router == 4)
+                                  color: (controller.router == 4 ||
+                                          controller.router == 5)
                                       ? Constants.primary
                                       : Colors.grey.shade300,
                                   borderRadius: BorderRadius.circular(5)),
@@ -250,13 +271,13 @@ class _BackgraundPageState extends State<BackgraundPage> {
                             itemBuilder: (context) {
                               return [
                                 PopupMenuItem(
-                                    value: 3,
+                                    value: 4,
                                     child: Text(
                                       'Registrados',
                                       style: Constants.title,
                                     )),
                                 PopupMenuItem(
-                                    value: 4,
+                                    value: 5,
                                     child: Text(
                                       'Novo registro',
                                       style: Constants.title,
@@ -266,24 +287,25 @@ class _BackgraundPageState extends State<BackgraundPage> {
                       ),
                     ),
                     Visibility(
-                      visible: controller.user.admin,
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 10),
+                      visible:
+                          (controller.user.admin || controller.user.adminFull),
+                      child: SizedBox(
+                        width: 120,
                         child: PopupMenuButton(
                             onSelected: (value) {
                               switch (value) {
-                                case 5:
-                                  if (controller.router != 5) {
-                                    controller.setRouter(5);
+                                case 6:
+                                  if (controller.router != 6) {
+                                    controller.setRouter(6);
                                     Navigator.of(context).pushReplacement(
                                         MaterialPageRoute(
                                             builder: (context) =>
                                                 const UsersPage()));
                                   }
                                   break;
-                                case 6:
-                                  if (controller.router != 6) {
-                                    controller.setRouter(6);
+                                case 7:
+                                  if (controller.router != 7) {
+                                    controller.setRouter(7);
                                     Navigator.of(context).pushReplacement(
                                         MaterialPageRoute(
                                             builder: (context) =>
@@ -300,8 +322,8 @@ class _BackgraundPageState extends State<BackgraundPage> {
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 20),
                               decoration: BoxDecoration(
-                                  color: (controller.router == 5 ||
-                                          controller.router == 6)
+                                  color: (controller.router == 6 ||
+                                          controller.router == 7)
                                       ? Constants.primary
                                       : Colors.grey.shade300,
                                   borderRadius: BorderRadius.circular(5)),
@@ -313,13 +335,13 @@ class _BackgraundPageState extends State<BackgraundPage> {
                             itemBuilder: (context) {
                               return [
                                 PopupMenuItem(
-                                    value: 5,
+                                    value: 6,
                                     child: Text(
                                       'Registrados',
                                       style: Constants.title,
                                     )),
                                 PopupMenuItem(
-                                    value: 6,
+                                    value: 7,
                                     child: Text(
                                       'Novo registro',
                                       style: Constants.title,
@@ -370,10 +392,18 @@ class _BackgraundPageState extends State<BackgraundPage> {
                                 margin: const EdgeInsets.all(10),
                                 child: InkWell(
                                   onTap: widget.onBack,
-                                  child: Image.asset(
-                                    'assets/cbmcecabecalho2.png',
-                                    fit: BoxFit.fitHeight,
-                                    height: 70,
+                                  child: ConstrainedBox(
+                                    constraints: const BoxConstraints(
+                                      maxHeight: 80,
+                                    ),
+                                    child: AspectRatio(
+                                      aspectRatio:
+                                          (controller.modeMOBILE ? 3 : 4),
+                                      child: Image.asset(
+                                        'assets/cbmcecabecalho2.png',
+                                        fit: BoxFit.fitWidth,
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),

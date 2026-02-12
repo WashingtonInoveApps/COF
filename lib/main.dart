@@ -107,7 +107,6 @@ class _AppWidgetState extends State<AppWidget> {
         },
       ),
       theme: ThemeData(
-          // scaffoldBackgroundColor: Core.primary,
           primaryColor: Colors.green.shade800,
           dialogTheme: DialogThemeData(
             backgroundColor: Colors.white,

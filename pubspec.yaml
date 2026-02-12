@@ -62,6 +62,7 @@ dependencies:
   # flutter_custom_clippers:
   syncfusion_flutter_charts: ^32.2.3
   syncfusion_flutter_datagrid: ^32.2.3
+  syncfusion_flutter_gauges:
   # pluto_menu_bar:
   url_strategy:
   url_launcher: 

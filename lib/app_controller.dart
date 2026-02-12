@@ -67,21 +67,11 @@ abstract class _AppControllerBase with Store {
   @observable
   bool loading = false;
 
-  // @observable
-  // bool loadingCheklist = false;
-
   @observable
   bool checklistVeicular = false;
 
   @observable
   bool modeMOBILE = false;
-
-  // @observable
-  // DateTime dateReferenceStart =
-  //     DateTime.now().subtract(const Duration(days: 1));
-
-  // @observable
-  // DateTime dateReferenceFinish = DateTime.now();
 
   @observable
   List<CarModel> cars = <CarModel>[].asObservable();
@@ -323,6 +313,9 @@ abstract class _AppControllerBase with Store {
 
     this.modeMOBILE = modeMOBILE;
     this.width = width;
+
+    log('Modo MOBILE: $modeMOBILE');
+    log('Width: $width , Max Width: $maxWidth');
 
     return width;
   }

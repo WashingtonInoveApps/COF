@@ -243,8 +243,8 @@ class UserDataSource extends DataGridSource {
 
       return DataGridRow(cells: [
         DataGridCell<String>(
-          columnName: '${user.id ?? ''}/${user.enable.toString()}',
-          value: user.enable.toString(),
+          columnName: 'enable',
+          value: '${user.id ?? ''}/${user.enable.toString()}',
         ),
         DataGridCell<String>(
           columnName: 'details',

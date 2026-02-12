@@ -1,176 +1,284 @@
-// import 'package:bsu_control/app_controller.dart';
-// import 'package:bsu_control/core/constants.dart';
-// import 'package:bsu_control/src/checklist/view/checklist_details_page.dart';
-// import 'package:bsu_control/src/widgets/alert_message.dart';
-// import 'package:bsu_control/src/widgets/backgraund_page.dart';
-// import 'package:bsu_control/src/widgets/check_list_card.dart';
-// import 'package:flutter/material.dart';
-// import 'package:flutter_mobx/flutter_mobx.dart';
-// import 'package:get_it/get_it.dart';
+import 'dart:async';
 
-// import 'checklist_register_page.dart';
+import 'package:bsu_control/app_controller.dart';
+import 'package:bsu_control/core/constants.dart';
+import 'package:bsu_control/core/core.dart';
+import 'package:bsu_control/model/check_list_model.dart';
+import 'package:bsu_control/src/checklist/controller/checklist_controller.dart';
+import 'package:bsu_control/src/checklist/view/checklist_details_page.dart';
+import 'package:bsu_control/src/checklist/view/widget/chart_user_state_widget.dart';
+import 'package:bsu_control/src/widgets/backgraund_page.dart';
+import 'package:bsu_control/src/widgets/checklist_table_view.dart';
+import 'package:bsu_control/src/widgets/images_changes_view_widget.dart';
+import 'package:bsu_control/src/widgets/textfield_widget.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:get_it/get_it.dart';
+import 'package:mobx/mobx.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
-// class ChecklistPage extends StatefulWidget {
-//   final bool home;
-//   const ChecklistPage({Key? key, this.home = false}) : super(key: key);
+import '../../widgets/config_view_widget.dart';
+import '../../widgets/limit_table_widget.dart';
+import '../../widgets/pagination_widget.dart';
 
-//   @override
-//   State createState() => _ChecklistPageState();
-// }
+class ChecklistPage extends StatefulWidget {
+  const ChecklistPage({Key? key}) : super(key: key);
 
-// class _ChecklistPageState extends State<ChecklistPage> {
-//   final controller = GetIt.I.get<AppController>();
+  @override
+  State createState() => _ChecklistPageState();
+}
 
-//   @override
-//   void initState() {
-//     super.initState();
-//     controller.setCheckListVeicular(true);
-//   }
+class _ChecklistPageState extends State<ChecklistPage> {
+  late CheckListController controller;
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return PopScope(
-//       canPop: true,
-//       onPopInvokedWithResult: (didPop, __) {
-//         if (didPop) return; // já fechou, não faz nada
+  late ReactionDisposer rec;
+  late StreamSubscription subscription;
 
-//         WidgetsBinding.instance.addPostFrameCallback((_) {
-//           Navigator.of(context).pop(); // agora pode
-//         });
-//       },
-//       child: Stack(
-//         children: [
-//           BackgraundPage(
-//             onBack: () => Navigator.of(context).pop(),
-//             childLeft: Column(
-//               crossAxisAlignment: CrossAxisAlignment.start,
-//               children: [
-//                 Row(
-//                   children: [
-//                     ElevatedButton(
-//                         onPressed: () {
-//                           Navigator.of(context).push(MaterialPageRoute(
-//                               builder: (context) =>
-//                                   const ChecklistRegisterPage()));
-//                         },
-//                         child: Padding(
-//                           padding: const EdgeInsets.symmetric(
-//                               horizontal: 15, vertical: 2),
-//                           child: Text(
-//                             "NOVO",
-//                             style: Constants.subtitle.copyWith(
-//                                 color: Colors.white,
-//                                 fontWeight: FontWeight.bold),
-//                           ),
-//                         )),
-//                     const Spacer(),
-//                     Observer(builder: (_) {
-//                       return TextButton(
-//                           style: TextButton.styleFrom(
-//                               side: BorderSide(
-//                                   color: Theme.of(context).primaryColor)),
-//                           onPressed: () async {
-//                             showDatePicker(
-//                                     context: context,
-//                                     initialDate: DateTime.now(),
-//                                     firstDate: DateTime(2021),
-//                                     lastDate: DateTime(2050))
-//                                 .then((value) {
-//                               if (value != null) {
-//                                 // controller.setReferenceDate(value);
-//                               }
-//                             });
-//                           },
-//                           child: Text(
-//                             'data',
-//                             // Core.formatDate(
-//                             //   controller.date,
-//                             //   largeDay: true,
-//                             // ),
-//                             style: Constants.title.copyWith(
-//                                 color: Theme.of(context).primaryColor),
-//                           ));
-//                     }),
-//                   ],
-//                 ),
-//                 const SizedBox(
-//                   height: 5.0,
-//                 ),
-//                 const Divider(),
-//                 const SizedBox(
-//                   height: 5.0,
-//                 ),
-//                 Observer(builder: (_) {
-//                   return controller.checklists.isEmpty
-//                       ? Center(
-//                           child: Text(
-//                             "Ops ! Nenhum registro encontrado.",
-//                             style: Constants.title,
-//                           ),
-//                         )
-//                       : Column(
-//                           children: List.generate(controller.checklists.length,
-//                               (index) {
-//                             final checklist = controller.checklists[index];
-//                             final delete = controller.user.admin ||
-//                                 (controller.user.id == checklist.user.id &&
-//                                     checklist.enable);
+  final app = GetIt.I.get<AppController>();
+  final searchController = TextEditingController();
 
-//                             return CheckListCard(
-//                               checkList: checklist,
-//                               onDelete: delete
-//                                   ? () async {
-//                                       final result = await showDialog(
-//                                           context: context,
-//                                           builder: (context) => AlertMessage(
-//                                               title: 'Atenção',
-//                                               message:
-//                                                   'Deseja excluir esse checklist ?',
-//                                               cancel: true,
-//                                               onPressedCancel: () =>
-//                                                   Navigator.of(context)
-//                                                       .pop(false),
-//                                               onPressedOK: () =>
-//                                                   Navigator.of(context)
-//                                                       .pop(true)));
+  @override
+  void initState() {
+    super.initState();
+    controller = CheckListController(init: null, app: app);
+    controller.setDateRangeChecklist(
+        dateStart: controller.dateStartConfig,
+        dateFinish: controller.dateFinishConfig);
 
-//                                       if (result ?? false) {
-//                                         await controller.deleteChecklist(
-//                                             checkList: checklist);
-//                                       }
-//                                     }
-//                                   : null,
-//                               onTap: () {
-//                                 // Navigator.of(context).push(MaterialPageRoute(
-//                                 //     builder: (context) => ChecklistDetailsPage(
-//                                 //         checkListId:
-//                                 //             controller.checklists[index].id!)));
-//                               },
-//                             );
-//                           }),
-//                         );
-//                 }),
-//                 const SizedBox(
-//                   height: 5.0,
-//                 ),
-//               ],
-//             ),
-//           ),
-//           Observer(builder: (_) {
-//             return IgnorePointer(
-//               ignoring: !controller.loading,
-//               child: Container(
-//                 color: controller.loading ? Colors.black54 : Colors.transparent,
-//                 child: Center(
-//                     child: CircularProgressIndicator(
-//                   valueColor: AlwaysStoppedAnimation<Color>(
-//                       controller.loading ? Colors.white : Colors.transparent),
-//                 )),
-//               ),
-//             );
-//           }),
-//         ],
-//       ),
-//     );
-//   }
-// }
+    rec = autorun((_) {
+      controller.setLoading(true);
+      subscription = controller
+          .streamChecklistPeriod(
+              userID: app.user.id!,
+              referenceDateStart: controller.dateReferenceStart,
+              referenceDateFinish: controller.dateReferenceFinish)
+          .listen((result) {
+        controller.setMyChecklistUser(app.getChecklistUser(list: result));
+        controller.setLoading(false);
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    searchController.dispose();
+    subscription.cancel();
+    rec();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return PopScope(
+      canPop: false,
+      child: Stack(
+        children: [
+          BackgraundPage(
+            childLeft: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  width: double.infinity,
+                  child: Wrap(
+                    alignment: WrapAlignment.spaceEvenly,
+                    children: [
+                      SizedBox(
+                        width: (app.modeMOBILE
+                            ? double.infinity
+                            : app.maxWidth * 0.45),
+                        child: Column(
+                          spacing: 5,
+                          children: [
+                            Observer(builder: (_) {
+                              return ConfigViewWidget(
+                                dateStart: controller.dateStartConfig,
+                                dateFinish: controller.dateFinishConfig,
+                                onDateStart: controller.setDateStartConfig,
+                                onDateFinish: controller.setDateFinishConfig,
+                                onReset: () {
+                                  controller.cleanExibitionConfig();
+
+                                  controller.setDateRangeChecklist(
+                                      dateStart: controller.dateStartConfig,
+                                      dateFinish: controller.dateFinishConfig);
+                                },
+                                onChange: () {
+                                  controller.setDateRangeChecklist(
+                                      dateStart: controller.dateStartConfig,
+                                      dateFinish: controller.dateFinishConfig);
+                                },
+                              );
+                            }),
+                          ],
+                        ),
+                      ),
+                      SizedBox(
+                        width: (app.modeMOBILE
+                            ? double.infinity
+                            : app.maxWidth * 0.46),
+                        child: Column(
+                          spacing: 5,
+                          children: [
+                            Card(
+                              child: Container(
+                                height: 200,
+                                padding: const EdgeInsets.all(10),
+                                child: Observer(builder: (_) {
+                                  final checklists = List<CheckListModel>.from(
+                                      controller.myChecklistUser);
+                                  return UserStateChart(checklists: checklists);
+                                }),
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                SizedBox(
+                  width: double.infinity,
+                  child: Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.end,
+                    alignment: WrapAlignment.spaceBetween,
+                    direction: Axis.horizontal,
+                    children: [
+                      Observer(builder: (_) {
+                        return Text.rich(
+                          TextSpan(text: 'Registros ', children: [
+                            TextSpan(
+                                text:
+                                    '${Core.formatDate(controller.dateReferenceStart)} - ${Core.formatDate(controller.dateReferenceFinish)}',
+                                style: Constants.subtitleHint)
+                          ]),
+                          style: Constants.title.copyWith(fontSize: 18),
+                        );
+                      }),
+                      Observer(builder: (_) {
+                        return IgnorePointer(
+                          ignoring: controller.myChecklistUser.isEmpty,
+                          child: Container(
+                            margin: const EdgeInsets.only(top: 10),
+                            width: app.modeMOBILE ? double.infinity : 350,
+                            alignment: Alignment.centerRight,
+                            child: FieldText(
+                              search: true,
+                              controller: searchController,
+                              hint: 'Ex.: Digite algo para pesquisar',
+                              onChange: controller.onChangeFilter,
+                              onClear: () {
+                                searchController.clear();
+                                controller.onChangeFilter('');
+                              },
+                            ),
+                          ),
+                        );
+                      }),
+                    ],
+                  ),
+                ),
+                app.modeMOBILE ? Container() : const Divider(),
+                SizedBox(
+                  width: double.infinity,
+                  height: 450,
+                  child: Observer(builder: (context) {
+                    if (controller.loading) {
+                      return const Center(child: LinearProgressIndicator());
+                    } else if (controller.myChecklistUserSort.isEmpty) {
+                      return Text(
+                        'Ops ! Nenhum registro encontrado.',
+                        style: Constants.subtitleHint,
+                      );
+                    } else {
+                      return Padding(
+                        padding: const EdgeInsets.only(
+                          top: 5,
+                        ),
+                        child: Column(
+                          spacing: 5,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Exibindo 1 a ${controller.myChecklistUserSort.length} de ${controller.myChecklistUser.length} entradas',
+                              style: Constants.subtitleHint,
+                            ),
+                            Expanded(
+                              child: ChecklistTableView(
+                                values: controller.myChecklistUserSort,
+                                obms: app.obms,
+                                onContact: (contact) async {
+                                  final path = kIsWeb
+                                      ? "https://wa.me/+55$contact/?text=${Uri.encodeFull('Olá, tudo bem ?')}"
+                                      : "whatsapp://send?phone=+55$contact&text=${Uri.encodeFull('Olá, tudo bem ?')}";
+
+                                  await launchUrlString(path,
+                                      mode: LaunchMode.externalApplication);
+                                },
+                                onDetails: (id) async {
+                                  await Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              ChecklistDetailsPage(
+                                                  checklistID: id)));
+                                },
+                                onChanges: (changes) {
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return AlertDialog(
+                                          contentPadding:
+                                              const EdgeInsets.all(10),
+                                          content: ImagesChangesViewWidget(
+                                              changes: changes),
+                                        );
+                                      });
+                                },
+                              ),
+                            ),
+                            Row(
+                              children: [
+                                LimitTableWidget(
+                                    limit: controller.limit,
+                                    onChange: controller.setLimit),
+                                const Spacer(),
+                                Observer(builder: (context) {
+                                  return PaginationWidget(
+                                    limit: controller.limit,
+                                    page: controller.page,
+                                    length: controller.myChecklistUser.length,
+                                    onChange: controller.setPage,
+                                  );
+                                }),
+                              ],
+                            )
+                          ],
+                        ),
+                      );
+                    }
+                  }),
+                ),
+              ],
+            ),
+          ),
+          Observer(builder: (_) {
+            return IgnorePointer(
+              ignoring: !controller.loading,
+              child: Container(
+                color: controller.loading ? Colors.black54 : Colors.transparent,
+                child: Center(
+                    child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                      controller.loading ? Colors.white : Colors.transparent),
+                )),
+              ),
+            );
+          }),
+        ],
+      ),
+    );
+  }
+}

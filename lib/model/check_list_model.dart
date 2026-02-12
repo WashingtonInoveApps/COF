@@ -83,7 +83,7 @@ class CheckListModel {
       'supply': supply.map((x) => x.toMap()).toList(),
       'changes': changes.map((x) => x.toMap()).toList(),
       'referenceDate': Core.formatDate(reference),
-      //"${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}",
+      'referenceYear': reference.year.toString(),
       'referenceMonth':
           "${reference.month.toString().padLeft(2, '0')}/${reference.year}"
     };

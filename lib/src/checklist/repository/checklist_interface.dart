@@ -11,4 +11,10 @@ abstract class ICheckListRepository {
   Future<bool> finish({required CheckListModel checklist, Uint8List? image});
 
   Stream<CheckListModel> streamChecklistByID({required String checklistID});
+
+  Stream<List<CheckListModel>> streamChecklistUser({required String userID});
+
+  Stream<List<CheckListModel>> streamChecklistPeriod(
+      {required DateTime referenceDateStart,
+      required DateTime referenceDateFinish});
 }

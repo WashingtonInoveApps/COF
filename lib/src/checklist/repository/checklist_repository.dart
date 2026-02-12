@@ -111,4 +111,46 @@ class CheckListRepository extends APIClient implements ICheckListRepository {
         .snapshots()
         .map((e) => CheckListModel.fromMap(e.data() as Map<String, dynamic>));
   }
+
+  @override
+  Stream<List<CheckListModel>> streamChecklistPeriod(
+      {required DateTime referenceDateStart,
+      required DateTime referenceDateFinish}) {
+    final start = referenceDateStart
+        .copyWith(hour: 0, second: 0, minute: 0, millisecond: 0, microsecond: 0)
+        .millisecondsSinceEpoch;
+    final finish = referenceDateFinish
+        .copyWith(
+          hour: 23,
+          second: 59,
+          minute: 59,
+        )
+        .millisecondsSinceEpoch;
+
+    return colChecklist
+        .where('date', isGreaterThanOrEqualTo: start)
+        .where('date', isLessThanOrEqualTo: finish)
+        .orderBy('date')
+        .snapshots()
+        .map((e) {
+      return e.docs.map((doc) {
+        var checkList =
+            CheckListModel.fromMap(doc.data() as Map<String, dynamic>);
+        checkList.id = doc.id;
+        return checkList;
+      }).toList();
+    });
+  }
+
+  @override
+  Stream<List<CheckListModel>> streamChecklistUser({required String userID}) {
+    return colChecklist.where('userID', isEqualTo: userID).snapshots().map((e) {
+      return e.docs.map((doc) {
+        var checkList =
+            CheckListModel.fromMap(doc.data() as Map<String, dynamic>);
+        checkList.id = doc.id;
+        return checkList;
+      }).toList();
+    });
+  }
 }

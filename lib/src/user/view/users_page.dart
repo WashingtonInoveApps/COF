@@ -85,62 +85,45 @@ class _UsersPageState extends State<UsersPage> {
               const SizedBox(
                 height: 10,
               ),
-              Text(
-                'Exibindo 1 a ${controller.usersSorts.length} de ${controller.usersOBM.length} entradas',
-                style: Constants.subtitleHint,
-              ),
-              Observer(builder: (context) {
-                final users = List<UserModel>.from(controller.usersSorts);
-                final obms = List<OBMModel>.from(app.obms);
-                return UsersTableView(
-                  values: users,
-                  obms: obms,
-                  onContact: (contact) async {
-                    final path = kIsWeb
-                        ? "https://wa.me/+55$contact/?text=${Uri.encodeFull('Olá, tudo bem ?')}"
-                        : "whatsapp://send?phone=+55$contact&text=${Uri.encodeFull('Olá, tudo bem ?')}";
-
-                    await launchUrlString(path,
-                        mode: LaunchMode.externalApplication);
-                  },
-                  onDetails: (user) {
-                    app.setRouter(6);
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => UserPageRegister(
-                              user: user,
-                            )));
-                  },
-                  onEnable: (user) async {
-                    await controller.update(user: user);
-                  },
+              Observer(builder: (_) {
+                return Text(
+                  'Exibindo 1 a ${controller.usersSorts.length} de ${controller.usersOBM.length} entradas',
+                  style: Constants.subtitleHint,
                 );
-              }
-                  // Column(
-                  //       children: List.generate(app.users.length, (index) {
-                  //         final user = app.users[index];
-                  //         final obm =
-                  //             app.obms.firstWhere((e) => e.id == user.obmID);
+              }),
+              const SizedBox(
+                height: 5,
+              ),
+              SizedBox(
+                width: double.infinity,
+                height: MediaQuery.of(context).size.height * 0.60,
+                child: Observer(builder: (context) {
+                  final users = List<UserModel>.from(controller.usersSorts);
+                  final obms = List<OBMModel>.from(app.obms);
+                  return UsersTableView(
+                    values: users,
+                    obms: obms,
+                    onContact: (contact) async {
+                      final path = kIsWeb
+                          ? "https://wa.me/+55$contact/?text=${Uri.encodeFull('Olá, tudo bem ?')}"
+                          : "whatsapp://send?phone=+55$contact&text=${Uri.encodeFull('Olá, tudo bem ?')}";
 
-                  //         return CardUser(
-                  //           obm: obm,
-                  //           user: user,
-                  //           onEdit: () {
-                  //             app.setRouter(6);
-                  //             Navigator.of(context).push(MaterialPageRoute(
-                  //                 builder: (context) => UserPageRegister(
-                  //                       user: user,
-                  //                     )));
-                  //           },
-                  //           onDelete: () async {},
-                  //           onEnable: (value) async {
-                  //             await controller.update(
-                  //                 user: user.copyWith(enable: value));
-                  //           },
-                  //         );
-                  //       }),
-                  //     )
-
-                  ),
+                      await launchUrlString(path,
+                          mode: LaunchMode.externalApplication);
+                    },
+                    onDetails: (user) {
+                      app.setRouter(6);
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => UserPageRegister(
+                                user: user,
+                              )));
+                    },
+                    onEnable: (user) async {
+                      await controller.update(user: user);
+                    },
+                  );
+                }),
+              ),
               const SizedBox(
                 height: 10,
               ),

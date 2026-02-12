@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:bsu_control/app_controller.dart';
+import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/core/enum.dart';
 import 'package:bsu_control/core/validation.dart';
 import 'package:bsu_control/model/car_changes_model.dart';
@@ -88,6 +89,10 @@ abstract class _CheckListControllerBase with Store {
       <ItensChangesModel>[].asObservable();
 
   @observable
+  ObservableList<CheckListModel> myChecklistUser =
+      <CheckListModel>[].asObservable();
+
+  @observable
   ObservableList<ItensChangesModel> materials =
       <ItensChangesModel>[].asObservable();
 
@@ -97,6 +102,21 @@ abstract class _CheckListControllerBase with Store {
 
   @observable
   DateTime date = DateTime.now();
+
+  @observable
+  DateTime dateReferenceStart = DateTime.now();
+
+  @observable
+  DateTime dateReferenceFinish = DateTime.now();
+
+  @observable
+  DateTime dateStartConfig = DateTime.now().subtract(const Duration(days: 1));
+
+  @observable
+  DateTime dateFinishConfig = DateTime.now();
+
+  @observable
+  DateTime dateMyChecklist = DateTime.now();
 
   @observable
   String prefix = "";
@@ -132,6 +152,15 @@ abstract class _CheckListControllerBase with Store {
 
   @observable
   String endKM = "";
+
+  @observable
+  String filter = '';
+
+  @observable
+  int limit = 10;
+
+  @observable
+  int page = 1;
 
   @observable
   double oil = 0.0;
@@ -176,8 +205,94 @@ abstract class _CheckListControllerBase with Store {
         .toList();
   }
 
+  Stream<List<CheckListModel>> streamChecklistPeriod(
+      {required String userID,
+      required DateTime referenceDateStart,
+      required DateTime referenceDateFinish}) {
+    return repository.streamChecklistPeriod(
+        referenceDateStart: referenceDateStart,
+        referenceDateFinish: referenceDateFinish);
+  }
+
+  Stream<List<CheckListModel>> streamChecklistUser({required String userID}) {
+    return repository.streamChecklistUser(userID: userID);
+  }
+
+  @computed
+  List<CheckListModel> get myChecklistUserSort {
+    if (filter.isNotEmpty) {
+      final filtered = myChecklistUser
+          .where((e) =>
+              (e.prefix.toLowerCase().contains(filter.toLowerCase()) ||
+                  e.obm.toLowerCase().contains(filter.toLowerCase()) ||
+                  (e.cia.toLowerCase().contains(filter.toLowerCase())) ||
+                  (e.team.toLowerCase().contains(filter.toLowerCase())) ||
+                  (e.state.label.toLowerCase().contains(filter.toLowerCase()))))
+          .toList();
+
+      final list = Core.paginate(list: filtered, page: page, limit: limit);
+      return List<CheckListModel>.from(list);
+    } else {
+      final list =
+          Core.paginate(list: myChecklistUser, page: page, limit: limit);
+      return List<CheckListModel>.from(list);
+    }
+  }
+
   @action
   changeDate(DateTime? value) => date = value ?? date;
+
+  @action
+  setDateMyChecklist(DateTime? value) =>
+      dateMyChecklist = value ?? dateMyChecklist;
+
+  @action
+  setDateRangeChecklist(
+      {required DateTime dateStart, required DateTime dateFinish}) {
+    dateReferenceStart = dateStart;
+    dateReferenceFinish = dateFinish;
+  }
+
+  @action
+  void cleanExibitionConfig() {
+    dateStartConfig = DateTime.now().subtract(const Duration(days: 1));
+    dateFinishConfig = DateTime.now();
+  }
+
+  @action
+  setDateStartConfig(DateTime? value) {
+    dateStartConfig = value ?? dateStartConfig;
+  }
+
+  @action
+  setDateFinishConfig(DateTime? value) {
+    dateFinishConfig = value ?? dateFinishConfig;
+  }
+
+  @action
+  setMyChecklistUser(List<CheckListModel> value) {
+    value.sort((a, b) => b.date.compareTo(a.date));
+    myChecklistUser
+      ..clear()
+      ..addAll(value);
+  }
+
+  @action
+  onChangeFilter(String? value) {
+    filter = value ?? '';
+    page = 1;
+  }
+
+  @action
+  setLimit(int? value) {
+    limit = value ?? limit;
+    page = 1;
+  }
+
+  @action
+  setPage(int value) {
+    page = value;
+  }
 
   @action
   setPrefix(String? value) {
