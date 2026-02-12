@@ -1,4 +1,5 @@
 import 'package:bsu_control/app_controller.dart';
+import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/model/obm_model.dart';
 import 'package:bsu_control/src/user/repository/user_interface.dart';
@@ -16,13 +17,36 @@ class UserController = _UserControllerBase with _$UserController;
 abstract class _UserControllerBase with Store {
   final AppController app;
   late IUserRepository repository;
+  late UserModel? init;
 
   final controllerPassword = TextEditingController();
   final controllerPasswordConfirme = TextEditingController();
 
-  _UserControllerBase({required this.app}) {
+  _UserControllerBase({required this.app, required this.init}) {
     repository = UserRepository(
         endpoint: app.endpoint, appID: app.appID, test: app.test);
+
+    userControllerInit(init);
+  }
+
+  @action
+  userControllerInit(UserModel? value) {
+    graduation = value?.graduation ?? Constants.graduations.first;
+
+    admin = value?.admin ?? false;
+    enable = value?.enable ?? false;
+    battalion = value?.battalion ?? false;
+    company = value?.company ?? false;
+    managerOperational = value?.managerOperational ?? false;
+    managerFleet = value?.managerFleet ?? false;
+
+    obm = app.obms.first;
+    cia = value?.cia ?? obm.cias.first;
+
+    if (value != null) {
+      obm = app.obms.firstWhere((e) => e.id == value.obmID);
+      cia = value.cia;
+    }
   }
 
   @observable
@@ -33,8 +57,10 @@ abstract class _UserControllerBase with Store {
 
   @observable
   String? cia;
+
   @observable
   String filter = '';
+
   @observable
   int limit = 10;
 
@@ -48,13 +74,41 @@ abstract class _UserControllerBase with Store {
   bool admin = false;
 
   @observable
-  bool adminFull = false;
+  bool enable = false;
+
+  @observable
+  bool battalion = false;
+
+  @observable
+  bool company = false;
+
+  @observable
+  bool managerOperational = false;
+
+  @observable
+  bool managerFleet = false;
+
+  @computed
+  UserModel get userInit {
+    return UserModel(
+        id: init?.id,
+        admin: admin,
+        battalion: battalion,
+        cia: cia ?? '',
+        company: company,
+        enable: enable,
+        graduation: graduation,
+        managerFleet: managerFleet,
+        managerOperational: managerOperational,
+        email: init?.email ?? '',
+        obmID: obm.id ?? '');
+  }
 
   @computed
   List<UserModel> get usersOBM {
-    if (app.user.adminFull) {
+    if (app.user.admin) {
       return List<UserModel>.from(app.users);
-    } else if (app.user.admin) {
+    } else if (app.user.battalion) {
       return List<UserModel>.from(
           app.users.where((e) => e.obmID == app.user.obmID).toList());
     } else {
@@ -108,7 +162,17 @@ abstract class _UserControllerBase with Store {
   setAdmin(bool? value) => admin = value ?? admin;
 
   @action
-  setAdminFull(bool? value) => adminFull = value ?? adminFull;
+  setBattalion(bool? value) => battalion = value ?? battalion;
+
+  @action
+  setCompany(bool? value) => company = value ?? company;
+
+  @action
+  setManagerFleet(bool? value) => managerFleet = value ?? managerFleet;
+
+  @action
+  setManagerOperational(bool? value) =>
+      managerOperational = value ?? managerOperational;
 
   @action
   setCia(String? value) => cia = value;

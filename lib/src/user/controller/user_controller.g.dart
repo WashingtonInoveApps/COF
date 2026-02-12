@@ -9,6 +9,13 @@ part of 'user_controller.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$UserController on _UserControllerBase, Store {
+  Computed<UserModel>? _$userInitComputed;
+
+  @override
+  UserModel get userInit =>
+      (_$userInitComputed ??= Computed<UserModel>(() => super.userInit,
+              name: '_UserControllerBase.userInit'))
+          .value;
   Computed<List<UserModel>>? _$usersOBMComputed;
 
   @override
@@ -152,19 +159,83 @@ mixin _$UserController on _UserControllerBase, Store {
     });
   }
 
-  late final _$adminFullAtom =
-      Atom(name: '_UserControllerBase.adminFull', context: context);
+  late final _$enableAtom =
+      Atom(name: '_UserControllerBase.enable', context: context);
 
   @override
-  bool get adminFull {
-    _$adminFullAtom.reportRead();
-    return super.adminFull;
+  bool get enable {
+    _$enableAtom.reportRead();
+    return super.enable;
   }
 
   @override
-  set adminFull(bool value) {
-    _$adminFullAtom.reportWrite(value, super.adminFull, () {
-      super.adminFull = value;
+  set enable(bool value) {
+    _$enableAtom.reportWrite(value, super.enable, () {
+      super.enable = value;
+    });
+  }
+
+  late final _$battalionAtom =
+      Atom(name: '_UserControllerBase.battalion', context: context);
+
+  @override
+  bool get battalion {
+    _$battalionAtom.reportRead();
+    return super.battalion;
+  }
+
+  @override
+  set battalion(bool value) {
+    _$battalionAtom.reportWrite(value, super.battalion, () {
+      super.battalion = value;
+    });
+  }
+
+  late final _$companyAtom =
+      Atom(name: '_UserControllerBase.company', context: context);
+
+  @override
+  bool get company {
+    _$companyAtom.reportRead();
+    return super.company;
+  }
+
+  @override
+  set company(bool value) {
+    _$companyAtom.reportWrite(value, super.company, () {
+      super.company = value;
+    });
+  }
+
+  late final _$managerOperationalAtom =
+      Atom(name: '_UserControllerBase.managerOperational', context: context);
+
+  @override
+  bool get managerOperational {
+    _$managerOperationalAtom.reportRead();
+    return super.managerOperational;
+  }
+
+  @override
+  set managerOperational(bool value) {
+    _$managerOperationalAtom.reportWrite(value, super.managerOperational, () {
+      super.managerOperational = value;
+    });
+  }
+
+  late final _$managerFleetAtom =
+      Atom(name: '_UserControllerBase.managerFleet', context: context);
+
+  @override
+  bool get managerFleet {
+    _$managerFleetAtom.reportRead();
+    return super.managerFleet;
+  }
+
+  @override
+  set managerFleet(bool value) {
+    _$managerFleetAtom.reportWrite(value, super.managerFleet, () {
+      super.managerFleet = value;
     });
   }
 
@@ -194,6 +265,17 @@ mixin _$UserController on _UserControllerBase, Store {
 
   late final _$_UserControllerBaseActionController =
       ActionController(name: '_UserControllerBase', context: context);
+
+  @override
+  dynamic userControllerInit(UserModel? value) {
+    final _$actionInfo = _$_UserControllerBaseActionController.startAction(
+        name: '_UserControllerBase.userControllerInit');
+    try {
+      return super.userControllerInit(value);
+    } finally {
+      _$_UserControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
 
   @override
   dynamic onChangeFilter(String? value) {
@@ -251,11 +333,44 @@ mixin _$UserController on _UserControllerBase, Store {
   }
 
   @override
-  dynamic setAdminFull(bool? value) {
+  dynamic setBattalion(bool? value) {
     final _$actionInfo = _$_UserControllerBaseActionController.startAction(
-        name: '_UserControllerBase.setAdminFull');
+        name: '_UserControllerBase.setBattalion');
     try {
-      return super.setAdminFull(value);
+      return super.setBattalion(value);
+    } finally {
+      _$_UserControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setCompany(bool? value) {
+    final _$actionInfo = _$_UserControllerBaseActionController.startAction(
+        name: '_UserControllerBase.setCompany');
+    try {
+      return super.setCompany(value);
+    } finally {
+      _$_UserControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setManagerFleet(bool? value) {
+    final _$actionInfo = _$_UserControllerBaseActionController.startAction(
+        name: '_UserControllerBase.setManagerFleet');
+    try {
+      return super.setManagerFleet(value);
+    } finally {
+      _$_UserControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setManagerOperational(bool? value) {
+    final _$actionInfo = _$_UserControllerBaseActionController.startAction(
+        name: '_UserControllerBase.setManagerOperational');
+    try {
+      return super.setManagerOperational(value);
     } finally {
       _$_UserControllerBaseActionController.endAction(_$actionInfo);
     }
@@ -294,7 +409,12 @@ limit: ${limit},
 page: ${page},
 obm: ${obm},
 admin: ${admin},
-adminFull: ${adminFull},
+enable: ${enable},
+battalion: ${battalion},
+company: ${company},
+managerOperational: ${managerOperational},
+managerFleet: ${managerFleet},
+userInit: ${userInit},
 usersOBM: ${usersOBM},
 usersSorts: ${usersSorts}
     ''';

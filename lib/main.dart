@@ -33,8 +33,8 @@ void main() async {
   final controller = AppController(
       maxWidth: 1000,
       appID: 'VBJM7eAETNS2pYWpfKLY',
-      endpoint: 'http://localhost:3000',
-      test: true);
+      endpoint: 'https://us-central1-bsucos-function.cloudfunctions.net/app',
+      test: false);
 
   GetIt.I.registerSingleton<AppController>(controller);
 
@@ -142,6 +142,8 @@ class _AppWidgetState extends State<AppWidget> {
               return Colors.white;
             }),
           ),
+          progressIndicatorTheme:
+              ProgressIndicatorThemeData(color: Constants.primary),
           cardTheme: CardThemeData(
             elevation: 4,
             color: Colors.white,

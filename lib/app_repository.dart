@@ -46,7 +46,7 @@ class AppRepository extends APIClient implements IAppRepository {
   Stream<List<CheckListModel>> listenChecklistToday(
       {required DateTime referenceDate}) {
     try {
-      log('Buscando checklist diário');
+      log('Buscando checklist diário: ${Core.formatDate(referenceDate)}');
       return colChecklist
           .where('referenceDate', isEqualTo: Core.formatDate(referenceDate))
           .snapshots()

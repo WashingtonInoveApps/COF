@@ -14,89 +14,66 @@ class UserModel {
   String acessToken;
   String codeVerifyPassword;
 
-  bool adminFull;
   bool admin;
   bool enable;
+  bool battalion;
+  bool company;
+  bool managerOperational;
+  bool managerFleet;
 
   UserModel({
+    this.id,
     this.name = '',
     this.registration = '',
     this.contact = '',
     this.email = '',
-    this.id,
     this.graduation = '',
     this.obmID = '',
-    this.fullname = '',
     this.cia = '',
+    this.fullname = '',
     this.acessToken = '',
     this.codeVerifyPassword = '',
-    this.adminFull = false,
     this.admin = false,
     this.enable = false,
+    this.battalion = false,
+    this.company = false,
+    this.managerOperational = false,
+    this.managerFleet = false,
   });
-
-  UserModel copyWith({
-    String? name,
-    String? registration,
-    String? contact,
-    String? email,
-    String? id,
-    String? graduation,
-    String? obmID,
-    String? fullname,
-    String? cia,
-    String? acessToken,
-    String? codeVerifyPassword,
-    bool? adminFull,
-    bool? admin,
-    bool? enable,
-  }) {
-    return UserModel(
-      name: name ?? this.name,
-      cia: cia ?? this.cia,
-      registration: registration ?? this.registration,
-      contact: contact ?? this.contact,
-      email: email ?? this.email,
-      id: id ?? this.id,
-      graduation: graduation ?? this.graduation,
-      obmID: obmID ?? this.obmID,
-      fullname: fullname ?? this.fullname,
-      adminFull: adminFull ?? this.adminFull,
-      acessToken: acessToken ?? this.acessToken,
-      codeVerifyPassword: codeVerifyPassword ?? this.codeVerifyPassword,
-      admin: admin ?? this.admin,
-      enable: enable ?? this.enable,
-    );
-  }
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
+      'id': id,
       'name': name,
-      'cia': cia,
       'registration': registration,
       'contact': contact,
       'email': email,
-      'id': id,
       'graduation': graduation,
       'obmID': obmID,
+      'cia': cia,
       'fullname': fullname,
       'acessToken': acessToken,
       'codeVerifyPassword': codeVerifyPassword,
-      'adminFull': adminFull,
       'admin': admin,
       'enable': enable,
+      'battalion': battalion,
+      'company': company,
+      'managerOperational': managerOperational,
+      'managerFleet': managerFleet,
     };
   }
 
   Map<String, dynamic> toMapResume() {
     return <String, dynamic>{
+      'id': id,
       'name': name,
       'registration': registration,
-      'id': id,
-      'cia': cia,
+      'contact': contact,
+      'email': email,
       'graduation': graduation,
       'obmID': obmID,
-      'fullname': fullname,
+      'cia': cia,
+      'fullname': fullname
     };
   }
 
@@ -104,18 +81,21 @@ class UserModel {
     return UserModel(
       id: map['id'],
       name: map['name'] ?? '',
-      cia: map['cia'] ?? '',
       registration: map['registration'] ?? '',
       contact: map['contact'] ?? '',
       email: map['email'] ?? '',
       graduation: map['graduation'] ?? '',
       obmID: map['obmID'] ?? '',
+      cia: map['cia'] ?? '',
       fullname: map['fullname'] ?? '',
-      codeVerifyPassword: map['codeVerifyPassword'] ?? '',
       acessToken: map['acessToken'] ?? '',
-      adminFull: map['adminFull'] ?? false,
+      codeVerifyPassword: map['codeVerifyPassword'] ?? '',
       admin: map['admin'] ?? false,
       enable: map['enable'] ?? false,
+      battalion: map['battalion'] ?? false,
+      company: map['company'] ?? false,
+      managerOperational: map['managerOperational'] ?? false,
+      managerFleet: map['managerFleet'] ?? false,
     );
   }
 
@@ -124,9 +104,11 @@ class UserModel {
         id: map['id'],
         name: map['name'] ?? '',
         registration: map['registration'] ?? '',
-        cia: map['cia'] ?? '',
+        contact: map['contact'] ?? '',
+        email: map['email'] ?? '',
         graduation: map['graduation'] ?? '',
         obmID: map['obmID'] ?? '',
+        cia: map['cia'] ?? '',
         fullname: map['fullname'] ?? '');
   }
 
@@ -134,4 +116,44 @@ class UserModel {
 
   factory UserModel.fromJson(String source) =>
       UserModel.fromMap(json.decode(source) as Map<String, dynamic>);
+
+  UserModel copyWith({
+    String? id,
+    String? name,
+    String? registration,
+    String? contact,
+    String? email,
+    String? graduation,
+    String? obmID,
+    String? cia,
+    String? fullname,
+    String? acessToken,
+    String? codeVerifyPassword,
+    bool? admin,
+    bool? enable,
+    bool? battalion,
+    bool? company,
+    bool? managerOperational,
+    bool? managerFleet,
+  }) {
+    return UserModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      registration: registration ?? this.registration,
+      contact: contact ?? this.contact,
+      email: email ?? this.email,
+      graduation: graduation ?? this.graduation,
+      obmID: obmID ?? this.obmID,
+      cia: cia ?? this.cia,
+      fullname: fullname ?? this.fullname,
+      acessToken: acessToken ?? this.acessToken,
+      codeVerifyPassword: codeVerifyPassword ?? this.codeVerifyPassword,
+      admin: admin ?? this.admin,
+      enable: enable ?? this.enable,
+      battalion: battalion ?? this.battalion,
+      company: company ?? this.company,
+      managerOperational: managerOperational ?? this.managerOperational,
+      managerFleet: managerFleet ?? this.managerFleet,
+    );
+  }
 }

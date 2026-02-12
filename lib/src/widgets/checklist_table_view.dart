@@ -347,22 +347,25 @@ class ChecklistDataSource extends DataGridSource {
             ),
           );
         } else if (cell.columnName == 'details') {
-          return Center(
-            child: InkWell(
-              child: Card(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadiusGeometry.circular(100)),
-                child: const Padding(
-                  padding: EdgeInsets.all(5.0),
-                  child: Icon(Icons.search, size: 20, color: Colors.green),
-                ),
-              ),
-              onTap: () async {
-                final value = cell.value;
-                onDetails?.call(value);
-              },
-            ),
-          );
+          return (onDetails != null)
+              ? Center(
+                  child: InkWell(
+                    child: Card(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadiusGeometry.circular(100)),
+                      child: const Padding(
+                        padding: EdgeInsets.all(5.0),
+                        child:
+                            Icon(Icons.search, size: 20, color: Colors.green),
+                      ),
+                    ),
+                    onTap: () async {
+                      final value = cell.value;
+                      onDetails?.call(value);
+                    },
+                  ),
+                )
+              : Container();
         } else if (cell.columnName == 'state') {
           final state = EnumCore.statusChecklistFromString(cell.value);
 
@@ -410,7 +413,7 @@ class ChecklistDataSource extends DataGridSource {
                     ),
                   ),
                   Expanded(
-                    child: (int.parse(changesLength) > 0)
+                    child: (int.parse(changesLength) > 0 && (onChanges != null))
                         ? Center(
                             child: InkWell(
                               child: Card(

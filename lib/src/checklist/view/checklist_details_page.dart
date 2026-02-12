@@ -201,9 +201,23 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
                                 )),
                           ],
                         )
-                      : (app.user.admin)
+                      : (app.user.admin || app.user.managerFleet)
                           ? ElevatedButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                controller
+                                    .deleteChecklist(checklist: checklist)
+                                    .then((_) {
+                                  Navigator.of(context).pop();
+                                }).catchError((err) {
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) => AlertMessage(
+                                          title: 'Atenção',
+                                          message: err.toString(),
+                                          onPressedOK: () =>
+                                              Navigator.of(context).pop()));
+                                });
+                              },
                               child: Text(
                                 'Excluir',
                                 style: Constants.titleButton,

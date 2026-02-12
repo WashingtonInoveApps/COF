@@ -126,8 +126,6 @@ abstract class _AppControllerBase with Store {
 
   @computed
   int get checklistTodayPendent {
-    if (checklistsToday.isEmpty) return 0;
-
     final carsOperating =
         cars.where((e) => e.state == StatusCar.operando).length;
 
@@ -154,9 +152,9 @@ abstract class _AppControllerBase with Store {
 
   @computed
   List<CarModel> get carsUsers {
-    if (user.adminFull) {
+    if (user.managerOperational || user.admin) {
       return List<CarModel>.from(cars);
-    } else if (user.admin) {
+    } else if (user.battalion) {
       return List<CarModel>.from(
           cars.where((e) => e.obmID == user.obmID).toList());
     } else {
@@ -167,16 +165,8 @@ abstract class _AppControllerBase with Store {
   }
 
   List<CheckListModel> getChecklistUser({required List<CheckListModel> list}) {
-    if (user.adminFull) {
-      return List<CheckListModel>.from(list);
-    } else if (user.admin) {
-      return List<CheckListModel>.from(
-          list.where((e) => e.obmID == user.obmID).toList());
-    } else {
-      return List<CheckListModel>.from(list
-          .where((e) => e.cia.toLowerCase() == user.cia.toLowerCase())
-          .toList());
-    }
+    return List<CheckListModel>.from(
+        list.where((e) => e.userID == user.id).toList());
   }
 
   @action
@@ -224,16 +214,6 @@ abstract class _AppControllerBase with Store {
       ..addAll(value);
   }
 
-  // @action
-  // setLimit(int? value) {
-  //   limit = value ?? limit;
-  // }
-
-  // @action
-  // setPage(int value) {
-  //   page = value;
-  // }
-
   @action
   setUsers(List<UserModel> value) {
     users
@@ -248,7 +228,7 @@ abstract class _AppControllerBase with Store {
     value.sort((a, b) => a.date.compareTo(b.date));
     checklistsToday
       ..clear()
-      ..addAll(getChecklistUser(list: value));
+      ..addAll(value);
   }
 
   @action

@@ -561,6 +561,15 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
         .run(() => super.finish(checklist: checklist, image: image));
   }
 
+  late final _$deleteChecklistAsyncAction =
+      AsyncAction('_CheckListControllerBase.deleteChecklist', context: context);
+
+  @override
+  Future<bool> deleteChecklist({required CheckListModel checklist}) {
+    return _$deleteChecklistAsyncAction
+        .run(() => super.deleteChecklist(checklist: checklist));
+  }
+
   late final _$_CheckListControllerBaseActionController =
       ActionController(name: '_CheckListControllerBase', context: context);
 

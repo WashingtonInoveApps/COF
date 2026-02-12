@@ -163,11 +163,11 @@ class Core {
     return list.sublist(start, end);
   }
 
-  // static bool isOperationalDay(DateTime referenceDate) {
-  //   final nowOpDay = getOperationalDay(DateTime.now());
+  static bool verifyExpiresChecklist() {
+    final date = DateTime.now();
 
-  //   return referenceDate.year == nowOpDay.year &&
-  //       referenceDate.month == nowOpDay.month &&
-  //       referenceDate.day == nowOpDay.day;
-  // }
+    if (date.hour < 8) return true;
+
+    return false;
+  }
 }

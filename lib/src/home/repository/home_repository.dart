@@ -48,13 +48,10 @@ class HomeRepository extends APIClient implements IHomeRepository {
             .orderBy('date')
             .snapshots()
             .map((e) {
-          log(e.docs.length.toString());
-          return e.docs.map((doc) {
-            var checkList =
-                CheckListModel.fromMap(doc.data() as Map<String, dynamic>);
-            checkList.id = doc.id;
-            return checkList;
-          }).toList();
+          return e.docs
+              .map((doc) =>
+                  CheckListModel.fromMap(doc.data() as Map<String, dynamic>))
+              .toList();
         });
       }
     } catch (e) {

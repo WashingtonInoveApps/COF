@@ -1,6 +1,7 @@
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/model/obm_model.dart';
+import 'package:bsu_control/model/user_model.dart';
 import 'package:bsu_control/src/car/view/car_register_page.dart';
 import 'package:bsu_control/src/car/view/cars_page.dart';
 import 'package:bsu_control/src/checklist/view/checklist_page.dart';
@@ -10,9 +11,12 @@ import 'package:bsu_control/src/home/home_page.dart';
 import 'package:bsu_control/src/login/view/login_page.dart';
 import 'package:bsu_control/src/user/view/user_register_page.dart';
 import 'package:bsu_control/src/user/view/users_page.dart';
+import 'package:bsu_control/src/widgets/alert_message.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
+
+import '../../core/core.dart';
 
 class BackgraundPage extends StatefulWidget {
   final bool menu;
@@ -43,320 +47,347 @@ class BackgraundPage extends StatefulWidget {
 class _BackgraundPageState extends State<BackgraundPage> {
   final controller = GetIt.I.get<AppController>();
 
-  OBMModel? userOBM;
+  OBMModel? obmUser;
 
   @override
   void initState() {
     super.initState();
 
     if (controller.obms.isNotEmpty) {
-      userOBM =
+      obmUser =
           controller.obms.firstWhere((e) => e.id == controller.user.obmID);
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    Widget menu() => Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Text(
-              'Controle Operacional de Frota',
-              style: Constants.title
-                  .copyWith(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            Text(
-              userOBM?.name ?? '',
-              style: Constants.title,
-            ),
-            const SizedBox(
-              height: 2,
-            ),
-            PopupMenuButton(
-                onSelected: (value) {
-                  switch (value) {
-                    case 0:
-                      Navigator.of(context)
-                          .pushAndRemoveUntil(
-                              MaterialPageRoute(
-                                  builder: (conext) => const LoginPage(
-                                        exit: true,
-                                      )),
-                              (_) => false)
-                          .then((_) {
-                        controller.setRouter(0);
-                      });
-                      break;
-                    default:
-                      break;
-                  }
-                },
-                child: Row(
-                  spacing: 5,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Text(
-                      controller.user.fullname,
-                      style: Constants.titleHint,
-                    ),
-                    const Icon(
-                      Icons.account_circle_rounded,
-                      size: 20,
-                      color: Colors.grey,
-                    ),
-                  ],
+  Widget menu({required BuildContext context, required UserModel user}) {
+    final usersEnable =
+        (user.admin || user.managerFleet || user.battalion || user.company);
+
+    final vtrsEnable = (user.admin ||
+        user.managerFleet ||
+        user.battalion ||
+        user.company ||
+        user.managerOperational);
+
+    final expires = Core.verifyExpiresChecklist();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Text(
+          'Controle Operacional de Frota',
+          style: Constants.title
+              .copyWith(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        Text(
+          obmUser?.name ?? '',
+          style: Constants.title,
+        ),
+        const SizedBox(
+          height: 2,
+        ),
+        PopupMenuButton(
+            onSelected: (value) {
+              switch (value) {
+                case 0:
+                  Navigator.of(context)
+                      .pushAndRemoveUntil(
+                          MaterialPageRoute(
+                              builder: (conext) => const LoginPage(
+                                    exit: true,
+                                  )),
+                          (_) => false)
+                      .then((_) {
+                    controller.setRouter(0);
+                    controller.setDateStartConfig(
+                        DateTime.now().subtract(const Duration(days: 1)));
+                    controller.setDateFinishConfig(DateTime.now());
+                  });
+                  break;
+                default:
+                  break;
+              }
+            },
+            child: Row(
+              spacing: 5,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Text(
+                  controller.user.fullname,
+                  style: Constants.titleHint,
                 ),
-                itemBuilder: (context) {
-                  return [
-                    PopupMenuItem(
-                        value: 0,
-                        child: Text(
-                          'Sair',
-                          style: Constants.title,
-                        ))
-                  ];
-                }),
-            const SizedBox(
-              height: 10,
+                const Icon(
+                  Icons.account_circle_rounded,
+                  size: 20,
+                  color: Colors.grey,
+                ),
+              ],
             ),
-            Visibility(
-              visible: widget.menu,
-              child: Observer(builder: (_) {
-                return Wrap(
-                  spacing: 5,
-                  runSpacing: 5,
-                  direction: Axis.horizontal,
-                  children: [
-                    SizedBox(
-                      height: 35,
-                      width: 120,
-                      child: ElevatedButton(
-                          onPressed: () {
-                            if (controller.router != 0) {
-                              controller.setRouter(0);
+            itemBuilder: (context) {
+              return [
+                PopupMenuItem(
+                    value: 0,
+                    child: Text(
+                      'Sair',
+                      style: Constants.title,
+                    ))
+              ];
+            }),
+        const SizedBox(
+          height: 10,
+        ),
+        Visibility(
+          visible: widget.menu,
+          child: Observer(builder: (_) {
+            return Wrap(
+              spacing: 5,
+              runSpacing: 5,
+              direction: Axis.horizontal,
+              children: [
+                SizedBox(
+                  height: 35,
+                  width: 120,
+                  child: ElevatedButton(
+                      onPressed: () {
+                        if (controller.router != 0) {
+                          controller.setRouter(0);
+                          Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(
+                                  builder: (context) => const HomePage()));
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: (controller.router == 0)
+                              ? Constants.primary
+                              : Colors.grey.shade300),
+                      child: Text(
+                        'Inicío',
+                        style: Constants.titleButton,
+                      )),
+                ),
+                SizedBox(
+                  width: 120,
+                  child: PopupMenuButton(
+                      onSelected: (value) {
+                        switch (value) {
+                          case 1:
+                            if (controller.router != 1) {
+                              controller.setRouter(1);
                               Navigator.of(context).pushReplacement(
                                   MaterialPageRoute(
-                                      builder: (context) => const HomePage()));
+                                      builder: (context) =>
+                                          const ChecklistPage()));
                             }
-                          },
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: (controller.router == 0)
+                            break;
+                          case 2:
+                            if (controller.router != 2) {
+                              controller.setRouter(2);
+                              Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const MyChecklistPage()));
+                            }
+                            break;
+                          case 3:
+                            if (controller.router != 3) {
+                              if (expires) {
+                                showDialog(
+                                    context: context,
+                                    builder: (context) => AlertMessage(
+                                        title: 'Atenção',
+                                        message:
+                                            'Ops ! Horário para realizar um novo registro expirado, espere um novo período.',
+                                        onPressedOK: () =>
+                                            Navigator.of(context).pop()));
+                              } else {
+                                controller.setRouter(3);
+                                Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const ChecklistRegisterPage()));
+                              }
+                            }
+                            break;
+                          default:
+                            return;
+                        }
+                      },
+                      child: Container(
+                        height: 35,
+                        alignment: Alignment.center,
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        decoration: BoxDecoration(
+                            color: (controller.router == 1 ||
+                                    controller.router == 2 ||
+                                    controller.router == 3)
+                                ? Constants.primary
+                                : Colors.grey.shade300,
+                            borderRadius: BorderRadius.circular(5)),
+                        child: Text(
+                          'Checklist',
+                          style: Constants.titleButton,
+                        ),
+                      ),
+                      itemBuilder: (context) {
+                        return [
+                          PopupMenuItem(
+                              value: 1,
+                              child: Text(
+                                'Registrados',
+                                style: Constants.title,
+                              )),
+                          PopupMenuItem(
+                              value: 2,
+                              child: Text(
+                                'Meus registros',
+                                style: Constants.title,
+                              )),
+                          PopupMenuItem(
+                              value: 3,
+                              child: Text(
+                                'Novo registro',
+                                style: Constants.title,
+                              )),
+                        ];
+                      }),
+                ),
+                Visibility(
+                  visible: vtrsEnable,
+                  child: SizedBox(
+                    width: 120,
+                    child: PopupMenuButton(
+                        onSelected: (value) {
+                          switch (value) {
+                            case 4:
+                              if (controller.router != 4) {
+                                controller.setRouter(4);
+                                Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const CarsPage()));
+                              }
+                              break;
+                            case 5:
+                              if (controller.router != 5) {
+                                controller.setRouter(5);
+                                Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const CarRegisterPage()));
+                              }
+                              break;
+                            default:
+                              break;
+                          }
+                        },
+                        child: Container(
+                          height: 35,
+                          alignment: Alignment.center,
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          decoration: BoxDecoration(
+                              color: (controller.router == 4 ||
+                                      controller.router == 5)
                                   ? Constants.primary
-                                  : Colors.grey.shade300),
+                                  : Colors.grey.shade300,
+                              borderRadius: BorderRadius.circular(5)),
                           child: Text(
-                            'Inicío',
+                            'Viaturas',
                             style: Constants.titleButton,
-                          )),
-                    ),
-                    SizedBox(
-                      width: 120,
-                      child: PopupMenuButton(
-                          onSelected: (value) {
-                            switch (value) {
-                              case 1:
-                                if (controller.router != 1) {
-                                  controller.setRouter(1);
-                                  Navigator.of(context).pushReplacement(
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              const ChecklistPage()));
-                                }
-                                break;
-                              case 2:
-                                if (controller.router != 2) {
-                                  controller.setRouter(2);
-                                  Navigator.of(context).pushReplacement(
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              const MyChecklistPage()));
-                                }
-                                break;
-                              case 3:
-                                if (controller.router != 3) {
-                                  controller.setRouter(3);
-                                  Navigator.of(context).pushReplacement(
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              const ChecklistRegisterPage()));
-                                }
-                                break;
-                              default:
-                                return;
-                            }
-                          },
-                          child: Container(
-                            height: 35,
-                            alignment: Alignment.center,
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            decoration: BoxDecoration(
-                                color: (controller.router == 1 ||
-                                        controller.router == 2 ||
-                                        controller.router == 3)
-                                    ? Constants.primary
-                                    : Colors.grey.shade300,
-                                borderRadius: BorderRadius.circular(5)),
-                            child: Text(
-                              'Checklist',
-                              style: Constants.titleButton,
-                            ),
                           ),
-                          itemBuilder: (context) {
-                            return [
-                              PopupMenuItem(
-                                  value: 1,
-                                  child: Text(
-                                    'Registrados',
-                                    style: Constants.title,
-                                  )),
-                              PopupMenuItem(
-                                  value: 2,
-                                  child: Text(
-                                    'Meus registros',
-                                    style: Constants.title,
-                                  )),
-                              PopupMenuItem(
-                                  value: 3,
-                                  child: Text(
-                                    'Novo registro',
-                                    style: Constants.title,
-                                  )),
-                            ];
-                          }),
-                    ),
-                    Visibility(
-                      visible: controller.user.admin,
-                      child: SizedBox(
-                        width: 120,
-                        child: PopupMenuButton(
-                            onSelected: (value) {
-                              switch (value) {
-                                case 4:
-                                  if (controller.router != 4) {
-                                    controller.setRouter(4);
-                                    Navigator.of(context).pushReplacement(
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                const CarsPage()));
-                                  }
-                                  break;
-                                case 5:
-                                  if (controller.router != 5) {
-                                    controller.setRouter(5);
-                                    Navigator.of(context).pushReplacement(
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                const CarRegisterPage()));
-                                  }
-                                  break;
-                                default:
-                                  break;
+                        ),
+                        itemBuilder: (context) {
+                          return [
+                            PopupMenuItem(
+                                value: 4,
+                                child: Text(
+                                  'Registrados',
+                                  style: Constants.title,
+                                )),
+                            PopupMenuItem(
+                                value: 5,
+                                enabled: (user.managerFleet || user.admin),
+                                child: Text(
+                                  'Novo registro',
+                                  style: Constants.title.copyWith(
+                                      color: (user.managerFleet || user.admin)
+                                          ? Colors.black
+                                          : Colors.grey),
+                                )),
+                          ];
+                        }),
+                  ),
+                ),
+                Visibility(
+                  visible: usersEnable,
+                  child: SizedBox(
+                    width: 120,
+                    child: PopupMenuButton(
+                        onSelected: (value) {
+                          switch (value) {
+                            case 6:
+                              if (controller.router != 6) {
+                                controller.setRouter(6);
+                                Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const UsersPage()));
                               }
-                            },
-                            child: Container(
-                              height: 35,
-                              alignment: Alignment.center,
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 20),
-                              decoration: BoxDecoration(
-                                  color: (controller.router == 4 ||
-                                          controller.router == 5)
-                                      ? Constants.primary
-                                      : Colors.grey.shade300,
-                                  borderRadius: BorderRadius.circular(5)),
-                              child: Text(
-                                'Viaturas',
-                                style: Constants.titleButton,
-                              ),
-                            ),
-                            itemBuilder: (context) {
-                              return [
-                                PopupMenuItem(
-                                    value: 4,
-                                    child: Text(
-                                      'Registrados',
-                                      style: Constants.title,
-                                    )),
-                                PopupMenuItem(
-                                    value: 5,
-                                    child: Text(
-                                      'Novo registro',
-                                      style: Constants.title,
-                                    )),
-                              ];
-                            }),
-                      ),
-                    ),
-                    Visibility(
-                      visible:
-                          (controller.user.admin || controller.user.adminFull),
-                      child: SizedBox(
-                        width: 120,
-                        child: PopupMenuButton(
-                            onSelected: (value) {
-                              switch (value) {
-                                case 6:
-                                  if (controller.router != 6) {
-                                    controller.setRouter(6);
-                                    Navigator.of(context).pushReplacement(
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                const UsersPage()));
-                                  }
-                                  break;
-                                case 7:
-                                  if (controller.router != 7) {
-                                    controller.setRouter(7);
-                                    Navigator.of(context).pushReplacement(
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                const UserPageRegister()));
-                                  }
-                                  break;
-                                default:
-                                  break;
+                              break;
+                            case 7:
+                              if (controller.router != 7) {
+                                controller.setRouter(7);
+                                Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const UserPageRegister()));
                               }
-                            },
-                            child: Container(
-                              height: 35,
-                              alignment: Alignment.center,
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 20),
-                              decoration: BoxDecoration(
-                                  color: (controller.router == 6 ||
-                                          controller.router == 7)
-                                      ? Constants.primary
-                                      : Colors.grey.shade300,
-                                  borderRadius: BorderRadius.circular(5)),
-                              child: Text(
-                                'Usuários',
-                                style: Constants.titleButton,
-                              ),
-                            ),
-                            itemBuilder: (context) {
-                              return [
-                                PopupMenuItem(
-                                    value: 6,
-                                    child: Text(
-                                      'Registrados',
-                                      style: Constants.title,
-                                    )),
-                                PopupMenuItem(
-                                    value: 7,
-                                    child: Text(
-                                      'Novo registro',
-                                      style: Constants.title,
-                                    )),
-                              ];
-                            }),
-                      ),
-                    ),
-                  ],
-                );
-              }),
-            ),
-          ],
-        );
+                              break;
+                            default:
+                              break;
+                          }
+                        },
+                        child: Container(
+                          height: 35,
+                          alignment: Alignment.center,
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          decoration: BoxDecoration(
+                              color: (controller.router == 6 ||
+                                      controller.router == 7)
+                                  ? Constants.primary
+                                  : Colors.grey.shade300,
+                              borderRadius: BorderRadius.circular(5)),
+                          child: Text(
+                            'Usuários',
+                            style: Constants.titleButton,
+                          ),
+                        ),
+                        itemBuilder: (context) {
+                          return [
+                            PopupMenuItem(
+                                value: 6,
+                                child: Text(
+                                  'Registrados',
+                                  style: Constants.title,
+                                )),
+                            PopupMenuItem(
+                                value: 7,
+                                child: Text(
+                                  'Novo registro',
+                                  style: Constants.title,
+                                )),
+                          ];
+                        }),
+                  ),
+                ),
+              ],
+            );
+          }),
+        ),
+      ],
+    );
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Material(
       color: Constants.primary,
       child: SafeArea(
@@ -400,7 +431,7 @@ class _BackgraundPageState extends State<BackgraundPage> {
                                       aspectRatio:
                                           (controller.modeMOBILE ? 3 : 4),
                                       child: Image.asset(
-                                        'assets/cbmcecabecalho2.png',
+                                        'assets/cbmce.png',
                                         fit: BoxFit.fitWidth,
                                       ),
                                     ),
@@ -428,7 +459,9 @@ class _BackgraundPageState extends State<BackgraundPage> {
                                                 )),
                                           )
                                         : Container()
-                                    : menu(),
+                                    : menu(
+                                        context: context,
+                                        user: controller.user),
                               )
                             ],
                           ),
@@ -438,7 +471,9 @@ class _BackgraundPageState extends State<BackgraundPage> {
                                       ? Column(
                                           children: [
                                             const Divider(),
-                                            menu(),
+                                            menu(
+                                                context: context,
+                                                user: controller.user),
                                             const Divider(),
                                           ],
                                         )

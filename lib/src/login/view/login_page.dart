@@ -81,7 +81,7 @@ class _LoginPageState extends State<LoginPage> {
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Image.asset(
-                    'assets/cbmcecabecalho2.png',
+                    'assets/cbmce.png',
                     fit: BoxFit.fitHeight,
                     height: 70,
                   ),

@@ -38,19 +38,8 @@ class _UserPageRegisterState extends State<UserPageRegister> {
   @override
   void initState() {
     super.initState();
-    controller = UserController(app: app);
-    controller
-        .setGraduation(widget.user?.graduation ?? Constants.graduations.first);
-    controller.setAdmin(widget.user?.admin ?? false);
-    controller.setAdminFull(widget.user?.adminFull ?? false);
-    controller.setOBM((widget.user?.obmID.isNotEmpty ?? false)
-        ? app.obms.firstWhere((e) => e.id == widget.user?.obmID)
-        : app.obms.first);
-
-    user = widget.user ?? UserModel(graduation: controller.graduation);
-
-    // controller.setOBM((widget.user == null) ? Constants.obms.first : user.obm);
-    // controller.setAdmin(user.admin);
+    controller = UserController(app: app, init: widget.user);
+    user = widget.user ?? controller.userInit;
   }
 
   @override
@@ -61,13 +50,18 @@ class _UserPageRegisterState extends State<UserPageRegister> {
   }
 
   void closePage(BuildContext context) {
-    controller.app.setRouter(5);
+    controller.app.setRouter(6);
     Navigator.of(context).pop();
   }
 
   @override
   Widget build(BuildContext context) {
     final register = (widget.user == null);
+    final enable = (app.user.admin ||
+        app.user.battalion ||
+        app.user.company ||
+        app.user.managerFleet);
+
     return PopScope(
       canPop: false,
       child: Stack(
@@ -323,8 +317,7 @@ class _UserPageRegisterState extends State<UserPageRegister> {
                     height: 10,
                   ),
                   IgnorePointer(
-                    ignoring: (widget.user != null &&
-                        !(controller.app.user.adminFull)),
+                    ignoring: (widget.user != null && !enable),
                     child: FieldText(
                       initValue: user.email,
                       inputType: TextInputType.emailAddress,
@@ -341,39 +334,95 @@ class _UserPageRegisterState extends State<UserPageRegister> {
                   ),
                   Visibility(
                     visible: app.user.admin,
-                    child: Row(
+                    child: Column(
                       children: [
-                        Expanded(
-                          child: Text(
-                            'Função Administrador',
-                            style: Constants.title,
-                          ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                'Função Administrador',
+                                style: Constants.title,
+                              ),
+                            ),
+                            Observer(builder: (_) {
+                              return Switch(
+                                  value: controller.admin,
+                                  activeThumbColor: Constants.primary,
+                                  onChanged: controller.setAdmin);
+                            }),
+                          ],
                         ),
-                        Observer(builder: (_) {
-                          return Switch(
-                              value: controller.admin,
-                              activeThumbColor: Constants.primary,
-                              onChanged: controller.setAdmin);
-                        }),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                'Gestor operacional',
+                                style: Constants.title,
+                              ),
+                            ),
+                            Observer(builder: (_) {
+                              return Switch(
+                                  value: controller.managerOperational,
+                                  activeThumbColor: Constants.primary,
+                                  onChanged: controller.setManagerOperational);
+                            }),
+                          ],
+                        ),
                       ],
                     ),
                   ),
                   Visibility(
-                    visible: app.user.adminFull,
-                    child: Row(
+                    visible: enable,
+                    child: Column(
                       children: [
-                        Expanded(
-                          child: Text(
-                            'Função Administrador Especial',
-                            style: Constants.title,
-                          ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                'Comandante de batalhão',
+                                style: Constants.title,
+                              ),
+                            ),
+                            Observer(builder: (_) {
+                              return Switch(
+                                  value: controller.battalion,
+                                  activeThumbColor: Constants.primary,
+                                  onChanged: controller.setBattalion);
+                            }),
+                          ],
                         ),
-                        Observer(builder: (_) {
-                          return Switch(
-                              value: controller.adminFull,
-                              activeThumbColor: Constants.primary,
-                              onChanged: controller.setAdminFull);
-                        }),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                'Comandante de companhia',
+                                style: Constants.title,
+                              ),
+                            ),
+                            Observer(builder: (_) {
+                              return Switch(
+                                  value: controller.company,
+                                  activeThumbColor: Constants.primary,
+                                  onChanged: controller.setCompany);
+                            }),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                'Gestor de frota',
+                                style: Constants.title,
+                              ),
+                            ),
+                            Observer(builder: (_) {
+                              return Switch(
+                                  value: controller.managerFleet,
+                                  activeThumbColor: Constants.primary,
+                                  onChanged: controller.setManagerFleet);
+                            }),
+                          ],
+                        ),
                       ],
                     ),
                   ),
@@ -385,65 +434,69 @@ class _UserPageRegisterState extends State<UserPageRegister> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Visibility(
-                        visible: (widget.user != null),
-                        child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.grey,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(5),
+                        visible: (widget.user != null && app.user.admin),
+                        child: SizedBox(
+                          height: 40,
+                          child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.grey,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
                               ),
-                            ),
-                            onPressed: () async {
-                              showDialog(
-                                  context: context,
-                                  builder: (context) => AlertMessage(
-                                      title: 'Atenção',
-                                      message:
-                                          'Deseja excluir o registro desse usuário ?',
-                                      titleOK: 'Sim',
-                                      cancel: true,
-                                      onPressedCancel: () =>
-                                          Navigator.of(context).pop(false),
-                                      onPressedOK: () => Navigator.of(context)
-                                          .pop(true))).then((value) {
-                                if (value ?? false) {
-                                  controller
-                                      .delete(user: widget.user!)
-                                      .then((value) {
-                                    if (value) closePage(context);
-                                  }).catchError((err) {
-                                    showDialog(
-                                        context: context,
-                                        builder: (context) => AlertMessage(
-                                            title: 'Atenção',
-                                            message:
-                                                'Ops ! Falha ao tentar deletar registro do usuário: ${err.toString()}',
-                                            onPressedOK: () =>
-                                                Navigator.of(context).pop()));
-                                  });
-                                }
-                              });
-                            },
-                            child: Text(
-                              "Excluir",
-                              style:
-                                  Constants.title.copyWith(color: Colors.white),
-                            )),
+                              onPressed: () async {
+                                showDialog(
+                                    context: context,
+                                    builder: (context) => AlertMessage(
+                                        title: 'Atenção',
+                                        message:
+                                            'Deseja excluir o registro desse usuário ?',
+                                        titleOK: 'Sim',
+                                        cancel: true,
+                                        onPressedCancel: () =>
+                                            Navigator.of(context).pop(false),
+                                        onPressedOK: () => Navigator.of(context)
+                                            .pop(true))).then((value) {
+                                  if (value ?? false) {
+                                    controller
+                                        .delete(user: widget.user!)
+                                        .then((value) {
+                                      if (value) closePage(context);
+                                    }).catchError((err) {
+                                      showDialog(
+                                          context: context,
+                                          builder: (context) => AlertMessage(
+                                              title: 'Atenção',
+                                              message:
+                                                  'Ops ! Falha ao tentar deletar registro do usuário: ${err.toString()}',
+                                              onPressedOK: () =>
+                                                  Navigator.of(context).pop()));
+                                    });
+                                  }
+                                });
+                              },
+                              child: Text(
+                                "Excluir",
+                                style: Constants.title
+                                    .copyWith(color: Colors.white),
+                              )),
+                        ),
                       ),
                       SizedBox(
-                        height: 50,
+                        height: 40,
                         child: ElevatedButton(
                           onPressed: () async {
                             if (_key.currentState!.validate()) {
                               _key.currentState!.save();
 
-                              user.graduation = controller.graduation;
-                              user.obmID = controller.obm.id ?? '';
-                              user.admin = controller.admin;
-                              user.cia = controller.cia ?? '';
-                              user.adminFull = controller.adminFull;
+                              final data = controller.userInit.copyWith(
+                                  fullname: user.fullname,
+                                  name: user.name,
+                                  contact: user.contact,
+                                  email: user.email,
+                                  registration: user.registration);
 
-                              controller.save(user: user).then((value) async {
+                              controller.save(user: data).then((value) async {
                                 showDialog(
                                     context: context,
                                     builder: (context) => AlertMessage(

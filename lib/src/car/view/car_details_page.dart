@@ -325,6 +325,7 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                     ),
                   ),
                   PopupMenuButton<StatusCar>(
+                    enabled: controller.enable,
                     initialValue: car.state,
                     onSelected: (StatusCar value) async {
                       if (value == StatusCar.baixado) {
@@ -408,12 +409,15 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                           return statusRegisters(
                               context: context,
                               status: status,
-                              onDelete: (value) async {
-                                await controller.deleteStatusCar(
-                                    car: car.copyWith(
-                                        enable: true, state: StatusCar.waiting),
-                                    status: value);
-                              });
+                              onDelete: controller.enable
+                                  ? (value) async {
+                                      await controller.deleteStatusCar(
+                                          car: car.copyWith(
+                                              enable: true,
+                                              state: StatusCar.waiting),
+                                          status: value);
+                                    }
+                                  : null);
                         }
                       }
                     }),
@@ -421,103 +425,108 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
               const SizedBox(
                 height: 10.0,
               ),
-              Row(
-                spacing: 10,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  SizedBox(
-                    width: 80.0,
-                    child: TextButton(
-                        style: TextButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadiusGeometry.circular(5)),
-                            side: BorderSide(
-                                color: Theme.of(context).primaryColor)),
-                        onPressed: () {
-                          showDialog(
-                              context: context,
-                              builder: (context) => AlertMessage(
-                                    title: '',
-                                    message:
-                                        'Deseja deletar o registro desse veículo ?',
-                                    cancel: true,
-                                    titleOK: 'Sim',
-                                    onPressedOK: () =>
-                                        Navigator.of(context).pop(true),
-                                    onPressedCancel: () =>
-                                        Navigator.of(context).pop(false),
-                                  )).then((value) {
-                            if (value ?? false) {
-                              controller
-                                  .deleteCar(id: car.id ?? '')
-                                  .then((value) {
-                                Navigator.of(context).pop();
-                              }).catchError((err) {
-                                showDialog(
-                                    context: context,
-                                    builder: (context) => AlertMessage(
-                                          title: 'Atenção',
-                                          message: err.toString(),
-                                          onPressedOK: () =>
-                                              Navigator.of(context).pop(),
-                                        ));
-                              });
-                            }
-                          });
-                        },
-                        child: Text(
-                          "Excluir",
-                          style: Constants.subtitle.copyWith(
-                              color: Theme.of(context).primaryColor,
-                              fontWeight: FontWeight.bold),
-                        )),
-                  ),
-                  SizedBox(
-                    width: 80.0,
-                    child: TextButton(
-                        style: TextButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadiusGeometry.circular(5)),
-                            side: BorderSide(
-                                color: Theme.of(context).primaryColor)),
-                        onPressed: () {
-                          showDialog(
-                              context: context,
-                              builder: (context) => AlertMessage(
-                                    title: '',
-                                    message:
-                                        'Deseja criar uma copia atual desse veiculo ?',
-                                    cancel: true,
-                                    titleOK: 'Sim',
-                                    onPressedOK: () =>
-                                        Navigator.of(context).pop(true),
-                                    onPressedCancel: () =>
-                                        Navigator.of(context).pop(false),
-                                  )).then((value) async {
-                            if (value ?? false) {
-                              controller.copy(car: car).then((value) {
-                                Navigator.of(context).pop();
-                              }).catchError((err) {
-                                showDialog(
-                                    context: context,
-                                    builder: (context) => AlertMessage(
-                                          title: 'Atenção',
-                                          message: err.toString(),
-                                          onPressedOK: () =>
-                                              Navigator.of(context).pop(),
-                                        ));
-                              });
-                            }
-                          });
-                        },
-                        child: Text(
-                          "Copiar",
-                          style: Constants.subtitle.copyWith(
-                              color: Theme.of(context).primaryColor,
-                              fontWeight: FontWeight.bold),
-                        )),
-                  ),
-                ],
+              Visibility(
+                visible: controller.enable,
+                child: Row(
+                  spacing: 10,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    SizedBox(
+                      width: 80.0,
+                      child: TextButton(
+                          style: TextButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                  borderRadius:
+                                      BorderRadiusGeometry.circular(5)),
+                              side: BorderSide(
+                                  color: Theme.of(context).primaryColor)),
+                          onPressed: () {
+                            showDialog(
+                                context: context,
+                                builder: (context) => AlertMessage(
+                                      title: 'Atenção',
+                                      message:
+                                          'Deseja deletar o registro desse veículo ?',
+                                      cancel: true,
+                                      titleOK: 'Sim',
+                                      onPressedOK: () =>
+                                          Navigator.of(context).pop(true),
+                                      onPressedCancel: () =>
+                                          Navigator.of(context).pop(false),
+                                    )).then((value) {
+                              if (value ?? false) {
+                                controller
+                                    .deleteCar(id: car.id ?? '')
+                                    .then((value) {
+                                  Navigator.of(context).pop();
+                                }).catchError((err) {
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) => AlertMessage(
+                                            title: 'Atenção',
+                                            message: err.toString(),
+                                            onPressedOK: () =>
+                                                Navigator.of(context).pop(),
+                                          ));
+                                });
+                              }
+                            });
+                          },
+                          child: Text(
+                            "Excluir",
+                            style: Constants.subtitle.copyWith(
+                                color: Theme.of(context).primaryColor,
+                                fontWeight: FontWeight.bold),
+                          )),
+                    ),
+                    SizedBox(
+                      width: 80.0,
+                      child: TextButton(
+                          style: TextButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                  borderRadius:
+                                      BorderRadiusGeometry.circular(5)),
+                              side: BorderSide(
+                                  color: Theme.of(context).primaryColor)),
+                          onPressed: () {
+                            showDialog(
+                                context: context,
+                                builder: (context) => AlertMessage(
+                                      title: '',
+                                      message:
+                                          'Deseja criar uma copia atual desse veiculo ?',
+                                      cancel: true,
+                                      titleOK: 'Sim',
+                                      onPressedOK: () =>
+                                          Navigator.of(context).pop(true),
+                                      onPressedCancel: () =>
+                                          Navigator.of(context).pop(false),
+                                    )).then((value) async {
+                              if (value ?? false) {
+                                controller.copy(car: car).then((value) {
+                                  Navigator.of(context).pop();
+                                }).catchError((err) {
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) => AlertMessage(
+                                            title: 'Atenção',
+                                            message: err.toString(),
+                                            onPressedOK: () =>
+                                                Navigator.of(context).pop(),
+                                          ));
+                                });
+                              }
+                            });
+                          },
+                          child: Text(
+                            "Copiar",
+                            style: Constants.subtitle.copyWith(
+                                color: Theme.of(context).primaryColor,
+                                fontWeight: FontWeight.bold),
+                          )),
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(
                 height: 50.0,
@@ -546,7 +555,7 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
 Widget statusRegisters(
     {required BuildContext context,
     required List<CarStatusModel> status,
-    required Function(CarStatusModel) onDelete}) {
+    required Function(CarStatusModel)? onDelete}) {
   return Column(
     children: List.generate(status.length, (index) {
       final state = status[index];
@@ -601,7 +610,7 @@ Widget statusRegisters(
               ),
             ),
             Visibility(
-              visible: (index == 0 && !state.value),
+              visible: (index == 0 && !state.value && onDelete != null),
               child: IconButton(
                   onPressed: () async {
                     showDialog(
@@ -617,11 +626,7 @@ Widget statusRegisters(
                                   Navigator.of(context).pop(false),
                             )).then((value) async {
                       if (value ?? false) {
-                        onDelete(state);
-                        // await controller.deleteStatusCar(
-                        //     car: car.copyWith(
-                        //         enable: true, state: StatusCar.reserva),
-                        //     status: status[index]);
+                        onDelete?.call(state);
                       }
                     });
                   },

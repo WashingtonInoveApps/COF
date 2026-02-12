@@ -137,7 +137,7 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                       borderRadius: BorderRadius.circular(5.0)),
                   child: Observer(builder: (_) {
                     return IgnorePointer(
-                      ignoring: !app.user.adminFull,
+                      ignoring: !app.user.admin,
                       child: DropdownButton<OBMModel>(
                           isExpanded: true,
                           value: controller.obm,

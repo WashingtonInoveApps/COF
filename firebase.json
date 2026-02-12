@@ -1,36 +1,31 @@
 {
-    "hosting": {
-        "public": "build/web",
-        "ignore": [
-            "firebase.json",
-            "**/.*",
-            "**/node_modules/**"
-        ],
-        "rewrites": [
-            {
-                "source": "**",
-                "destination": "/index.html"
-            }
-        ]
-    },
-    "flutter": {
-        "platforms": {
-            "android": {
-                "default": {
-                    "projectId": "bsucos-function",
-                    "appId": "1:1031414772745:android:d625b3b6ed26194f9174d8",
-                    "fileOutput": "android/app/google-services.json"
-                }
-            },
-            "dart": {
-                "lib/firebase_options.dart": {
-                    "projectId": "bsucos-function",
-                    "configurations": {
-                        "android": "1:1031414772745:android:d625b3b6ed26194f9174d8",
-                        "ios": "1:1031414772745:ios:f32c565083f086bf9174d8"
-                    }
-                }
-            }
+  "hosting": {
+    "site": "cof-cbmce",
+    "public": "build/web",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
+  },
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "bsucos-function",
+          "appId": "1:1031414772745:android:d625b3b6ed26194f9174d8",
+          "fileOutput": "android/app/google-services.json"
         }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "bsucos-function",
+          "configurations": {
+            "android": "1:1031414772745:android:d625b3b6ed26194f9174d8",
+            "ios": "1:1031414772745:ios:f32c565083f086bf9174d8"
+          }
+        }
+      }
     }
+  }
 }

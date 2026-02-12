@@ -59,6 +59,7 @@ class CheckListModel {
 
   Map<String, dynamic> toMap() {
     final reference = Core.getOperationalDay(date);
+
     return {
       'user': user.toMapResume(),
       'pb': pb,

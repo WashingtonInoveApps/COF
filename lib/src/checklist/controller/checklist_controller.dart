@@ -534,6 +534,30 @@ abstract class _CheckListControllerBase with Store {
     }
   }
 
+  @action
+  Future<bool> deleteChecklist({required CheckListModel checklist}) async {
+    try {
+      loading = true;
+      final car = app.cars.firstWhere((e) => e.id == checklist.checkCar.car.id);
+
+      final changes = List<CarChangeModel>.from(car.changes);
+
+      for (final change in checklist.changes) {
+        changes.removeWhere(
+            (e) => (e.checklistID != null) && (e.checklistID == checklist.id));
+      }
+
+      final result = await repository.deleteChecklist(
+          checklist: checklist, car: car.copyWith(changes: changes));
+
+      loading = false;
+      return result;
+    } catch (e) {
+      loading = false;
+      rethrow;
+    }
+  }
+
   bool validationForm() {
     messagesErros.clear();
     switch (step) {

@@ -30,7 +30,7 @@ class CheckListRepository extends APIClient implements ICheckListRepository {
         for (var change in changes) {
           if (change.fileImage != null) {
             change.image = await saveFile(
-                pathStorage: 'imagens/cars/${checklist.prefix}',
+                pathStorage: 'imagens/changes/${checklist.prefix}',
                 data: change.fileImage!,
                 filename:
                     '${checklist.prefix}_${DateTime.now().millisecondsSinceEpoch}.png');
@@ -152,5 +152,31 @@ class CheckListRepository extends APIClient implements ICheckListRepository {
         return checkList;
       }).toList();
     });
+  }
+
+  @override
+  Future<bool> deleteChecklist(
+      {required CheckListModel checklist, required CarModel car}) async {
+    try {
+      var docChecklist = colChecklist.doc(checklist.id);
+      var docCar = colCars.doc(car.id);
+
+      await firebase!.runTransaction((trans) async {
+        trans.update(docCar, car.toMap());
+        trans.delete(docChecklist);
+      });
+
+      for (final change in checklist.changes) {
+        if (change.image != null) {
+          await deleteFile(
+              path: 'imagens/changes/${car.prefix}',
+              filename: change.image!.name);
+        }
+      }
+
+      return true;
+    } catch (e) {
+      rethrow;
+    }
   }
 }

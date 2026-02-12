@@ -32,8 +32,7 @@ class _UsersPageState extends State<UsersPage> {
   @override
   void initState() {
     super.initState();
-    controller = UserController(app: app);
-    controller.setGraduation(Constants.graduations.first);
+    controller = UserController(app: app, init: null);
   }
 
   @override

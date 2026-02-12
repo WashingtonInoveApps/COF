@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/core.dart';
@@ -80,7 +78,7 @@ abstract class _CarControllerBase with Store {
   ObservableList<CarChangeModel> carChanges = <CarChangeModel>[].asObservable();
 
   @computed
-  bool get enable => app.user.admin;
+  bool get enable => app.user.managerFleet;
 
   @computed
   List<CarModel> get carsSorts {
@@ -133,16 +131,12 @@ abstract class _CarControllerBase with Store {
     statusGeral
       ..clear()
       ..addAll(list);
-
-    log('Status Geral: ${statusGeral.length}');
   }
 
   @action
   onChangeFilter(String? value) {
     filter = value ?? '';
     page = 1;
-
-    log("Filter: $filter");
   }
 
   @action
@@ -167,7 +161,6 @@ abstract class _CarControllerBase with Store {
   setReferenceYearProblem(DateTime? value) {
     if (value != null) {
       referenceYearProblem = value;
-      log('Date Problem: ${Core.formatDate(referenceYearProblem)}');
     }
   }
 
@@ -175,7 +168,6 @@ abstract class _CarControllerBase with Store {
   setReferenceYearTendencies(DateTime? value) {
     if (value != null) {
       referenceYearTendencies = value;
-      log('Date Tendencies: ${Core.formatDate(referenceYearTendencies)}');
     }
   }
 
