@@ -14,9 +14,11 @@ class CheckListRepository extends APIClient implements ICheckListRepository {
       : super(endpoint: endpoint, appID: appID, test: test);
 
   @override
-  Future<bool> save(
-      {required CheckListModel checklist,
-      required List<CarChangeModel> changes}) async {
+  Future<bool> save({
+    required CheckListModel checklist,
+    required List<CarChangeModel> changes,
+    required List<ChecklistOutherChange> outhers,
+  }) async {
     try {
       var doc = colChecklist.doc(checklist.id);
       var docCar = colCars.doc(checklist.checkCar.car.id);
@@ -44,10 +46,26 @@ class CheckListRepository extends APIClient implements ICheckListRepository {
           }
         }
 
+        for (var outher in outhers) {
+          if (outher.fileImage != null) {
+            outher.image = await saveFile(
+                pathStorage: 'imagens/changes/${checklist.prefix}',
+                data: outher.fileImage!,
+                filename:
+                    '${checklist.prefix}_outher_${DateTime.now().millisecondsSinceEpoch}.png');
+
+            if (outher.image == null) {
+              return Exception(
+                  'Falha ao salvar imagem de outras alterações do veículo.');
+            }
+          }
+        }
+
         trans.set(
             doc,
             checklist
                 .copyWith(
+                    outhers: outhers,
                     changes: changes
                         .where((e) => e.checklistID == checklist.id)
                         .toList())
@@ -171,6 +189,14 @@ class CheckListRepository extends APIClient implements ICheckListRepository {
           await deleteFile(
               path: 'imagens/changes/${car.prefix}',
               filename: change.image!.name);
+        }
+      }
+
+      for (final outher in (checklist.outhers ?? [])) {
+        if (outher.image != null) {
+          await deleteFile(
+              path: 'imagens/changes/${car.prefix}',
+              filename: outher.image!.name);
         }
       }
 

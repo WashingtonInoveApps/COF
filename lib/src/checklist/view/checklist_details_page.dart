@@ -4,24 +4,21 @@ import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/core/enum.dart';
-import 'package:bsu_control/core/validation.dart';
 import 'package:bsu_control/model/check_list_model.dart';
 import 'package:bsu_control/model/itens_changes_model.dart';
-import 'package:bsu_control/model/supply_model.dart';
-import 'package:bsu_control/model/user_model.dart';
+import 'package:bsu_control/src/checklist/view/checklist_finish_page.dart';
 import 'package:bsu_control/src/checklist/view/checklist_register_page.dart';
 import 'package:bsu_control/src/checklist/view/widget/fluids_widget.dart';
 import 'package:bsu_control/src/checklist/view/widget/fuel_widget.dart';
 import 'package:bsu_control/src/widgets/alert_message.dart';
 import 'package:bsu_control/src/widgets/backgraund_page.dart';
 import 'package:bsu_control/src/widgets/car_changes_widget.dart';
-import 'package:bsu_control/src/widgets/textfield_widget.dart';
+import 'package:bsu_control/src/widgets/card_outhers_widget.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:signature/signature.dart';
 
 import '../controller/checklist_controller.dart';
 
@@ -40,17 +37,13 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
   late StreamSubscription subscription;
   late CheckListController controller;
 
-  final signatureController = SignatureController();
-  final endKMController = TextEditingController();
-  final key = GlobalKey<FormState>();
-
   late CheckListModel checklist;
   bool loadingPage = true;
 
   @override
   void initState() {
     super.initState();
-    controller = CheckListController(init: null, app: app);
+    controller = CheckListController(init: null, app: app, update: false);
 
     subscription = controller
         .streamChecklistByID(checklistID: widget.checklistID)
@@ -65,9 +58,7 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
   @override
   void dispose() {
     super.dispose();
-    endKMController.dispose();
     subscription.cancel();
-    signatureController.dispose();
   }
 
   @override
@@ -98,15 +89,20 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
           top: Column(
             children: [
               Row(
+                spacing: 10,
                 children: [
                   Expanded(
                       child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        obm.prefix,
-                        style: Constants.title
-                            .copyWith(fontWeight: FontWeight.bold),
+                      Text.rich(
+                        TextSpan(text: obm.prefix, children: [
+                          TextSpan(
+                              text: '  CHECKLIST VEICULAR',
+                              style: Constants.subtitleHint)
+                        ]),
+                        style: Constants.title.copyWith(
+                            fontWeight: FontWeight.bold, fontSize: 18),
                       ),
                       Text(
                         checklist.cia.toUpperCase(),
@@ -132,68 +128,11 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
                                 )),
                             ElevatedButton(
                                 onPressed: () async {
-                                  await showModalBottomSheet(
-                                      context: context,
-                                      isScrollControlled: true,
-                                      backgroundColor: Colors.transparent,
-                                      // isDismissible: false,
-                                      builder: (context) => Padding(
-                                            padding: EdgeInsets.only(
-                                              left: 15,
-                                              right: 15,
-                                              top: 15,
-                                              bottom: MediaQuery.of(context)
-                                                      .viewInsets
-                                                      .bottom +
-                                                  15, // 🔥 SOBE COM TECLADO
-                                            ),
-                                            child: finishWidget(
-                                              key: key,
-                                              controller: endKMController,
-                                              signatureController:
-                                                  signatureController,
-                                              onFinish: (value) async {
-                                                Navigator.of(context).pop();
-
-                                                controller.setLoading(true);
-                                                final image =
-                                                    await signatureController
-                                                        .toPngBytes();
-
-                                                await controller
-                                                    .finish(
-                                                        checklist:
-                                                            checklist.copyWith(
-                                                                endKM: value),
-                                                        image: image)
-                                                    .then((_) {
-                                                  showDialog(
-                                                      context: context,
-                                                      builder: (context) =>
-                                                          AlertMessage(
-                                                              title: "Atenção",
-                                                              message:
-                                                                  'Parabéns ! Seu registro foi finalizado com sucesso.',
-                                                              onPressedOK: () =>
-                                                                  Navigator.of(
-                                                                          context)
-                                                                      .pop()));
-                                                }).catchError((err) {
-                                                  showDialog(
-                                                      context: context,
-                                                      builder: (context) =>
-                                                          AlertMessage(
-                                                              title: "Atenção",
-                                                              message: err
-                                                                  .toString(),
-                                                              onPressedOK: () =>
-                                                                  Navigator.of(
-                                                                          context)
-                                                                      .pop()));
-                                                });
-                                              },
-                                            ),
-                                          ));
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) => ChecklistFinishPage(
+                                            controller: controller,
+                                            checklist: checklist,
+                                          )));
                                 },
                                 child: Text(
                                   'Finalizar',
@@ -201,9 +140,23 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
                                 )),
                           ],
                         )
-                      : (app.user.admin || app.user.managerFleet)
-                          ? ElevatedButton(
-                              onPressed: () {
+                      : Container(),
+                  (app.user.admin || app.user.managerFleet)
+                      ? ElevatedButton(
+                          onPressed: () async {
+                            await showDialog(
+                                context: context,
+                                builder: (context) => AlertMessage(
+                                    title: 'Atenção',
+                                    message:
+                                        'Você perderar todas as alterações constadas nesse registro. Deseja realmente excluir esse registro ?',
+                                    titleOK: 'Sim',
+                                    cancel: true,
+                                    onPressedCancel: () =>
+                                        Navigator.of(context).pop(false),
+                                    onPressedOK: () => Navigator.of(context)
+                                        .pop(true))).then((value) {
+                              if (value ?? false) {
                                 controller
                                     .deleteChecklist(checklist: checklist)
                                     .then((_) {
@@ -217,12 +170,16 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
                                           onPressedOK: () =>
                                               Navigator.of(context).pop()));
                                 });
-                              },
-                              child: Text(
-                                'Excluir',
-                                style: Constants.titleButton,
-                              ))
-                          : Container(),
+                              }
+                            });
+                          },
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.grey),
+                          child: Text(
+                            'Excluir',
+                            style: Constants.titleButton,
+                          ))
+                      : Container(),
                 ],
               ),
               const Divider()
@@ -434,7 +391,7 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
                     color: Constants.primary,
                     borderRadius: BorderRadius.circular(5)),
                 child: Text(
-                  "ITENS",
+                  "ITENS OU EQUIPAMENTOS",
                   style: Constants.titleButton,
                 ),
               ),
@@ -460,7 +417,7 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
                     color: Constants.primary,
                     borderRadius: BorderRadius.circular(5)),
                 child: Text(
-                  "MATERIAIS",
+                  "MATERIAIS DE CONSUMO",
                   style: Constants.titleButton,
                 ),
               ),
@@ -486,6 +443,82 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
                     color: Constants.primary,
                     borderRadius: BorderRadius.circular(5)),
                 child: Text(
+                  'OUTRAS ALTERAÇÕES',
+                  style: Constants.titleButton,
+                ),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              (checklist.outhers?.isEmpty ?? true)
+                  ? Text(
+                      'Nenhuma outra alteração encontrada',
+                      style: Constants.titleHint,
+                    )
+                  : Column(
+                      children:
+                          List.generate(checklist.outhers!.length, (index) {
+                        final outher = checklist.outhers![index];
+
+                        return CardOutherChange(
+                          outher: outher,
+                        );
+                      }).expand((widget) => [widget, const Divider()]).toList()
+                            ..removeLast(),
+                    ),
+              const SizedBox(
+                height: 10,
+              ),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                    color: Constants.primary,
+                    borderRadius: BorderRadius.circular(5)),
+                child: Text(
+                  "MATERIAIS UTILIZADOS",
+                  style: Constants.titleButton,
+                ),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              (checklist.materials?.isEmpty ?? false)
+                  ? Text(
+                      'Nenhum material utilizado',
+                      style: Constants.titleHint,
+                    )
+                  : Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children:
+                          List.generate(checklist.materials!.length, (index) {
+                        final material = checklist.materials![index];
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              material.description,
+                              style: Constants.title,
+                            ),
+                            Text(
+                              '${material.quantity.toString().padLeft(2, '0')} unidade(s)',
+                              style: Constants.subtitleHint,
+                            ),
+                          ],
+                        );
+                      }).expand((widget) => [widget, const Divider()]).toList()
+                            ..removeLast(),
+                    ),
+              const SizedBox(
+                height: 10,
+              ),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                    color: Constants.primary,
+                    borderRadius: BorderRadius.circular(5)),
+                child: Text(
                   "OBSERVAÇÕES GERAL",
                   style: Constants.titleButton,
                 ),
@@ -493,12 +526,15 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
               const SizedBox(
                 height: 10,
               ),
-              Text(
-                checklist.obs.isEmpty
-                    ? 'Nenhuma observação geral registrada.'
-                    : checklist.obs,
-                style: Constants.title,
-              ),
+              checklist.obs.isEmpty
+                  ? Text(
+                      'Nenhuma observação geral registrada.',
+                      style: Constants.titleHint,
+                    )
+                  : Text(
+                      checklist.obs,
+                      style: Constants.title,
+                    ),
               (checklist.signature != null)
                   ? Container(
                       width: double.infinity,
@@ -553,126 +589,6 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
       ],
     );
   }
-}
-
-Widget finishWidget(
-    {required GlobalKey<FormState> key,
-    required TextEditingController controller,
-    required SignatureController signatureController,
-    required Function(String value) onFinish}) {
-  controller.clear();
-  String label = '';
-
-  return StatefulBuilder(builder: (context, setState) {
-    return Container(
-      constraints: const BoxConstraints(maxWidth: 350),
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-          color: Colors.white, borderRadius: BorderRadius.circular(5)),
-      clipBehavior: Clip.antiAlias,
-      child: Form(
-        key: key,
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Stack(
-                children: [
-                  FieldText(
-                    controller: controller,
-                    hint: 'Ex.: 12345',
-                    validation: Validation.validatorNumber,
-                    inputType: TextInputType.number,
-                  ),
-                  Positioned(
-                      top: 10,
-                      right: 10,
-                      child: Text(
-                        'KM Final',
-                        style: Constants.subtitleHint,
-                      ))
-                ],
-              ),
-              const SizedBox(
-                height: 10.0,
-              ),
-              Container(
-                padding: const EdgeInsets.all(5),
-                decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey),
-                    borderRadius: BorderRadius.circular(5)),
-                child: Column(
-                  spacing: 5,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Insira sua assinatura',
-                      style: Constants.subtitleHint,
-                    ),
-                    Stack(
-                      children: [
-                        Signature(
-                          controller: signatureController,
-                          height: 200,
-                          backgroundColor: Colors.grey.shade200,
-                        ),
-                        Positioned(
-                          bottom: 5,
-                          right: 5,
-                          child: InkWell(
-                            onTap: () => signatureController.clear(),
-                            child: const Icon(
-                              Icons.refresh,
-                              color: Colors.grey,
-                              size: 20,
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              Visibility(
-                visible: label.isNotEmpty,
-                child: Text(
-                  'Insira sua assinatura',
-                  style: Constants.titleHint,
-                ),
-              ),
-              const SizedBox(
-                height: 10.0,
-              ),
-              SizedBox(
-                  height: 50.0,
-                  width: double.infinity,
-                  child: ElevatedButton(
-                      onPressed: () {
-                        if (key.currentState?.validate() ?? false) {
-                          if (signatureController.isEmpty) {
-                            setState(() {
-                              label =
-                                  'Insira uma assinatura antes de prosseguir.';
-                            });
-
-                            return;
-                          } else {
-                            setState(() {
-                              label = '';
-                            });
-                          }
-
-                          onFinish(controller.text);
-                        }
-                      },
-                      child: Text("FINALIZAR", style: Constants.titleButton)))
-            ],
-          ),
-        ),
-      ),
-    );
-  });
 }
 
 Widget changesListWidget(
@@ -775,12 +691,15 @@ Widget changesListWidget(
                       'Observações',
                       style: Constants.subtitleHint,
                     ),
-                    Text(
-                      category.obs.isEmpty
-                          ? 'Nenhuma observação registrada.'
-                          : category.obs,
-                      style: Constants.title,
-                    ),
+                    category.obs.isEmpty
+                        ? Text(
+                            'Nenhuma observação geral registrada.',
+                            style: Constants.titleHint,
+                          )
+                        : Text(
+                            category.obs,
+                            style: Constants.title,
+                          ),
                   ],
                 ),
               ));
@@ -788,154 +707,4 @@ Widget changesListWidget(
       );
     },
   );
-  // return Padding(
-  //   padding: const EdgeInsets.only(top: 15),
-  //   child: Column(
-  //     crossAxisAlignment: CrossAxisAlignment.start,
-  //     children: [
-  //       Text(
-  //         itensChanges.description,
-  //         style: Constants.titleHint,
-  //       ),
-  //       const Divider(),
-  //       Column(
-  //         children: List.generate(
-  //             itensChanges.itens.length,
-  //             (index) => Container(
-  //                   margin: const EdgeInsets.only(bottom: 5.0),
-  //                   padding: const EdgeInsets.all(6),
-  //                   decoration: BoxDecoration(
-  //                       border: Border.all(color: Colors.grey.shade300),
-  //                       borderRadius: BorderRadius.circular(2)),
-  //                   child: Row(
-  //                     children: [
-  //                       Expanded(
-  //                         child: Text(
-  //                           itensChanges.itens[index].description,
-  //                           style: Constants.subtitle,
-  //                         ),
-  //                       ),
-  //                       itensChanges.itens[index].value
-  //                           ? Icon(MdiIcons.checkCircle,
-  //                               size: 20.0, color: Colors.green)
-  //                           : Icon(MdiIcons.closeCircle,
-  //                               size: 20.0, color: Colors.red),
-  //                     ],
-  //                   ),
-  //                 )),
-  //       ),
-  //       itensChanges.obs.isEmpty
-  //           ? Container()
-  //           : Container(
-  //               padding: const EdgeInsets.all(5),
-  //               decoration: BoxDecoration(
-  //                   border: Border.all(color: Colors.grey.shade300),
-  //                   borderRadius: BorderRadius.circular(5)),
-  //               child: Column(
-  //                 crossAxisAlignment: CrossAxisAlignment.start,
-  //                 children: [
-  //                   const SizedBox(
-  //                     height: 5.0,
-  //                   ),
-  //                   Text(
-  //                     "OBSERVAÇÃO",
-  //                     style: Constants.subtitleHint,
-  //                   ),
-  //                   const SizedBox(
-  //                     height: 5.0,
-  //                   ),
-  //                   Text(
-  //                     itensChanges.obs,
-  //                     style: Constants.title,
-  //                   ),
-  //                 ],
-  //               ),
-  //             ),
-  //     ],
-  //   ),
-  // );
-}
-
-class SupplyWidget extends StatefulWidget {
-  final UserModel user;
-  final Function(SupplyModel supply)? onInsert;
-  const SupplyWidget({Key? key, this.onInsert, required this.user})
-      : super(key: key);
-
-  @override
-  State<SupplyWidget> createState() => _SupplyWidgetState();
-}
-
-class _SupplyWidgetState extends State<SupplyWidget> {
-  final _key = GlobalKey<FormState>();
-  late SupplyModel supply;
-
-  @override
-  void initState() {
-    super.initState();
-    supply = SupplyModel(date: DateTime.now(), user: widget.user);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Form(
-      key: _key,
-      child: AlertDialog(
-        contentPadding: const EdgeInsets.all(10),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            FieldText(
-              hint: "QUILÔMETRAGEM",
-              validation: Validation.validatorNumber,
-              inputType: TextInputType.number,
-              onSaved: (value) {
-                supply.kmSupply = value!;
-              },
-            ),
-            const SizedBox(
-              height: 10.0,
-            ),
-            FieldText(
-              hint: "LITROS",
-              validation: Validation.validatorPrice,
-              inputType: TextInputType.number,
-              onSaved: (value) {
-                supply.litros = double.parse(value!);
-              },
-            ),
-            const SizedBox(
-              height: 10.0,
-            ),
-            FieldText(
-              hint: "PREÇO",
-              validation: Validation.validatorPrice,
-              inputType: TextInputType.number,
-              onSaved: (value) {
-                supply.value = double.parse(value!);
-              },
-            ),
-            const SizedBox(
-              height: 10.0,
-            ),
-            SizedBox(
-                height: 50.0,
-                width: double.infinity,
-                child: ElevatedButton(
-                    onPressed: () {
-                      if (_key.currentState!.validate()) {
-                        _key.currentState!.save();
-
-                        Navigator.of(context).pop();
-                        if (widget.onInsert != null) {
-                          widget.onInsert!(supply);
-                        }
-                      }
-                    },
-                    child: Text("INSERIR", style: Constants.titleButton)))
-          ],
-        ),
-      ),
-    );
-  }
 }

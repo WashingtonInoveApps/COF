@@ -1,14 +1,17 @@
 import 'package:bsu_control/core/constants.dart';
+import 'package:bsu_control/model/check_list_model.dart';
 import 'package:bsu_control/src/checklist/controller/checklist_controller.dart';
 import 'package:bsu_control/src/checklist/view/widget/fluids_widget.dart';
 import 'package:bsu_control/src/checklist/view/widget/fuel_widget.dart';
 import 'package:bsu_control/src/widgets/car_changes_widget.dart';
+import 'package:bsu_control/src/widgets/image_change_widget.dart';
 import 'package:bsu_control/src/widgets/textfield_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:mobx/mobx.dart';
 
 import '../../../../core/validation.dart';
+import '../../../widgets/card_outhers_widget.dart';
 
 class ChecklistCarPage extends StatefulWidget {
   final CheckListController controller;
@@ -99,10 +102,6 @@ class _ChecklistCarPageState extends State<ChecklistCarPage> {
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(5.0)),
                       child: Observer(builder: (_) {
-                        final prefixs = List<String>.from(
-                            controller.cars.map((e) => e.prefix).toList()
-                              ..add('SELECIONE'));
-
                         return IgnorePointer(
                           ignoring: controller.update,
                           child: DropdownButton<String>(
@@ -110,7 +109,7 @@ class _ChecklistCarPageState extends State<ChecklistCarPage> {
                               value: controller.prefix,
                               underline: Container(),
                               onChanged: controller.setPrefix,
-                              items: prefixs
+                              items: controller.prefixs
                                   .map((e) => DropdownMenuItem(
                                         value: e,
                                         child: Padding(
@@ -218,12 +217,85 @@ class _ChecklistCarPageState extends State<ChecklistCarPage> {
                               );
                       }),
                     ),
-                    Text(
-                      "OBSERVAÇÕES",
-                      style: Constants.subtitleHint,
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                          color: Constants.primary,
+                          borderRadius: BorderRadius.circular(5)),
+                      child: Text(
+                        'OUTRAS ALTERAÇÕES',
+                        style: Constants.titleButton,
+                      ),
                     ),
                     const SizedBox(
-                      height: 5,
+                      height: 10,
+                    ),
+                    Observer(builder: (context) {
+                      return controller.outhers.isEmpty
+                          ? Text(
+                              'Nenhuma outra alteração encontrada',
+                              style: Constants.titleHint,
+                            )
+                          : Column(
+                              children: List.generate(controller.outhers.length,
+                                      (index) {
+                                final outher = controller.outhers[index];
+
+                                return CardOutherChange(
+                                  outher: outher,
+                                  onDelete: () {
+                                    controller.deleteOuhtersChange(index);
+                                  },
+                                );
+                              })
+                                  .expand((widget) => [widget, const Divider()])
+                                  .toList()
+                                ..removeLast(),
+                            );
+                    }),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Center(
+                      child: IconButton(
+                          onPressed: () async {
+                            await showDialog(
+                                context: context,
+                                builder: (context) => ImageChangeWidget(
+                                      onSelect: (image, description) {
+                                        controller.addOuthersChange(
+                                            ChecklistOutherChange(
+                                                date: DateTime.now(),
+                                                description: description,
+                                                fileImage: image));
+                                      },
+                                    ));
+                          },
+                          style: IconButton.styleFrom(
+                              backgroundColor: Constants.primary),
+                          icon: const Icon(
+                            Icons.add,
+                            color: Colors.white,
+                            size: 20,
+                          )),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                          color: Constants.primary,
+                          borderRadius: BorderRadius.circular(5)),
+                      child: Text(
+                        'OBSERVAÇÕES GERAIS',
+                        style: Constants.titleButton,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 10,
                     ),
                     FieldText(
                       initValue: controller.obs,

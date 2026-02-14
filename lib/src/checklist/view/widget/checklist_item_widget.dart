@@ -1,5 +1,5 @@
 import 'package:bsu_control/core/constants.dart';
-import 'package:bsu_control/model/itens_changes_model.dart';
+import 'package:bsu_control/model/item_model.dart';
 import 'package:flutter/material.dart';
 
 class ChacklistItemWidget extends StatefulWidget {

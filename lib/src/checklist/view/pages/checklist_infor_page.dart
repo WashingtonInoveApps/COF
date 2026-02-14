@@ -24,6 +24,8 @@ class _CheckListInforPageState extends State<CheckListInforPage> {
       filter: {"#": RegExp(r'[0-9]')},
       type: MaskAutoCompletionType.lazy);
 
+  List<String> teams = [];
+
   @override
   void initState() {
     super.initState();
@@ -210,7 +212,7 @@ class _CheckListInforPageState extends State<CheckListInforPage> {
           }),
           Observer(builder: (context) {
             return Visibility(
-                visible: (controller.obm.team.isNotEmpty),
+                visible: (controller.teams.isNotEmpty),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -242,7 +244,7 @@ class _CheckListInforPageState extends State<CheckListInforPage> {
                           value: controller.team,
                           underline: Container(),
                           onChanged: controller.setTeam,
-                          items: controller.obm.team
+                          items: controller.teams
                               .map((e) => DropdownMenuItem(
                                     value: e,
                                     child: Padding(

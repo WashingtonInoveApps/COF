@@ -126,22 +126,35 @@ class _UsersPageState extends State<UsersPage> {
               const SizedBox(
                 height: 10,
               ),
-              Row(
-                children: [
-                  Observer(builder: (_) {
-                    return LimitTableWidget(
-                        limit: controller.limit, onChange: controller.setLimit);
-                  }),
-                  const Spacer(),
-                  Observer(builder: (context) {
-                    return PaginationWidget(
-                      limit: controller.limit,
-                      page: controller.page,
-                      length: controller.usersSorts.length,
-                      onChange: controller.setPage,
-                    );
-                  }),
-                ],
+              SizedBox(
+                width: double.infinity,
+                child: Wrap(
+                  spacing: 10,
+                  runSpacing: 10,
+                  direction: Axis.horizontal,
+                  alignment: WrapAlignment.spaceBetween,
+                  children: [
+                    SizedBox(
+                      width: 200,
+                      child: Observer(builder: (_) {
+                        return LimitTableWidget(
+                            limit: controller.limit,
+                            onChange: controller.setLimit);
+                      }),
+                    ),
+                    SizedBox(
+                      width: 250,
+                      child: Observer(builder: (context) {
+                        return PaginationWidget(
+                          limit: controller.limit,
+                          page: controller.page,
+                          length: controller.usersOBM.length,
+                          onChange: controller.setPage,
+                        );
+                      }),
+                    ),
+                  ],
+                ),
               )
             ],
           ),

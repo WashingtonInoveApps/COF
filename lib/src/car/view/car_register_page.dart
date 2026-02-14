@@ -288,7 +288,7 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "ITENS",
+                  "ITENS OU EQUIPAMENTOS",
                   style: Constants.subtitleHint,
                 ),
                 const Divider(),
@@ -455,7 +455,7 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                       )),
                 ),
                 Text(
-                  "MATERIAIS",
+                  "MATERIAIS DE CONSUMO",
                   style: Constants.subtitleHint,
                 ),
                 const Divider(),
@@ -797,7 +797,7 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                           }
                         },
                         child: Text(
-                          (widget.car == null) ? "SALVAR" : "ALTERAR",
+                          (widget.car == null) ? "Salvar" : "Alterar",
                           style: Constants.titleButton,
                         )),
                   ),

@@ -37,12 +37,11 @@ void main() async {
       test: false);
 
   GetIt.I.registerSingleton<AppController>(controller);
+  await controller.initApplication();
 
   setPathUrlStrategy();
 
-  controller.initApplication().then((_) {
-    runApp(const AppWidget());
-  });
+  runApp(const AppWidget());
 }
 
 class AppWidget extends StatefulWidget {
@@ -55,7 +54,6 @@ class AppWidget extends StatefulWidget {
 class _AppWidgetState extends State<AppWidget> {
   final controller = GetIt.I.get<AppController>();
 
-  StreamSubscription? checklistPeriodDispose;
   StreamSubscription? carDispose;
   StreamSubscription? checklistTodayDispose;
   StreamSubscription? usersDispose;
@@ -82,7 +80,6 @@ class _AppWidgetState extends State<AppWidget> {
     super.dispose();
 
     carDispose?.cancel();
-    checklistPeriodDispose?.cancel();
     usersDispose?.cancel();
     checklistTodayDispose?.cancel();
   }

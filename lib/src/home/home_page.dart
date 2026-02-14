@@ -28,7 +28,7 @@ import 'package:url_launcher/url_launcher_string.dart';
 import '../widgets/pagination_widget.dart';
 import 'view/widgets/period_chart_widget.dart';
 
-const versionCodeSystem = 3;
+const versionCodeSystem = 4;
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -168,7 +168,8 @@ class _HomePageState extends State<HomePage> {
                                   spacing: 5,
                                   children: [
                                     Card(
-                                      child: Padding(
+                                      child: Container(
+                                        width: double.infinity,
                                         padding: const EdgeInsets.all(10.0),
                                         child: Column(
                                           crossAxisAlignment:
@@ -341,6 +342,7 @@ class _HomePageState extends State<HomePage> {
                                     Observer(builder: (_) {
                                       return SizedBox(
                                         height: 245,
+                                        width: double.infinity,
                                         child: CarsChart(
                                           cars: app.carsUsers,
                                           carsTypes: app.carsTypes,
@@ -359,23 +361,28 @@ class _HomePageState extends State<HomePage> {
                                   spacing: 5,
                                   children: [
                                     Observer(builder: (_) {
-                                      return ConfigViewWidget(
-                                        dateStart: app.dateStartConfig,
-                                        dateFinish: app.dateFinishConfig,
-                                        onDateStart: app.setDateStartConfig,
-                                        onDateFinish: app.setDateFinishConfig,
-                                        onReset: () {
-                                          app.cleanExibitionConfig();
+                                      return SizedBox(
+                                        width: double.infinity,
+                                        child: ConfigViewWidget(
+                                          dateStart: app.dateStartConfig,
+                                          dateFinish: app.dateFinishConfig,
+                                          onDateStart: app.setDateStartConfig,
+                                          onDateFinish: app.setDateFinishConfig,
+                                          onReset: () {
+                                            app.cleanExibitionConfig();
 
-                                          controller.setDateRangeChecklist(
-                                              dateStart: app.dateStartConfig,
-                                              dateFinish: app.dateFinishConfig);
-                                        },
-                                        onChange: () {
-                                          controller.setDateRangeChecklist(
-                                              dateStart: app.dateStartConfig,
-                                              dateFinish: app.dateFinishConfig);
-                                        },
+                                            controller.setDateRangeChecklist(
+                                                dateStart: app.dateStartConfig,
+                                                dateFinish:
+                                                    app.dateFinishConfig);
+                                          },
+                                          onChange: () {
+                                            controller.setDateRangeChecklist(
+                                                dateStart: app.dateStartConfig,
+                                                dateFinish:
+                                                    app.dateFinishConfig);
+                                          },
+                                        ),
                                       );
                                     }),
                                     Observer(builder: (context) {
@@ -515,22 +522,34 @@ class _HomePageState extends State<HomePage> {
                                             : null,
                                       ),
                                     ),
-                                    Row(
-                                      children: [
-                                        LimitTableWidget(
-                                            limit: controller.limit,
-                                            onChange: controller.setLimit),
-                                        const Spacer(),
-                                        Observer(builder: (context) {
-                                          return PaginationWidget(
-                                            limit: controller.limit,
-                                            page: controller.page,
-                                            length: controller
-                                                .checklistsPeriod.length,
-                                            onChange: controller.setPage,
-                                          );
-                                        }),
-                                      ],
+                                    SizedBox(
+                                      width: double.infinity,
+                                      child: Wrap(
+                                        spacing: 10,
+                                        runSpacing: 10,
+                                        direction: Axis.horizontal,
+                                        alignment: WrapAlignment.spaceBetween,
+                                        children: [
+                                          SizedBox(
+                                            width: 200,
+                                            child: LimitTableWidget(
+                                                limit: controller.limit,
+                                                onChange: controller.setLimit),
+                                          ),
+                                          SizedBox(
+                                            width: 250,
+                                            child: Observer(builder: (context) {
+                                              return PaginationWidget(
+                                                limit: controller.limit,
+                                                page: controller.page,
+                                                length: controller
+                                                    .checklistsPeriod.length,
+                                                onChange: controller.setPage,
+                                              );
+                                            }),
+                                          ),
+                                        ],
+                                      ),
                                     )
                                   ],
                                 ),

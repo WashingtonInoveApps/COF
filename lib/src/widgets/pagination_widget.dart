@@ -69,6 +69,7 @@ class _PaginationWidgetState extends State<PaginationWidget> {
     final enableNext = widget.page < totalPages;
     return Row(
       spacing: 2,
+      mainAxisAlignment: MainAxisAlignment.end,
       children: [
         InkWell(
           onTap: enableBack ? () => widget.onChange(widget.page - 1) : null,

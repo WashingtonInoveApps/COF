@@ -96,7 +96,7 @@ class _CarMapaWidgetState extends State<CarMapaWidget> {
                         widget.onInsert(mapa);
                       }
                     },
-                    child: Text("INSERIR", style: Constants.titleButton)))
+                    child: Text("Inserir", style: Constants.titleButton)))
           ],
         ),
       ),

@@ -106,7 +106,7 @@ class _DescriptionStateWidgetState extends State<DescriptionStateWidget> {
                               value: false));
                         }
                       },
-                      child: Text("INSERIR", style: Constants.titleButton)))
+                      child: Text("Inserir", style: Constants.titleButton)))
             ],
           ),
         ),

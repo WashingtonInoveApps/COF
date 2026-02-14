@@ -263,23 +263,35 @@ class _CarsPageState extends State<CarsPage> {
             const SizedBox(
               height: 10,
             ),
-            Row(
-              children: [
-                Observer(builder: (_) {
-                  return LimitTableWidget(
-                      limit: carController.limit,
-                      onChange: carController.setLimit);
-                }),
-                const Spacer(),
-                Observer(builder: (context) {
-                  return PaginationWidget(
-                    limit: carController.limit,
-                    page: carController.page,
-                    length: carController.cars.length,
-                    onChange: carController.setPage,
-                  );
-                }),
-              ],
+            SizedBox(
+              width: double.infinity,
+              child: Wrap(
+                spacing: 10,
+                runSpacing: 10,
+                direction: Axis.horizontal,
+                alignment: WrapAlignment.spaceBetween,
+                children: [
+                  SizedBox(
+                    width: 200,
+                    child: Observer(builder: (_) {
+                      return LimitTableWidget(
+                          limit: carController.limit,
+                          onChange: carController.setLimit);
+                    }),
+                  ),
+                  SizedBox(
+                    width: 250,
+                    child: Observer(builder: (context) {
+                      return PaginationWidget(
+                        limit: carController.limit,
+                        page: carController.page,
+                        length: carController.cars.length,
+                        onChange: carController.setPage,
+                      );
+                    }),
+                  ),
+                ],
+              ),
             )
           ],
         ),

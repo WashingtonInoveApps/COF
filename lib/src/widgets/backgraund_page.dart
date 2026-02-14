@@ -4,6 +4,7 @@ import 'package:bsu_control/model/obm_model.dart';
 import 'package:bsu_control/model/user_model.dart';
 import 'package:bsu_control/src/car/view/car_register_page.dart';
 import 'package:bsu_control/src/car/view/cars_page.dart';
+import 'package:bsu_control/src/checklist/view/checklist_details_page.dart';
 import 'package:bsu_control/src/checklist/view/checklist_page.dart';
 import 'package:bsu_control/src/checklist/view/checklist_register_page.dart';
 import 'package:bsu_control/src/checklist/view/my_checklist_page.dart';
@@ -189,21 +190,28 @@ class _BackgraundPageState extends State<BackgraundPage> {
                             break;
                           case 3:
                             if (controller.router != 3) {
-                              if (expires) {
-                                showDialog(
-                                    context: context,
-                                    builder: (context) => AlertMessage(
-                                        title: 'Atenção',
-                                        message:
-                                            'Ops ! Horário para realizar um novo registro expirado, espere um novo período.',
-                                        onPressedOK: () =>
-                                            Navigator.of(context).pop()));
+                              if (controller.newRegister) {
+                                if (expires) {
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) => AlertMessage(
+                                          title: 'Atenção',
+                                          message:
+                                              'Ops ! Horário para realizar um novo registro expirado, espere um novo período.',
+                                          onPressedOK: () =>
+                                              Navigator.of(context).pop()));
+                                } else {
+                                  controller.setRouter(3);
+                                  Navigator.of(context).pushReplacement(
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const ChecklistRegisterPage()));
+                                }
                               } else {
-                                controller.setRouter(3);
-                                Navigator.of(context).pushReplacement(
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            const ChecklistRegisterPage()));
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) => ChecklistDetailsPage(
+                                        checklistID:
+                                            controller.checklistUser!.id!)));
                               }
                             }
                             break;
@@ -244,7 +252,9 @@ class _BackgraundPageState extends State<BackgraundPage> {
                           PopupMenuItem(
                               value: 3,
                               child: Text(
-                                'Novo registro',
+                                controller.newRegister
+                                    ? 'Novo registro'
+                                    : 'Ver registro',
                                 style: Constants.title,
                               )),
                         ];

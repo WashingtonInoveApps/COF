@@ -32,7 +32,7 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
   @override
   void initState() {
     super.initState();
-    controller = CheckListController(init: null, app: app);
+    controller = CheckListController(init: null, app: app, update: false);
   }
 
   @override

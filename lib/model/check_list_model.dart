@@ -1,11 +1,13 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/core/enum.dart';
 import 'package:bsu_control/model/car_changes_model.dart';
 import 'package:bsu_control/model/car_checklist.dart';
 import 'package:bsu_control/model/file_model.dart';
+import 'package:bsu_control/model/item_model.dart';
 import 'package:bsu_control/model/supply_model.dart';
 import 'package:bsu_control/model/user_model.dart';
 
@@ -31,6 +33,8 @@ class CheckListModel {
   List<SupplyModel> supply;
   List<CarChangeModel> changes;
   List<StatesChecklist> states;
+  List<ChecklistOutherChange>? outhers;
+  List<ItemModel>? materials;
   StateChecklist state;
 
   CheckListModel(
@@ -41,6 +45,8 @@ class CheckListModel {
       required this.changes,
       required this.states,
       required this.obm,
+      this.outhers,
+      this.materials,
       this.signature,
       this.userID = '',
       this.pb = "",
@@ -75,8 +81,10 @@ class CheckListModel {
       'id': id,
       'userID': userID,
       'state': state.name,
+      'materials': materials?.map((e) => e.toMap()).toList(),
       'obs': obs,
       'enable': enable,
+      'outhers': outhers?.map((e) => e.toMap()).toList(),
       'states': states.map((e) => e.toMap()).toList(),
       'date': date.millisecondsSinceEpoch,
       'dateFinish': dateFinish?.millisecondsSinceEpoch,
@@ -114,6 +122,14 @@ class CheckListModel {
           ? List<StatesChecklist>.from(
               map['states']?.map((x) => StatesChecklist.fromMap(x)))
           : [],
+      materials: (map['materials'] != null)
+          ? List<ItemModel>.from(
+              map['materials']?.map((x) => ItemModel.fromMap(x)))
+          : [],
+      outhers: (map['outhers'] != null)
+          ? List<ChecklistOutherChange>.from(
+              map['outhers']?.map((x) => ChecklistOutherChange.fromMap(x)))
+          : [],
       date: DateTime.fromMillisecondsSinceEpoch(map['date']),
       dateFinish: map['dateFinish'] != null
           ? DateTime.fromMillisecondsSinceEpoch(map['dateFinish'])
@@ -134,29 +150,32 @@ class CheckListModel {
   factory CheckListModel.copy({required CheckListModel checklist}) =>
       CheckListModel.fromJson(checklist.toJson());
 
-  CheckListModel copyWith(
-      {UserModel? user,
-      String? pb,
-      String? team,
-      String? prefix,
-      String? startKM,
-      String? endKM,
-      String? userID,
-      String? id,
-      String? obs,
-      String? obm,
-      FileModel? signature,
-      String? cia,
-      String? contact,
-      String? obmID,
-      bool? enable,
-      DateTime? date,
-      DateTime? dateFinish,
-      CarCheckList? checkCar,
-      List<SupplyModel>? supply,
-      StateChecklist? state,
-      List<StatesChecklist>? states,
-      List<CarChangeModel>? changes}) {
+  CheckListModel copyWith({
+    UserModel? user,
+    String? pb,
+    String? team,
+    String? prefix,
+    String? startKM,
+    String? endKM,
+    String? userID,
+    String? id,
+    String? obs,
+    String? obm,
+    FileModel? signature,
+    String? cia,
+    String? contact,
+    String? obmID,
+    bool? enable,
+    DateTime? date,
+    DateTime? dateFinish,
+    CarCheckList? checkCar,
+    List<SupplyModel>? supply,
+    StateChecklist? state,
+    List<StatesChecklist>? states,
+    List<CarChangeModel>? changes,
+    List<ChecklistOutherChange>? outhers,
+    List<ItemModel>? materials,
+  }) {
     return CheckListModel(
       user: user ?? this.user,
       pb: pb ?? this.pb,
@@ -171,11 +190,13 @@ class CheckListModel {
       state: state ?? this.state,
       signature: signature ?? this.signature,
       states: states ?? this.states,
+      outhers: outhers ?? this.outhers,
       obs: obs ?? this.obs,
       cia: cia ?? this.cia,
       contact: contact ?? this.contact,
       obmID: obmID ?? this.obmID,
       enable: enable ?? this.enable,
+      materials: materials ?? this.materials,
       date: date ?? this.date,
       dateFinish: dateFinish ?? this.dateFinish,
       checkCar: checkCar ?? this.checkCar,
@@ -218,4 +239,38 @@ class StatesChecklist {
       date: date ?? this.date,
     );
   }
+}
+
+class ChecklistOutherChange {
+  String description;
+  DateTime date;
+  FileModel? image;
+  Uint8List? fileImage; //Usado apenas para salvar a data temporariamente.
+
+  ChecklistOutherChange(
+      {required this.date, this.description = '', this.image, this.fileImage});
+
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'description': description,
+      'date': date.millisecondsSinceEpoch,
+      'image': image?.toMap(),
+    };
+  }
+
+  factory ChecklistOutherChange.fromMap(Map<String, dynamic> map) {
+    return ChecklistOutherChange(
+      description: map['description'] as String,
+      date: DateTime.fromMillisecondsSinceEpoch(map['date'] as int),
+      image: map['image'] != null
+          ? FileModel.fromMap(map['image'] as Map<String, dynamic>)
+          : null,
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory ChecklistOutherChange.fromJson(String source) =>
+      ChecklistOutherChange.fromMap(
+          json.decode(source) as Map<String, dynamic>);
 }

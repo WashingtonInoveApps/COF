@@ -60,7 +60,7 @@ class _ChecklistMaterialsPageState extends State<ChecklistMaterialsPage> {
                   color: Constants.primary,
                   borderRadius: BorderRadius.circular(5)),
               child: Text(
-                'MATERIAIS',
+                'MATERIAIS DE CONSUMO',
                 style: Constants.titleButton,
               ),
             ),

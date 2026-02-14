@@ -1,7 +1,7 @@
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/model/check_list_model.dart';
-import 'package:bsu_control/model/itens_changes_model.dart';
+import 'package:bsu_control/model/item_model.dart';
 import 'package:bsu_control/src/checklist/view/pages/checklist_car_page.dart';
 import 'package:bsu_control/src/checklist/view/pages/checklist_infor_page.dart';
 import 'package:bsu_control/src/checklist/view/pages/checklist_itens_page.dart';
@@ -32,9 +32,7 @@ class _ChecklistRegisterPageState extends State<ChecklistRegisterPage> {
     super.initState();
 
     controller = CheckListController(
-      init: widget.checklist,
-      app: app,
-    );
+        init: widget.checklist, app: app, update: (widget.checklist != null));
   }
 
   @override

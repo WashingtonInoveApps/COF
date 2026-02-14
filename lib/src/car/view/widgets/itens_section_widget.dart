@@ -1,6 +1,6 @@
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/validation.dart';
-import 'package:bsu_control/model/itens_changes_model.dart';
+import 'package:bsu_control/model/item_model.dart';
 import 'package:bsu_control/src/widgets/textfield_widget.dart';
 import 'package:flutter/material.dart';
 
@@ -68,7 +68,7 @@ class _ItensSectionWidgetState extends State<ItensSectionWidget> {
                         }
                       },
                       child: Text(
-                        "ADICIONAR",
+                        "Adicionar",
                         style: Constants.titleButton,
                       )),
                 ),

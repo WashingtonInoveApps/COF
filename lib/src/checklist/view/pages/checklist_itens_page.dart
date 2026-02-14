@@ -60,7 +60,7 @@ class _ChecklistItensPageState extends State<ChecklistItensPage> {
                   color: Constants.primary,
                   borderRadius: BorderRadius.circular(5)),
               child: Text(
-                'ITENS',
+                'ITENS OU EQUIPAMENTOS',
                 style: Constants.titleButton,
               ),
             ),

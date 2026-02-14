@@ -100,7 +100,7 @@ class _ImageChangeWidgetState extends State<ImageChangeWidget> {
 
                         Navigator.of(context).pop();
                       },
-                      child: Text("ADICIONAR", style: Constants.titleButton)))
+                      child: Text("Adicionar", style: Constants.titleButton)))
             ],
           ),
         ),

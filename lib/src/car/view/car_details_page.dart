@@ -85,7 +85,7 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                             onUpdate(int.parse(_controller.text));
                           }
                         },
-                        child: Text("ALTERAR", style: Constants.titleButton)))
+                        child: Text("Alterar", style: Constants.titleButton)))
               ],
             ),
           ),

@@ -537,7 +537,7 @@ class _UserPageRegisterState extends State<UserPageRegister> {
                               }
                             },
                             child: Text(
-                              register ? "CADASTRAR" : "ALTERAR",
+                              register ? "Cadastrar" : "Alterar",
                               style: Constants.titleButton,
                             ),
                           ),

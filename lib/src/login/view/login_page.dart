@@ -231,7 +231,7 @@ class _LoginPageState extends State<LoginPage> {
                                           width: double.infinity,
                                           child: ElevatedButton(
                                             child: Text(
-                                              'REDEFINIR SENHA',
+                                              'Redefinir senha',
                                               style: Constants.titleButton,
                                             ),
                                             onPressed: () async {
@@ -351,7 +351,7 @@ class _LoginPageState extends State<LoginPage> {
                                                   }
                                                 },
                                                 child: Text(
-                                                  "LOGIN",
+                                                  "Login",
                                                   style: Constants.titleButton,
                                                 ),
                                               ),

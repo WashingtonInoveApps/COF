@@ -69,7 +69,7 @@ class _FieldTextState extends State<FieldText> {
                   ),
             border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(widget.borderRadius),
-                borderSide: const BorderSide(color: Colors.black)),
+                borderSide: const BorderSide(color: Colors.grey)),
             hintText: widget.hint,
             label: (widget.label != null)
                 ? Text(

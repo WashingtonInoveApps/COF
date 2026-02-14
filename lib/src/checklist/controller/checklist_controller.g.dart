@@ -31,6 +31,13 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
               () => super.myChecklistUserSort,
               name: '_CheckListControllerBase.myChecklistUserSort'))
           .value;
+  Computed<List<String>>? _$prefixsComputed;
+
+  @override
+  List<String> get prefixs =>
+      (_$prefixsComputed ??= Computed<List<String>>(() => super.prefixs,
+              name: '_CheckListControllerBase.prefixs'))
+          .value;
 
   late final _$loadingAtom =
       Atom(name: '_CheckListControllerBase.loading', context: context);
@@ -109,6 +116,54 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
   set materials(ObservableList<ItensChangesModel> value) {
     _$materialsAtom.reportWrite(value, super.materials, () {
       super.materials = value;
+    });
+  }
+
+  late final _$outhersAtom =
+      Atom(name: '_CheckListControllerBase.outhers', context: context);
+
+  @override
+  ObservableList<ChecklistOutherChange> get outhers {
+    _$outhersAtom.reportRead();
+    return super.outhers;
+  }
+
+  @override
+  set outhers(ObservableList<ChecklistOutherChange> value) {
+    _$outhersAtom.reportWrite(value, super.outhers, () {
+      super.outhers = value;
+    });
+  }
+
+  late final _$teamsAtom =
+      Atom(name: '_CheckListControllerBase.teams', context: context);
+
+  @override
+  ObservableList<String> get teams {
+    _$teamsAtom.reportRead();
+    return super.teams;
+  }
+
+  @override
+  set teams(ObservableList<String> value) {
+    _$teamsAtom.reportWrite(value, super.teams, () {
+      super.teams = value;
+    });
+  }
+
+  late final _$materialsConsumedAtom = Atom(
+      name: '_CheckListControllerBase.materialsConsumed', context: context);
+
+  @override
+  ObservableList<ItemModel> get materialsConsumed {
+    _$materialsConsumedAtom.reportRead();
+    return super.materialsConsumed;
+  }
+
+  @override
+  set materialsConsumed(ObservableList<ItemModel> value) {
+    _$materialsConsumedAtom.reportWrite(value, super.materialsConsumed, () {
+      super.materialsConsumed = value;
     });
   }
 
@@ -221,22 +276,6 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
   set prefix(String value) {
     _$prefixAtom.reportWrite(value, super.prefix, () {
       super.prefix = value;
-    });
-  }
-
-  late final _$updateAtom =
-      Atom(name: '_CheckListControllerBase.update', context: context);
-
-  @override
-  bool get update {
-    _$updateAtom.reportRead();
-    return super.update;
-  }
-
-  @override
-  set update(bool value) {
-    _$updateAtom.reportWrite(value, super.update, () {
-      super.update = value;
     });
   }
 
@@ -697,6 +736,50 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
   }
 
   @override
+  dynamic addOuthersChange(ChecklistOutherChange value) {
+    final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
+        name: '_CheckListControllerBase.addOuthersChange');
+    try {
+      return super.addOuthersChange(value);
+    } finally {
+      _$_CheckListControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic deleteOuhtersChange(int index) {
+    final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
+        name: '_CheckListControllerBase.deleteOuhtersChange');
+    try {
+      return super.deleteOuhtersChange(index);
+    } finally {
+      _$_CheckListControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic addMaterialsConsumed(List<ItemModel> values) {
+    final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
+        name: '_CheckListControllerBase.addMaterialsConsumed');
+    try {
+      return super.addMaterialsConsumed(values);
+    } finally {
+      _$_CheckListControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic deleteMaterialsConsumed(int index) {
+    final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
+        name: '_CheckListControllerBase.deleteMaterialsConsumed');
+    try {
+      return super.deleteMaterialsConsumed(index);
+    } finally {
+      _$_CheckListControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   dynamic setPrefix(String? value) {
     final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
         name: '_CheckListControllerBase.setPrefix');
@@ -935,6 +1018,9 @@ carChanges: ${carChanges},
 itens: ${itens},
 myChecklistUser: ${myChecklistUser},
 materials: ${materials},
+outhers: ${outhers},
+teams: ${teams},
+materialsConsumed: ${materialsConsumed},
 date: ${date},
 dateReferenceStart: ${dateReferenceStart},
 dateReferenceFinish: ${dateReferenceFinish},
@@ -942,7 +1028,6 @@ dateStartConfig: ${dateStartConfig},
 dateFinishConfig: ${dateFinishConfig},
 dateMyChecklist: ${dateMyChecklist},
 prefix: ${prefix},
-update: ${update},
 enable: ${enable},
 step: ${step},
 contact: ${contact},
@@ -964,7 +1049,8 @@ arref: ${arref},
 car: ${car},
 btFinish: ${btFinish},
 cars: ${cars},
-myChecklistUserSort: ${myChecklistUserSort}
+myChecklistUserSort: ${myChecklistUserSort},
+prefixs: ${prefixs}
     ''';
   }
 }

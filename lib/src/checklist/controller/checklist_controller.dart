@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:typed_data';
 
 import 'package:bsu_control/app_controller.dart';
@@ -8,6 +9,7 @@ import 'package:bsu_control/model/car_changes_model.dart';
 import 'package:bsu_control/model/car_checklist.dart';
 import 'package:bsu_control/model/car_model.dart';
 import 'package:bsu_control/model/check_list_model.dart';
+import 'package:bsu_control/model/item_model.dart';
 import 'package:bsu_control/model/itens_changes_model.dart';
 import 'package:bsu_control/model/obm_model.dart';
 import 'package:bsu_control/src/checklist/repository/checklist_interface.dart';
@@ -24,6 +26,7 @@ class CheckListController = _CheckListControllerBase with _$CheckListController;
 abstract class _CheckListControllerBase with Store {
   final AppController app;
   final CheckListModel? init;
+  final bool update;
 
   late ICheckListRepository repository;
 
@@ -32,7 +35,8 @@ abstract class _CheckListControllerBase with Store {
   @observable
   bool loading = false;
 
-  _CheckListControllerBase({required this.init, required this.app}) {
+  _CheckListControllerBase(
+      {required this.init, required this.app, required this.update}) {
     repository = CheckListRepository(
         endpoint: app.endpoint, appID: app.appID, test: app.test);
     initController(init);
@@ -46,8 +50,6 @@ abstract class _CheckListControllerBase with Store {
   initController(CheckListModel? init) {
     itens.clear();
     materials.clear();
-
-    update = (init != null);
 
     id = init?.id;
     prefix = init?.prefix ?? 'SELECIONE';
@@ -73,6 +75,10 @@ abstract class _CheckListControllerBase with Store {
       itens.addAll(List<ItensChangesModel>.from(init.checkCar.car.itens));
       materials
           .addAll(List<ItensChangesModel>.from(init.checkCar.car.materials));
+
+      outhers
+        ..clear()
+        ..addAll(init.outhers ?? []);
     } else {
       itens.addAll(List<ItensChangesModel>.from(car?.itens ?? []));
       materials.addAll(List<ItensChangesModel>.from(car?.materials ?? []));
@@ -95,6 +101,16 @@ abstract class _CheckListControllerBase with Store {
   @observable
   ObservableList<ItensChangesModel> materials =
       <ItensChangesModel>[].asObservable();
+
+  @observable
+  ObservableList<ChecklistOutherChange> outhers =
+      <ChecklistOutherChange>[].asObservable();
+
+  @observable
+  ObservableList<String> teams = <String>[].asObservable();
+
+  @observable
+  ObservableList<ItemModel> materialsConsumed = <ItemModel>[].asObservable();
 
   List<StatesChecklist> states = [];
 
@@ -119,10 +135,7 @@ abstract class _CheckListControllerBase with Store {
   DateTime dateMyChecklist = DateTime.now();
 
   @observable
-  String prefix = "";
-
-  @observable
-  bool update = false;
+  String prefix = "SELECIONE";
 
   @observable
   bool enable = true;
@@ -139,7 +152,7 @@ abstract class _CheckListControllerBase with Store {
   String? cia;
 
   @observable
-  String team = "SELECIONE";
+  String team = "";
 
   @observable
   String pb = "";
@@ -295,6 +308,28 @@ abstract class _CheckListControllerBase with Store {
   }
 
   @action
+  addOuthersChange(ChecklistOutherChange value) {
+    outhers.add(value);
+  }
+
+  @action
+  deleteOuhtersChange(int index) {
+    outhers.removeAt(index);
+  }
+
+  @action
+  addMaterialsConsumed(List<ItemModel> values) {
+    materialsConsumed
+      ..clear()
+      ..addAll(values);
+  }
+
+  @action
+  deleteMaterialsConsumed(int index) {
+    materialsConsumed.removeAt(index);
+  }
+
+  @action
   setPrefix(String? value) {
     if (value != null && value != "SELECIONE") {
       car = CarModel.copy(cars.firstWhere((c) => c.prefix == value));
@@ -326,6 +361,38 @@ abstract class _CheckListControllerBase with Store {
     }
   }
 
+  List<String> teamsValidade({required List<String> teams}) {
+    if (obm.team.isEmpty) return [];
+
+    final list = app.checklistsToday.map((e) => e.team).toList();
+
+    List<String> result = obm.team.where((e) => !list.contains(e)).toList();
+
+    if (update) result.insert(0, init!.team);
+
+    return result;
+  }
+
+  @computed
+  List<String> get prefixs {
+    List<String> data = ['SELECIONE'];
+
+    if (cars.isNotEmpty) {
+      final list = app.checklistsToday.map((e) => e.prefix).toList();
+
+      final result = cars
+          .where((e) => !list.contains(e.prefix))
+          .map((e) => e.prefix)
+          .toList();
+
+      data.addAll(result);
+
+      if (update) data.add(init!.prefix);
+    }
+
+    return data;
+  }
+
   List<ItensChangesModel> processItens(List<ItensChangesModel> value) {
     List<ItensChangesModel> list = [];
     List<ItemModel> itens = [];
@@ -347,7 +414,13 @@ abstract class _CheckListControllerBase with Store {
   setOBM(OBMModel? value) {
     if (value != null) {
       if (obm != value) {
+        teams.clear();
+
         obm = value;
+
+        teams.addAll(teamsValidade(teams: obm.team));
+
+        if (teams.isNotEmpty && team.isEmpty) team = teams.last;
 
         if (obm.cias.isNotEmpty) {
           cia = obm.cias.first;
@@ -435,6 +508,8 @@ abstract class _CheckListControllerBase with Store {
 
     itens.removeAt(indexCategory);
     itens.insert(indexCategory, category.copyWith(obs: obs));
+
+    log('OBS Itens: ${itens[indexCategory].obs}');
   }
 
   @action
@@ -456,8 +531,8 @@ abstract class _CheckListControllerBase with Store {
     final category =
         ItensChangesModel.fromMap(materials.elementAt(indexCategory).toMap());
 
-    itens.removeAt(indexCategory);
-    itens.insert(indexCategory, category.copyWith(obs: obs));
+    materials.removeAt(indexCategory);
+    materials.insert(indexCategory, category.copyWith(obs: obs));
   }
 
   @action
@@ -497,10 +572,13 @@ abstract class _CheckListControllerBase with Store {
           states: states,
           supply: supplies);
 
-      final result =
-          await repository.save(checklist: checklist, changes: carChanges);
-      loading = false;
+      final result = await repository.save(
+        checklist: checklist,
+        changes: carChanges,
+        outhers: outhers,
+      );
 
+      loading = false;
       return result;
     } catch (e) {
       loading = false;
@@ -521,6 +599,7 @@ abstract class _CheckListControllerBase with Store {
       final result = await repository.finish(
           checklist: checklist.copyWith(
               state: state.state,
+              materials: materialsConsumed,
               states: states,
               dateFinish: now,
               enable: false),
