@@ -435,8 +435,7 @@ class _BackgraundPageState extends State<BackgraundPage> {
                                   onTap: widget.onBack,
                                   child: ConstrainedBox(
                                     constraints: const BoxConstraints(
-                                      maxHeight: 80,
-                                    ),
+                                        maxHeight: 80, maxWidth: 250),
                                     child: AspectRatio(
                                       aspectRatio:
                                           (controller.modeMOBILE ? 3 : 4),
@@ -448,30 +447,31 @@ class _BackgraundPageState extends State<BackgraundPage> {
                                   ),
                                 ),
                               ),
-                              const Spacer(),
-                              Visibility(
-                                visible: !widget.login,
-                                child: controller.modeMOBILE
-                                    ? widget.menu
-                                        ? Align(
-                                            alignment: Alignment.centerRight,
-                                            child: IconButton(
-                                                style: IconButton.styleFrom(
-                                                  backgroundColor:
-                                                      Constants.primary,
-                                                ),
-                                                onPressed:
-                                                    controller.changeMenuOpen,
-                                                icon: const Icon(
-                                                  Icons.menu_rounded,
-                                                  size: 20,
-                                                  color: Colors.white,
-                                                )),
-                                          )
-                                        : Container()
-                                    : menu(
-                                        context: context,
-                                        user: controller.user),
+                              Expanded(
+                                child: Visibility(
+                                  visible: !widget.login,
+                                  child: controller.modeMOBILE
+                                      ? widget.menu
+                                          ? Align(
+                                              alignment: Alignment.centerRight,
+                                              child: IconButton(
+                                                  style: IconButton.styleFrom(
+                                                    backgroundColor:
+                                                        Constants.primary,
+                                                  ),
+                                                  onPressed:
+                                                      controller.changeMenuOpen,
+                                                  icon: const Icon(
+                                                    Icons.menu_rounded,
+                                                    size: 20,
+                                                    color: Colors.white,
+                                                  )),
+                                            )
+                                          : Container()
+                                      : menu(
+                                          context: context,
+                                          user: controller.user),
+                                ),
                               )
                             ],
                           ),

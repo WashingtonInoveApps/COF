@@ -25,6 +25,8 @@ class ChecklistFinishPage extends StatefulWidget {
 class _ChecklistFinishPageState extends State<ChecklistFinishPage> {
   final signatureController = SignatureController();
   final endKMController = TextEditingController();
+  final obsController = TextEditingController();
+
   final key = GlobalKey<FormState>();
 
   late CheckListModel checklist;
@@ -41,6 +43,7 @@ class _ChecklistFinishPageState extends State<ChecklistFinishPage> {
     super.dispose();
     endKMController.dispose();
     signatureController.dispose();
+    obsController.dispose();
   }
 
   Future<bool> finishChecklist() async {
@@ -49,7 +52,8 @@ class _ChecklistFinishPageState extends State<ChecklistFinishPage> {
       final image = await signatureController.toPngBytes();
 
       await widget.controller.finish(
-          checklist: checklist.copyWith(endKM: endKMController.text),
+          checklist: checklist.copyWith(
+              endKM: endKMController.text, obs: obsController.text),
           image: image);
       widget.controller.setLoading(false);
 
@@ -175,17 +179,17 @@ class _ChecklistFinishPageState extends State<ChecklistFinishPage> {
                   height: 10,
                 ),
                 Observer(builder: (context) {
-                  return (widget.controller.materialsConsumed.isEmpty)
+                  return (widget.controller.materialsConsumedUsed.isEmpty)
                       ? Container()
                       : Padding(
                           padding: const EdgeInsets.only(
                               bottom: 10, left: 5, right: 5),
                           child: Column(
                             children: List.generate(
-                                    widget.controller.materialsConsumed.length,
-                                    (index) {
-                              final material =
-                                  widget.controller.materialsConsumed[index];
+                                    widget.controller.materialsConsumedUsed
+                                        .length, (index) {
+                              final material = widget
+                                  .controller.materialsConsumedUsed[index];
                               return Row(
                                 children: [
                                   Expanded(
@@ -206,7 +210,7 @@ class _ChecklistFinishPageState extends State<ChecklistFinishPage> {
                                   IconButton(
                                     onPressed: () {
                                       widget.controller
-                                          .deleteMaterialsConsumed(index);
+                                          .deleteMaterialsConsumedUsed(index);
                                     },
                                     icon: const Icon(
                                       Icons.delete,
@@ -231,10 +235,11 @@ class _ChecklistFinishPageState extends State<ChecklistFinishPage> {
                             builder: (context) {
                               return Center(
                                 child: InsertMaterialWidget(
-                                  init: widget.controller.materialsConsumed,
-                                  materials: checklist.checkCar.car.materials,
-                                  onInsert:
-                                      widget.controller.addMaterialsConsumed,
+                                  init: widget.controller.materialsConsumedUsed,
+                                  materials: checklist
+                                      .checkCar.car.materialsConsumable,
+                                  onInsert: widget
+                                      .controller.addMaterialsConsumedUsed,
                                 ),
                               );
                             });
@@ -330,6 +335,21 @@ class _ChecklistFinishPageState extends State<ChecklistFinishPage> {
                       ),
                     ],
                   ),
+                ),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                      color: Constants.primary,
+                      borderRadius: BorderRadius.circular(5)),
+                  child: Text(
+                    'OBSERVAÇÕES GERAIS',
+                    style: Constants.titleButton,
+                  ),
+                ),
+                FieldText(
+                  controller: obsController,
+                  hint: "EX.: Alguma informação importante",
                 ),
                 Align(
                   alignment: Alignment.centerRight,

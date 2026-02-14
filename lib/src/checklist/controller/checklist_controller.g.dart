@@ -119,6 +119,22 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
     });
   }
 
+  late final _$materialsConsumableAtom = Atom(
+      name: '_CheckListControllerBase.materialsConsumable', context: context);
+
+  @override
+  ObservableList<ItensChangesModel> get materialsConsumable {
+    _$materialsConsumableAtom.reportRead();
+    return super.materialsConsumable;
+  }
+
+  @override
+  set materialsConsumable(ObservableList<ItensChangesModel> value) {
+    _$materialsConsumableAtom.reportWrite(value, super.materialsConsumable, () {
+      super.materialsConsumable = value;
+    });
+  }
+
   late final _$outhersAtom =
       Atom(name: '_CheckListControllerBase.outhers', context: context);
 
@@ -151,19 +167,20 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
     });
   }
 
-  late final _$materialsConsumedAtom = Atom(
-      name: '_CheckListControllerBase.materialsConsumed', context: context);
+  late final _$materialsConsumedUsedAtom = Atom(
+      name: '_CheckListControllerBase.materialsConsumedUsed', context: context);
 
   @override
-  ObservableList<ItemModel> get materialsConsumed {
-    _$materialsConsumedAtom.reportRead();
-    return super.materialsConsumed;
+  ObservableList<ItemModel> get materialsConsumedUsed {
+    _$materialsConsumedUsedAtom.reportRead();
+    return super.materialsConsumedUsed;
   }
 
   @override
-  set materialsConsumed(ObservableList<ItemModel> value) {
-    _$materialsConsumedAtom.reportWrite(value, super.materialsConsumed, () {
-      super.materialsConsumed = value;
+  set materialsConsumedUsed(ObservableList<ItemModel> value) {
+    _$materialsConsumedUsedAtom.reportWrite(value, super.materialsConsumedUsed,
+        () {
+      super.materialsConsumedUsed = value;
     });
   }
 
@@ -758,22 +775,22 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
   }
 
   @override
-  dynamic addMaterialsConsumed(List<ItemModel> values) {
+  dynamic addMaterialsConsumedUsed(List<ItemModel> values) {
     final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
-        name: '_CheckListControllerBase.addMaterialsConsumed');
+        name: '_CheckListControllerBase.addMaterialsConsumedUsed');
     try {
-      return super.addMaterialsConsumed(values);
+      return super.addMaterialsConsumedUsed(values);
     } finally {
       _$_CheckListControllerBaseActionController.endAction(_$actionInfo);
     }
   }
 
   @override
-  dynamic deleteMaterialsConsumed(int index) {
+  dynamic deleteMaterialsConsumedUsed(int index) {
     final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
-        name: '_CheckListControllerBase.deleteMaterialsConsumed');
+        name: '_CheckListControllerBase.deleteMaterialsConsumedUsed');
     try {
-      return super.deleteMaterialsConsumed(index);
+      return super.deleteMaterialsConsumedUsed(index);
     } finally {
       _$_CheckListControllerBaseActionController.endAction(_$actionInfo);
     }
@@ -989,6 +1006,39 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
   }
 
   @override
+  List<ItensChangesModel> changeList(
+      {required List<ItensChangesModel> list,
+      required ItemModel value,
+      required int indexSection,
+      required int indexItem}) {
+    final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
+        name: '_CheckListControllerBase.changeList');
+    try {
+      return super.changeList(
+          list: list,
+          value: value,
+          indexSection: indexSection,
+          indexItem: indexItem);
+    } finally {
+      _$_CheckListControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic changeOBS(
+      {required List<ItensChangesModel> list,
+      required String obs,
+      required int indexSection}) {
+    final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
+        name: '_CheckListControllerBase.changeOBS');
+    try {
+      return super.changeOBS(list: list, obs: obs, indexSection: indexSection);
+    } finally {
+      _$_CheckListControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   dynamic changeOBSMaterials(String obs, int indexCategory) {
     final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
         name: '_CheckListControllerBase.changeOBSMaterials');
@@ -1018,9 +1068,10 @@ carChanges: ${carChanges},
 itens: ${itens},
 myChecklistUser: ${myChecklistUser},
 materials: ${materials},
+materialsConsumable: ${materialsConsumable},
 outhers: ${outhers},
 teams: ${teams},
-materialsConsumed: ${materialsConsumed},
+materialsConsumedUsed: ${materialsConsumedUsed},
 date: ${date},
 dateReferenceStart: ${dateReferenceStart},
 dateReferenceFinish: ${dateReferenceFinish},

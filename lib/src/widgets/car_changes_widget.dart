@@ -97,34 +97,7 @@ class _CarChangesWidgetState extends State<CarChangesWidget> {
         children: [
           Row(
             children: [
-              Expanded(
-                  child: Align(
-                alignment: Alignment.centerLeft,
-                child: InkWell(
-                    onTap: () {
-                      showDialog(
-                          context: context,
-                          builder: (context) {
-                            return AlertDialog(
-                              contentPadding: const EdgeInsets.all(10),
-                              content:
-                                  ImagesChangesViewWidget(changes: changes),
-                            );
-                          });
-                    },
-                    child: Card(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadiusGeometry.circular(100)),
-                      child: Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: Icon(
-                          Icons.list_alt_rounded,
-                          size: 25,
-                          color: Constants.primary,
-                        ),
-                      ),
-                    )),
-              )),
+              const Spacer(),
               menuView(
                   indexImage: indexImage,
                   onChange: (value) {
@@ -282,6 +255,39 @@ class _CarChangesWidgetState extends State<CarChangesWidget> {
                             // ),
                           ),
                         ),
+                        Positioned(
+                          bottom: 10,
+                          left: 10,
+                          child: InkWell(
+                              onTap: changes.isNotEmpty
+                                  ? () {
+                                      showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return AlertDialog(
+                                              contentPadding:
+                                                  const EdgeInsets.all(10),
+                                              content: ImagesChangesViewWidget(
+                                                  changes: changes),
+                                            );
+                                          });
+                                    }
+                                  : null,
+                              child: Card(
+                                elevation: 5,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius:
+                                        BorderRadiusGeometry.circular(100)),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: Icon(
+                                    Icons.list_alt_rounded,
+                                    size: 20,
+                                    color: Constants.primary,
+                                  ),
+                                ),
+                              )),
+                        )
                       ],
                     ),
                   ),

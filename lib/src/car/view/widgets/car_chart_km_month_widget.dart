@@ -107,6 +107,8 @@ class _CarChartKmByMonthState extends State<CarChartKmByMonth> {
       media = calcularMedia(list: dataChart);
     }
 
+    final list = filterChart(list: dataChart);
+
     return Column(
       spacing: 10,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -149,7 +151,7 @@ class _CarChartKmByMonthState extends State<CarChartKmByMonth> {
                   size: 20,
                   color: Colors.grey,
                 )),
-            (widget.checklists.isEmpty)
+            (list.isEmpty)
                 ? Container()
                 : IconButton(
                     onPressed: () {
@@ -241,7 +243,7 @@ class _CarChartKmByMonthState extends State<CarChartKmByMonth> {
           ],
         ),
         Expanded(
-          child: dataChart.isEmpty
+          child: list.isEmpty
               ? Center(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -282,7 +284,7 @@ class _CarChartKmByMonthState extends State<CarChartKmByMonth> {
                   ),
                   series: <CartesianSeries>[
                     BarSeries<KmChartData, String>(
-                      dataSource: filterChart(list: dataChart),
+                      dataSource: list,
                       width: 0.5, // 👈 espessura da barra (0 a 1)
                       spacing: 0.0, // 👈 espaço entre barras
                       xValueMapper: (data, _) => data.prefix,
@@ -309,7 +311,7 @@ class _CarChartKmByMonthState extends State<CarChartKmByMonth> {
                         color: Colors.yellow,
                       ),
                       coordinateUnit: CoordinateUnit.point,
-                      x: filterChart(list: dataChart).first.prefix,
+                      x: list.isEmpty ? '' : list.first.prefix,
                       y: media,
                     ),
                   ],
@@ -394,4 +396,7 @@ class KmChartData {
       km: km ?? this.km,
     );
   }
+
+  @override
+  String toString() => 'KmChartData(prefix: $prefix, km: $km)';
 }

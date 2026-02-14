@@ -76,10 +76,14 @@ abstract class _CarControllerBase with Store {
       <ItensChangesModel>[].asObservable();
 
   @observable
+  ObservableList<ItensChangesModel> sectionsMaterialsConsumable =
+      <ItensChangesModel>[].asObservable();
+
+  @observable
   ObservableList<CarChangeModel> carChanges = <CarChangeModel>[].asObservable();
 
   @computed
-  bool get enable => app.user.managerFleet;
+  bool get enable => (app.user.managerFleet || app.user.admin);
 
   @computed
   List<CarModel> get carsSorts {
@@ -226,111 +230,69 @@ abstract class _CarControllerBase with Store {
   }
 
   @action
-  addSectionsItens(ItensChangesModel value) {
-    sectionsItens.add(value);
+  addSections(
+      {required List<ItensChangesModel> list,
+      required ItensChangesModel value}) {
+    list.add(value);
   }
 
   @action
-  editSectionsItens(int index, ItensChangesModel value) {
-    final section =
-        sectionsItens[index].copyWith(description: value.description);
-
-    sectionsItens.removeAt(index);
-    sectionsItens.insert(index, section);
+  removeSections({required List<ItensChangesModel> list, required int index}) {
+    list.removeAt(index);
   }
 
   @action
-  removeSectionsItens(int index) {
-    sectionsItens.removeAt(index);
-  }
-
-  @action
-  cleanSectionsItens() {
-    sectionsItens.clear();
-  }
-
-  @action
-  addSectionsMaterials(ItensChangesModel value) {
-    sectionsMaterials.add(value);
-  }
-
-  @action
-  editSectionsMaterials(int index, ItensChangesModel value) {
-    final section =
-        sectionsMaterials[index].copyWith(description: value.description);
-
-    sectionsMaterials.removeAt(index);
-    sectionsMaterials.insert(index, section);
-  }
-
-  @action
-  removeSectionsMaterials(int index) {
-    sectionsMaterials.removeAt(index);
-  }
-
-  @action
-  cleanSectionsMaterials() {
-    sectionsMaterials.clear();
-  }
-
-  @action
-  expansionSectionsItens(int index) {
-    final section =
-        sectionsItens[index].copyWith(value: !sectionsItens[index].value);
-    sectionsItens.removeAt(index);
-    sectionsItens.insert(index, section);
-  }
-
-  @action
-  addSectionItens(int index, ItemModel value) {
-    final section = ItensChangesModel.fromMap(sectionsItens[index].toMap());
+  addItensSection({
+    required List<ItensChangesModel> list,
+    required int index,
+    required ItemModel value,
+  }) {
+    final section = ItensChangesModel.fromMap(list[index].toMap());
 
     final itens = List<ItemModel>.from(section.itens);
     itens.add(value);
 
-    sectionsItens.removeAt(index);
-    sectionsItens.insert(index, section.copyWith(itens: itens));
+    list.removeAt(index);
+    list.insert(index, section.copyWith(itens: itens));
   }
 
   @action
-  removeSectionItens(int index, int itemIndex) {
-    final section = ItensChangesModel.fromMap(sectionsItens[index].toMap());
+  removeItensSection({
+    required List<ItensChangesModel> list,
+    required int index,
+    required int indexItem,
+  }) {
+    final section = ItensChangesModel.fromMap(list[index].toMap());
 
     final itens = List<ItemModel>.from(section.itens);
-    itens.removeAt(itemIndex);
+    itens.removeAt(indexItem);
 
-    sectionsItens.removeAt(index);
-    sectionsItens.insert(index, section.copyWith(itens: itens));
+    list.removeAt(index);
+    list.insert(index, section.copyWith(itens: itens));
   }
 
   @action
-  expansionSectionsMaterials(int index) {
-    final section = sectionsMaterials[index]
-        .copyWith(value: !sectionsMaterials[index].value);
-    sectionsMaterials.removeAt(index);
-    sectionsMaterials.insert(index, section);
+  editSections(
+      {required List<ItensChangesModel> list,
+      required int index,
+      required ItensChangesModel value}) {
+    final section = list[index].copyWith(description: value.description);
+
+    list.removeAt(index);
+    list.insert(index, section);
   }
 
   @action
-  addSectionMaterials(int index, ItemModel value) {
-    final section = ItensChangesModel.fromMap(sectionsMaterials[index].toMap());
-
-    final itens = List<ItemModel>.from(section.itens);
-    itens.add(value);
-
-    sectionsMaterials.removeAt(index);
-    sectionsMaterials.insert(index, section.copyWith(itens: itens));
+  cleanSections({required List<ItensChangesModel> list}) {
+    list.clear();
   }
 
   @action
-  removeSectionMaterials(int index, int itemIndex) {
-    final section = ItensChangesModel.fromMap(sectionsMaterials[index].toMap());
-
-    final itens = List<ItemModel>.from(section.itens);
-    itens.removeAt(itemIndex);
-
-    sectionsMaterials.removeAt(index);
-    sectionsMaterials.insert(index, section.copyWith(itens: itens));
+  expansionSections(
+      {required List<ItensChangesModel> list, required int index}) {
+    final section = list[index].copyWith(value: !list[index].value);
+    list.removeAt(index);
+    list.insert(index, section);
   }
 
   @action
@@ -345,7 +307,22 @@ abstract class _CarControllerBase with Store {
         }
       }
 
-      final result = await repository.save(car: car, images: images);
+      if (car.type.isEmpty && type == 'Outros') {
+        throw Exception('Insira o tipo de veículo antes de continuar.');
+      }
+
+      final result = await repository.save(
+          car: car.copyWith(
+            function: function,
+            adm: adm,
+            changes: carChanges,
+            obmID: obm.id ?? '',
+            cia: (cia?.toLowerCase()) ?? (obm.id ?? ''),
+            itens: sectionsItens,
+            materials: sectionsMaterials,
+            materialsConsumable: sectionsMaterialsConsumable,
+          ),
+          images: images);
       loading = false;
 
       return result;

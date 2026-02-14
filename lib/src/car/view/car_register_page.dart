@@ -51,24 +51,37 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
   void initState() {
     super.initState();
     controller = CarController(app: app);
-    controller.cleanSectionsItens();
-    controller.cleanSectionsMaterials();
+    controller.cleanSections(list: controller.sectionsItens);
+    controller.cleanSections(list: controller.sectionsMaterials);
+    controller.cleanSections(list: controller.sectionsMaterialsConsumable);
 
     controller.setOBM(app.obms.firstWhere((e) => e.id == app.user.obmID));
 
     if (widget.car != null) {
       controller.setTypeCar(widget.car?.type);
       controller.setFunctionCar(widget.car?.function);
-      controller.cleanSectionsItens();
-      controller.cleanSectionsMaterials();
+
+      controller.cleanSections(list: controller.sectionsItens);
+      controller.cleanSections(list: controller.sectionsMaterials);
+      controller.cleanSections(list: controller.sectionsMaterialsConsumable);
 
       car = CarModel.copy(widget.car!);
       for (final itens in car.itens) {
-        controller.addSectionsItens(itens.copyWith(value: false));
+        controller.addSections(
+            list: controller.sectionsItens,
+            value: itens.copyWith(value: false));
       }
 
       for (final itens in car.materials) {
-        controller.addSectionsMaterials(itens.copyWith(value: false));
+        controller.addSections(
+            list: controller.sectionsMaterials,
+            value: itens.copyWith(value: false));
+      }
+
+      for (final itens in car.materialsConsumable) {
+        controller.addSections(
+            list: controller.sectionsMaterialsConsumable,
+            value: itens.copyWith(value: false));
       }
 
       controller.onChangesCar(widget.car?.changes ?? []);
@@ -77,6 +90,7 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
           images: [],
           itens: [],
           materials: [],
+          materialsConsumable: [],
           changes: [],
           status: [],
           mapas: [],
@@ -93,6 +107,167 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
   void dispose() {
     super.dispose();
     carTypeController.dispose();
+  }
+
+  Widget listSections(
+      {required BuildContext context, required List<ItensChangesModel> list}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        list.isEmpty
+            ? Text(
+                'Nenhum itens encontrado.',
+                style: Constants.title,
+              )
+            : Column(
+                children: List.generate(list.length, (index) {
+                  final section = list[index];
+
+                  return Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Column(
+                        children: [
+                          Row(
+                            spacing: 5,
+                            children: [
+                              Expanded(
+                                  child: Text(
+                                section.description,
+                                style: Constants.title,
+                              )),
+                              InkWell(
+                                onTap: () {
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) => AlertMessage(
+                                          title: 'Atenção',
+                                          message:
+                                              'Deseja excluir essa categoria de itens ?',
+                                          cancel: true,
+                                          titleOK: 'Sim',
+                                          onPressedCancel: () =>
+                                              Navigator.of(context).pop(false),
+                                          onPressedOK: () =>
+                                              Navigator.of(context)
+                                                  .pop(true))).then((value) {
+                                    if (value ?? false) {
+                                      controller.removeSections(
+                                          list: list, index: index);
+                                    }
+                                  });
+                                },
+                                child: CircleAvatar(
+                                  radius: 12,
+                                  backgroundColor: Constants.primary,
+                                  child: const Icon(
+                                    Icons.remove,
+                                    size: 15,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                              InkWell(
+                                onTap: () {
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) => Center(
+                                            child: SectionWidget(
+                                              section: section,
+                                              onChange: (value) {
+                                                controller.editSections(
+                                                    list: list,
+                                                    index: index,
+                                                    value: value);
+                                              },
+                                            ),
+                                          ));
+                                },
+                                child: CircleAvatar(
+                                  radius: 12,
+                                  backgroundColor: Constants.primary,
+                                  child: const Icon(
+                                    Icons.edit,
+                                    size: 12,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                              InkWell(
+                                onTap: () => controller.expansionSections(
+                                    list: list, index: index),
+                                child: CircleAvatar(
+                                  radius: 12,
+                                  backgroundColor: Constants.primary,
+                                  child: Icon(
+                                    section.value
+                                        ? Icons.keyboard_arrow_up_outlined
+                                        : Icons.keyboard_arrow_down_outlined,
+                                    size: 20,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          Visibility(
+                              visible: section.value,
+                              child: SizedBox(
+                                height: 300,
+                                child: changesListWidget(
+                                    section: section,
+                                    context: context,
+                                    onDelete: (indexItem) =>
+                                        controller.removeItensSection(
+                                            list: list,
+                                            index: index,
+                                            indexItem: indexItem),
+                                    onAdd: () {
+                                      showDialog(
+                                          context: context,
+                                          builder: (context) => Center(
+                                                child: ItensSectionWidget(
+                                                  onChange: (value) {
+                                                    controller.addItensSection(
+                                                        list: list,
+                                                        index: index,
+                                                        value: value);
+                                                  },
+                                                ),
+                                              ));
+                                    }),
+                              ))
+                        ],
+                      ),
+                    ),
+                  );
+                }),
+              ),
+        const SizedBox(
+          height: 10,
+        ),
+        Center(
+          child: IconButton(
+              onPressed: () {
+                showDialog(
+                    context: context,
+                    builder: (context) => Center(
+                          child: SectionWidget(
+                            onChange: (value) {
+                              controller.addSections(list: list, value: value);
+                            },
+                          ),
+                        ));
+              },
+              style: IconButton.styleFrom(backgroundColor: Constants.primary),
+              icon: const Icon(
+                Icons.add,
+                color: Colors.white,
+                size: 20,
+              )),
+        ),
+      ],
+    );
   }
 
   @override
@@ -122,9 +297,20 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
               spacing: 10,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                      color: Constants.primary,
+                      borderRadius: BorderRadius.circular(5)),
+                  child: Text(
+                    "INFORMAÇÕES BÁSICAS",
+                    style: Constants.titleButton,
+                  ),
+                ),
                 Text(
                   "ORGANIZAÇÃO",
-                  style: Constants.subtitleHint,
+                  style: Constants.titleHint,
                 ),
                 Container(
                   height: 50.0,
@@ -183,7 +369,7 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                         children: [
                           Text(
                             "COMPANHIA",
-                            style: Constants.subtitleHint,
+                            style: Constants.titleHint,
                           ),
                           Container(
                             height: 50.0,
@@ -216,7 +402,7 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                 }),
                 Text(
                   "PREFIXO",
-                  style: Constants.subtitleHint,
+                  style: Constants.titleHint,
                 ),
                 FieldText(
                   initValue: car.prefix,
@@ -227,7 +413,7 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                 ),
                 Text(
                   "MODELO",
-                  style: Constants.subtitleHint,
+                  style: Constants.titleHint,
                 ),
                 FieldText(
                   initValue: car.model,
@@ -238,7 +424,7 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                 ),
                 Text(
                   "PLACA",
-                  style: Constants.subtitleHint,
+                  style: Constants.titleHint,
                 ),
                 FieldText(
                   initValue: car.plate,
@@ -249,7 +435,7 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                 ),
                 Text(
                   "KM INICIAL",
-                  style: Constants.subtitleHint,
+                  style: Constants.titleHint,
                 ),
                 FieldText(
                   initValue: car.km.toString(),
@@ -260,7 +446,7 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                 ),
                 Text(
                   "MODELO DO PNEU",
-                  style: Constants.subtitleHint,
+                  style: Constants.titleHint,
                 ),
                 FieldText(
                   initValue: car.modelPneu,
@@ -272,7 +458,7 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                 ),
                 Text(
                   "NÚMERO DO CARTÃO",
-                  style: Constants.subtitleHint,
+                  style: Constants.titleHint,
                 ),
                 FieldText(
                   initValue: car.ticket,
@@ -282,357 +468,12 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                   onSaved: (value) => car.ticket = value ?? car.ticket,
                   mask: [maskCard],
                 ),
-              ],
-            ),
-            childRight: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "ITENS OU EQUIPAMENTOS",
-                  style: Constants.subtitleHint,
-                ),
-                const Divider(),
-                const SizedBox(
-                  height: 5,
-                ),
-                Observer(builder: (context) {
-                  return controller.sectionsItens.isEmpty
-                      ? Text(
-                          'Nenhum itens do checklist encontrado.',
-                          style: Constants.title,
-                        )
-                      : Column(
-                          children: List.generate(
-                              controller.sectionsItens.length, (index) {
-                            final section = controller.sectionsItens[index];
-
-                            return Card(
-                              child: Padding(
-                                padding: const EdgeInsets.all(10.0),
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      spacing: 5,
-                                      children: [
-                                        Expanded(
-                                            child: Text(
-                                          section.description,
-                                          style: Constants.title,
-                                        )),
-                                        InkWell(
-                                          onTap: () {
-                                            showDialog(
-                                                context: context,
-                                                builder: (context) => AlertMessage(
-                                                    title: 'Atenção',
-                                                    message:
-                                                        'Deseja excluir essa categoria de itens ?',
-                                                    cancel: true,
-                                                    titleOK: 'Sim',
-                                                    onPressedCancel: () =>
-                                                        Navigator.of(context)
-                                                            .pop(false),
-                                                    onPressedOK: () =>
-                                                        Navigator.of(context)
-                                                            .pop(true))).then(
-                                                (value) {
-                                              if (value ?? false) {
-                                                controller
-                                                    .removeSectionsItens(index);
-                                              }
-                                            });
-                                          },
-                                          child: CircleAvatar(
-                                            radius: 12,
-                                            backgroundColor: Constants.primary,
-                                            child: const Icon(
-                                              Icons.remove,
-                                              size: 15,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ),
-                                        InkWell(
-                                          onTap: () {
-                                            showDialog(
-                                                context: context,
-                                                builder: (context) => Center(
-                                                      child: SectionWidget(
-                                                        section: section,
-                                                        onChange: (value) {
-                                                          controller
-                                                              .editSectionsItens(
-                                                                  index, value);
-                                                        },
-                                                      ),
-                                                    ));
-                                          },
-                                          child: CircleAvatar(
-                                            radius: 12,
-                                            backgroundColor: Constants.primary,
-                                            child: const Icon(
-                                              Icons.edit,
-                                              size: 12,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ),
-                                        InkWell(
-                                          onTap: () => controller
-                                              .expansionSectionsItens(index),
-                                          child: CircleAvatar(
-                                            radius: 12,
-                                            backgroundColor: Constants.primary,
-                                            child: Icon(
-                                              section.value
-                                                  ? Icons
-                                                      .keyboard_arrow_up_outlined
-                                                  : Icons
-                                                      .keyboard_arrow_down_outlined,
-                                              size: 20,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Visibility(
-                                        visible: section.value,
-                                        child: SizedBox(
-                                          height: 300,
-                                          child: changesListWidget(
-                                              section: section,
-                                              context: context,
-                                              onDelete: (value) =>
-                                                  controller.removeSectionItens(
-                                                      index, value),
-                                              onAdd: () {
-                                                showDialog(
-                                                    context: context,
-                                                    builder: (context) =>
-                                                        Center(
-                                                          child:
-                                                              ItensSectionWidget(
-                                                            onChange: (value) {
-                                                              controller
-                                                                  .addSectionItens(
-                                                                      index,
-                                                                      value);
-                                                            },
-                                                          ),
-                                                        ));
-                                              }),
-                                        ))
-                                  ],
-                                ),
-                              ),
-                            );
-                          }),
-                        );
-                }),
-                const SizedBox(
-                  height: 10,
-                ),
-                Center(
-                  child: IconButton(
-                      onPressed: () {
-                        showDialog(
-                            context: context,
-                            builder: (context) => Center(
-                                  child: SectionWidget(
-                                    onChange: (value) {
-                                      controller.addSectionsItens(value);
-                                    },
-                                  ),
-                                ));
-                      },
-                      style: IconButton.styleFrom(
-                          backgroundColor: Constants.primary),
-                      icon: const Icon(
-                        Icons.add,
-                        color: Colors.white,
-                        size: 20,
-                      )),
-                ),
-                Text(
-                  "MATERIAIS DE CONSUMO",
-                  style: Constants.subtitleHint,
-                ),
-                const Divider(),
-                const SizedBox(
-                  height: 5,
-                ),
-                Observer(builder: (context) {
-                  return controller.sectionsMaterials.isEmpty
-                      ? Text(
-                          'Nenhum material encontrado.',
-                          style: Constants.title,
-                        )
-                      : Column(
-                          children: List.generate(
-                              controller.sectionsMaterials.length, (index) {
-                            final section = controller.sectionsMaterials[index];
-
-                            return Card(
-                              child: Padding(
-                                padding: const EdgeInsets.all(10.0),
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      spacing: 5,
-                                      children: [
-                                        Expanded(
-                                            child: Text(
-                                          section.description,
-                                          style: Constants.title,
-                                        )),
-                                        InkWell(
-                                          onTap: () {
-                                            showDialog(
-                                                context: context,
-                                                builder: (context) => AlertMessage(
-                                                    title: 'Atenção',
-                                                    message:
-                                                        'Deseja excluir essa categoria de itens ?',
-                                                    cancel: true,
-                                                    titleOK: 'Sim',
-                                                    onPressedCancel: () =>
-                                                        Navigator.of(context)
-                                                            .pop(false),
-                                                    onPressedOK: () =>
-                                                        Navigator.of(context)
-                                                            .pop(true))).then(
-                                                (value) {
-                                              if (value ?? false) {
-                                                controller
-                                                    .removeSectionsMaterials(
-                                                        index);
-                                              }
-                                            });
-                                          },
-                                          child: CircleAvatar(
-                                            radius: 12,
-                                            backgroundColor: Constants.primary,
-                                            child: const Icon(
-                                              Icons.remove,
-                                              size: 15,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ),
-                                        InkWell(
-                                          onTap: () {
-                                            showDialog(
-                                                context: context,
-                                                builder: (context) => Center(
-                                                      child: SectionWidget(
-                                                        section: section,
-                                                        onChange: (value) {
-                                                          controller
-                                                              .editSectionsMaterials(
-                                                                  index, value);
-                                                        },
-                                                      ),
-                                                    ));
-                                          },
-                                          child: CircleAvatar(
-                                            radius: 12,
-                                            backgroundColor: Constants.primary,
-                                            child: const Icon(
-                                              Icons.edit,
-                                              size: 12,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ),
-                                        InkWell(
-                                          onTap: () => controller
-                                              .expansionSectionsMaterials(
-                                                  index),
-                                          child: CircleAvatar(
-                                            radius: 12,
-                                            backgroundColor: Constants.primary,
-                                            child: Icon(
-                                              section.value
-                                                  ? Icons
-                                                      .keyboard_arrow_up_outlined
-                                                  : Icons
-                                                      .keyboard_arrow_down_outlined,
-                                              size: 20,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Visibility(
-                                        visible: section.value,
-                                        child: SizedBox(
-                                          height: 300,
-                                          child: changesListWidget(
-                                              section: section,
-                                              context: context,
-                                              onDelete: (value) => controller
-                                                  .removeSectionMaterials(
-                                                      index, value),
-                                              onAdd: () {
-                                                showDialog(
-                                                    context: context,
-                                                    builder: (context) =>
-                                                        Center(
-                                                          child:
-                                                              ItensSectionWidget(
-                                                            onChange: (value) {
-                                                              controller
-                                                                  .addSectionMaterials(
-                                                                      index,
-                                                                      value);
-                                                            },
-                                                          ),
-                                                        ));
-                                              }),
-                                        ))
-                                  ],
-                                ),
-                              ),
-                            );
-                          }),
-                        );
-                }),
-                const SizedBox(
-                  height: 10,
-                ),
-                Center(
-                  child: IconButton(
-                      onPressed: () {
-                        showDialog(
-                            context: context,
-                            builder: (context) => Center(
-                                  child: SectionWidget(
-                                    onChange: (value) {
-                                      controller.addSectionsMaterials(value);
-                                    },
-                                  ),
-                                ));
-                      },
-                      style: IconButton.styleFrom(
-                          backgroundColor: Constants.primary),
-                      icon: const Icon(
-                        Icons.add,
-                        color: Colors.white,
-                        size: 20,
-                      )),
-                ),
                 Text(
                   "FUNÇÃO",
-                  style: Constants.subtitleHint,
-                ),
-                const Divider(),
-                const SizedBox(
-                  height: 5,
+                  style: Constants.titleHint,
                 ),
                 Container(
-                  height: 50.0,
+                  height: 45.0,
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(horizontal: 5),
                   alignment: Alignment.center,
@@ -663,19 +504,12 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                             .toList());
                   }),
                 ),
-                const SizedBox(
-                  height: 15,
-                ),
                 Text(
                   "TIPO DE VEÍCULO",
-                  style: Constants.subtitleHint,
-                ),
-                const Divider(),
-                const SizedBox(
-                  height: 5,
+                  style: Constants.titleHint,
                 ),
                 Container(
-                  height: 50.0,
+                  height: 45.0,
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(horizontal: 5),
                   alignment: Alignment.center,
@@ -709,15 +543,78 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                 ),
                 Observer(builder: (_) {
                   return controller.fieldCarTypeVisible
-                      ? Padding(
-                          padding: const EdgeInsets.only(top: 10),
-                          child: FieldText(
-                            controller: carTypeController,
-                            hint: "TIPO DE VEÍCULO",
-                            validation: Validation.validatorPreenchimento,
-                          ),
+                      ? FieldText(
+                          controller: carTypeController,
+                          hint: "TIPO DE VEÍCULO",
+                          validation: Validation.validatorPreenchimento,
                         )
                       : Container();
+                }),
+              ],
+            ),
+            childRight: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                      color: Constants.primary,
+                      borderRadius: BorderRadius.circular(5)),
+                  child: Text(
+                    "ITENS OU EQUIPAMENTOS",
+                    style: Constants.titleButton,
+                  ),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                Observer(builder: (context) {
+                  return listSections(
+                      context: context, list: controller.sectionsItens);
+                }),
+                const SizedBox(
+                  height: 10,
+                ),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                      color: Constants.primary,
+                      borderRadius: BorderRadius.circular(5)),
+                  child: Text(
+                    "MATERIAIS PERMANENTES",
+                    style: Constants.titleButton,
+                  ),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                Observer(builder: (context) {
+                  return listSections(
+                      context: context, list: controller.sectionsMaterials);
+                }),
+                const SizedBox(
+                  height: 10,
+                ),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                      color: Constants.primary,
+                      borderRadius: BorderRadius.circular(5)),
+                  child: Text(
+                    "MATERIAIS DE CONSUMO",
+                    style: Constants.titleButton,
+                  ),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                Observer(builder: (context) {
+                  return listSections(
+                      context: context,
+                      list: controller.sectionsMaterialsConsumable);
                 }),
                 const SizedBox(
                   height: 20,
@@ -756,22 +653,13 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                           if (_key.currentState?.validate() ?? false) {
                             _key.currentState!.save();
 
-                            car.type = controller.type;
-                            car.function = controller.function;
-                            car.adm = controller.adm;
-                            car.changes = controller.carChanges;
-                            car.obmID = controller.obm.id ?? '';
-                            car.cia = (controller.cia?.toLowerCase()) ??
-                                (controller.obm.id ?? '');
-                            car.itens = controller.sectionsItens;
-                            car.materials = controller.sectionsMaterials;
-
-                            if (carTypeController.text.isNotEmpty) {
-                              car.type = carTypeController.text;
-                            }
-
                             controller
-                                .save(car: car, images: images)
+                                .save(
+                                    car: car.copyWith(
+                                        type: controller.fieldCarTypeVisible
+                                            ? carTypeController.text
+                                            : controller.type),
+                                    images: images)
                                 .then((value) async {
                               await showDialog(
                                   context: context,

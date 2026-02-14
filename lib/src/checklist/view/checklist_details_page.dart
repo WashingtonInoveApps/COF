@@ -417,7 +417,7 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
                     color: Constants.primary,
                     borderRadius: BorderRadius.circular(5)),
                 child: Text(
-                  "MATERIAIS DE CONSUMO",
+                  "MATERIAIS PERMANENTES",
                   style: Constants.titleButton,
                 ),
               ),
@@ -432,6 +432,32 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
                   : changesListWidget(
                       context: context,
                       categories: checklist.checkCar.car.materials,
+                    ),
+              const SizedBox(
+                height: 10,
+              ),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                    color: Constants.primary,
+                    borderRadius: BorderRadius.circular(5)),
+                child: Text(
+                  "MATERIAIS DE CONSUMO",
+                  style: Constants.titleButton,
+                ),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              (checklist.checkCar.car.materialsConsumable.isEmpty)
+                  ? Text(
+                      'Nenhum registro de itens encontrado.',
+                      style: Constants.title,
+                    )
+                  : changesListWidget(
+                      context: context,
+                      categories: checklist.checkCar.car.materialsConsumable,
                     ),
               const SizedBox(
                 height: 10,
@@ -469,72 +495,81 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
               const SizedBox(
                 height: 10,
               ),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                    color: Constants.primary,
-                    borderRadius: BorderRadius.circular(5)),
-                child: Text(
-                  "MATERIAIS UTILIZADOS",
-                  style: Constants.titleButton,
-                ),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              (checklist.materials?.isEmpty ?? false)
-                  ? Text(
-                      'Nenhum material utilizado',
-                      style: Constants.titleHint,
-                    )
-                  : Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children:
-                          List.generate(checklist.materials!.length, (index) {
-                        final material = checklist.materials![index];
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              material.description,
+              Visibility(
+                  visible: !checklist.enable,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                            color: Constants.primary,
+                            borderRadius: BorderRadius.circular(5)),
+                        child: Text(
+                          "MATERIAIS UTILIZADOS",
+                          style: Constants.titleButton,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      (checklist.materials?.isEmpty ?? false)
+                          ? Text(
+                              'Nenhum material utilizado',
+                              style: Constants.titleHint,
+                            )
+                          : Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: List.generate(
+                                      checklist.materials!.length, (index) {
+                                final material = checklist.materials![index];
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      material.description,
+                                      style: Constants.title,
+                                    ),
+                                    Text(
+                                      '${material.quantity.toString().padLeft(2, '0')} unidade(s)',
+                                      style: Constants.subtitleHint,
+                                    ),
+                                  ],
+                                );
+                              })
+                                  .expand((widget) => [widget, const Divider()])
+                                  .toList()
+                                ..removeLast(),
+                            ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                            color: Constants.primary,
+                            borderRadius: BorderRadius.circular(5)),
+                        child: Text(
+                          "OBSERVAÇÕES GERAL",
+                          style: Constants.titleButton,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      checklist.obs.isEmpty
+                          ? Text(
+                              'Nenhuma observação geral registrada.',
+                              style: Constants.titleHint,
+                            )
+                          : Text(
+                              checklist.obs,
                               style: Constants.title,
                             ),
-                            Text(
-                              '${material.quantity.toString().padLeft(2, '0')} unidade(s)',
-                              style: Constants.subtitleHint,
-                            ),
-                          ],
-                        );
-                      }).expand((widget) => [widget, const Divider()]).toList()
-                            ..removeLast(),
-                    ),
-              const SizedBox(
-                height: 10,
-              ),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                    color: Constants.primary,
-                    borderRadius: BorderRadius.circular(5)),
-                child: Text(
-                  "OBSERVAÇÕES GERAL",
-                  style: Constants.titleButton,
-                ),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              checklist.obs.isEmpty
-                  ? Text(
-                      'Nenhuma observação geral registrada.',
-                      style: Constants.titleHint,
-                    )
-                  : Text(
-                      checklist.obs,
-                      style: Constants.title,
-                    ),
+                    ],
+                  )),
               (checklist.signature != null)
                   ? Container(
                       width: double.infinity,

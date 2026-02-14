@@ -193,6 +193,9 @@ class _ChecklistCarPageState extends State<ChecklistCarPage> {
                               onFr: controller.setFR,
                               onArref: controller.setArref)),
                     ),
+                    const SizedBox(
+                      height: 10,
+                    )
                   ],
                 ),
               ),
@@ -282,25 +285,6 @@ class _ChecklistCarPageState extends State<ChecklistCarPage> {
                     ),
                     const SizedBox(
                       height: 10,
-                    ),
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                          color: Constants.primary,
-                          borderRadius: BorderRadius.circular(5)),
-                      child: Text(
-                        'OBSERVAÇÕES GERAIS',
-                        style: Constants.titleButton,
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    FieldText(
-                      initValue: controller.obs,
-                      hint: "EX.: Alguma informação importante",
-                      onChange: controller.setOBS,
                     ),
                   ],
                 ),

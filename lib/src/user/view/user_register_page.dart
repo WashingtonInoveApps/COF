@@ -28,7 +28,11 @@ class _UserPageRegisterState extends State<UserPageRegister> {
   final app = GetIt.I.get<AppController>();
 
   final maskRegistration = MaskTextInputFormatter(
-      mask: '###.###-#-#', type: MaskAutoCompletionType.lazy);
+    mask: '###.###-#-#',
+    filter: {
+      "#": RegExp(r'[A-Za-z0-9]'), // agora aceita letras e números
+    },
+  );
 
   final maskFormatter = MaskTextInputFormatter(
       mask: '(##) #####-####', filter: {"#": RegExp(r'[0-9]')});

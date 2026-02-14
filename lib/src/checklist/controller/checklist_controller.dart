@@ -72,16 +72,21 @@ abstract class _CheckListControllerBase with Store {
     if (init != null) {
       car = app.cars.firstWhere((e) => e.id == init.checkCar.car.id);
 
-      itens.addAll(List<ItensChangesModel>.from(init.checkCar.car.itens));
-      materials
-          .addAll(List<ItensChangesModel>.from(init.checkCar.car.materials));
+      itens.addAll(
+          deepCopySections(value: init.checkCar.car.itens, update: true));
+      materials.addAll(
+          deepCopySections(value: init.checkCar.car.materials, update: true));
+      materialsConsumable.addAll(deepCopySections(
+          value: init.checkCar.car.materialsConsumable, update: true));
 
       outhers
         ..clear()
         ..addAll(init.outhers ?? []);
     } else {
-      itens.addAll(List<ItensChangesModel>.from(car?.itens ?? []));
-      materials.addAll(List<ItensChangesModel>.from(car?.materials ?? []));
+      itens.addAll(deepCopySections(value: car?.itens ?? []));
+      materials.addAll(deepCopySections(value: car?.materials ?? []));
+      materialsConsumable
+          .addAll(deepCopySections(value: car?.materialsConsumable ?? []));
     }
 
     carChanges.addAll(car?.changes ?? []);
@@ -103,6 +108,10 @@ abstract class _CheckListControllerBase with Store {
       <ItensChangesModel>[].asObservable();
 
   @observable
+  ObservableList<ItensChangesModel> materialsConsumable =
+      <ItensChangesModel>[].asObservable();
+
+  @observable
   ObservableList<ChecklistOutherChange> outhers =
       <ChecklistOutherChange>[].asObservable();
 
@@ -110,7 +119,8 @@ abstract class _CheckListControllerBase with Store {
   ObservableList<String> teams = <String>[].asObservable();
 
   @observable
-  ObservableList<ItemModel> materialsConsumed = <ItemModel>[].asObservable();
+  ObservableList<ItemModel> materialsConsumedUsed =
+      <ItemModel>[].asObservable();
 
   List<StatesChecklist> states = [];
 
@@ -199,10 +209,14 @@ abstract class _CheckListControllerBase with Store {
   @computed
   bool get btFinish {
     final materialsEmpty = car?.materials.isEmpty ?? true;
+    final materialsConsumableEmpty = car?.materialsConsumable.isEmpty ?? true;
 
     if (materialsEmpty && step == 2) {
       return true;
-    } else if (step == 3) {
+    }
+    if (materialsConsumableEmpty && step == 3) {
+      return true;
+    } else if (step == 4) {
       return true;
     }
 
@@ -318,15 +332,15 @@ abstract class _CheckListControllerBase with Store {
   }
 
   @action
-  addMaterialsConsumed(List<ItemModel> values) {
-    materialsConsumed
+  addMaterialsConsumedUsed(List<ItemModel> values) {
+    materialsConsumedUsed
       ..clear()
       ..addAll(values);
   }
 
   @action
-  deleteMaterialsConsumed(int index) {
-    materialsConsumed.removeAt(index);
+  deleteMaterialsConsumedUsed(int index) {
+    materialsConsumedUsed.removeAt(index);
   }
 
   @action
@@ -335,29 +349,23 @@ abstract class _CheckListControllerBase with Store {
       car = CarModel.copy(cars.firstWhere((c) => c.prefix == value));
       prefix = value;
 
+      log(car?.toJson() ?? 'Sem veiculo');
+
       carChanges
         ..clear()
         ..addAll(car?.changes ?? []);
 
       itens
         ..clear()
-        ..addAll(processItens(car?.itens ?? []));
+        ..addAll(deepCopySections(value: car?.itens ?? []));
 
       materials
         ..clear()
-        ..addAll(processItens(car?.materials ?? []));
+        ..addAll(deepCopySections(value: car?.materials ?? []));
 
-      for (final category in itens) {
-        for (final item in category.itens) {
-          item.quantity = 0;
-        }
-      }
-
-      for (final category in materials) {
-        for (final item in category.itens) {
-          item.quantity = 0;
-        }
-      }
+      materialsConsumable
+        ..clear()
+        ..addAll(deepCopySections(value: car?.materialsConsumable ?? []));
     }
   }
 
@@ -393,21 +401,16 @@ abstract class _CheckListControllerBase with Store {
     return data;
   }
 
-  List<ItensChangesModel> processItens(List<ItensChangesModel> value) {
-    List<ItensChangesModel> list = [];
-    List<ItemModel> itens = [];
-
-    for (final item in value) {
-      list.add(ItensChangesModel.fromMap(item.toMap()));
-    }
-
-    for (final category in list) {
-      for (final item in category.itens) {
-        itens.add(item.copyWith(quantity: 0));
-      }
-    }
-
-    return list;
+  List<ItensChangesModel> deepCopySections(
+      {required List<ItensChangesModel> value, bool update = false}) {
+    return value.map((section) {
+      return section.copyWith(
+        itens: section.itens
+            .map((item) =>
+                item.copyWith(quantity: update ? item.quantityMarked : 0))
+            .toList(),
+      );
+    }).toList();
   }
 
   @action
@@ -527,6 +530,37 @@ abstract class _CheckListControllerBase with Store {
   }
 
   @action
+  List<ItensChangesModel> changeList({
+    required List<ItensChangesModel> list,
+    required ItemModel value,
+    required int indexSection,
+    required int indexItem,
+  }) {
+    final section = ItensChangesModel.fromMap(list[indexSection].toMap());
+    List<ItemModel> itens = List.from(section.itens);
+
+    itens.removeAt(indexItem);
+    itens.insert(indexItem, value);
+
+    list.removeAt(indexSection);
+    list.insert(indexSection, section.copyWith(itens: itens));
+
+    return list;
+  }
+
+  @action
+  changeOBS({
+    required List<ItensChangesModel> list,
+    required String obs,
+    required int indexSection,
+  }) {
+    final section = ItensChangesModel.fromMap(list[indexSection].toMap());
+
+    list.removeAt(indexSection);
+    list.insert(indexSection, section.copyWith(obs: obs));
+  }
+
+  @action
   changeOBSMaterials(String obs, int indexCategory) {
     final category =
         ItensChangesModel.fromMap(materials.elementAt(indexCategory).toMap());
@@ -549,7 +583,11 @@ abstract class _CheckListControllerBase with Store {
           user: app.user,
           userID: app.user.id ?? '',
           checkCar: CarCheckList(
-            car: car!.copyWith(itens: itens, materials: materials),
+            car: car!.copyWith(
+              itens: itens,
+              materials: materials,
+              materialsConsumable: materialsConsumable,
+            ),
             arref: arref,
             fr: fr,
             fuel: fuel,
@@ -599,7 +637,7 @@ abstract class _CheckListControllerBase with Store {
       final result = await repository.finish(
           checklist: checklist.copyWith(
               state: state.state,
-              materials: materialsConsumed,
+              materials: materialsConsumedUsed,
               states: states,
               dateFinish: now,
               enable: false),
@@ -668,10 +706,8 @@ abstract class _CheckListControllerBase with Store {
         }
 
         return messagesErros.isEmpty;
-      case 2:
-        return true;
       default:
-        return false;
+        return true;
     }
   }
 }

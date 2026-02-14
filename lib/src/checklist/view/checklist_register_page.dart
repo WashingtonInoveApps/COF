@@ -1,11 +1,12 @@
+import 'dart:developer';
+
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/model/check_list_model.dart';
 import 'package:bsu_control/model/item_model.dart';
 import 'package:bsu_control/src/checklist/view/pages/checklist_car_page.dart';
 import 'package:bsu_control/src/checklist/view/pages/checklist_infor_page.dart';
-import 'package:bsu_control/src/checklist/view/pages/checklist_itens_page.dart';
-import 'package:bsu_control/src/checklist/view/pages/checklist_materials_page.dart';
+import 'package:bsu_control/src/checklist/view/pages/checklist_section_page.dart';
 import 'package:bsu_control/src/widgets/alert_message.dart';
 import 'package:bsu_control/src/widgets/backgraund_page.dart';
 import 'package:flutter/material.dart';
@@ -37,16 +38,78 @@ class _ChecklistRegisterPageState extends State<ChecklistRegisterPage> {
 
   @override
   Widget build(BuildContext context) {
-    final steps = [
+    final update = (widget.checklist != null);
+
+    final pages = [
       CheckListInforPage(
         controller: controller,
       ),
       ChecklistCarPage(controller: controller),
-      ChecklistItensPage(controller: controller),
-      ChecklistMaterialsPage(controller: controller)
+      Observer(builder: (context) {
+        return ChecklistSectionPage(
+          key: ValueKey(
+              "itens${controller.step}"), //flutter entende que é outro widget e reconstroi.
+          width: app.width,
+          title: 'ITENS OU EQUIPAMENTOS',
+          sections: controller.car?.itens ?? [],
+          list: controller.itens,
+          onChangeItem: (value, indexSection, indexItem) {
+            controller.changeList(
+                list: controller.itens,
+                value: value,
+                indexSection: indexSection,
+                indexItem: indexItem);
+          },
+          onChangeOBS: (obs, index) {
+            controller.changeOBS(
+                list: controller.itens, obs: obs, indexSection: index);
+          },
+        );
+      }),
+      Observer(builder: (context) {
+        return ChecklistSectionPage(
+          key: ValueKey("materials${controller.step}"),
+          width: app.width,
+          title: 'MATERIAIS PERMANENTES',
+          sections: controller.car?.materials ?? [],
+          list: controller.materials,
+          onChangeItem: (value, indexSection, indexItem) {
+            controller.changeList(
+                list: controller.materials,
+                value: value,
+                indexSection: indexSection,
+                indexItem: indexItem);
+          },
+          onChangeOBS: (obs, index) {
+            controller.changeOBS(
+                list: controller.materials, obs: obs, indexSection: index);
+          },
+        );
+      }),
+      Observer(builder: (context) {
+        return ChecklistSectionPage(
+          key: ValueKey("consumable${controller.step}"),
+          width: app.width,
+          title: 'MATERIAIS DE CONSUMO',
+          sections: controller.car?.materialsConsumable ?? [],
+          list: controller.materialsConsumable,
+          onChangeItem: (value, indexSection, indexItem) {
+            controller.changeList(
+                list: controller.materialsConsumable,
+                value: value,
+                indexSection: indexSection,
+                indexItem: indexItem);
+          },
+          onChangeOBS: (obs, index) {
+            controller.changeOBS(
+                list: controller.materialsConsumable,
+                obs: obs,
+                indexSection: index);
+          },
+        );
+      }),
     ];
 
-    final update = (widget.checklist != null);
     return Scaffold(
       body: Stack(
         children: [
@@ -196,9 +259,10 @@ class _ChecklistRegisterPageState extends State<ChecklistRegisterPage> {
               ],
             ),
             childLeft: Observer(builder: (_) {
+              log('Step: ${controller.step}');
               return AnimatedSwitcher(
                 duration: const Duration(milliseconds: 300),
-                child: steps[controller.step],
+                child: pages[controller.step],
               );
             }),
           ),

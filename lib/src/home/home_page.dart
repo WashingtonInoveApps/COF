@@ -28,7 +28,7 @@ import 'package:url_launcher/url_launcher_string.dart';
 import '../widgets/pagination_widget.dart';
 import 'view/widgets/period_chart_widget.dart';
 
-const versionCodeSystem = 4;
+const versionCodeSystem = 6;
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -262,76 +262,82 @@ class _HomePageState extends State<HomePage> {
                                                 mainAxisAlignment:
                                                     MainAxisAlignment.center,
                                                 children: [
-                                                  Observer(builder: (context) {
-                                                    return app.newRegister
-                                                        ? btCustom(
-                                                            label:
-                                                                'Novo Registro',
-                                                            icon: Icons.add,
-                                                            color: Colors
-                                                                .blue.shade800,
-                                                            onTap: () {
-                                                              if (expires) {
-                                                                showDialog(
-                                                                    context:
-                                                                        context,
-                                                                    builder: (context) => AlertMessage(
-                                                                        title:
-                                                                            'Atenção',
-                                                                        message:
-                                                                            'Ops ! Horário para realizar um novo registro expirado, espere um novo período.',
-                                                                        onPressedOK:
-                                                                            () =>
-                                                                                Navigator.of(context).pop()));
-                                                              } else {
-                                                                app.setRouter(
-                                                                    2);
-                                                                Navigator.of(
+                                                  Expanded(
+                                                    child: Observer(
+                                                        builder: (context) {
+                                                      return app.newRegister
+                                                          ? btCustom(
+                                                              label:
+                                                                  'Novo Registro',
+                                                              icon: Icons.add,
+                                                              color: Colors.blue
+                                                                  .shade800,
+                                                              onTap: () {
+                                                                if (expires) {
+                                                                  showDialog(
+                                                                      context:
+                                                                          context,
+                                                                      builder: (context) => AlertMessage(
+                                                                          title:
+                                                                              'Atenção',
+                                                                          message:
+                                                                              'Ops ! Horário para realizar um novo registro expirado, espere um novo período.',
+                                                                          onPressedOK: () =>
+                                                                              Navigator.of(context).pop()));
+                                                                } else {
+                                                                  app.setRouter(
+                                                                      2);
+                                                                  Navigator.of(
+                                                                          context)
+                                                                      .pushReplacement(MaterialPageRoute(
+                                                                          builder: (context) =>
+                                                                              const ChecklistRegisterPage()));
+                                                                }
+                                                              })
+                                                          : btCustom(
+                                                              label:
+                                                                  'Ver registro',
+                                                              icon:
+                                                                  Icons.search,
+                                                              color: Colors
+                                                                  .deepPurple
+                                                                  .shade800,
+                                                              onTap: () async {
+                                                                await Navigator.of(
                                                                         context)
-                                                                    .pushReplacement(MaterialPageRoute(
+                                                                    .push(MaterialPageRoute(
                                                                         builder:
                                                                             (context) =>
-                                                                                const ChecklistRegisterPage()));
-                                                              }
-                                                            })
-                                                        : btCustom(
-                                                            label:
-                                                                'Ver registro',
-                                                            icon: Icons.search,
-                                                            color: Colors
-                                                                .deepPurple
-                                                                .shade800,
-                                                            onTap: () async {
-                                                              await Navigator.of(
-                                                                      context)
-                                                                  .push(MaterialPageRoute(
-                                                                      builder: (context) => ChecklistDetailsPage(
-                                                                          checklistID: app
-                                                                              .checklistUser!
-                                                                              .id!)));
-                                                            });
-                                                  }),
-                                                  btCustom(
-                                                      label:
-                                                          'Novo abastecimento',
-                                                      icon: MdiIcons.gasStation,
-                                                      color: Colors
-                                                          .orange.shade700,
-                                                      onTap: null),
-                                                  btCustom(
-                                                      label: 'Meus registros',
-                                                      icon: MdiIcons.viewList,
-                                                      color:
-                                                          Colors.green.shade700,
-                                                      onTap: () {
-                                                        app.setRouter(1);
-                                                        Navigator.of(context)
-                                                            .pushReplacement(
-                                                                MaterialPageRoute(
-                                                                    builder:
-                                                                        (context) =>
-                                                                            const MyChecklistPage()));
-                                                      }),
+                                                                                ChecklistDetailsPage(checklistID: app.checklistUser!.id!)));
+                                                              });
+                                                    }),
+                                                  ),
+                                                  Expanded(
+                                                    child: btCustom(
+                                                        label:
+                                                            'Novo abastecimento',
+                                                        icon:
+                                                            MdiIcons.gasStation,
+                                                        color: Colors
+                                                            .orange.shade700,
+                                                        onTap: null),
+                                                  ),
+                                                  Expanded(
+                                                    child: btCustom(
+                                                        label: 'Meus registros',
+                                                        icon: MdiIcons.viewList,
+                                                        color: Colors
+                                                            .green.shade700,
+                                                        onTap: () {
+                                                          app.setRouter(1);
+                                                          Navigator.of(context)
+                                                              .pushReplacement(
+                                                                  MaterialPageRoute(
+                                                                      builder:
+                                                                          (context) =>
+                                                                              const MyChecklistPage()));
+                                                        }),
+                                                  ),
                                                 ],
                                               ),
                                             ),
@@ -579,62 +585,6 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-// Widget cardInfor(
-//     {required String label,
-//     required IconData icon,
-//     required Color color,
-//     required int value}) {
-//   return IntrinsicHeight(
-//     child: Row(
-//       spacing: 5,
-//       crossAxisAlignment: CrossAxisAlignment.center,
-//       children: [
-//         Container(
-//           alignment: Alignment.center,
-//           margin: const EdgeInsets.all(5),
-//           padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 25),
-//           decoration: BoxDecoration(
-//               borderRadius: BorderRadius.circular(5), color: color),
-//           child: Icon(
-//             icon,
-//             size: 20,
-//             color: Colors.white,
-//           ),
-//         ),
-//         Expanded(
-//           child: Column(
-//             mainAxisAlignment: MainAxisAlignment.center,
-//             crossAxisAlignment: CrossAxisAlignment.start,
-//             children: [
-//               const SizedBox(
-//                 height: 5,
-//               ),
-//               ...label
-//                   .split(' ')
-//                   .map((e) => Text(
-//                         e.toUpperCase(),
-//                         textAlign: TextAlign.center,
-//                         style: Constants.subtitle.copyWith(color: Colors.grey),
-//                       ))
-//                   .toList(),
-//               Text(
-//                 value.toString().padLeft(2, '0'),
-//                 style: Constants.title.copyWith(
-//                     color: Colors.black,
-//                     fontSize: 20,
-//                     fontWeight: FontWeight.bold),
-//               ),
-//               const SizedBox(
-//                 height: 5,
-//               )
-//             ],
-//           ),
-//         ),
-//       ],
-//     ),
-//   );
-// }
-
 Widget btCustom(
     {required String label,
     required IconData icon,
@@ -662,6 +612,7 @@ Widget btCustom(
                     e,
                     textAlign: TextAlign.center,
                     style: Constants.title.copyWith(color: Colors.white),
+                    overflow: TextOverflow.ellipsis,
                   ))
               .toList()
         ],
