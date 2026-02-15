@@ -1,9 +1,9 @@
 import 'dart:async';
 
-import 'package:universal_html/html.dart' as html;
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/core.dart';
+import 'package:bsu_control/main.dart';
 import 'package:bsu_control/model/check_list_model.dart';
 import 'package:bsu_control/src/checklist/view/checklist_details_page.dart';
 import 'package:bsu_control/src/checklist/view/checklist_register_page.dart';
@@ -24,11 +24,13 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:mobx/mobx.dart';
+import 'package:universal_html/html.dart' as html;
 import 'package:url_launcher/url_launcher_string.dart';
+
 import '../widgets/pagination_widget.dart';
 import 'view/widgets/period_chart_widget.dart';
 
-const versionCodeSystem = 6;
+const versionCodeSystem = 7;
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -50,7 +52,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    controller = HomeController(app: app);
+    controller = HomeController(config: config);
 
     controller.setDateRangeChecklist(
         dateStart: app.dateStartConfig, dateFinish: app.dateFinishConfig);
@@ -308,7 +310,7 @@ class _HomePageState extends State<HomePage> {
                                                                     .push(MaterialPageRoute(
                                                                         builder:
                                                                             (context) =>
-                                                                                ChecklistDetailsPage(checklistID: app.checklistUser!.id!)));
+                                                                                ChecklistDetailsPage(checklist: app.checklistUser!)));
                                                               });
                                                     }),
                                                   ),
@@ -392,7 +394,7 @@ class _HomePageState extends State<HomePage> {
                                       );
                                     }),
                                     Observer(builder: (context) {
-                                      final list = List<CheckListModel>.from(
+                                      final list = List<ChecklistModel>.from(
                                           controller.checklistsPeriod);
                                       return SizedBox(
                                         height: 300,
@@ -499,33 +501,27 @@ class _HomePageState extends State<HomePage> {
                                               mode: LaunchMode
                                                   .externalApplication);
                                         },
-                                        onDetails: app.user.managerOperational
-                                            ? (id) async {
-                                                await Navigator.of(context)
-                                                    .push(MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            ChecklistDetailsPage(
-                                                                checklistID:
-                                                                    id)));
-                                              }
-                                            : null,
-                                        onChanges: app.user.managerOperational
-                                            ? (changes) {
-                                                showDialog(
-                                                    context: context,
-                                                    builder: (context) {
-                                                      return AlertDialog(
-                                                        contentPadding:
-                                                            const EdgeInsets
-                                                                .all(10),
-                                                        content:
-                                                            ImagesChangesViewWidget(
-                                                                changes:
-                                                                    changes),
-                                                      );
-                                                    });
-                                              }
-                                            : null,
+                                        onDetails: (checklist) async {
+                                          await Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      ChecklistDetailsPage(
+                                                          checklist:
+                                                              checklist)));
+                                        },
+                                        onChanges: (changes) {
+                                          showDialog(
+                                              context: context,
+                                              builder: (context) {
+                                                return AlertDialog(
+                                                  contentPadding:
+                                                      const EdgeInsets.all(10),
+                                                  content:
+                                                      ImagesChangesViewWidget(
+                                                          changes: changes),
+                                                );
+                                              });
+                                        },
                                       ),
                                     ),
                                     SizedBox(

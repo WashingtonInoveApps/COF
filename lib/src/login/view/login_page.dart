@@ -1,7 +1,6 @@
-import 'dart:developer';
-
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/validation.dart';
+import 'package:bsu_control/main.dart';
 import 'package:bsu_control/src/widgets/alert_message.dart';
 import 'package:bsu_control/src/widgets/textfield_widget.dart';
 import 'package:flutter/cupertino.dart';
@@ -37,18 +36,18 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    controller = LoginController(app: app);
+    controller = LoginController(config: config);
 
-    controller.loginController((email) {
+    controller.call((email) {
       controllerEmail.text = email;
-      log(email);
-    }).then((value) {
+    }).then((user) {
       if (widget.exit) {
         controller.setLoading(false);
         return;
       }
 
-      if (value) {
+      if (user != null) {
+        app.setUser(user);
         Navigator.of(context).pushReplacement(
             CupertinoPageRoute(builder: (context) => const HomePage()));
       }

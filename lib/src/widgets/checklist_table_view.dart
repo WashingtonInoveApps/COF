@@ -9,10 +9,10 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
 class ChecklistTableView extends StatefulWidget {
-  final List<CheckListModel> values;
+  final List<ChecklistModel> values;
   final List<OBMModel> obms;
   final Function(String)? onContact;
-  final Function(String)? onDetails;
+  final Function(ChecklistModel)? onDetails;
   final Function(List<CarChangeModel>)? onChanges;
 
   const ChecklistTableView(
@@ -37,7 +37,10 @@ class _ChecklistTableViewState extends State<ChecklistTableView> {
         checklists: widget.values,
         obms: widget.obms,
         onContact: widget.onContact,
-        onDetails: widget.onDetails,
+        onDetails: (id) {
+          final checklist = widget.values.firstWhere((e) => e.id == id);
+          widget.onDetails?.call(checklist);
+        },
         onChanges: (id) {
           final checklist = widget.values.firstWhere((e) => e.id == id);
           widget.onChanges?.call(checklist.changes);
@@ -205,7 +208,7 @@ class ChecklistDataSource extends DataGridSource {
     onSortChanged?.call();
   }
 
-  void updateData(List<CheckListModel> checklists, List<OBMModel> obms) {
+  void updateData(List<ChecklistModel> checklists, List<OBMModel> obms) {
     _rows = checklists.map<DataGridRow>((check) {
       final obm = obms.firstWhere((e) => e.id == check.obmID);
 
@@ -254,7 +257,7 @@ class ChecklistDataSource extends DataGridSource {
   }
 
   ChecklistDataSource({
-    required List<CheckListModel> checklists,
+    required List<ChecklistModel> checklists,
     required List<OBMModel> obms,
     this.onContact,
     this.onDetails,

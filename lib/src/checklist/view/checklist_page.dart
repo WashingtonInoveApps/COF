@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/core.dart';
+import 'package:bsu_control/main.dart';
 import 'package:bsu_control/model/check_list_model.dart';
 import 'package:bsu_control/src/checklist/controller/checklist_controller.dart';
 import 'package:bsu_control/src/checklist/view/checklist_details_page.dart';
@@ -41,7 +42,15 @@ class _ChecklistPageState extends State<ChecklistPage> {
   @override
   void initState() {
     super.initState();
-    controller = CheckListController(init: null, app: app, update: false);
+
+    controller = CheckListController(
+      init: null,
+      config: config,
+      update: false,
+      cars: app.cars,
+      checklistTodays: app.checklistsToday,
+    );
+
     controller.setDateRangeChecklist(
         dateStart: controller.dateStartConfig,
         dateFinish: controller.dateFinishConfig);
@@ -54,7 +63,9 @@ class _ChecklistPageState extends State<ChecklistPage> {
               referenceDateStart: controller.dateReferenceStart,
               referenceDateFinish: controller.dateReferenceFinish)
           .listen((result) {
-        controller.setMyChecklistUser(app.getChecklistUser(list: result));
+        controller.setMyChecklistUser(
+            result.where((e) => e.userID == app.user.id).toList());
+
         controller.setLoading(false);
       });
     });
@@ -125,7 +136,7 @@ class _ChecklistPageState extends State<ChecklistPage> {
                                 height: 200,
                                 padding: const EdgeInsets.all(10),
                                 child: Observer(builder: (_) {
-                                  final checklists = List<CheckListModel>.from(
+                                  final checklists = List<ChecklistModel>.from(
                                       controller.myChecklistUser);
                                   return UserStateChart(checklists: checklists);
                                 }),
@@ -223,7 +234,7 @@ class _ChecklistPageState extends State<ChecklistPage> {
                                       MaterialPageRoute(
                                           builder: (context) =>
                                               ChecklistDetailsPage(
-                                                  checklistID: id)));
+                                                  checklist: id)));
                                 },
                                 onChanges: (changes) {
                                   showDialog(

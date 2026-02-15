@@ -24,6 +24,6 @@ abstract class ICarRepository {
   Future<bool> deleteCarMapa({required String id});
   Future<bool> insertMapaCar({required CarMapaModel mapa});
 
-  Future<List<CheckListModel>> getChecklistByMonth(
+  Future<List<ChecklistModel>> getChecklistByMonth(
       {required DateTime reference});
 }

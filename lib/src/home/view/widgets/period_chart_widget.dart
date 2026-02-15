@@ -7,7 +7,7 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 class ChartPeriodWidget extends StatelessWidget {
   final DateTime dateStart;
   final DateTime dateFinish;
-  final List<CheckListModel> checklists;
+  final List<ChecklistModel> checklists;
 
   const ChartPeriodWidget(
       {Key? key,
@@ -16,7 +16,7 @@ class ChartPeriodWidget extends StatelessWidget {
       required this.dateFinish})
       : super(key: key);
 
-  List<ChecklistChartData> buildChartData(List<CheckListModel> list) {
+  List<ChecklistChartData> buildChartData(List<ChecklistModel> list) {
     Map<String, int> checklistsPorDia = {};
     Map<String, int> alteracoesPorDia = {};
 
@@ -44,7 +44,7 @@ class ChartPeriodWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final list = List<CheckListModel>.from(checklists);
+    final list = List<ChecklistModel>.from(checklists);
     list.sort((a, b) => a.date.compareTo(b.date));
 
     final data = buildChartData(list);

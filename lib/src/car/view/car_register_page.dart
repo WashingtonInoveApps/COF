@@ -2,6 +2,7 @@ import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/enum.dart';
 import 'package:bsu_control/core/validation.dart';
+import 'package:bsu_control/main.dart';
 import 'package:bsu_control/model/car_model.dart';
 import 'package:bsu_control/model/itens_changes_model.dart';
 import 'package:bsu_control/model/obm_model.dart';
@@ -50,7 +51,12 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
   @override
   void initState() {
     super.initState();
-    controller = CarController(app: app);
+
+    controller = CarController(
+      config: config,
+      user: app.user,
+    );
+
     controller.cleanSections(list: controller.sectionsItens);
     controller.cleanSections(list: controller.sectionsMaterials);
     controller.cleanSections(list: controller.sectionsMaterialsConsumable);

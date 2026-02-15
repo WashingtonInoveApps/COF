@@ -20,21 +20,21 @@ class InsertMaterialWidget extends StatefulWidget {
 }
 
 class _InsertMaterialWidgetState extends State<InsertMaterialWidget> {
-  List<String> materials = [];
+  List<ItemModel> materials = [];
   List<ItemModel> itens = [];
 
   @override
   void initState() {
     super.initState();
     materials = widget.materials
-        .map((e) => e.itens.map((e) => e.description))
+        .map((e) => e.itens)
         .expand((element) => element)
         .toSet()
         .toList();
 
-    for (final item in materials) {
-      itens.add(ItemModel(description: item));
-    }
+    itens
+      ..clear()
+      ..addAll(List<ItemModel>.from(materials));
   }
 
   List<ItemModel> processList(List<ItemModel> itens, List<ItemModel> compare) {
@@ -49,6 +49,7 @@ class _InsertMaterialWidgetState extends State<InsertMaterialWidget> {
       } else {
         final material = compare[index];
         list.add(ItemModel(
+            id: item.id,
             description: item.description,
             quantity: (item.quantity + material.quantity)));
       }
@@ -97,7 +98,7 @@ class _InsertMaterialWidgetState extends State<InsertMaterialWidget> {
                       children: [
                         Expanded(
                           child: Text(
-                            item,
+                            item.description,
                             style: Constants.title,
                           ),
                         ),

@@ -111,186 +111,199 @@ class _CarChangesWidgetState extends State<CarChangesWidget> {
             height: 10,
           ),
           (hasImageChange(image))
-              ? SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Center(
-                    child: Stack(
-                      children: [
-                        Center(
-                          child: ClipRRect(
-                            borderRadius: BorderRadiusGeometry.circular(5),
-                            child: (image is Uint8List)
-                                ? Image.memory(
-                                    image,
-                                    height: heightImage,
-                                    width: widthImage,
-                                    fit: BoxFit.contain,
-                                  )
-                                : (image is FileModel)
-                                    ? CachedNetworkImage(
-                                        imageUrl: image.url,
+              ? Stack(
+                  children: [
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Center(
+                        child: Stack(
+                          children: [
+                            Center(
+                              child: ClipRRect(
+                                borderRadius: BorderRadiusGeometry.circular(5),
+                                child: (image is Uint8List)
+                                    ? Image.memory(
+                                        image,
                                         height: heightImage,
                                         width: widthImage,
-                                        progressIndicatorBuilder:
-                                            (context, url, downloadProgress) =>
-                                                Center(
-                                          child: CircularProgressIndicator(
-                                              color: Constants.primary,
-                                              value: downloadProgress.progress),
-                                        ),
                                         fit: BoxFit.contain,
                                       )
-                                    : Column(
-                                        spacing: 5,
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          const Icon(
-                                            Icons.image_not_supported,
-                                            size: 50,
-                                            color: Colors.grey,
+                                    : (image is FileModel)
+                                        ? CachedNetworkImage(
+                                            imageUrl: image.url,
+                                            height: heightImage,
+                                            width: widthImage,
+                                            progressIndicatorBuilder: (context,
+                                                    url, downloadProgress) =>
+                                                Center(
+                                              child: CircularProgressIndicator(
+                                                  color: Constants.primary,
+                                                  value: downloadProgress
+                                                      .progress),
+                                            ),
+                                            fit: BoxFit.contain,
+                                          )
+                                        : Column(
+                                            spacing: 5,
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              const Icon(
+                                                Icons.image_not_supported,
+                                                size: 50,
+                                                color: Colors.grey,
+                                              ),
+                                              Text(
+                                                'Sem imagem',
+                                                style: Constants.subtitleHint,
+                                              ),
+                                            ],
                                           ),
-                                          Text(
-                                            'Sem imagem',
-                                            style: Constants.subtitleHint,
-                                          ),
-                                        ],
-                                      ),
-                          ),
-                        ),
-                        Center(
-                          child: GestureDetector(
-                            behavior: HitTestBehavior.translucent,
-                            onTapDown: (TapDownDetails details) async {
-                              RenderBox box = paintKey.currentContext!
-                                  .findRenderObject()! as RenderBox;
+                              ),
+                            ),
+                            Center(
+                              child: GestureDetector(
+                                behavior: HitTestBehavior.translucent,
+                                onTapDown: (TapDownDetails details) async {
+                                  RenderBox box = paintKey.currentContext!
+                                      .findRenderObject()! as RenderBox;
 
-                              final local =
-                                  box.globalToLocal(details.globalPosition);
+                                  final local =
+                                      box.globalToLocal(details.globalPosition);
 
-                              // 📌 COORDENADA PROPORCIONAL
-                              final tapDx = local.dx / box.size.width;
-                              final tapDy = local.dy / box.size.height;
+                                  // 📌 COORDENADA PROPORCIONAL
+                                  final tapDx = local.dx / box.size.width;
+                                  final tapDy = local.dy / box.size.height;
 
-                              int index = -1;
+                                  int index = -1;
 
-                              // 🔍 VERIFICA SE TOCOU EM UM PONTO JÁ EXISTENTE
-                              for (int i = 0; i < changes.length; i++) {
-                                final dx = (changes[i].dx - tapDx).abs();
-                                final dy = (changes[i].dy - tapDy).abs();
+                                  // 🔍 VERIFICA SE TOCOU EM UM PONTO JÁ EXISTENTE
+                                  for (int i = 0; i < changes.length; i++) {
+                                    final dx = (changes[i].dx - tapDx).abs();
+                                    final dy = (changes[i].dy - tapDy).abs();
 
-                                if (dx < (widget.region / box.size.width) &&
-                                    dy < (widget.region / box.size.height)) {
-                                  index = i;
-                                  break;
-                                }
-                              }
-
-                              if (index != -1) {
-                                final enable = ((widget.remove &&
-                                        (widget.checklistID ==
-                                            changes[index].checklistID) &&
-                                        !changes[index].value) ||
-                                    widget.update);
-
-                                showDialog(
-                                    context: context,
-                                    builder: (context) => ImageViewChangeWidget(
-                                          enable: enable,
-                                          change: changes[index],
-                                          onRemove: () {
-                                            List<CarChangeModel> carChanges =
-                                                List<CarChangeModel>.from(
-                                                    widget.car.changes);
-
-                                            carChanges.removeAt(index);
-                                            widget.onChange?.call(carChanges);
-                                          },
-                                        ));
-                              } else {
-                                if (widget.add) {
-                                  await showDialog(
-                                      context: context,
-                                      builder: (context) => ImageChangeWidget(
-                                            onSelect: (image, description) {
-                                              final change = CarChangeModel(
-                                                checklistID: widget.checklistID,
-                                                user: widget.user,
-                                                value: widget.update,
-                                                dx: tapDx, // 🔥 SALVA PROPORCIONAL
-                                                dy: tapDy,
-                                                description: description,
-                                                fileImage: image,
-                                                indexImage: indexImage,
-                                                date: DateTime.now(),
-                                              );
-
-                                              changes.add(change);
-                                              List<CarChangeModel> carChanges =
-                                                  List<CarChangeModel>.from(
-                                                      widget.car.changes);
-                                              carChanges.add(change);
-
-                                              widget.onChange?.call(carChanges);
-                                            },
-                                          ));
-                                }
-                              }
-                            },
-                            child: paintChangesImage(
-                                key: paintKey,
-                                changes: changes,
-                                checklistID: widget.checklistID,
-                                heightImage: heightImage,
-                                widthImage: widthImage),
-                            // child: CustomPaint(
-                            //   key: paintKey,
-                            //   foregroundPainter: MyCustomPainter(
-                            //       changes: changes,
-                            //       checklistID: widget.checklistID),
-                            //   child: Container(
-                            //     height: heightImage, // 🔒 TAMANHO FIXO
-                            //     width: widthImage,
-                            //     color: Colors.transparent,
-                            //   ),
-                            // ),
-                          ),
-                        ),
-                        Positioned(
-                          bottom: 10,
-                          left: 10,
-                          child: InkWell(
-                              onTap: changes.isNotEmpty
-                                  ? () {
-                                      showDialog(
-                                          context: context,
-                                          builder: (context) {
-                                            return AlertDialog(
-                                              contentPadding:
-                                                  const EdgeInsets.all(10),
-                                              content: ImagesChangesViewWidget(
-                                                  changes: changes),
-                                            );
-                                          });
+                                    if (dx < (widget.region / box.size.width) &&
+                                        dy <
+                                            (widget.region / box.size.height)) {
+                                      index = i;
+                                      break;
                                     }
-                                  : null,
-                              child: Card(
-                                elevation: 5,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius:
-                                        BorderRadiusGeometry.circular(100)),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(10.0),
-                                  child: Icon(
-                                    Icons.list_alt_rounded,
-                                    size: 20,
-                                    color: Constants.primary,
-                                  ),
-                                ),
-                              )),
-                        )
-                      ],
+                                  }
+
+                                  if (index != -1) {
+                                    final enable = ((widget.remove &&
+                                            (widget.checklistID ==
+                                                changes[index].checklistID) &&
+                                            !changes[index].value) ||
+                                        widget.update);
+
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) =>
+                                            ImageViewChangeWidget(
+                                              enable: enable,
+                                              change: changes[index],
+                                              onRemove: () {
+                                                List<CarChangeModel>
+                                                    carChanges =
+                                                    List<CarChangeModel>.from(
+                                                        widget.car.changes);
+
+                                                carChanges.removeAt(index);
+                                                widget.onChange
+                                                    ?.call(carChanges);
+                                              },
+                                            ));
+                                  } else {
+                                    if (widget.add) {
+                                      await showDialog(
+                                          context: context,
+                                          builder: (context) =>
+                                              ImageChangeWidget(
+                                                onSelect: (image, description) {
+                                                  final change = CarChangeModel(
+                                                    checklistID:
+                                                        widget.checklistID,
+                                                    user: widget.user,
+                                                    value: widget.update,
+                                                    dx: tapDx, // 🔥 SALVA PROPORCIONAL
+                                                    dy: tapDy,
+                                                    description: description,
+                                                    fileImage: image,
+                                                    indexImage: indexImage,
+                                                    date: DateTime.now(),
+                                                  );
+
+                                                  changes.add(change);
+                                                  List<CarChangeModel>
+                                                      carChanges =
+                                                      List<CarChangeModel>.from(
+                                                          widget.car.changes);
+                                                  carChanges.add(change);
+
+                                                  widget.onChange
+                                                      ?.call(carChanges);
+                                                },
+                                              ));
+                                    }
+                                  }
+                                },
+                                child: paintChangesImage(
+                                    key: paintKey,
+                                    changes: changes,
+                                    checklistID: widget.checklistID,
+                                    heightImage: heightImage,
+                                    widthImage: widthImage),
+                                // child: CustomPaint(
+                                //   key: paintKey,
+                                //   foregroundPainter: MyCustomPainter(
+                                //       changes: changes,
+                                //       checklistID: widget.checklistID),
+                                //   child: Container(
+                                //     height: heightImage, // 🔒 TAMANHO FIXO
+                                //     width: widthImage,
+                                //     color: Colors.transparent,
+                                //   ),
+                                // ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
+                    Positioned(
+                      bottom: 10,
+                      left: 10,
+                      child: InkWell(
+                          onTap: changes.isNotEmpty
+                              ? () {
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return AlertDialog(
+                                          contentPadding:
+                                              const EdgeInsets.all(10),
+                                          content: ImagesChangesViewWidget(
+                                              changes: changes),
+                                        );
+                                      });
+                                }
+                              : null,
+                          child: Card(
+                            elevation: 5,
+                            shape: RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadiusGeometry.circular(100)),
+                            child: Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Icon(
+                                Icons.list_alt_rounded,
+                                size: 20,
+                                color: Constants.primary,
+                              ),
+                            ),
+                          )),
+                    )
+                  ],
                 )
               : (widget.register)
                   ? InkWell(

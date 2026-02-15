@@ -1,6 +1,7 @@
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/model/obm_model.dart';
+import 'package:bsu_control/model/user_model.dart';
 import 'package:bsu_control/src/checklist/controller/checklist_controller.dart';
 import 'package:bsu_control/src/widgets/textfield_widget.dart';
 import 'package:flutter/material.dart';
@@ -8,9 +9,16 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 class CheckListInforPage extends StatefulWidget {
+  final UserModel user;
+  final List<OBMModel> obms;
   final CheckListController controller;
-  const CheckListInforPage({Key? key, required this.controller})
-      : super(key: key);
+
+  const CheckListInforPage({
+    Key? key,
+    required this.controller,
+    required this.obms,
+    required this.user,
+  }) : super(key: key);
 
   @override
   State<CheckListInforPage> createState() => _CheckListInforPageState();
@@ -30,8 +38,7 @@ class _CheckListInforPageState extends State<CheckListInforPage> {
   void initState() {
     super.initState();
     controller = widget.controller;
-    controller.setOBM(controller.app.obms
-        .firstWhere((e) => e.id == controller.app.user.obmID));
+    controller.setOBM(widget.obms.firstWhere((e) => e.id == widget.user.obmID));
   }
 
   @override
@@ -132,7 +139,7 @@ class _CheckListInforPageState extends State<CheckListInforPage> {
                   value: controller.obm,
                   underline: Container(),
                   onChanged: controller.setOBM,
-                  items: controller.app.obms
+                  items: widget.obms
                       .map((e) => DropdownMenuItem(
                             value: e,
                             child: Padding(

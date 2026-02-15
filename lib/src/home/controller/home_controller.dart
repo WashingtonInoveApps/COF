@@ -1,9 +1,9 @@
 import 'dart:developer';
 
-import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/core/enum.dart';
 import 'package:bsu_control/model/check_list_model.dart';
+import 'package:bsu_control/model/config_model.dart';
 import 'package:bsu_control/src/home/repository/home_interface.dart';
 import 'package:bsu_control/src/home/repository/home_repository.dart';
 import 'package:mobx/mobx.dart';
@@ -13,12 +13,12 @@ part 'home_controller.g.dart';
 class HomeController = _HomeControllerBase with _$HomeController;
 
 abstract class _HomeControllerBase with Store {
-  final AppController app;
+  final ConfigModel config;
   late IHomeRepository repository;
 
-  _HomeControllerBase({required this.app}) {
+  _HomeControllerBase({required this.config}) {
     repository = HomeRepository(
-        endpoint: app.endpoint, appID: app.appID, test: app.test);
+        endpoint: config.endpoint, appID: config.appID, test: config.test);
   }
 
   @observable
@@ -28,7 +28,7 @@ abstract class _HomeControllerBase with Store {
   bool isOperacionalToday = true;
 
   @observable
-  List<CheckListModel> checklistsPeriod = <CheckListModel>[].asObservable();
+  List<ChecklistModel> checklistsPeriod = <ChecklistModel>[].asObservable();
 
   @observable
   DateTime date = DateTime.now();
@@ -49,7 +49,7 @@ abstract class _HomeControllerBase with Store {
   int page = 1;
 
   @action
-  Stream<List<CheckListModel>> listenChecklistPeriod(
+  Stream<List<ChecklistModel>> listenChecklistPeriod(
       {required DateTime dateStart, required DateTime dateFinish}) {
     loading = true;
 
@@ -79,7 +79,7 @@ abstract class _HomeControllerBase with Store {
   }
 
   @computed
-  List<CheckListModel> get checklistPeriodSort {
+  List<ChecklistModel> get checklistPeriodSort {
     if (filter.isNotEmpty) {
       final filtered = checklistsPeriod
           .where((e) =>
@@ -91,16 +91,16 @@ abstract class _HomeControllerBase with Store {
           .toList();
 
       final list = Core.paginate(list: filtered, page: page, limit: limit);
-      return List<CheckListModel>.from(list);
+      return List<ChecklistModel>.from(list);
     } else {
       final list =
           Core.paginate(list: checklistsPeriod, page: page, limit: limit);
-      return List<CheckListModel>.from(list);
+      return List<ChecklistModel>.from(list);
     }
   }
 
   @action
-  setChecklistPeriod(List<CheckListModel> value) {
+  setChecklistPeriod(List<ChecklistModel> value) {
     value.sort((a, b) => b.date.compareTo(a.date));
     checklistsPeriod
       ..clear()

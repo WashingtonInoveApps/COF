@@ -1,5 +1,5 @@
-import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/db.dart';
+import 'package:bsu_control/model/config_model.dart';
 import 'package:bsu_control/model/user_model.dart';
 import 'package:mobx/mobx.dart';
 
@@ -14,12 +14,12 @@ class LoginController = _LoginControllerBase with _$LoginController;
 enum LoginState { done, sucess, reset, request }
 
 abstract class _LoginControllerBase with Store {
-  final AppController app;
+  final ConfigModel config;
   late ILoginRepository repository;
 
-  _LoginControllerBase({required this.app}) {
+  _LoginControllerBase({required this.config}) {
     repository = LoginRepository(
-        appID: app.appID, endpoint: app.endpoint, test: app.test);
+        appID: config.appID, endpoint: config.endpoint, test: config.test);
   }
 
   @observable
@@ -31,82 +31,68 @@ abstract class _LoginControllerBase with Store {
   String userID = '';
 
   @action
-  Future<bool> loginController(Function(String) onEmail) async {
-    loading = true;
+  Future<UserModel?> call(Function(String) onEmail) async {
+    try {
+      loading = true;
+      final result = await DBController.get(tag: 'user');
 
-    final result = await DBController.get(tag: 'user');
+      if (result == null) {
+        loading = false;
+        return null;
+      }
 
-    if (result == null) {
+      final user = UserModel.fromMap(result);
+      onEmail.call(user.email);
+
+      return await currentUser(acessToken: user.acessToken);
+    } catch (e) {
       loading = false;
-      return false;
+      return null;
     }
-
-    final user = UserModel.fromMap(result);
-    onEmail.call(user.email);
-
-    if (!(await currentUser(acessToken: user.acessToken))) {
-      loading = false;
-      return false;
-    }
-
-    return true;
   }
 
   @action
   setLoading(bool value) => loading = value;
 
   @action
-  Future<bool> initialization({required UserModel user}) async {
+  Future<UserModel?> currentUser({required String acessToken}) async {
     try {
-      await DBController.save(tag: 'user', value: user.toJson());
+      final result = await repository.currentUser(acessToken: acessToken);
 
-      if (!user.enable) {
+      if (result == null) {
+        state = LoginState.done;
+        return null;
+      }
+
+      if (!result.enable) {
         throw Exception('Usuário sem permissão de acesso,contate o suporte.');
       }
 
-      app.setUser(user);
-
-      await app.getOBMs();
-      await repository.updateToken(
-          userID: user.id ?? '', token: user.acessToken);
-
-      return true;
+      return result;
     } catch (e) {
+      loading = false;
       state = LoginState.done;
       rethrow;
     }
   }
 
   @action
-  Future<bool> currentUser({required String acessToken}) async {
-    try {
-      final result = await repository.currentUser(acessToken: acessToken);
-
-      if (result == null) {
-        state = LoginState.done;
-        return false;
-      }
-
-      return await initialization(user: result);
-    } catch (e) {
-      loading = false;
-      state = LoginState.done;
-      return false;
-    }
-  }
-
-  @action
-  Future<bool> login({required String email, required String senha}) async {
+  Future<UserModel?> login(
+      {required String email, required String senha}) async {
     try {
       loading = true;
       final result = await repository.login(email: email, senha: senha);
 
       if (result == null) {
         loading = false;
-        return false;
+        return null;
       }
 
-      return await initialization(user: result);
+      if (!result.enable) {
+        throw Exception('Usuário sem permissão de acesso,contate o suporte.');
+      }
+
+      return result;
     } catch (e) {
       loading = false;
       state = LoginState.done;

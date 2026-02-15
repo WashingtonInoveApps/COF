@@ -3,6 +3,7 @@ import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/core/enum.dart';
 import 'package:bsu_control/core/validation.dart';
+import 'package:bsu_control/main.dart';
 import 'package:bsu_control/model/car_model.dart';
 import 'package:bsu_control/model/car_status_model.dart';
 import 'package:bsu_control/src/car/controller/car_controller.dart';
@@ -39,7 +40,10 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
   @override
   void initState() {
     super.initState();
-    controller = CarController(app: app);
+    controller = CarController(
+      config: config,
+      user: app.user,
+    );
 
     rec = autorun((_) {
       setState(() {

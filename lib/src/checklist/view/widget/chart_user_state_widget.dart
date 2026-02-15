@@ -7,10 +7,10 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
 class UserStateChart extends StatelessWidget {
-  final List<CheckListModel> checklists;
+  final List<ChecklistModel> checklists;
   const UserStateChart({Key? key, required this.checklists}) : super(key: key);
 
-  List<StatusChartData> processStates(List<CheckListModel> list) {
+  List<StatusChartData> processStates(List<ChecklistModel> list) {
     List<StatusChartData> result = [];
     for (final state in StateChecklist.values) {
       final checklists = list.where((e) => e.state == state).toList();

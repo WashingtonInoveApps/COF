@@ -1,5 +1,6 @@
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
+import 'package:bsu_control/main.dart';
 import 'package:bsu_control/model/obm_model.dart';
 import 'package:bsu_control/model/user_model.dart';
 import 'package:bsu_control/src/user/view/user_register_page.dart';
@@ -11,6 +12,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
+import 'package:mobx/mobx.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 import '../controller/user_controller.dart';
@@ -25,6 +27,7 @@ class UsersPage extends StatefulWidget {
 
 class _UsersPageState extends State<UsersPage> {
   late UserController controller;
+  late ReactionDisposer reaction;
 
   final searchController = TextEditingController();
   final app = GetIt.I.get<AppController>();
@@ -32,12 +35,23 @@ class _UsersPageState extends State<UsersPage> {
   @override
   void initState() {
     super.initState();
-    controller = UserController(app: app, init: null);
+
+    controller = UserController(
+      config: config,
+      init: null,
+      obms: app.obms,
+      user: app.user,
+    );
+
+    reaction = autorun((_) {
+      controller.setUsers(app.users);
+    });
   }
 
   @override
   void dispose() {
     super.dispose();
+    reaction();
     searchController.dispose();
   }
 

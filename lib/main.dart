@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
+import 'package:bsu_control/model/config_model.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +13,12 @@ import 'package:get_it/get_it.dart';
 import 'package:url_strategy/url_strategy.dart';
 
 import 'src/login/view/login_page.dart';
+
+final config = ConfigModel(
+  appID: 'VBJM7eAETNS2pYWpfKLY',
+  endpoint: 'https://us-central1-bsucos-function.cloudfunctions.net/app',
+  test: false,
+);
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,11 +37,7 @@ void main() async {
     await Firebase.initializeApp();
   }
 
-  final controller = AppController(
-      maxWidth: 1000,
-      appID: 'VBJM7eAETNS2pYWpfKLY',
-      endpoint: 'https://us-central1-bsucos-function.cloudfunctions.net/app',
-      test: false);
+  final controller = AppController(maxWidth: 1000, config: config);
 
   GetIt.I.registerSingleton<AppController>(controller);
   await controller.initApplication();

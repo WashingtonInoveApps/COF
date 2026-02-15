@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
+import 'package:bsu_control/main.dart';
 import 'package:bsu_control/model/check_list_model.dart';
 import 'package:bsu_control/model/item_model.dart';
 import 'package:bsu_control/src/checklist/view/pages/checklist_car_page.dart';
@@ -17,7 +18,7 @@ import '../../home/home_page.dart';
 import '../controller/checklist_controller.dart';
 
 class ChecklistRegisterPage extends StatefulWidget {
-  final CheckListModel? checklist;
+  final ChecklistModel? checklist;
   const ChecklistRegisterPage({Key? key, this.checklist}) : super(key: key);
 
   @override
@@ -33,7 +34,12 @@ class _ChecklistRegisterPageState extends State<ChecklistRegisterPage> {
     super.initState();
 
     controller = CheckListController(
-        init: widget.checklist, app: app, update: (widget.checklist != null));
+      init: widget.checklist,
+      config: config,
+      update: (widget.checklist != null),
+      cars: app.cars,
+      checklistTodays: app.checklistsToday,
+    );
   }
 
   @override
@@ -42,16 +48,22 @@ class _ChecklistRegisterPageState extends State<ChecklistRegisterPage> {
 
     final pages = [
       CheckListInforPage(
+        obms: app.obms,
+        user: app.user,
         controller: controller,
       ),
-      ChecklistCarPage(controller: controller),
+      ChecklistCarPage(
+        user: app.user,
+        width: app.width,
+        controller: controller,
+      ),
       Observer(builder: (context) {
         return ChecklistSectionPage(
           key: ValueKey(
               "itens${controller.step}"), //flutter entende que é outro widget e reconstroi.
           width: app.width,
           title: 'ITENS OU EQUIPAMENTOS',
-          sections: controller.car?.itens ?? [],
+          // sections: controller.car?.itens ?? [],
           list: controller.itens,
           onChangeItem: (value, indexSection, indexItem) {
             controller.changeList(
@@ -71,7 +83,7 @@ class _ChecklistRegisterPageState extends State<ChecklistRegisterPage> {
           key: ValueKey("materials${controller.step}"),
           width: app.width,
           title: 'MATERIAIS PERMANENTES',
-          sections: controller.car?.materials ?? [],
+          // sections: controller.car?.materials ?? [],
           list: controller.materials,
           onChangeItem: (value, indexSection, indexItem) {
             controller.changeList(
@@ -91,7 +103,7 @@ class _ChecklistRegisterPageState extends State<ChecklistRegisterPage> {
           key: ValueKey("consumable${controller.step}"),
           width: app.width,
           title: 'MATERIAIS DE CONSUMO',
-          sections: controller.car?.materialsConsumable ?? [],
+          // sections: controller.car?.materialsConsumable ?? [],
           list: controller.materialsConsumable,
           onChangeItem: (value, indexSection, indexItem) {
             controller.changeList(
@@ -150,7 +162,7 @@ class _ChecklistRegisterPageState extends State<ChecklistRegisterPage> {
                     return controller.btFinish
                         ? ElevatedButton(
                             onPressed: () {
-                              controller.save().then((_) {
+                              controller.save(user: app.user).then((_) {
                                 if (update) {
                                   Navigator.of(context).pop();
                                 } else {

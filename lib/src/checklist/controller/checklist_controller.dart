@@ -1,7 +1,5 @@
-import 'dart:developer';
 import 'dart:typed_data';
 
-import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/core/enum.dart';
 import 'package:bsu_control/core/validation.dart';
@@ -9,9 +7,11 @@ import 'package:bsu_control/model/car_changes_model.dart';
 import 'package:bsu_control/model/car_checklist.dart';
 import 'package:bsu_control/model/car_model.dart';
 import 'package:bsu_control/model/check_list_model.dart';
+import 'package:bsu_control/model/config_model.dart';
 import 'package:bsu_control/model/item_model.dart';
 import 'package:bsu_control/model/itens_changes_model.dart';
 import 'package:bsu_control/model/obm_model.dart';
+import 'package:bsu_control/model/user_model.dart';
 import 'package:bsu_control/src/checklist/repository/checklist_interface.dart';
 import 'package:bsu_control/src/checklist/repository/checklist_repository.dart';
 import 'package:mobx/mobx.dart';
@@ -24,8 +24,11 @@ part 'checklist_controller.g.dart';
 class CheckListController = _CheckListControllerBase with _$CheckListController;
 
 abstract class _CheckListControllerBase with Store {
-  final AppController app;
-  final CheckListModel? init;
+  final ConfigModel config;
+  final ChecklistModel? init;
+  final List<CarModel> cars;
+  final List<ChecklistModel> checklistTodays;
+
   final bool update;
 
   late ICheckListRepository repository;
@@ -36,20 +39,29 @@ abstract class _CheckListControllerBase with Store {
   bool loading = false;
 
   _CheckListControllerBase(
-      {required this.init, required this.app, required this.update}) {
+      {required this.init,
+      required this.config,
+      required this.update,
+      required this.cars,
+      required this.checklistTodays}) {
     repository = CheckListRepository(
-        endpoint: app.endpoint, appID: app.appID, test: app.test);
+      endpoint: config.endpoint,
+      appID: config.appID,
+      test: config.test,
+    );
+
     initController(init);
   }
 
-  Stream<CheckListModel> streamChecklistByID({required String checklistID}) {
+  Stream<ChecklistModel> streamChecklistByID({required String checklistID}) {
     return repository.streamChecklistByID(checklistID: checklistID);
   }
 
   @action
-  initController(CheckListModel? init) {
+  initController(ChecklistModel? init) {
     itens.clear();
     materials.clear();
+    materialsConsumable.clear();
 
     id = init?.id;
     prefix = init?.prefix ?? 'SELECIONE';
@@ -70,14 +82,26 @@ abstract class _CheckListControllerBase with Store {
     supplies = init?.supply ?? [];
 
     if (init != null) {
-      car = app.cars.firstWhere((e) => e.id == init.checkCar.car.id);
+      car = cars.firstWhere((e) => e.id == init.checkCar.car.id);
 
-      itens.addAll(
-          deepCopySections(value: init.checkCar.car.itens, update: true));
-      materials.addAll(
-          deepCopySections(value: init.checkCar.car.materials, update: true));
-      materialsConsumable.addAll(deepCopySections(
-          value: init.checkCar.car.materialsConsumable, update: true));
+      itens.addAll(mergeSections(
+          currentSections: deepCopySections(value: car?.itens ?? []),
+          savedSections: deepCopySections(
+            value: init.checkCar.car.itens,
+          )));
+
+      materials.addAll(mergeSections(
+          currentSections: deepCopySections(value: car?.materials ?? []),
+          savedSections: deepCopySections(
+            value: init.checkCar.car.materials,
+          )));
+
+      materialsConsumable.addAll(mergeSections(
+          currentSections:
+              deepCopySections(value: car?.materialsConsumable ?? []),
+          savedSections: deepCopySections(
+            value: init.checkCar.car.materialsConsumable,
+          )));
 
       outhers
         ..clear()
@@ -89,7 +113,9 @@ abstract class _CheckListControllerBase with Store {
           .addAll(deepCopySections(value: car?.materialsConsumable ?? []));
     }
 
-    carChanges.addAll(car?.changes ?? []);
+    carChanges
+      ..clear()
+      ..addAll(car?.changes ?? []);
   }
 
   @observable
@@ -100,8 +126,8 @@ abstract class _CheckListControllerBase with Store {
       <ItensChangesModel>[].asObservable();
 
   @observable
-  ObservableList<CheckListModel> myChecklistUser =
-      <CheckListModel>[].asObservable();
+  ObservableList<ChecklistModel> myChecklistUser =
+      <ChecklistModel>[].asObservable();
 
   @observable
   ObservableList<ItensChangesModel> materials =
@@ -224,15 +250,15 @@ abstract class _CheckListControllerBase with Store {
   }
 
   @computed
-  List<CarModel> get cars {
-    return app.cars
+  List<CarModel> get carsSort {
+    return cars
         .where((e) => (cia != null)
             ? (e.cia.toLowerCase() == cia?.toLowerCase())
             : (e.obmID.toLowerCase() == obm.id?.toLowerCase()))
         .toList();
   }
 
-  Stream<List<CheckListModel>> streamChecklistPeriod(
+  Stream<List<ChecklistModel>> streamChecklistPeriod(
       {required String userID,
       required DateTime referenceDateStart,
       required DateTime referenceDateFinish}) {
@@ -241,12 +267,12 @@ abstract class _CheckListControllerBase with Store {
         referenceDateFinish: referenceDateFinish);
   }
 
-  Stream<List<CheckListModel>> streamChecklistUser({required String userID}) {
+  Stream<List<ChecklistModel>> streamChecklistUser({required String userID}) {
     return repository.streamChecklistUser(userID: userID);
   }
 
   @computed
-  List<CheckListModel> get myChecklistUserSort {
+  List<ChecklistModel> get myChecklistUserSort {
     if (filter.isNotEmpty) {
       final filtered = myChecklistUser
           .where((e) =>
@@ -258,11 +284,11 @@ abstract class _CheckListControllerBase with Store {
           .toList();
 
       final list = Core.paginate(list: filtered, page: page, limit: limit);
-      return List<CheckListModel>.from(list);
+      return List<ChecklistModel>.from(list);
     } else {
       final list =
           Core.paginate(list: myChecklistUser, page: page, limit: limit);
-      return List<CheckListModel>.from(list);
+      return List<ChecklistModel>.from(list);
     }
   }
 
@@ -297,8 +323,9 @@ abstract class _CheckListControllerBase with Store {
   }
 
   @action
-  setMyChecklistUser(List<CheckListModel> value) {
+  setMyChecklistUser(List<ChecklistModel> value) {
     value.sort((a, b) => b.date.compareTo(a.date));
+
     myChecklistUser
       ..clear()
       ..addAll(value);
@@ -349,8 +376,6 @@ abstract class _CheckListControllerBase with Store {
       car = CarModel.copy(cars.firstWhere((c) => c.prefix == value));
       prefix = value;
 
-      log(car?.toJson() ?? 'Sem veiculo');
-
       carChanges
         ..clear()
         ..addAll(car?.changes ?? []);
@@ -372,9 +397,8 @@ abstract class _CheckListControllerBase with Store {
   List<String> teamsValidade({required List<String> teams}) {
     if (obm.team.isEmpty) return [];
 
-    final list = app.checklistsToday.map((e) => e.team).toList();
-
-    List<String> result = obm.team.where((e) => !list.contains(e)).toList();
+    final list = checklistTodays.map((e) => e.team).toList();
+    final result = obm.team.where((e) => !list.contains(e)).toList();
 
     if (update) result.insert(0, init!.team);
 
@@ -386,7 +410,7 @@ abstract class _CheckListControllerBase with Store {
     List<String> data = ['SELECIONE'];
 
     if (cars.isNotEmpty) {
-      final list = app.checklistsToday.map((e) => e.prefix).toList();
+      final list = checklistTodays.map((e) => e.prefix).toList();
 
       final result = cars
           .where((e) => !list.contains(e.prefix))
@@ -401,14 +425,73 @@ abstract class _CheckListControllerBase with Store {
     return data;
   }
 
-  List<ItensChangesModel> deepCopySections(
-      {required List<ItensChangesModel> value, bool update = false}) {
+  List<ItensChangesModel> deepCopySections({
+    required List<ItensChangesModel> value,
+  }) {
     return value.map((section) {
-      return section.copyWith(
-        itens: section.itens
-            .map((item) =>
-                item.copyWith(quantity: update ? item.quantityMarked : 0))
-            .toList(),
+      return ItensChangesModel(
+        id: section.id,
+        description: section.description,
+        value: section.value,
+        obs: section.obs,
+        itens: section.itens.map((item) {
+          return ItemModel(
+            id: item.id,
+            description: item.description,
+            quantity: item.quantity,
+            quantityMarked: item.quantityMarked,
+            value: item.value,
+          );
+        }).toList(),
+      );
+    }).toList();
+  }
+
+  //Criado com auxilio do ChatGPT
+  List<ItensChangesModel> mergeSections({
+    required List<ItensChangesModel> currentSections,
+    required List<ItensChangesModel> savedSections,
+  }) {
+    /// 1️⃣ Cria um mapa das seções salvas usando o ID como chave
+    final Map<String, ItensChangesModel> savedSectionsMap = {
+      for (var section in savedSections) section.id: section
+    };
+
+    /// 2️⃣ Percorre as seções atuais do carro
+    return currentSections.map((currentSection) {
+      /// 3️⃣ Procura se essa seção já existia no checklist salvo
+      final savedSection = savedSectionsMap[currentSection.id];
+
+      /// 4️⃣ Se não existir, significa que é uma seção nova
+      if (savedSection == null) {
+        return currentSection;
+      }
+
+      /// 5️⃣ Cria um mapa dos itens salvos dessa seção
+      final Map<String, ItemModel> savedItemsMap = {
+        for (var item in savedSection.itens) item.id: item
+      };
+
+      /// 6️⃣ Agora percorremos os itens atuais da seção
+      final mergedItems = currentSection.itens.map((currentItem) {
+        /// 7️⃣ Verifica se esse item já foi salvo antes
+        final savedItem = savedItemsMap[currentItem.id];
+
+        /// 8️⃣ Se existir, reaproveita os dados do checklist salvo
+        if (savedItem != null) {
+          return currentItem.copyWith(
+              quantityMarked: savedItem.quantityMarked, value: savedItem.value);
+        }
+
+        /// 9️⃣ Se não existir, é um item novo
+        return currentItem;
+      }).toList();
+
+      /// 🔟 Retorna a seção mesclada
+      return currentSection.copyWith(
+        itens: mergedItems,
+        obs: savedSection.obs,
+        value: false,
       );
     }).toList();
   }
@@ -491,45 +574,6 @@ abstract class _CheckListControllerBase with Store {
   }
 
   @action
-  changeItens(ItemModel value, int indexCategory, int indexItem) {
-    final category =
-        ItensChangesModel.fromMap(itens.elementAt(indexCategory).toMap());
-
-    List<ItemModel> list = List.from(category.itens);
-
-    list.removeAt(indexItem);
-    list.insert(indexItem, value);
-
-    itens.removeAt(indexCategory);
-    itens.insert(indexCategory, category.copyWith(itens: list));
-  }
-
-  @action
-  changeOBSItens(String obs, int indexCategory) {
-    final category =
-        ItensChangesModel.fromMap(itens.elementAt(indexCategory).toMap());
-
-    itens.removeAt(indexCategory);
-    itens.insert(indexCategory, category.copyWith(obs: obs));
-
-    log('OBS Itens: ${itens[indexCategory].obs}');
-  }
-
-  @action
-  changeMaterials(ItemModel value, int indexCategory, int indexItem) {
-    final category =
-        ItensChangesModel.fromMap(materials.elementAt(indexCategory).toMap());
-
-    List<ItemModel> list = List.from(category.itens);
-
-    list.removeAt(indexItem);
-    list.insert(indexItem, value);
-
-    materials.removeAt(indexCategory);
-    materials.insert(indexCategory, category.copyWith(itens: list));
-  }
-
-  @action
   List<ItensChangesModel> changeList({
     required List<ItensChangesModel> list,
     required ItemModel value,
@@ -561,27 +605,18 @@ abstract class _CheckListControllerBase with Store {
   }
 
   @action
-  changeOBSMaterials(String obs, int indexCategory) {
-    final category =
-        ItensChangesModel.fromMap(materials.elementAt(indexCategory).toMap());
-
-    materials.removeAt(indexCategory);
-    materials.insert(indexCategory, category.copyWith(obs: obs));
-  }
-
-  @action
   setLoading(bool value) => loading = value;
 
   @action
-  Future<bool> save() async {
+  Future<bool> save({required UserModel user}) async {
     try {
       loading = true;
 
-      final checklist = CheckListModel(
+      final checklist = ChecklistModel(
           id: id,
           date: date,
-          user: app.user,
-          userID: app.user.id ?? '',
+          user: user,
+          userID: user.id ?? '',
           checkCar: CarCheckList(
             car: car!.copyWith(
               itens: itens,
@@ -626,7 +661,7 @@ abstract class _CheckListControllerBase with Store {
 
   @action
   Future<bool> finish(
-      {required CheckListModel checklist, Uint8List? image}) async {
+      {required ChecklistModel checklist, Uint8List? image}) async {
     try {
       final now = DateTime.now();
       final states = List<StatesChecklist>.from(checklist.states);
@@ -652,11 +687,11 @@ abstract class _CheckListControllerBase with Store {
   }
 
   @action
-  Future<bool> deleteChecklist({required CheckListModel checklist}) async {
+  Future<bool> delete({required ChecklistModel checklist}) async {
     try {
       loading = true;
-      final car = app.cars.firstWhere((e) => e.id == checklist.checkCar.car.id);
 
+      final car = cars.firstWhere((e) => e.id == checklist.checkCar.car.id);
       final changes = List<CarChangeModel>.from(car.changes);
 
       for (final change in checklist.changes) {
@@ -664,7 +699,7 @@ abstract class _CheckListControllerBase with Store {
             (e) => (e.checklistID != null) && (e.checklistID == checklist.id));
       }
 
-      final result = await repository.deleteChecklist(
+      final result = await repository.delete(
           checklist: checklist, car: car.copyWith(changes: changes));
 
       loading = false;

@@ -8,9 +8,9 @@ import 'model/supply_model.dart';
 
 abstract class IAppRepository {
   Future<bool> saveSupplies(
-      {required SupplyModel supply, required CheckListModel checklist});
+      {required SupplyModel supply, required ChecklistModel checklist});
 
-  Stream<List<CheckListModel>> listenChecklistToday(
+  Stream<List<ChecklistModel>> listenChecklistToday(
       {required DateTime referenceDate});
 
   Stream<List<CarModel>> listenCar();
@@ -20,7 +20,7 @@ abstract class IAppRepository {
   Future<List<OBMModel>> getOBMs();
 
   Future<bool> deleteSupply(
-      {required SupplyModel supply, required CheckListModel checklist});
+      {required SupplyModel supply, required ChecklistModel checklist});
 
   Future<AppModel> getAppModel();
   Future<bool> updateAppModel({required AppModel appData});

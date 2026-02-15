@@ -43,7 +43,7 @@ class LoginRepository extends APIClient implements ILoginRepository {
 
       final user = UserModel.fromMap(response.data);
       await FirebaseAuth.instance.signInWithCustomToken(user.acessToken);
-      // updateAcessToken(token: user.acessToken);
+      await updateToken(userID: user.id ?? '', token: user.acessToken);
 
       return user;
     } on DioException catch (e) {

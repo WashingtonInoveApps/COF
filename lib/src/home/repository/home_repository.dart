@@ -11,7 +11,7 @@ class HomeRepository extends APIClient implements IHomeRepository {
       : super(endpoint: endpoint, appID: appID, test: test);
 
   @override
-  Stream<List<CheckListModel>> listenChecklistPeriod(
+  Stream<List<ChecklistModel>> listenChecklistPeriod(
       {required DateTime referenceDateStart,
       required DateTime referenceDateFinish}) {
     try {
@@ -35,7 +35,7 @@ class HomeRepository extends APIClient implements IHomeRepository {
                 isEqualTo: Core.formatDate(referenceDateStart))
             .snapshots()
             .map((e) => e.docs.map((doc) {
-                  var checkList = CheckListModel.fromMap(
+                  var checkList = ChecklistModel.fromMap(
                       doc.data() as Map<String, dynamic>);
                   checkList.id = doc.id;
                   return checkList;
@@ -50,7 +50,7 @@ class HomeRepository extends APIClient implements IHomeRepository {
             .map((e) {
           return e.docs
               .map((doc) =>
-                  CheckListModel.fromMap(doc.data() as Map<String, dynamic>))
+                  ChecklistModel.fromMap(doc.data() as Map<String, dynamic>))
               .toList();
         });
       }

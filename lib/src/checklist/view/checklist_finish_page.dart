@@ -13,7 +13,7 @@ import 'package:signature/signature.dart';
 
 class ChecklistFinishPage extends StatefulWidget {
   final CheckListController controller;
-  final CheckListModel checklist;
+  final ChecklistModel checklist;
   const ChecklistFinishPage(
       {Key? key, required this.checklist, required this.controller})
       : super(key: key);
@@ -29,7 +29,7 @@ class _ChecklistFinishPageState extends State<ChecklistFinishPage> {
 
   final key = GlobalKey<FormState>();
 
-  late CheckListModel checklist;
+  late ChecklistModel checklist;
   String label = '';
 
   @override

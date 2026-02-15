@@ -47,6 +47,22 @@ mixin _$UserController on _UserControllerBase, Store {
     });
   }
 
+  late final _$usersAtom =
+      Atom(name: '_UserControllerBase.users', context: context);
+
+  @override
+  ObservableList<UserModel> get users {
+    _$usersAtom.reportRead();
+    return super.users;
+  }
+
+  @override
+  set users(ObservableList<UserModel> value) {
+    _$usersAtom.reportWrite(value, super.users, () {
+      super.users = value;
+    });
+  }
+
   late final _$graduationAtom =
       Atom(name: '_UserControllerBase.graduation', context: context);
 
@@ -311,6 +327,17 @@ mixin _$UserController on _UserControllerBase, Store {
   }
 
   @override
+  dynamic setUsers(List<UserModel> values) {
+    final _$actionInfo = _$_UserControllerBaseActionController.startAction(
+        name: '_UserControllerBase.setUsers');
+    try {
+      return super.setUsers(values);
+    } finally {
+      _$_UserControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   dynamic setGraduation(String? value) {
     final _$actionInfo = _$_UserControllerBaseActionController.startAction(
         name: '_UserControllerBase.setGraduation');
@@ -402,6 +429,7 @@ mixin _$UserController on _UserControllerBase, Store {
   String toString() {
     return '''
 loading: ${loading},
+users: ${users},
 graduation: ${graduation},
 cia: ${cia},
 filter: ${filter},

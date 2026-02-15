@@ -7,12 +7,12 @@ import 'package:bsu_control/core/db.dart';
 import 'package:bsu_control/core/enum.dart';
 import 'package:bsu_control/model/app_model.dart';
 import 'package:bsu_control/model/car_model.dart';
+import 'package:bsu_control/model/config_model.dart';
 import 'package:bsu_control/model/obm_model.dart';
 import 'package:bsu_control/model/user_model.dart';
 import 'package:mobx/mobx.dart';
 
 import 'model/check_list_model.dart';
-import 'model/supply_model.dart';
 
 part 'app_controller.g.dart';
 
@@ -20,24 +20,19 @@ part 'app_controller.g.dart';
 class AppController = _AppControllerBase with _$AppController;
 
 abstract class _AppControllerBase with Store {
-  final String appID;
-  final bool test;
-  final String endpoint;
+  final ConfigModel config;
   final double maxWidth;
 
   late IAppRepository repository;
 
-  _AppControllerBase(
-      {required this.appID,
-      required this.endpoint,
-      required this.test,
-      required this.maxWidth}) {
+  _AppControllerBase({required this.config, required this.maxWidth}) {
     repository = AppRepository(
-      appID: appID,
-      endpoint: endpoint,
-      test: test,
+      appID: config.appID,
+      endpoint: config.endpoint,
+      test: config.test,
     );
 
+    processWidth(constrainedMaxWidth: double.infinity, childRight: false);
     getUserDB(tag: 'user');
   }
 
@@ -77,7 +72,7 @@ abstract class _AppControllerBase with Store {
   List<CarModel> cars = <CarModel>[].asObservable();
 
   @observable
-  List<CheckListModel> checklistsToday = <CheckListModel>[].asObservable();
+  List<ChecklistModel> checklistsToday = <ChecklistModel>[].asObservable();
 
   @observable
   List<UserModel> users = <UserModel>[].asObservable();
@@ -112,7 +107,7 @@ abstract class _AppControllerBase with Store {
   }
 
   @computed
-  CheckListModel? get checklistUser {
+  ChecklistModel? get checklistUser {
     if (checklistsToday.isEmpty) return null;
 
     final list = checklistsToday.where((e) => e.userID == user.id).toList();
@@ -164,11 +159,6 @@ abstract class _AppControllerBase with Store {
     }
   }
 
-  List<CheckListModel> getChecklistUser({required List<CheckListModel> list}) {
-    return List<CheckListModel>.from(
-        list.where((e) => e.userID == user.id).toList());
-  }
-
   @action
   setDateStartConfig(DateTime? value) {
     dateStartConfig = value ?? dateStartConfig;
@@ -200,7 +190,7 @@ abstract class _AppControllerBase with Store {
   @action
   setCheckListVeicular(bool value) => checklistVeicular = value;
 
-  Stream<List<CheckListModel>> listenChecklistToday() {
+  Stream<List<ChecklistModel>> listenChecklistToday() {
     final dateReference = Core.getOperationalDay(DateTime.now());
 
     log('Data Operacional: ${Core.formatDate(dateReference)}');
@@ -224,27 +214,14 @@ abstract class _AppControllerBase with Store {
   }
 
   @action
-  setChecklistToday(List<CheckListModel> value) {
+  setChecklistToday(List<ChecklistModel> value) {
     value.sort((a, b) => a.date.compareTo(b.date));
     checklistsToday
       ..clear()
       ..addAll(value);
   }
 
-  @action
-  Future<bool> saveSupplies(
-      {required SupplyModel supply, required CheckListModel checklist}) async {
-    loading = true;
-    final result =
-        await repository.saveSupplies(supply: supply, checklist: checklist);
-    loading = false;
-
-    return result;
-  }
-
-  @action
   Future<void> getOBMs() async {
-    loading = true;
     final result = await repository.getOBMs();
 
     result.sort((a, b) => a.prefix.compareTo(b.prefix));
@@ -258,8 +235,6 @@ abstract class _AppControllerBase with Store {
       ..clear()
       ..addAll(result);
 
-    loading = false;
-
     return;
   }
 
@@ -268,16 +243,6 @@ abstract class _AppControllerBase with Store {
     if (result != null) user = UserModel.fromMap(result);
 
     return result != null;
-  }
-
-  @action
-  Future<bool> deleteSupply(
-      {required SupplyModel supply, required CheckListModel checklist}) async {
-    loading = true;
-    final result =
-        await repository.deleteSupply(supply: supply, checklist: checklist);
-    loading = false;
-    return result;
   }
 
   @action
@@ -303,6 +268,8 @@ abstract class _AppControllerBase with Store {
   @action
   Future<void> initApplication() async {
     final result = await repository.getAppModel();
+    await getOBMs();
+
     version = result.version;
   }
 }

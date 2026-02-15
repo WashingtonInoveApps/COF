@@ -11,7 +11,7 @@ import 'package:bsu_control/model/item_model.dart';
 import 'package:bsu_control/model/supply_model.dart';
 import 'package:bsu_control/model/user_model.dart';
 
-class CheckListModel {
+class ChecklistModel {
   UserModel user;
   String pb;
   String team;
@@ -37,7 +37,7 @@ class CheckListModel {
   List<ItemModel>? materials;
   StateChecklist state;
 
-  CheckListModel(
+  ChecklistModel(
       {required this.user,
       required this.date,
       required this.checkCar,
@@ -98,8 +98,8 @@ class CheckListModel {
     };
   }
 
-  factory CheckListModel.fromMap(Map<String, dynamic> map) {
-    return CheckListModel(
+  factory ChecklistModel.fromMap(Map<String, dynamic> map) {
+    return ChecklistModel(
       user: UserModel.fromMapResume(map['user']),
       pb: map['pb'] ?? '',
       team: map['team'] ?? '',
@@ -144,13 +144,13 @@ class CheckListModel {
 
   String toJson() => json.encode(toMap());
 
-  factory CheckListModel.fromJson(String source) =>
-      CheckListModel.fromMap(json.decode(source));
+  factory ChecklistModel.fromJson(String source) =>
+      ChecklistModel.fromMap(json.decode(source));
 
-  factory CheckListModel.copy({required CheckListModel checklist}) =>
-      CheckListModel.fromJson(checklist.toJson());
+  factory ChecklistModel.copy({required ChecklistModel checklist}) =>
+      ChecklistModel.fromJson(checklist.toJson());
 
-  CheckListModel copyWith({
+  ChecklistModel copyWith({
     UserModel? user,
     String? pb,
     String? team,
@@ -176,7 +176,7 @@ class CheckListModel {
     List<ChecklistOutherChange>? outhers,
     List<ItemModel>? materials,
   }) {
-    return CheckListModel(
+    return ChecklistModel(
       user: user ?? this.user,
       pb: pb ?? this.pb,
       team: team ?? this.team,

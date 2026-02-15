@@ -1,5 +1,6 @@
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
+import 'package:bsu_control/main.dart';
 import 'package:bsu_control/model/check_list_model.dart';
 import 'package:bsu_control/src/checklist/controller/checklist_controller.dart';
 import 'package:bsu_control/src/checklist/view/checklist_details_page.dart';
@@ -32,7 +33,13 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
   @override
   void initState() {
     super.initState();
-    controller = CheckListController(init: null, app: app, update: false);
+    controller = CheckListController(
+      init: null,
+      config: config,
+      update: false,
+      cars: app.cars,
+      checklistTodays: app.checklistsToday,
+    );
   }
 
   @override
@@ -89,7 +96,7 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
                 SizedBox(
                   width: double.infinity,
                   height: 450,
-                  child: StreamBuilder<List<CheckListModel>>(
+                  child: StreamBuilder<List<ChecklistModel>>(
                       stream:
                           controller.streamChecklistUser(userID: app.user.id!),
                       builder: (context, snapshot) {
@@ -131,12 +138,13 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
                                               mode: LaunchMode
                                                   .externalApplication);
                                         },
-                                        onDetails: (id) async {
+                                        onDetails: (checklist) async {
                                           await Navigator.of(context).push(
                                               MaterialPageRoute(
                                                   builder: (context) =>
                                                       ChecklistDetailsPage(
-                                                          checklistID: id)));
+                                                          checklist:
+                                                              checklist)));
                                         },
                                         onChanges: (changes) {
                                           showDialog(

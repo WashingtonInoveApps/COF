@@ -3,6 +3,7 @@ import 'package:bsu_control/core/validation.dart';
 import 'package:bsu_control/model/itens_changes_model.dart';
 import 'package:bsu_control/src/widgets/textfield_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
 
 class SectionWidget extends StatefulWidget {
   final ItensChangesModel? section;
@@ -62,7 +63,9 @@ class _SectionWidgetState extends State<SectionWidget> {
                   onPressed: () async {
                     if (formKEY.currentState!.validate()) {
                       widget.onChange(ItensChangesModel(
-                          description: controllerText.text, itens: []));
+                          id: widget.section?.id ?? const Uuid().v4(),
+                          description: controllerText.text,
+                          itens: []));
                       Navigator.of(context).pop();
                     }
                   },

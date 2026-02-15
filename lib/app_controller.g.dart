@@ -23,11 +23,11 @@ mixin _$AppController on _AppControllerBase, Store {
       (_$newRegisterComputed ??= Computed<bool>(() => super.newRegister,
               name: '_AppControllerBase.newRegister'))
           .value;
-  Computed<CheckListModel?>? _$checklistUserComputed;
+  Computed<ChecklistModel?>? _$checklistUserComputed;
 
   @override
-  CheckListModel? get checklistUser => (_$checklistUserComputed ??=
-          Computed<CheckListModel?>(() => super.checklistUser,
+  ChecklistModel? get checklistUser => (_$checklistUserComputed ??=
+          Computed<ChecklistModel?>(() => super.checklistUser,
               name: '_AppControllerBase.checklistUser'))
       .value;
   Computed<int>? _$checklistTodayPendentComputed;
@@ -253,13 +253,13 @@ mixin _$AppController on _AppControllerBase, Store {
       Atom(name: '_AppControllerBase.checklistsToday', context: context);
 
   @override
-  List<CheckListModel> get checklistsToday {
+  List<ChecklistModel> get checklistsToday {
     _$checklistsTodayAtom.reportRead();
     return super.checklistsToday;
   }
 
   @override
-  set checklistsToday(List<CheckListModel> value) {
+  set checklistsToday(List<ChecklistModel> value) {
     _$checklistsTodayAtom.reportWrite(value, super.checklistsToday, () {
       super.checklistsToday = value;
     });
@@ -279,34 +279,6 @@ mixin _$AppController on _AppControllerBase, Store {
     _$usersAtom.reportWrite(value, super.users, () {
       super.users = value;
     });
-  }
-
-  late final _$saveSuppliesAsyncAction =
-      AsyncAction('_AppControllerBase.saveSupplies', context: context);
-
-  @override
-  Future<bool> saveSupplies(
-      {required SupplyModel supply, required CheckListModel checklist}) {
-    return _$saveSuppliesAsyncAction
-        .run(() => super.saveSupplies(supply: supply, checklist: checklist));
-  }
-
-  late final _$getOBMsAsyncAction =
-      AsyncAction('_AppControllerBase.getOBMs', context: context);
-
-  @override
-  Future<void> getOBMs() {
-    return _$getOBMsAsyncAction.run(() => super.getOBMs());
-  }
-
-  late final _$deleteSupplyAsyncAction =
-      AsyncAction('_AppControllerBase.deleteSupply', context: context);
-
-  @override
-  Future<bool> deleteSupply(
-      {required SupplyModel supply, required CheckListModel checklist}) {
-    return _$deleteSupplyAsyncAction
-        .run(() => super.deleteSupply(supply: supply, checklist: checklist));
   }
 
   late final _$initApplicationAsyncAction =
@@ -420,7 +392,7 @@ mixin _$AppController on _AppControllerBase, Store {
   }
 
   @override
-  dynamic setChecklistToday(List<CheckListModel> value) {
+  dynamic setChecklistToday(List<ChecklistModel> value) {
     final _$actionInfo = _$_AppControllerBaseActionController.startAction(
         name: '_AppControllerBase.setChecklistToday');
     try {

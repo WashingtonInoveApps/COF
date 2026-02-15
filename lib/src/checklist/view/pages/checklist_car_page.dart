@@ -1,5 +1,6 @@
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/model/check_list_model.dart';
+import 'package:bsu_control/model/user_model.dart';
 import 'package:bsu_control/src/checklist/controller/checklist_controller.dart';
 import 'package:bsu_control/src/checklist/view/widget/fluids_widget.dart';
 import 'package:bsu_control/src/checklist/view/widget/fuel_widget.dart';
@@ -14,8 +15,14 @@ import '../../../../core/validation.dart';
 import '../../../widgets/card_outhers_widget.dart';
 
 class ChecklistCarPage extends StatefulWidget {
+  final UserModel user;
+  final double width;
   final CheckListController controller;
-  const ChecklistCarPage({Key? key, required this.controller})
+  const ChecklistCarPage(
+      {Key? key,
+      required this.controller,
+      required this.user,
+      required this.width})
       : super(key: key);
 
   @override
@@ -26,26 +33,26 @@ class _ChecklistCarPageState extends State<ChecklistCarPage> {
   late CheckListController controller;
   late ReactionDisposer _dispose;
 
-  double width = 0;
+  // double width = 0;
 
   @override
   void initState() {
     super.initState();
     controller = widget.controller;
-    width = processWidth(controller.app.maxWidth);
+    // width = processWidth(controller.app.maxWidth);
 
-    _dispose = reaction<double>((_) => controller.app.maxWidth, (value) {
-      setState(() {
-        width = processWidth(value);
-      });
-    });
+    // _dispose = reaction<double>((_) => controller.app.maxWidth, (value) {
+    //   setState(() {
+    //     width = processWidth(value);
+    //   });
+    // });
   }
 
-  double processWidth(double value) {
-    if (value <= 500) return value;
+  // double processWidth(double value) {
+  //   if (value <= 500) return value;
 
-    return value * 0.48;
-  }
+  //   return value * 0.48;
+  // }
 
   @override
   void dispose() {
@@ -77,7 +84,7 @@ class _ChecklistCarPageState extends State<ChecklistCarPage> {
             alignment: WrapAlignment.spaceBetween,
             children: [
               SizedBox(
-                width: width,
+                width: widget.width,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -200,7 +207,7 @@ class _ChecklistCarPageState extends State<ChecklistCarPage> {
                 ),
               ),
               SizedBox(
-                width: width,
+                width: widget.width,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -214,7 +221,7 @@ class _ChecklistCarPageState extends State<ChecklistCarPage> {
                                   remove: true,
                                   checklistID: controller.id,
                                   car: controller.car!,
-                                  user: controller.app.user,
+                                  user: widget.user,
                                   onChange: controller.addCarChanges,
                                 ),
                               );

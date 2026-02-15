@@ -1,12 +1,13 @@
-import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/core/enum.dart';
 import 'package:bsu_control/model/car_changes_model.dart';
 import 'package:bsu_control/model/check_list_model.dart';
+import 'package:bsu_control/model/config_model.dart';
 import 'package:bsu_control/model/item_model.dart';
 import 'package:bsu_control/model/itens_changes_model.dart';
 import 'package:bsu_control/model/obm_model.dart';
+import 'package:bsu_control/model/user_model.dart';
 import 'package:bsu_control/src/car/repository/car_interface.dart';
 import 'package:mobx/mobx.dart';
 
@@ -21,8 +22,15 @@ part 'car_controller.g.dart';
 class CarController = _CarControllerBase with _$CarController;
 
 abstract class _CarControllerBase with Store {
-  final AppController app;
+  final ConfigModel config;
+  final UserModel user;
+
   late ICarRepository repository;
+
+  _CarControllerBase({required this.config, required this.user}) {
+    repository = CarRepository(
+        endpoint: config.endpoint, appID: config.appID, test: config.test);
+  }
 
   @observable
   bool loading = false;
@@ -82,8 +90,7 @@ abstract class _CarControllerBase with Store {
   @observable
   ObservableList<CarChangeModel> carChanges = <CarChangeModel>[].asObservable();
 
-  @computed
-  bool get enable => (app.user.managerFleet || app.user.admin);
+  bool get enable => (user.managerFleet || user.admin);
 
   @computed
   List<CarModel> get carsSorts {
@@ -107,11 +114,6 @@ abstract class _CarControllerBase with Store {
   @computed
   bool get adm => function == Constants.carsFunctions.first;
 
-  _CarControllerBase({required this.app}) {
-    repository =
-        CarRepository(endpoint: app.endpoint, appID: app.appID, test: app.test);
-  }
-
   Stream<List<CarStatusModel>> listenStatus({required String carId}) {
     return repository.listenStatusCar(carId: carId);
   }
@@ -124,7 +126,7 @@ abstract class _CarControllerBase with Store {
     return repository.listenMapas(carId: carId);
   }
 
-  Future<List<CheckListModel>> getCheckListByMonth(
+  Future<List<ChecklistModel>> getCheckListByMonth(
       {required DateTime date}) async {
     return await repository.getChecklistByMonth(reference: date);
   }

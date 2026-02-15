@@ -9,7 +9,7 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 
 class CarChartKmByMonth extends StatefulWidget {
   final DateTime referenceDate;
-  final List<CheckListModel> checklists;
+  final List<ChecklistModel> checklists;
   final Function(DateTime)? onChangeDate;
   const CarChartKmByMonth(
       {Key? key,
@@ -52,10 +52,10 @@ class _CarChartKmByMonthState extends State<CarChartKmByMonth> {
     return list.map((e) => e.km).reduce((a, b) => a + b) / list.length;
   }
 
-  Map<String, double> processCarsByKM(List<CheckListModel> checklists) {
+  Map<String, double> processCarsByKM(List<ChecklistModel> checklists) {
     if (checklists.isEmpty) return {};
 
-    Map<String, List<CheckListModel>> carsKM = {};
+    Map<String, List<ChecklistModel>> carsKM = {};
 
     // Agrupar por viatura
     for (var check in checklists) {

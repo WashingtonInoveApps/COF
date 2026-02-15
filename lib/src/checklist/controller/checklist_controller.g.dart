@@ -16,18 +16,18 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
       (_$btFinishComputed ??= Computed<bool>(() => super.btFinish,
               name: '_CheckListControllerBase.btFinish'))
           .value;
-  Computed<List<CarModel>>? _$carsComputed;
+  Computed<List<CarModel>>? _$carsSortComputed;
 
   @override
-  List<CarModel> get cars =>
-      (_$carsComputed ??= Computed<List<CarModel>>(() => super.cars,
-              name: '_CheckListControllerBase.cars'))
+  List<CarModel> get carsSort =>
+      (_$carsSortComputed ??= Computed<List<CarModel>>(() => super.carsSort,
+              name: '_CheckListControllerBase.carsSort'))
           .value;
-  Computed<List<CheckListModel>>? _$myChecklistUserSortComputed;
+  Computed<List<ChecklistModel>>? _$myChecklistUserSortComputed;
 
   @override
-  List<CheckListModel> get myChecklistUserSort =>
-      (_$myChecklistUserSortComputed ??= Computed<List<CheckListModel>>(
+  List<ChecklistModel> get myChecklistUserSort =>
+      (_$myChecklistUserSortComputed ??= Computed<List<ChecklistModel>>(
               () => super.myChecklistUserSort,
               name: '_CheckListControllerBase.myChecklistUserSort'))
           .value;
@@ -91,13 +91,13 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
       Atom(name: '_CheckListControllerBase.myChecklistUser', context: context);
 
   @override
-  ObservableList<CheckListModel> get myChecklistUser {
+  ObservableList<ChecklistModel> get myChecklistUser {
     _$myChecklistUserAtom.reportRead();
     return super.myChecklistUser;
   }
 
   @override
-  set myChecklistUser(ObservableList<CheckListModel> value) {
+  set myChecklistUser(ObservableList<ChecklistModel> value) {
     _$myChecklistUserAtom.reportWrite(value, super.myChecklistUser, () {
       super.myChecklistUser = value;
     });
@@ -604,33 +604,32 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
       AsyncAction('_CheckListControllerBase.save', context: context);
 
   @override
-  Future<bool> save() {
-    return _$saveAsyncAction.run(() => super.save());
+  Future<bool> save({required UserModel user}) {
+    return _$saveAsyncAction.run(() => super.save(user: user));
   }
 
   late final _$finishAsyncAction =
       AsyncAction('_CheckListControllerBase.finish', context: context);
 
   @override
-  Future<bool> finish({required CheckListModel checklist, Uint8List? image}) {
+  Future<bool> finish({required ChecklistModel checklist, Uint8List? image}) {
     return _$finishAsyncAction
         .run(() => super.finish(checklist: checklist, image: image));
   }
 
-  late final _$deleteChecklistAsyncAction =
-      AsyncAction('_CheckListControllerBase.deleteChecklist', context: context);
+  late final _$deleteAsyncAction =
+      AsyncAction('_CheckListControllerBase.delete', context: context);
 
   @override
-  Future<bool> deleteChecklist({required CheckListModel checklist}) {
-    return _$deleteChecklistAsyncAction
-        .run(() => super.deleteChecklist(checklist: checklist));
+  Future<bool> delete({required ChecklistModel checklist}) {
+    return _$deleteAsyncAction.run(() => super.delete(checklist: checklist));
   }
 
   late final _$_CheckListControllerBaseActionController =
       ActionController(name: '_CheckListControllerBase', context: context);
 
   @override
-  dynamic initController(CheckListModel? init) {
+  dynamic initController(ChecklistModel? init) {
     final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
         name: '_CheckListControllerBase.initController');
     try {
@@ -709,7 +708,7 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
   }
 
   @override
-  dynamic setMyChecklistUser(List<CheckListModel> value) {
+  dynamic setMyChecklistUser(List<ChecklistModel> value) {
     final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
         name: '_CheckListControllerBase.setMyChecklistUser');
     try {
@@ -973,39 +972,6 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
   }
 
   @override
-  dynamic changeItens(ItemModel value, int indexCategory, int indexItem) {
-    final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
-        name: '_CheckListControllerBase.changeItens');
-    try {
-      return super.changeItens(value, indexCategory, indexItem);
-    } finally {
-      _$_CheckListControllerBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  dynamic changeOBSItens(String obs, int indexCategory) {
-    final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
-        name: '_CheckListControllerBase.changeOBSItens');
-    try {
-      return super.changeOBSItens(obs, indexCategory);
-    } finally {
-      _$_CheckListControllerBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  dynamic changeMaterials(ItemModel value, int indexCategory, int indexItem) {
-    final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
-        name: '_CheckListControllerBase.changeMaterials');
-    try {
-      return super.changeMaterials(value, indexCategory, indexItem);
-    } finally {
-      _$_CheckListControllerBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
   List<ItensChangesModel> changeList(
       {required List<ItensChangesModel> list,
       required ItemModel value,
@@ -1033,17 +999,6 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
         name: '_CheckListControllerBase.changeOBS');
     try {
       return super.changeOBS(list: list, obs: obs, indexSection: indexSection);
-    } finally {
-      _$_CheckListControllerBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  dynamic changeOBSMaterials(String obs, int indexCategory) {
-    final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
-        name: '_CheckListControllerBase.changeOBSMaterials');
-    try {
-      return super.changeOBSMaterials(obs, indexCategory);
     } finally {
       _$_CheckListControllerBaseActionController.endAction(_$actionInfo);
     }
@@ -1099,7 +1054,7 @@ fr: ${fr},
 arref: ${arref},
 car: ${car},
 btFinish: ${btFinish},
-cars: ${cars},
+carsSort: ${carsSort},
 myChecklistUserSort: ${myChecklistUserSort},
 prefixs: ${prefixs}
     ''';

@@ -213,7 +213,7 @@ class CarRepository extends APIClient implements ICarRepository {
   }
 
   @override
-  Future<List<CheckListModel>> getChecklistByMonth(
+  Future<List<ChecklistModel>> getChecklistByMonth(
       {required DateTime reference}) async {
     try {
       return await colChecklist
@@ -223,7 +223,7 @@ class CarRepository extends APIClient implements ICarRepository {
           .get()
           .then((result) => result.docs
               .map((e) =>
-                  CheckListModel.fromMap(e.data() as Map<String, dynamic>))
+                  ChecklistModel.fromMap(e.data() as Map<String, dynamic>))
               .toList());
     } catch (e) {
       return [];

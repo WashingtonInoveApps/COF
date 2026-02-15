@@ -6,28 +6,28 @@ import 'package:bsu_control/model/check_list_model.dart';
 
 abstract class ICheckListRepository {
   Future<bool> save({
-    required CheckListModel checklist,
+    required ChecklistModel checklist,
     required List<CarChangeModel> changes,
     required List<ChecklistOutherChange> outhers,
   });
 
-  Future<bool> deleteChecklist({
-    required CheckListModel checklist,
+  Future<bool> delete({
+    required ChecklistModel checklist,
     required CarModel car,
   });
 
   Future<bool> finish({
-    required CheckListModel checklist,
+    required ChecklistModel checklist,
     Uint8List? image,
   });
 
-  Stream<CheckListModel> streamChecklistByID({
+  Stream<ChecklistModel> streamChecklistByID({
     required String checklistID,
   });
 
-  Stream<List<CheckListModel>> streamChecklistUser({required String userID});
+  Stream<List<ChecklistModel>> streamChecklistUser({required String userID});
 
-  Stream<List<CheckListModel>> streamChecklistPeriod({
+  Stream<List<ChecklistModel>> streamChecklistPeriod({
     required DateTime referenceDateStart,
     required DateTime referenceDateFinish,
   });

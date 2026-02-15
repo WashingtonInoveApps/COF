@@ -4,6 +4,7 @@ import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/core/enum.dart';
+import 'package:bsu_control/main.dart';
 import 'package:bsu_control/model/check_list_model.dart';
 import 'package:bsu_control/model/itens_changes_model.dart';
 import 'package:bsu_control/src/checklist/view/checklist_finish_page.dart';
@@ -23,8 +24,8 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import '../controller/checklist_controller.dart';
 
 class ChecklistDetailsPage extends StatefulWidget {
-  final String checklistID;
-  const ChecklistDetailsPage({Key? key, required this.checklistID})
+  final ChecklistModel checklist;
+  const ChecklistDetailsPage({Key? key, required this.checklist})
       : super(key: key);
 
   @override
@@ -37,16 +38,24 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
   late StreamSubscription subscription;
   late CheckListController controller;
 
-  late CheckListModel checklist;
+  late ChecklistModel checklist;
   bool loadingPage = true;
 
   @override
   void initState() {
     super.initState();
-    controller = CheckListController(init: null, app: app, update: false);
+    checklist = ChecklistModel.copy(checklist: widget.checklist);
+
+    controller = CheckListController(
+      init: null,
+      config: config,
+      update: false,
+      cars: app.cars,
+      checklistTodays: app.checklistsToday,
+    );
 
     subscription = controller
-        .streamChecklistByID(checklistID: widget.checklistID)
+        .streamChecklistByID(checklistID: widget.checklist.id!)
         .listen((value) {
       setState(() {
         checklist = value;
@@ -63,14 +72,6 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (loadingPage) {
-      return const BackgraundPage(
-          menu: false,
-          childLeft: Center(
-            child: CircularProgressIndicator(),
-          ));
-    }
-
     final obm = app.obms.firstWhere((e) => e.id == checklist.obmID);
     final car = app.cars.firstWhere((e) => e.id == checklist.checkCar.car.id);
 
@@ -88,99 +89,128 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
           onBack: () => Navigator.of(context).pop(),
           top: Column(
             children: [
-              Row(
-                spacing: 10,
-                children: [
-                  Expanded(
-                      child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text.rich(
-                        TextSpan(text: obm.prefix, children: [
-                          TextSpan(
-                              text: '  CHECKLIST VEICULAR',
-                              style: Constants.subtitleHint)
-                        ]),
-                        style: Constants.title.copyWith(
-                            fontWeight: FontWeight.bold, fontSize: 18),
-                      ),
-                      Text(
-                        checklist.cia.toUpperCase(),
-                        style: Constants.title,
-                      ),
-                    ],
-                  )),
-                  enable
-                      ? Row(
-                          spacing: 10,
-                          children: [
-                            ElevatedButton(
-                                onPressed: () {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (context) =>
-                                          ChecklistRegisterPage(
-                                            checklist: checklist,
-                                          )));
-                                },
-                                child: Text(
-                                  'Editar',
-                                  style: Constants.titleButton,
-                                )),
-                            ElevatedButton(
-                                onPressed: () async {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (context) => ChecklistFinishPage(
-                                            controller: controller,
-                                            checklist: checklist,
-                                          )));
-                                },
-                                child: Text(
-                                  'Finalizar',
-                                  style: Constants.titleButton,
-                                )),
-                          ],
-                        )
-                      : Container(),
-                  (app.user.admin || app.user.managerFleet)
-                      ? ElevatedButton(
-                          onPressed: () async {
-                            await showDialog(
-                                context: context,
-                                builder: (context) => AlertMessage(
-                                    title: 'Atenção',
-                                    message:
-                                        'Você perderar todas as alterações constadas nesse registro. Deseja realmente excluir esse registro ?',
-                                    titleOK: 'Sim',
-                                    cancel: true,
-                                    onPressedCancel: () =>
-                                        Navigator.of(context).pop(false),
-                                    onPressedOK: () => Navigator.of(context)
-                                        .pop(true))).then((value) {
-                              if (value ?? false) {
-                                controller
-                                    .deleteChecklist(checklist: checklist)
-                                    .then((_) {
-                                  Navigator.of(context).pop();
-                                }).catchError((err) {
-                                  showDialog(
-                                      context: context,
-                                      builder: (context) => AlertMessage(
-                                          title: 'Atenção',
-                                          message: err.toString(),
-                                          onPressedOK: () =>
-                                              Navigator.of(context).pop()));
-                                });
-                              }
-                            });
-                          },
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.grey),
-                          child: Text(
-                            'Excluir',
-                            style: Constants.titleButton,
-                          ))
-                      : Container(),
-                ],
+              SizedBox(
+                width: double.infinity,
+                child: Wrap(
+                  spacing: 10,
+                  runSpacing: 5,
+                  direction: Axis.horizontal,
+                  alignment: WrapAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text.rich(
+                          TextSpan(text: obm.prefix, children: [
+                            TextSpan(
+                                text: '  CHECKLIST VEICULAR',
+                                style: Constants.subtitleHint)
+                          ]),
+                          style: Constants.title.copyWith(fontSize: 18),
+                        ),
+                        Text(
+                          checklist.cia.toUpperCase(),
+                          style: Constants.title,
+                        ),
+                      ],
+                    ),
+                    Wrap(
+                      spacing: 5,
+                      runSpacing: 5,
+                      crossAxisAlignment: WrapCrossAlignment.end,
+                      children: [
+                        enable
+                            ? SizedBox(
+                                width: 120,
+                                child: ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  ChecklistRegisterPage(
+                                                    checklist: checklist,
+                                                  )));
+                                    },
+                                    child: Text(
+                                      'Editar',
+                                      style: Constants.titleButton,
+                                    )),
+                              )
+                            : Container(
+                                width: 1,
+                              ),
+                        enable
+                            ? SizedBox(
+                                width: 120,
+                                child: ElevatedButton(
+                                    onPressed: () async {
+                                      Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  ChecklistFinishPage(
+                                                    controller: controller,
+                                                    checklist: checklist,
+                                                  )));
+                                    },
+                                    child: Text(
+                                      'Finalizar',
+                                      style: Constants.titleButton,
+                                    )),
+                              )
+                            : Container(),
+                        (app.user.admin || app.user.managerFleet)
+                            ? SizedBox(
+                                width: 120,
+                                child: ElevatedButton(
+                                    onPressed: () async {
+                                      await showDialog(
+                                          context: context,
+                                          builder: (context) => AlertMessage(
+                                              title: 'Atenção',
+                                              message:
+                                                  'Você perderar todas as alterações constadas nesse registro. Deseja realmente excluir esse registro ?',
+                                              titleOK: 'Sim',
+                                              cancel: true,
+                                              onPressedCancel: () =>
+                                                  Navigator.of(context)
+                                                      .pop(false),
+                                              onPressedOK: () =>
+                                                  Navigator.of(context).pop(
+                                                      true))).then((value) {
+                                        if (value ?? false) {
+                                          controller
+                                              .delete(checklist: checklist)
+                                              .then((_) {
+                                            Navigator.of(context).pop();
+                                          }).catchError((err) {
+                                            showDialog(
+                                                context: context,
+                                                builder: (context) =>
+                                                    AlertMessage(
+                                                        title: 'Atenção',
+                                                        message: err.toString(),
+                                                        onPressedOK: () =>
+                                                            Navigator.of(
+                                                                    context)
+                                                                .pop()));
+                                          });
+                                        }
+                                      });
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.grey),
+                                    child: Text(
+                                      'Excluir',
+                                      style: Constants.titleButton,
+                                    )),
+                              )
+                            : Container(
+                                width: 1,
+                              ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
               const Divider()
             ],
@@ -376,6 +406,42 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
                 user: checklist.user,
                 checklistID: checklist.id,
               ),
+              const SizedBox(
+                height: 10,
+              ),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                    color: Constants.primary,
+                    borderRadius: BorderRadius.circular(5)),
+                child: Text(
+                  'OUTRAS ALTERAÇÕES',
+                  style: Constants.titleButton,
+                ),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              (checklist.outhers?.isEmpty ?? true)
+                  ? Text(
+                      'Nenhuma outra alteração encontrada',
+                      style: Constants.titleHint,
+                    )
+                  : Column(
+                      children:
+                          List.generate(checklist.outhers!.length, (index) {
+                        final outher = checklist.outhers![index];
+
+                        return CardOutherChange(
+                          outher: outher,
+                        );
+                      }).expand((widget) => [widget, const Divider()]).toList()
+                            ..removeLast(),
+                    ),
+              const SizedBox(
+                height: 10,
+              ),
             ],
           ),
           childRight: Column(
@@ -458,39 +524,6 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
                   : changesListWidget(
                       context: context,
                       categories: checklist.checkCar.car.materialsConsumable,
-                    ),
-              const SizedBox(
-                height: 10,
-              ),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                    color: Constants.primary,
-                    borderRadius: BorderRadius.circular(5)),
-                child: Text(
-                  'OUTRAS ALTERAÇÕES',
-                  style: Constants.titleButton,
-                ),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              (checklist.outhers?.isEmpty ?? true)
-                  ? Text(
-                      'Nenhuma outra alteração encontrada',
-                      style: Constants.titleHint,
-                    )
-                  : Column(
-                      children:
-                          List.generate(checklist.outhers!.length, (index) {
-                        final outher = checklist.outhers![index];
-
-                        return CardOutherChange(
-                          outher: outher,
-                        );
-                      }).expand((widget) => [widget, const Divider()]).toList()
-                            ..removeLast(),
                     ),
               const SizedBox(
                 height: 10,

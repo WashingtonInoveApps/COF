@@ -1,6 +1,7 @@
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/validation.dart';
+import 'package:bsu_control/main.dart';
 import 'package:bsu_control/model/obm_model.dart';
 import 'package:bsu_control/model/user_model.dart';
 import 'package:bsu_control/src/user/view/users_page.dart';
@@ -23,7 +24,6 @@ class UserPageRegister extends StatefulWidget {
 }
 
 class _UserPageRegisterState extends State<UserPageRegister> {
-  late UserController controller;
   final _key = GlobalKey<FormState>();
   final app = GetIt.I.get<AppController>();
 
@@ -37,12 +37,19 @@ class _UserPageRegisterState extends State<UserPageRegister> {
   final maskFormatter = MaskTextInputFormatter(
       mask: '(##) #####-####', filter: {"#": RegExp(r'[0-9]')});
 
+  late UserController controller;
   UserModel user = UserModel();
 
   @override
   void initState() {
     super.initState();
-    controller = UserController(app: app, init: widget.user);
+    controller = UserController(
+      config: config,
+      init: widget.user,
+      obms: app.obms,
+      user: app.user,
+    );
+
     user = widget.user ?? controller.userInit;
   }
 
@@ -54,7 +61,7 @@ class _UserPageRegisterState extends State<UserPageRegister> {
   }
 
   void closePage(BuildContext context) {
-    controller.app.setRouter(6);
+    app.setRouter(6);
     Navigator.of(context).pop();
   }
 

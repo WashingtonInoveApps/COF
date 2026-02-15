@@ -17,7 +17,7 @@ class AppRepository extends APIClient implements IAppRepository {
 
   @override
   Future<bool> saveSupplies(
-      {required SupplyModel supply, required CheckListModel checklist}) async {
+      {required SupplyModel supply, required ChecklistModel checklist}) async {
     try {
       final docChecklist = colChecklist.doc(checklist.id);
       final docSupplies = colSupplies.doc(supply.id);
@@ -43,7 +43,7 @@ class AppRepository extends APIClient implements IAppRepository {
   }
 
   @override
-  Stream<List<CheckListModel>> listenChecklistToday(
+  Stream<List<ChecklistModel>> listenChecklistToday(
       {required DateTime referenceDate}) {
     try {
       log('Buscando checklist diário: ${Core.formatDate(referenceDate)}');
@@ -52,7 +52,7 @@ class AppRepository extends APIClient implements IAppRepository {
           .snapshots()
           .map((e) => e.docs
               .map((doc) =>
-                  CheckListModel.fromMap(doc.data() as Map<String, dynamic>))
+                  ChecklistModel.fromMap(doc.data() as Map<String, dynamic>))
               .toList());
     } catch (e) {
       return Stream.value([]);
@@ -79,7 +79,7 @@ class AppRepository extends APIClient implements IAppRepository {
 
   @override
   Future<bool> deleteSupply(
-      {required SupplyModel supply, required CheckListModel checklist}) async {
+      {required SupplyModel supply, required ChecklistModel checklist}) async {
     try {
       final docChecklist = colChecklist.doc(checklist.id);
       final docSupplies = colSupplies.doc(supply.id);

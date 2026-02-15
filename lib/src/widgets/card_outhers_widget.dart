@@ -11,45 +11,79 @@ class CardOutherChange extends StatelessWidget {
   const CardOutherChange({Key? key, required this.outher, this.onDelete})
       : super(key: key);
 
+  Widget image(
+      {required ChecklistOutherChange value,
+      double heigth = 100,
+      double width = 140}) {
+    return ClipRRect(
+      borderRadius: BorderRadiusGeometry.circular(5),
+      child: value.fileImage != null
+          ? Image.memory(
+              value.fileImage!,
+              height: heigth,
+              width: width,
+              fit: BoxFit.contain,
+            )
+          : kIsWeb
+              ? Image.network(
+                  value.image?.url ?? '',
+                  height: heigth,
+                  width: width,
+                  fit: BoxFit.contain,
+                )
+              : CachedNetworkImage(
+                  imageUrl: value.image?.url ?? '',
+                  height: heigth,
+                  width: width,
+                  progressIndicatorBuilder: (context, url, downloadProgress) =>
+                      Center(
+                    child: CircularProgressIndicator(
+                        color: Constants.primary,
+                        value: downloadProgress.progress),
+                  ),
+                  errorWidget: (context, url, error) => const Center(
+                      child: Icon(
+                    Icons.error,
+                    size: 60.0,
+                  )),
+                  fit: BoxFit.contain,
+                ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Row(
       spacing: 10,
       children: [
-        ClipRRect(
-          borderRadius: BorderRadiusGeometry.circular(5),
-          child: outher.fileImage != null
-              ? Image.memory(
-                  outher.fileImage!,
-                  height: 100,
-                  width: 100,
-                  fit: BoxFit.cover,
-                )
-              : kIsWeb
-                  ? Image.network(
-                      outher.image?.url ?? '',
-                      height: 100,
-                      width: 100,
-                      fit: BoxFit.cover,
-                    )
-                  : CachedNetworkImage(
-                      imageUrl: outher.image?.url ?? '',
-                      height: 100,
-                      width: 100,
-                      progressIndicatorBuilder:
-                          (context, url, downloadProgress) => Center(
-                        child: CircularProgressIndicator(
-                            color: Constants.primary,
-                            value: downloadProgress.progress),
-                      ),
-                      errorWidget: (context, url, error) => const Center(
-                          child: Icon(
-                        Icons.error,
-                        size: 60.0,
-                      )),
-                      fit: BoxFit.contain,
-                    ),
-        ),
+        InkWell(
+            onTap: () {
+              showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                        contentPadding: const EdgeInsets.all(5),
+                        content: Stack(
+                          children: [
+                            image(value: outher, heigth: 300, width: 450),
+                            Positioned(
+                                top: 10,
+                                right: 10,
+                                child: IconButton(
+                                    style: IconButton.styleFrom(
+                                        backgroundColor: Colors.black45),
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(),
+                                    icon: const Icon(
+                                      Icons.close,
+                                      size: 20,
+                                      color: Colors.white,
+                                    )))
+                          ],
+                        ),
+                      ));
+            },
+            child:
+                Tooltip(message: 'Abrir imagem', child: image(value: outher))),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

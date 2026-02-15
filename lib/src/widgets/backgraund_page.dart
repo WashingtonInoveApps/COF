@@ -210,8 +210,7 @@ class _BackgraundPageState extends State<BackgraundPage> {
                               } else {
                                 Navigator.of(context).push(MaterialPageRoute(
                                     builder: (context) => ChecklistDetailsPage(
-                                        checklistID:
-                                            controller.checklistUser!.id!)));
+                                        checklist: controller.checklistUser!)));
                               }
                             }
                             break;

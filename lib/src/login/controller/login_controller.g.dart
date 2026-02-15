@@ -41,29 +41,19 @@ mixin _$LoginController on _LoginControllerBase, Store {
     });
   }
 
-  late final _$loginControllerAsyncAction =
-      AsyncAction('_LoginControllerBase.loginController', context: context);
+  late final _$callAsyncAction =
+      AsyncAction('_LoginControllerBase.call', context: context);
 
   @override
-  Future<bool> loginController(dynamic Function(String) onEmail) {
-    return _$loginControllerAsyncAction
-        .run(() => super.loginController(onEmail));
-  }
-
-  late final _$initializationAsyncAction =
-      AsyncAction('_LoginControllerBase.initialization', context: context);
-
-  @override
-  Future<bool> initialization({required UserModel user}) {
-    return _$initializationAsyncAction
-        .run(() => super.initialization(user: user));
+  Future<UserModel?> call(dynamic Function(String) onEmail) {
+    return _$callAsyncAction.run(() => super.call(onEmail));
   }
 
   late final _$currentUserAsyncAction =
       AsyncAction('_LoginControllerBase.currentUser', context: context);
 
   @override
-  Future<bool> currentUser({required String acessToken}) {
+  Future<UserModel?> currentUser({required String acessToken}) {
     return _$currentUserAsyncAction
         .run(() => super.currentUser(acessToken: acessToken));
   }
@@ -72,7 +62,7 @@ mixin _$LoginController on _LoginControllerBase, Store {
       AsyncAction('_LoginControllerBase.login', context: context);
 
   @override
-  Future<bool> login({required String email, required String senha}) {
+  Future<UserModel?> login({required String email, required String senha}) {
     return _$loginAsyncAction
         .run(() => super.login(email: email, senha: senha));
   }

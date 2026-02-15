@@ -1,5 +1,6 @@
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
+import 'package:bsu_control/main.dart';
 import 'package:bsu_control/model/car_model.dart';
 import 'package:bsu_control/model/car_status_model.dart';
 import 'package:bsu_control/model/check_list_model.dart';
@@ -29,7 +30,7 @@ class CarsPage extends StatefulWidget {
 }
 
 class _CarsPageState extends State<CarsPage> {
-  final controller = GetIt.I.get<AppController>();
+  final app = GetIt.I.get<AppController>();
   final searchController = TextEditingController();
 
   late CarController carController;
@@ -38,11 +39,11 @@ class _CarsPageState extends State<CarsPage> {
   @override
   void initState() {
     super.initState();
-    carController = CarController(app: controller);
+    carController = CarController(config: config, user: app.user);
     carController.setDateKmByMonth(DateTime.now());
 
     rec = autorun((_) {
-      carController.setCars(List<CarModel>.from(controller.carsUsers));
+      carController.setCars(List<CarModel>.from(app.carsUsers));
     });
   }
 
@@ -67,9 +68,9 @@ class _CarsPageState extends State<CarsPage> {
                 alignment: WrapAlignment.spaceEvenly,
                 children: [
                   SizedBox(
-                    width: (controller.modeMOBILE
+                    width: (app.modeMOBILE
                         ? double.infinity
-                        : controller.maxWidth * 0.45),
+                        : app.maxWidth * 0.45),
                     child: Column(
                       spacing: 5,
                       children: [
@@ -78,8 +79,7 @@ class _CarsPageState extends State<CarsPage> {
                           child: Observer(builder: (_) {
                             final cars =
                                 List<CarModel>.from(carController.cars);
-                            final types =
-                                List<String>.from(controller.carsTypes);
+                            final types = List<String>.from(app.carsTypes);
 
                             return CarsChart(
                               cars: cars,
@@ -94,7 +94,7 @@ class _CarsPageState extends State<CarsPage> {
                               height: 328,
                               width: double.infinity,
                               padding: const EdgeInsets.all(10),
-                              child: FutureBuilder<List<CheckListModel>>(
+                              child: FutureBuilder<List<ChecklistModel>>(
                                   future: carController.getCheckListByMonth(
                                       date: carController.dateKmByMonth),
                                   builder: (context, snapshot) {
@@ -121,9 +121,9 @@ class _CarsPageState extends State<CarsPage> {
                     ),
                   ),
                   SizedBox(
-                    width: (controller.modeMOBILE
+                    width: (app.modeMOBILE
                         ? double.infinity
-                        : controller.maxWidth * 0.45),
+                        : app.maxWidth * 0.45),
                     child: Column(
                       spacing: 5,
                       children: [
@@ -207,7 +207,7 @@ class _CarsPageState extends State<CarsPage> {
                   Observer(builder: (_) {
                     return Container(
                       margin: const EdgeInsets.only(top: 10),
-                      width: controller.modeMOBILE ? double.infinity : 350,
+                      width: app.modeMOBILE ? double.infinity : 350,
                       alignment: Alignment.centerRight,
                       child: FieldText(
                         search: true,
@@ -224,7 +224,7 @@ class _CarsPageState extends State<CarsPage> {
                 ],
               ),
             ),
-            controller.modeMOBILE ? Container() : const Divider(),
+            app.modeMOBILE ? Container() : const Divider(),
             const SizedBox(
               height: 10,
             ),
@@ -241,7 +241,7 @@ class _CarsPageState extends State<CarsPage> {
               final cars = List<CarModel>.from(carController.carsSorts);
               return CarsTableView(
                 values: cars,
-                obms: controller.obms,
+                obms: app.obms,
                 onChanges: (changes) {
                   showDialog(
                       context: context,

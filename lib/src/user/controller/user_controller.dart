@@ -1,6 +1,6 @@
-import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/core.dart';
+import 'package:bsu_control/model/config_model.dart';
 import 'package:bsu_control/model/obm_model.dart';
 import 'package:bsu_control/src/user/repository/user_interface.dart';
 import 'package:bsu_control/src/user/repository/user_repository.dart';
@@ -15,16 +15,23 @@ part 'user_controller.g.dart';
 class UserController = _UserControllerBase with _$UserController;
 
 abstract class _UserControllerBase with Store {
-  final AppController app;
+  final ConfigModel config;
+  final UserModel? init;
+  final UserModel user;
+  final List<OBMModel> obms;
+
   late IUserRepository repository;
-  late UserModel? init;
 
   final controllerPassword = TextEditingController();
   final controllerPasswordConfirme = TextEditingController();
 
-  _UserControllerBase({required this.app, required this.init}) {
+  _UserControllerBase(
+      {required this.config,
+      required this.init,
+      required this.obms,
+      required this.user}) {
     repository = UserRepository(
-        endpoint: app.endpoint, appID: app.appID, test: app.test);
+        endpoint: config.endpoint, appID: config.appID, test: config.test);
 
     userControllerInit(init);
   }
@@ -41,16 +48,19 @@ abstract class _UserControllerBase with Store {
     managerFleet = value?.managerFleet ?? false;
 
     if (value != null) {
-      obm = app.obms.firstWhere((e) => e.id == value.obmID);
+      obm = obms.firstWhere((e) => e.id == value.obmID);
       cia = value.cia;
     } else {
-      obm = app.obms.firstWhere((e) => e.id == app.user.obmID);
+      obm = obms.firstWhere((e) => e.id == user.obmID);
       cia = obm.cias.first;
     }
   }
 
   @observable
   bool loading = false;
+
+  @observable
+  ObservableList<UserModel> users = <UserModel>[].asObservable();
 
   @observable
   String graduation = '';
@@ -106,14 +116,14 @@ abstract class _UserControllerBase with Store {
 
   @computed
   List<UserModel> get usersOBM {
-    if (app.user.admin) {
-      return List<UserModel>.from(app.users);
-    } else if (app.user.battalion) {
+    if (user.admin) {
+      return List<UserModel>.from(users);
+    } else if (user.battalion) {
       return List<UserModel>.from(
-          app.users.where((e) => e.obmID == app.user.obmID).toList());
+          users.where((e) => e.obmID == user.obmID).toList());
     } else {
-      return List<UserModel>.from(app.users
-          .where((e) => e.cia.toLowerCase() == app.user.cia.toLowerCase())
+      return List<UserModel>.from(users
+          .where((e) => e.cia.toLowerCase() == user.cia.toLowerCase())
           .toList());
     }
   }
@@ -153,6 +163,13 @@ abstract class _UserControllerBase with Store {
   @action
   setPage(int value) {
     page = value;
+  }
+
+  @action
+  setUsers(List<UserModel> values) {
+    users
+      ..clear()
+      ..addAll(values);
   }
 
   @action

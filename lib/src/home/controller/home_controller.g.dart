@@ -9,11 +9,11 @@ part of 'home_controller.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$HomeController on _HomeControllerBase, Store {
-  Computed<List<CheckListModel>>? _$checklistPeriodSortComputed;
+  Computed<List<ChecklistModel>>? _$checklistPeriodSortComputed;
 
   @override
-  List<CheckListModel> get checklistPeriodSort =>
-      (_$checklistPeriodSortComputed ??= Computed<List<CheckListModel>>(
+  List<ChecklistModel> get checklistPeriodSort =>
+      (_$checklistPeriodSortComputed ??= Computed<List<ChecklistModel>>(
               () => super.checklistPeriodSort,
               name: '_HomeControllerBase.checklistPeriodSort'))
           .value;
@@ -54,13 +54,13 @@ mixin _$HomeController on _HomeControllerBase, Store {
       Atom(name: '_HomeControllerBase.checklistsPeriod', context: context);
 
   @override
-  List<CheckListModel> get checklistsPeriod {
+  List<ChecklistModel> get checklistsPeriod {
     _$checklistsPeriodAtom.reportRead();
     return super.checklistsPeriod;
   }
 
   @override
-  set checklistsPeriod(List<CheckListModel> value) {
+  set checklistsPeriod(List<ChecklistModel> value) {
     _$checklistsPeriodAtom.reportWrite(value, super.checklistsPeriod, () {
       super.checklistsPeriod = value;
     });
@@ -166,7 +166,7 @@ mixin _$HomeController on _HomeControllerBase, Store {
       ActionController(name: '_HomeControllerBase', context: context);
 
   @override
-  Stream<List<CheckListModel>> listenChecklistPeriod(
+  Stream<List<ChecklistModel>> listenChecklistPeriod(
       {required DateTime dateStart, required DateTime dateFinish}) {
     final _$actionInfo = _$_HomeControllerBaseActionController.startAction(
         name: '_HomeControllerBase.listenChecklistPeriod');
@@ -203,7 +203,7 @@ mixin _$HomeController on _HomeControllerBase, Store {
   }
 
   @override
-  dynamic setChecklistPeriod(List<CheckListModel> value) {
+  dynamic setChecklistPeriod(List<ChecklistModel> value) {
     final _$actionInfo = _$_HomeControllerBaseActionController.startAction(
         name: '_HomeControllerBase.setChecklistPeriod');
     try {

@@ -15,7 +15,7 @@ class CheckListRepository extends APIClient implements ICheckListRepository {
 
   @override
   Future<bool> save({
-    required CheckListModel checklist,
+    required ChecklistModel checklist,
     required List<CarChangeModel> changes,
     required List<ChecklistOutherChange> outhers,
   }) async {
@@ -89,7 +89,7 @@ class CheckListRepository extends APIClient implements ICheckListRepository {
 
   @override
   Future<bool> finish(
-      {required CheckListModel checklist, Uint8List? image}) async {
+      {required ChecklistModel checklist, Uint8List? image}) async {
     try {
       var docChecklist = colChecklist.doc(checklist.id);
       var docCar = colCars.doc(checklist.checkCar.car.id);
@@ -123,15 +123,15 @@ class CheckListRepository extends APIClient implements ICheckListRepository {
   }
 
   @override
-  Stream<CheckListModel> streamChecklistByID({required String checklistID}) {
+  Stream<ChecklistModel> streamChecklistByID({required String checklistID}) {
     return colChecklist
         .doc(checklistID)
         .snapshots()
-        .map((e) => CheckListModel.fromMap(e.data() as Map<String, dynamic>));
+        .map((e) => ChecklistModel.fromMap(e.data() as Map<String, dynamic>));
   }
 
   @override
-  Stream<List<CheckListModel>> streamChecklistPeriod(
+  Stream<List<ChecklistModel>> streamChecklistPeriod(
       {required DateTime referenceDateStart,
       required DateTime referenceDateFinish}) {
     final start = referenceDateStart
@@ -151,30 +151,26 @@ class CheckListRepository extends APIClient implements ICheckListRepository {
         .orderBy('date')
         .snapshots()
         .map((e) {
-      return e.docs.map((doc) {
-        var checkList =
-            CheckListModel.fromMap(doc.data() as Map<String, dynamic>);
-        checkList.id = doc.id;
-        return checkList;
-      }).toList();
+      return e.docs
+          .map((doc) =>
+              ChecklistModel.fromMap(doc.data() as Map<String, dynamic>))
+          .toList();
     });
   }
 
   @override
-  Stream<List<CheckListModel>> streamChecklistUser({required String userID}) {
+  Stream<List<ChecklistModel>> streamChecklistUser({required String userID}) {
     return colChecklist.where('userID', isEqualTo: userID).snapshots().map((e) {
-      return e.docs.map((doc) {
-        var checkList =
-            CheckListModel.fromMap(doc.data() as Map<String, dynamic>);
-        checkList.id = doc.id;
-        return checkList;
-      }).toList();
+      return e.docs
+          .map((doc) =>
+              ChecklistModel.fromMap(doc.data() as Map<String, dynamic>))
+          .toList();
     });
   }
 
   @override
-  Future<bool> deleteChecklist(
-      {required CheckListModel checklist, required CarModel car}) async {
+  Future<bool> delete(
+      {required ChecklistModel checklist, required CarModel car}) async {
     try {
       var docChecklist = colChecklist.doc(checklist.id);
       var docCar = colCars.doc(car.id);
