@@ -61,6 +61,7 @@ class AlertMessage extends StatelessWidget {
         cancel
             ? TextButton(
                 onPressed: onPressedCancel,
+                style: TextButton.styleFrom(side: BorderSide.none),
                 child: Text(
                   titleCancel ?? "Cancelar",
                   style: Constants.title.copyWith(color: Colors.grey),
@@ -70,6 +71,7 @@ class AlertMessage extends StatelessWidget {
         ok
             ? TextButton(
                 onPressed: onPressedOK,
+                style: TextButton.styleFrom(side: BorderSide.none),
                 child: Text(
                   titleOK ?? "OK",
                   style: Constants.title

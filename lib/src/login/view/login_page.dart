@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/validation.dart';
 import 'package:bsu_control/main.dart';
@@ -38,8 +40,9 @@ class _LoginPageState extends State<LoginPage> {
     super.initState();
     controller = LoginController(config: config);
 
-    controller.call((email) {
+    controller.loginInitController((email) {
       controllerEmail.text = email;
+      log('Email: $email');
     }).then((user) {
       if (widget.exit) {
         controller.setLoading(false);
@@ -106,7 +109,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           Observer(builder: (context) {
                             if (controller.loading) {
-                              return CircularProgressIndicator(
+                              return const CircularProgressIndicator(
                                 valueColor: AlwaysStoppedAnimation<Color>(
                                     Constants.primary),
                               );
@@ -327,14 +330,17 @@ class _LoginPageState extends State<LoginPage> {
                                                             senha:
                                                                 controllerPassword
                                                                     .text)
-                                                        .then((_) async {
-                                                      await Navigator.of(
-                                                              context)
-                                                          .pushReplacement(
-                                                              CupertinoPageRoute(
-                                                                  builder:
-                                                                      (context) =>
-                                                                          const HomePage()));
+                                                        .then((value) async {
+                                                      if (value != null) {
+                                                        app.setUser(value);
+                                                        await Navigator.of(
+                                                                context)
+                                                            .pushReplacement(
+                                                                CupertinoPageRoute(
+                                                                    builder:
+                                                                        (context) =>
+                                                                            const HomePage()));
+                                                      }
                                                     }).catchError((err) async {
                                                       showDialog(
                                                           context: context,

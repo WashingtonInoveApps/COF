@@ -585,6 +585,22 @@ mixin _$CarController on _CarControllerBase, Store {
   }
 
   @override
+  dynamic editItensSection(
+      {required List<ItensChangesModel> list,
+      required int index,
+      required int indexItem,
+      required ItemModel value}) {
+    final _$actionInfo = _$_CarControllerBaseActionController.startAction(
+        name: '_CarControllerBase.editItensSection');
+    try {
+      return super.editItensSection(
+          list: list, index: index, indexItem: indexItem, value: value);
+    } finally {
+      _$_CarControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   dynamic removeItensSection(
       {required List<ItensChangesModel> list,
       required int index,

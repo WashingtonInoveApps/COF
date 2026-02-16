@@ -78,7 +78,7 @@ class _FieldTextState extends State<FieldText> {
                 : null,
             focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(widget.borderRadius),
-                borderSide: BorderSide(color: Constants.primary)),
+                borderSide: const BorderSide(color: Constants.primary)),
             labelStyle: Constants.title.copyWith(color: Colors.grey),
             errorStyle: Constants.title.copyWith(color: Colors.grey),
             hintStyle: Constants.title.copyWith(color: Colors.grey)),

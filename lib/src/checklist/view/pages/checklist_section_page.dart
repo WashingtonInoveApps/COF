@@ -32,8 +32,6 @@ class _ChecklistSectionPageState extends State<ChecklistSectionPage> {
 
   @override
   Widget build(BuildContext context) {
-    final size = processWidth(widget.width);
-
     return SizedBox(
       width: double.infinity,
       child: Column(
@@ -55,12 +53,13 @@ class _ChecklistSectionPageState extends State<ChecklistSectionPage> {
           SizedBox(
             width: double.infinity,
             child: Wrap(
+              runSpacing: 10,
               direction: Axis.horizontal,
               alignment: WrapAlignment.spaceBetween,
               children: List.generate(widget.list.length, (indexSection) {
                 final category = widget.list[indexSection];
                 return Container(
-                  width: size,
+                  width: widget.width,
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                       border: Border.all(color: Colors.grey.shade300),
@@ -72,7 +71,7 @@ class _ChecklistSectionPageState extends State<ChecklistSectionPage> {
                         width: double.infinity,
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
-                            color: Colors.blue.shade700,
+                            color: Constants.primary,
                             borderRadius: BorderRadius.circular(5)),
                         child: Text(
                           category.description,
@@ -99,7 +98,7 @@ class _ChecklistSectionPageState extends State<ChecklistSectionPage> {
                               },
                               child: CircleAvatar(
                                 radius: 15,
-                                backgroundColor: Colors.blue.shade700,
+                                backgroundColor: Constants.primary,
                                 child: Icon(
                                   category.value
                                       ? Icons.arrow_upward
@@ -157,10 +156,4 @@ class _ChecklistSectionPageState extends State<ChecklistSectionPage> {
       ),
     );
   }
-}
-
-double processWidth(double value) {
-  if (value <= 500) return value;
-
-  return value * 0.48;
 }

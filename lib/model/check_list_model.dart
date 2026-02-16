@@ -100,7 +100,6 @@ class ChecklistModel {
 
   factory ChecklistModel.fromMap(Map<String, dynamic> map) {
     return ChecklistModel(
-      user: UserModel.fromMapResume(map['user']),
       pb: map['pb'] ?? '',
       team: map['team'] ?? '',
       userID: map['userID'] ?? '',
@@ -118,6 +117,7 @@ class ChecklistModel {
       obs: map['obs'] ?? '',
       state: EnumCore.statusChecklistFromString(map['state'] as String),
       enable: map['enable'] ?? false,
+      user: UserModel.fromMapResume(map['user'] as Map<String, dynamic>),
       states: (map['states'] != null)
           ? List<StatesChecklist>.from(
               map['states']?.map((x) => StatesChecklist.fromMap(x)))

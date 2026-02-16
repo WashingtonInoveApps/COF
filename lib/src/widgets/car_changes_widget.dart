@@ -80,7 +80,6 @@ class _CarChangesWidgetState extends State<CarChangesWidget> {
     changes
       ..clear()
       ..addAll(widget.car.changes.where((e) => e.indexImage == indexImage));
-    debugPrint('Chagens widget.: ${changes.length}');
 
     final image = images[indexImage];
 
@@ -293,8 +292,8 @@ class _CarChangesWidgetState extends State<CarChangesWidget> {
                             shape: RoundedRectangleBorder(
                                 borderRadius:
                                     BorderRadiusGeometry.circular(100)),
-                            child: Padding(
-                              padding: const EdgeInsets.all(10.0),
+                            child: const Padding(
+                              padding: EdgeInsets.all(10.0),
                               child: Icon(
                                 Icons.list_alt_rounded,
                                 size: 20,

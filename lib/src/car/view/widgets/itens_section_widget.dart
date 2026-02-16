@@ -17,10 +17,18 @@ class ItensSectionWidget extends StatefulWidget {
 
 class _ItensSectionWidgetState extends State<ItensSectionWidget> {
   final formKEY = GlobalKey<FormState>();
-  final controllerText = TextEditingController();
-  final controllerQuantity = TextEditingController();
+  late TextEditingController controllerText;
+  late TextEditingController controllerQuantity;
 
   final uid = const Uuid();
+
+  @override
+  void initState() {
+    super.initState();
+    controllerText = TextEditingController(text: widget.item?.description);
+    controllerQuantity =
+        TextEditingController(text: widget.item?.quantity.toString());
+  }
 
   @override
   void dispose() {
@@ -65,7 +73,7 @@ class _ItensSectionWidgetState extends State<ItensSectionWidget> {
                       onPressed: () async {
                         if (formKEY.currentState!.validate()) {
                           widget.onChange(ItemModel(
-                              id: uid.v4(),
+                              id: widget.item?.id ?? uid.v4(),
                               description: controllerText.text,
                               quantity: int.parse(controllerQuantity.text)));
                           Navigator.of(context).pop();

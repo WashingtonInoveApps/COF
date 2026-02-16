@@ -39,7 +39,6 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
   late CheckListController controller;
 
   late ChecklistModel checklist;
-  bool loadingPage = true;
 
   @override
   void initState() {
@@ -59,7 +58,6 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
         .listen((value) {
       setState(() {
         checklist = value;
-        loadingPage = false;
       });
     });
   }
@@ -457,7 +455,7 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
                     color: Constants.primary,
                     borderRadius: BorderRadius.circular(5)),
                 child: Text(
-                  "ITENS OU EQUIPAMENTOS",
+                  "ITENS OU ACESSÓRIOS",
                   style: Constants.titleButton,
                 ),
               ),
@@ -682,7 +680,7 @@ Widget changesListWidget(
                   contentPadding: const EdgeInsets.only(left: 10),
                   title: Text(
                     category.description,
-                    style: Constants.titleHint,
+                    style: Constants.title,
                   ),
                 );
               },

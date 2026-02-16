@@ -42,6 +42,12 @@ class _ChecklistRegisterPageState extends State<ChecklistRegisterPage> {
     );
   }
 
+  double processWidth(double value) {
+    if (value <= 500) return value;
+
+    return value * 0.48;
+  }
+
   @override
   Widget build(BuildContext context) {
     final update = (widget.checklist != null);
@@ -54,15 +60,15 @@ class _ChecklistRegisterPageState extends State<ChecklistRegisterPage> {
       ),
       ChecklistCarPage(
         user: app.user,
-        width: app.width,
+        width: processWidth(app.width),
         controller: controller,
       ),
       Observer(builder: (context) {
         return ChecklistSectionPage(
           key: ValueKey(
               "itens${controller.step}"), //flutter entende que é outro widget e reconstroi.
-          width: app.width,
-          title: 'ITENS OU EQUIPAMENTOS',
+          width: processWidth(app.width),
+          title: 'ITENS OU ACESSÓRIOS',
           // sections: controller.car?.itens ?? [],
           list: controller.itens,
           onChangeItem: (value, indexSection, indexItem) {
@@ -81,7 +87,7 @@ class _ChecklistRegisterPageState extends State<ChecklistRegisterPage> {
       Observer(builder: (context) {
         return ChecklistSectionPage(
           key: ValueKey("materials${controller.step}"),
-          width: app.width,
+          width: processWidth(app.width),
           title: 'MATERIAIS PERMANENTES',
           // sections: controller.car?.materials ?? [],
           list: controller.materials,
@@ -101,7 +107,7 @@ class _ChecklistRegisterPageState extends State<ChecklistRegisterPage> {
       Observer(builder: (context) {
         return ChecklistSectionPage(
           key: ValueKey("consumable${controller.step}"),
-          width: app.width,
+          width: processWidth(app.width),
           title: 'MATERIAIS DE CONSUMO',
           // sections: controller.car?.materialsConsumable ?? [],
           list: controller.materialsConsumable,

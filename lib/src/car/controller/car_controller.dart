@@ -259,6 +259,51 @@ abstract class _CarControllerBase with Store {
   }
 
   @action
+  editItensSection({
+    required List<ItensChangesModel> list,
+    required int index,
+    required int indexItem,
+    required ItemModel value,
+  }) {
+    final section = ItensChangesModel.fromMap(list[index].toMap());
+
+    final itens = List<ItemModel>.from(section.itens);
+    itens.removeAt(indexItem);
+    itens.insert(indexItem, value);
+
+    list.removeAt(index);
+    list.insert(index, section.copyWith(itens: itens));
+  }
+
+  @action
+  moveItensSection({
+    required List<ItensChangesModel> list,
+    required int index,
+    required int indexItem,
+    required bool position,
+  }) {
+    int pos = 0;
+    final section = ItensChangesModel.fromMap(list[index].toMap());
+    final itens = List<ItemModel>.from(section.itens);
+
+    if (position) {
+      pos = indexItem - 1;
+    } else {
+      pos = indexItem + 1;
+    }
+
+    if (pos == -1 || pos > (itens.length - 1)) return;
+
+    final item = ItemModel.fromMap(itens[indexItem].toMap());
+
+    itens.removeAt(indexItem);
+    itens.insert(pos, item);
+
+    list.removeAt(index);
+    list.insert(index, section.copyWith(itens: itens));
+  }
+
+  @action
   removeItensSection({
     required List<ItensChangesModel> list,
     required int index,

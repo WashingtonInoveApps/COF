@@ -41,12 +41,13 @@ mixin _$LoginController on _LoginControllerBase, Store {
     });
   }
 
-  late final _$callAsyncAction =
-      AsyncAction('_LoginControllerBase.call', context: context);
+  late final _$loginInitControllerAsyncAction =
+      AsyncAction('_LoginControllerBase.loginInitController', context: context);
 
   @override
-  Future<UserModel?> call(dynamic Function(String) onEmail) {
-    return _$callAsyncAction.run(() => super.call(onEmail));
+  Future<UserModel?> loginInitController(dynamic Function(String) onEmail) {
+    return _$loginInitControllerAsyncAction
+        .run(() => super.loginInitController(onEmail));
   }
 
   late final _$currentUserAsyncAction =

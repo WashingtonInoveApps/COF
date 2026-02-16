@@ -6,6 +6,7 @@ import 'package:bsu_control/core/validation.dart';
 import 'package:bsu_control/main.dart';
 import 'package:bsu_control/model/car_model.dart';
 import 'package:bsu_control/model/car_status_model.dart';
+import 'package:bsu_control/model/itens_changes_model.dart';
 import 'package:bsu_control/src/car/controller/car_controller.dart';
 import 'package:bsu_control/src/widgets/backgraund_page.dart';
 import 'package:bsu_control/src/widgets/car_changes_widget.dart';
@@ -13,7 +14,6 @@ import 'package:bsu_control/src/widgets/textfield_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:mobx/mobx.dart';
 
 import '../../widgets/alert_message.dart';
@@ -103,65 +103,46 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
         BackgraundPage(
           menu: false,
           onBack: () => Navigator.of(context).pop(),
+          wrapAlign: WrapAlignment.spaceBetween,
+          top: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(10),
+            margin: const EdgeInsets.only(bottom: 10),
+            decoration: BoxDecoration(
+                color: Constants.primary,
+                borderRadius: BorderRadius.circular(5)),
+            child: Text(
+              car.prefix,
+              style: Constants.titleButton,
+            ),
+          ),
           childLeft: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Expanded(
-                      child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        car.prefix,
-                        style: Constants.title.copyWith(
-                            fontWeight: FontWeight.bold, fontSize: 16),
-                      ),
-                      Row(
-                        spacing: 10,
-                        children: [
-                          Text(
-                            "Quilometragem",
-                            style: Constants.titleHint,
-                          ),
-                          Text("${car.km.toString()} KM",
-                              style: Constants.title.copyWith(fontSize: 16)),
-                        ],
-                      ),
-                    ],
-                  )),
-                  controller.enable
-                      ? TextButton.icon(
-                          style: TextButton.styleFrom(
-                              padding: const EdgeInsets.all(10),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                              side: BorderSide(
-                                  color: Theme.of(context).primaryColor)),
-                          onPressed: () async {
-                            await Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => CarRegisterPage(
-                                      car: car,
-                                    )));
-                          },
-                          icon: Icon(
-                            MdiIcons.bookEdit,
-                            size: 20,
-                            color: Theme.of(context).primaryColor,
-                          ),
-                          label: Text(
-                            "Editar",
-                            style: Constants.title.copyWith(
-                                color: Theme.of(context).primaryColor),
-                          ))
-                      : Container(),
-                ],
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                    color: Constants.primary,
+                    borderRadius: BorderRadius.circular(5)),
+                child: Text(
+                  'INFORMAÇÕES BÁSICAS',
+                  style: Constants.titleButton,
+                ),
               ),
-              const Divider(),
               const SizedBox(
-                height: 10,
+                height: 10.0,
+              ),
+              Text(
+                "Quilometragem",
+                style: Constants.subtitleHint,
+              ),
+              SelectableText(
+                "${car.km.toString()} KM",
+                style: Constants.title.copyWith(fontSize: 16),
+              ),
+              const SizedBox(
+                height: 10.0,
               ),
               Text(
                 "Modelo",
@@ -212,9 +193,12 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                     )
                   : Container(),
               const SizedBox(
-                height: 10,
+                height: 5,
               ),
               const Divider(),
+              const SizedBox(
+                height: 5.0,
+              ),
               Row(
                 spacing: 10,
                 children: [
@@ -303,11 +287,6 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
               const SizedBox(
                 height: 10.0,
               ),
-            ],
-          ),
-          childRight: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
               Center(
                 child: CarChangesWidget(
                   add: false,
@@ -316,7 +295,7 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                 ),
               ),
               const SizedBox(
-                height: 15.0,
+                height: 10.0,
               ),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -429,6 +408,89 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
               const SizedBox(
                 height: 10.0,
               ),
+            ],
+          ),
+          childRight: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                    color: Constants.primary,
+                    borderRadius: BorderRadius.circular(5)),
+                child: Text(
+                  'ITENS OU ACESSÓRIOS',
+                  style: Constants.titleButton,
+                ),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              (car.itens.isEmpty)
+                  ? Text(
+                      'Nenhum registro de itens encontrado.',
+                      style: Constants.title,
+                    )
+                  : changesListWidget(
+                      context: context,
+                      categories: car.itens,
+                    ),
+              const SizedBox(
+                height: 15.0,
+              ),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                    color: Constants.primary,
+                    borderRadius: BorderRadius.circular(5)),
+                child: Text(
+                  'MATERIAIS PERMANENTES',
+                  style: Constants.titleButton,
+                ),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              (car.materials.isEmpty)
+                  ? Text(
+                      'Nenhum registro de itens encontrado.',
+                      style: Constants.title,
+                    )
+                  : changesListWidget(
+                      context: context,
+                      categories: car.materials,
+                    ),
+              const SizedBox(
+                height: 15.0,
+              ),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                    color: Constants.primary,
+                    borderRadius: BorderRadius.circular(5)),
+                child: Text(
+                  'MATERIAIS DE CONSUMO',
+                  style: Constants.titleButton,
+                ),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              (car.materialsConsumable.isEmpty)
+                  ? Text(
+                      'Nenhum registro de itens encontrado.',
+                      style: Constants.title,
+                    )
+                  : changesListWidget(
+                      context: context,
+                      categories: car.materialsConsumable,
+                    ),
+              const SizedBox(
+                height: 15.0,
+              ),
               Visibility(
                 visible: controller.enable,
                 child: Row(
@@ -438,12 +500,21 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                     SizedBox(
                       width: 80.0,
                       child: TextButton(
-                          style: TextButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                  borderRadius:
-                                      BorderRadiusGeometry.circular(5)),
-                              side: BorderSide(
-                                  color: Theme.of(context).primaryColor)),
+                          onPressed: () async {
+                            await Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => CarRegisterPage(
+                                      car: car,
+                                    )));
+                          },
+                          child: Text(
+                            "Editar",
+                            style: Constants.title.copyWith(
+                                color: Theme.of(context).primaryColor),
+                          )),
+                    ),
+                    SizedBox(
+                      width: 80.0,
+                      child: TextButton(
                           onPressed: () {
                             showDialog(
                                 context: context,
@@ -486,12 +557,6 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                     SizedBox(
                       width: 80.0,
                       child: TextButton(
-                          style: TextButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                  borderRadius:
-                                      BorderRadiusGeometry.circular(5)),
-                              side: BorderSide(
-                                  color: Theme.of(context).primaryColor)),
                           onPressed: () {
                             showDialog(
                                 context: context,
@@ -645,5 +710,73 @@ Widget statusRegisters(
       );
     }).expand((widget) => [widget, const Divider()]).toList()
       ..removeLast(),
+  );
+}
+
+Widget changesListWidget(
+    {required BuildContext context,
+    required List<ItensChangesModel> categories}) {
+  final list = List<ItensChangesModel>.from(categories);
+
+  return StatefulBuilder(
+    builder: (context, setState) {
+      return ExpansionPanelList(
+        elevation: 2,
+        expandedHeaderPadding: EdgeInsets.zero,
+        expansionCallback: (panelIndex, expanded) {
+          setState(() {
+            list[panelIndex].value = expanded;
+          });
+        },
+        children: list.map((category) {
+          return ExpansionPanel(
+              isExpanded: category.value,
+              headerBuilder: (context, isExpanded) {
+                return ListTile(
+                  contentPadding: const EdgeInsets.only(left: 10),
+                  title: Text(
+                    category.description,
+                    style: Constants.title,
+                  ),
+                );
+              },
+              body: Padding(
+                padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: category.itens
+                      .map((item) {
+                        return Row(
+                          children: [
+                            Expanded(
+                                child: Text(
+                              item.description,
+                              style: Constants.title,
+                            )),
+                            Text.rich(
+                              TextSpan(
+                                  text: item.quantity.toString(),
+                                  children: [
+                                    TextSpan(
+                                      text: ' unids.',
+                                      style: Constants.subtitleHint,
+                                    )
+                                  ]),
+                              style: Constants.title,
+                            ),
+                          ],
+                        );
+                      })
+                      .expand((widget) => [
+                            widget,
+                            const Divider(),
+                          ])
+                      .toList()
+                    ..removeLast(),
+                ),
+              ));
+        }).toList(),
+      );
+    },
   );
 }

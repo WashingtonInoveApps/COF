@@ -4,6 +4,7 @@ import 'package:bsu_control/core/enum.dart';
 import 'package:bsu_control/core/validation.dart';
 import 'package:bsu_control/main.dart';
 import 'package:bsu_control/model/car_model.dart';
+import 'package:bsu_control/model/item_model.dart';
 import 'package:bsu_control/model/itens_changes_model.dart';
 import 'package:bsu_control/model/obm_model.dart';
 import 'package:bsu_control/src/widgets/alert_message.dart';
@@ -163,10 +164,10 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                                     }
                                   });
                                 },
-                                child: CircleAvatar(
+                                child: const CircleAvatar(
                                   radius: 12,
                                   backgroundColor: Constants.primary,
-                                  child: const Icon(
+                                  child: Icon(
                                     Icons.remove,
                                     size: 15,
                                     color: Colors.white,
@@ -189,10 +190,10 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                                             ),
                                           ));
                                 },
-                                child: CircleAvatar(
+                                child: const CircleAvatar(
                                   radius: 12,
                                   backgroundColor: Constants.primary,
-                                  child: const Icon(
+                                  child: Icon(
                                     Icons.edit,
                                     size: 12,
                                     color: Colors.white,
@@ -241,6 +242,29 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                                                   },
                                                 ),
                                               ));
+                                    },
+                                    onEdit: (item, indexItem) {
+                                      showDialog(
+                                          context: context,
+                                          builder: (context) => Center(
+                                                child: ItensSectionWidget(
+                                                  item: item,
+                                                  onChange: (value) {
+                                                    controller.editItensSection(
+                                                        list: list,
+                                                        index: index,
+                                                        indexItem: indexItem,
+                                                        value: value);
+                                                  },
+                                                ),
+                                              ));
+                                    },
+                                    onMove: (indexItem, position) {
+                                      controller.moveItensSection(
+                                          list: list,
+                                          index: index,
+                                          indexItem: indexItem,
+                                          position: position);
                                     }),
                               ))
                         ],
@@ -568,7 +592,7 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                       color: Constants.primary,
                       borderRadius: BorderRadius.circular(5)),
                   child: Text(
-                    "ITENS OU EQUIPAMENTOS",
+                    "ITENS OU ACESSÓRIOS",
                     style: Constants.titleButton,
                   ),
                 ),
@@ -722,77 +746,135 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
 }
 
 Widget changesListWidget(
-        {required ItensChangesModel section,
-        required BuildContext context,
-        required Function(int i) onDelete,
-        required Function() onAdd}) =>
-    Column(
-      children: [
-        const SizedBox(
-          height: 5,
-        ),
-        const Divider(),
-        Expanded(
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: List.generate(
-                  section.itens.length,
-                  (index) => Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: Row(
-                          spacing: 10,
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    section.itens[index].description,
-                                    style: Constants.subtitle,
+    {required ItensChangesModel section,
+    required BuildContext context,
+    required Function(ItemModel, int) onEdit,
+    required Function(int i) onDelete,
+    required void Function(int, bool) onMove,
+    required Function() onAdd}) {
+  return Column(
+    children: [
+      const SizedBox(
+        height: 5,
+      ),
+      const Divider(),
+      Expanded(
+        child: SingleChildScrollView(
+          child: Column(
+            children: List.generate(
+                section.itens.length,
+                (index) => Padding(
+                      padding: const EdgeInsets.all(5.0),
+                      child: Column(
+                        spacing: 5,
+                        children: [
+                          Row(
+                            spacing: 5,
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  section.itens[index].description,
+                                  style: Constants.subtitle,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 2,
+                                ),
+                              ),
+                              Text(
+                                '${section.itens[index].quantity} unids.',
+                                style: Constants.subtitleHint,
+                              )
+                            ],
+                          ),
+                          Row(
+                            spacing: 5,
+                            children: [
+                              InkWell(
+                                onTap: (index == 0)
+                                    ? null
+                                    : () => onMove(index, true),
+                                child: CircleAvatar(
+                                  radius: 12,
+                                  backgroundColor: (index == 0)
+                                      ? Colors.grey
+                                      : Constants.primary,
+                                  child: const Icon(
+                                    Icons.arrow_upward_rounded,
+                                    color: Colors.white,
+                                    size: 12,
                                   ),
-                                  (section.itens[index].quantity > 1)
-                                      ? Text(
-                                          '${section.itens[index].quantity} unids.',
-                                          style: Constants.subtitleHint,
-                                        )
-                                      : Container(),
-                                ],
+                                ),
                               ),
-                            ),
-                            InkWell(
-                              child: const Icon(
-                                Icons.remove,
-                                color: Colors.grey,
-                                size: 20,
+                              InkWell(
+                                onTap: (index < (section.itens.length - 1))
+                                    ? () => onMove(index, false)
+                                    : null,
+                                child: CircleAvatar(
+                                  radius: 12,
+                                  backgroundColor:
+                                      (index < (section.itens.length - 1))
+                                          ? Constants.primary
+                                          : Colors.grey,
+                                  child: const Icon(
+                                    Icons.arrow_downward_rounded,
+                                    color: Colors.white,
+                                    size: 12,
+                                  ),
+                                ),
                               ),
-                              onTap: () => onDelete(index),
-                            )
-                          ],
-                        ),
-                      )),
+                              InkWell(
+                                child: const CircleAvatar(
+                                  radius: 12,
+                                  backgroundColor: Constants.primary,
+                                  child: Icon(
+                                    Icons.edit,
+                                    color: Colors.white,
+                                    size: 12,
+                                  ),
+                                ),
+                                onTap: () =>
+                                    onEdit(section.itens[index], index),
+                              ),
+                              InkWell(
+                                child: const CircleAvatar(
+                                  radius: 12,
+                                  backgroundColor: Colors.grey,
+                                  child: Icon(
+                                    Icons.delete,
+                                    color: Colors.white,
+                                    size: 12,
+                                  ),
+                                ),
+                                onTap: () => onDelete(index),
+                              ),
+                            ],
+                          )
+                        ],
+                      ),
+                    )).expand((widget) => [widget, const Divider()]).toList()
+              ..removeLast(),
+          ),
+        ),
+      ),
+      const SizedBox(
+        height: 10,
+      ),
+      Center(
+        child: InkWell(
+          onTap: onAdd,
+          child: const CircleAvatar(
+            radius: 15,
+            backgroundColor: Constants.primary,
+            child: Icon(
+              Icons.add,
+              size: 20,
+              color: Colors.white,
             ),
           ),
         ),
-        const SizedBox(
-          height: 10,
-        ),
-        Center(
-          child: InkWell(
-            onTap: onAdd,
-            child: CircleAvatar(
-              radius: 15,
-              backgroundColor: Constants.primary,
-              child: const Icon(
-                Icons.add,
-                size: 20,
-                color: Colors.white,
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(
-          height: 10,
-        ),
-      ],
-    );
+      ),
+      const SizedBox(
+        height: 10,
+      ),
+    ],
+  );
+}

@@ -254,7 +254,7 @@ abstract class _AppControllerBase with Store {
 
     double width = (modeMOBILE || childRight)
         ? ((constrainedMaxWidth > maxWidth) ? maxWidth : constrainedMaxWidth)
-        : maxWidth * 0.48;
+        : maxWidth * 0.47;
 
     this.modeMOBILE = modeMOBILE;
     this.width = width;
@@ -269,6 +269,8 @@ abstract class _AppControllerBase with Store {
   Future<void> initApplication() async {
     final result = await repository.getAppModel();
     await getOBMs();
+
+    log('OBMs: ${obms.length}');
 
     version = result.version;
   }

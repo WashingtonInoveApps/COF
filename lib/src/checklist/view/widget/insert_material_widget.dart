@@ -136,10 +136,10 @@ class _InsertMaterialWidgetState extends State<InsertMaterialWidget> {
                                         (itens[index].quantity + 1);
                                   });
                                 },
-                                child: CircleAvatar(
+                                child: const CircleAvatar(
                                   radius: 12,
                                   backgroundColor: Constants.primary,
-                                  child: const Icon(
+                                  child: Icon(
                                     Icons.add,
                                     size: 15,
                                     color: Colors.white,

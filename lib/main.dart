@@ -127,6 +127,12 @@ class _AppWidgetState extends State<AppWidget> {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(5))),
           ),
+          textButtonTheme: TextButtonThemeData(
+            style: TextButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadiusGeometry.circular(5)),
+                side: const BorderSide(color: Constants.primary)),
+          ),
           bottomSheetTheme: BottomSheetThemeData(
               surfaceTintColor: Colors.transparent,
               backgroundColor: Colors.white,
@@ -143,7 +149,7 @@ class _AppWidgetState extends State<AppWidget> {
             }),
           ),
           progressIndicatorTheme:
-              ProgressIndicatorThemeData(color: Constants.primary),
+              const ProgressIndicatorThemeData(color: Constants.primary),
           cardTheme: CardThemeData(
             elevation: 4,
             color: Colors.white,

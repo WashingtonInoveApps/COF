@@ -97,28 +97,33 @@ class _ChecklistPageState extends State<ChecklistPage> {
                       SizedBox(
                         width: (app.modeMOBILE
                             ? double.infinity
-                            : app.maxWidth * 0.45),
+                            : app.maxWidth * 0.46),
                         child: Column(
                           spacing: 5,
                           children: [
                             Observer(builder: (_) {
-                              return ConfigViewWidget(
-                                dateStart: controller.dateStartConfig,
-                                dateFinish: controller.dateFinishConfig,
-                                onDateStart: controller.setDateStartConfig,
-                                onDateFinish: controller.setDateFinishConfig,
-                                onReset: () {
-                                  controller.cleanExibitionConfig();
+                              return SizedBox(
+                                width: double.infinity,
+                                child: ConfigViewWidget(
+                                  dateStart: controller.dateStartConfig,
+                                  dateFinish: controller.dateFinishConfig,
+                                  onDateStart: controller.setDateStartConfig,
+                                  onDateFinish: controller.setDateFinishConfig,
+                                  onReset: () {
+                                    controller.cleanExibitionConfig();
 
-                                  controller.setDateRangeChecklist(
-                                      dateStart: controller.dateStartConfig,
-                                      dateFinish: controller.dateFinishConfig);
-                                },
-                                onChange: () {
-                                  controller.setDateRangeChecklist(
-                                      dateStart: controller.dateStartConfig,
-                                      dateFinish: controller.dateFinishConfig);
-                                },
+                                    controller.setDateRangeChecklist(
+                                        dateStart: controller.dateStartConfig,
+                                        dateFinish:
+                                            controller.dateFinishConfig);
+                                  },
+                                  onChange: () {
+                                    controller.setDateRangeChecklist(
+                                        dateStart: controller.dateStartConfig,
+                                        dateFinish:
+                                            controller.dateFinishConfig);
+                                  },
+                                ),
                               );
                             }),
                           ],

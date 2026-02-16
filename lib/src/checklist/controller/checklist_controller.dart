@@ -432,7 +432,7 @@ abstract class _CheckListControllerBase with Store {
       return ItensChangesModel(
         id: section.id,
         description: section.description,
-        value: section.value,
+        value: false,
         obs: section.obs,
         itens: section.itens.map((item) {
           return ItemModel(
@@ -619,9 +619,12 @@ abstract class _CheckListControllerBase with Store {
           userID: user.id ?? '',
           checkCar: CarCheckList(
             car: car!.copyWith(
-              itens: itens,
-              materials: materials,
-              materialsConsumable: materialsConsumable,
+              itens: itens.map((e) => e.copyWith(value: false)).toList(),
+              materials:
+                  materials.map((e) => e.copyWith(value: false)).toList(),
+              materialsConsumable: materialsConsumable
+                  .map((e) => e.copyWith(value: false))
+                  .toList(),
             ),
             arref: arref,
             fr: fr,

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bsu_control/core/db.dart';
 import 'package:bsu_control/model/config_model.dart';
 import 'package:bsu_control/model/user_model.dart';
@@ -31,18 +33,22 @@ abstract class _LoginControllerBase with Store {
   String userID = '';
 
   @action
-  Future<UserModel?> call(Function(String) onEmail) async {
+  Future<UserModel?> loginInitController(Function(String) onEmail) async {
     try {
       loading = true;
       final result = await DBController.get(tag: 'user');
 
       if (result == null) {
+        log('User: Não encontrado.');
+
         loading = false;
         return null;
       }
 
       final user = UserModel.fromMap(result);
       onEmail.call(user.email);
+
+      log('User: ${user.toMapResume()}');
 
       return await currentUser(acessToken: user.acessToken);
     } catch (e) {
@@ -91,6 +97,8 @@ abstract class _LoginControllerBase with Store {
       if (!result.enable) {
         throw Exception('Usuário sem permissão de acesso,contate o suporte.');
       }
+
+      await DBController.save(tag: 'user', value: result.toJson());
 
       return result;
     } catch (e) {

@@ -333,8 +333,8 @@ class CarsDataSource extends DataGridSource {
                                 shape: RoundedRectangleBorder(
                                     borderRadius:
                                         BorderRadiusGeometry.circular(100)),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(5.0),
+                                child: const Padding(
+                                  padding: EdgeInsets.all(5.0),
                                   child: Icon(
                                     Icons.list_alt_rounded,
                                     size: 20,

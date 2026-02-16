@@ -27,6 +27,7 @@ class BackgraundPage extends StatefulWidget {
   final Widget? bottom;
   final Widget? contentBottom;
   final Widget? top;
+  final WrapAlignment? wrapAlign;
   final Function()? onBack;
 
   const BackgraundPage({
@@ -39,6 +40,7 @@ class BackgraundPage extends StatefulWidget {
     this.onBack,
     this.top,
     this.contentBottom,
+    this.wrapAlign = WrapAlignment.spaceAround,
   }) : super(key: key);
 
   @override
@@ -496,7 +498,7 @@ class _BackgraundPageState extends State<BackgraundPage> {
                           SizedBox(
                             width: double.infinity,
                             child: Wrap(
-                              alignment: WrapAlignment.spaceAround,
+                              alignment: widget.wrapAlign!,
                               children: [
                                 SizedBox(
                                   width: width,
