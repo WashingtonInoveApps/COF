@@ -53,10 +53,9 @@ class Core {
     return '${hour.hour.toString().padLeft(2, '0')}:${hour.minute.toString().padLeft(2, '0')}';
   }
 
-  static Future<Uint8List?> pickerImage(
-      {required BuildContext context,
-      double height = 400,
-      double width = 600}) async {
+  static Future<Uint8List?> pickerImage({
+    required BuildContext context,
+  }) async {
     try {
       final image = await ImagePicker()
           .pickImage(source: ImageSource.gallery, imageQuality: 100);
@@ -66,8 +65,6 @@ class Core {
           sourcePath: image.path,
           compressFormat: ImageCompressFormat.png,
           aspectRatio: const CropAspectRatio(ratioX: 3, ratioY: 2),
-          maxHeight: height.toInt(),
-          maxWidth: width.toInt(),
           uiSettings: [
             AndroidUiSettings(
               lockAspectRatio: true,
@@ -76,9 +73,8 @@ class Core {
               aspectRatioLockEnabled: true,
             ),
             WebUiSettings(
-                context: context,
-                size:
-                    CropperSize(width: width.toInt(), height: height.toInt())),
+              context: context,
+            ),
           ],
         );
 
@@ -104,30 +100,42 @@ class Core {
     }
   }
 
-  static Widget boldFirstName({
+  static RichText boldFirstName({
     required String name,
     required String fullName,
     String? graduation,
-    TextStyle? normalStyle,
+    TextStyle? style,
     TextStyle? boldStyle,
-    TextAlign textAlign = TextAlign.start,
   }) {
-    final normal = normalStyle ?? const TextStyle(fontSize: 16);
-    final bold = boldStyle ?? normal.copyWith(fontWeight: FontWeight.bold);
+    final normalStyle = style ?? const TextStyle(color: Colors.black);
 
-    final rest = fullName.replaceFirst(name, '').trim();
+    final highlightStyle = boldStyle ??
+        normalStyle.copyWith(
+          fontWeight: FontWeight.bold,
+        );
 
-    return Text.rich(
-      TextSpan(
-        children: [
-          TextSpan(
-              text: (graduation == null) ? '' : "$graduation ",
-              style: normal.copyWith(color: Colors.grey)),
-          TextSpan(text: '$name ', style: bold),
-          TextSpan(text: rest, style: normal),
-        ],
+    final highlightWords = name
+        .toLowerCase()
+        .split(' ')
+        .where((e) => e.trim().isNotEmpty)
+        .toList();
+
+    final fullWords = fullName.split(' ');
+
+    return RichText(
+      textAlign: TextAlign.start,
+      text: TextSpan(
+        children: fullWords.map((word) {
+          final cleanWord = word.toLowerCase();
+
+          final isHighlighted = highlightWords.contains(cleanWord);
+
+          return TextSpan(
+            text: '$word ',
+            style: isHighlighted ? highlightStyle : normalStyle,
+          );
+        }).toList(),
       ),
-      textAlign: textAlign,
     );
   }
 
@@ -169,5 +177,12 @@ class Core {
     if (date.hour < 8) return true;
 
     return false;
+  }
+
+  static double calculateTableHeight(int rows) {
+    const rowHeight = 52.0;
+    const headerHeight = 40.0;
+
+    return headerHeight + (rows * rowHeight);
   }
 }

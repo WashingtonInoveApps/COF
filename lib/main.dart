@@ -12,7 +12,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get_it/get_it.dart';
 import 'package:url_strategy/url_strategy.dart';
 
-import 'src/login/view/login_page.dart';
+import 'login/view/login_page.dart';
 
 final config = ConfigModel(
   appID: 'VBJM7eAETNS2pYWpfKLY',
@@ -37,7 +37,7 @@ void main() async {
     await Firebase.initializeApp();
   }
 
-  final controller = AppController(maxWidth: 1000, config: config);
+  final controller = AppController(maxWidth: 360, config: config);
 
   GetIt.I.registerSingleton<AppController>(controller);
   await controller.initApplication();
@@ -107,7 +107,9 @@ class _AppWidgetState extends State<AppWidget> {
         },
       ),
       theme: ThemeData(
-          primaryColor: Colors.green.shade800,
+          useMaterial3: true,
+          primaryColor: const Color.fromARGB(255, 27, 94, 32),
+          colorScheme: ColorScheme.fromSeed(seedColor: Constants.primary),
           dialogTheme: DialogThemeData(
             backgroundColor: Colors.white,
             surfaceTintColor: Colors.transparent,
