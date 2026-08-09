@@ -6,26 +6,29 @@ import 'package:bsu_control/checklist/view/checklist_register_page.dart';
 import 'package:bsu_control/checklist/view/my_checklist_page.dart';
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/core.dart';
+import 'package:bsu_control/enum/state_enum.dart';
 import 'package:bsu_control/home/controller/home_controller.dart';
 import 'package:bsu_control/main.dart';
 import 'package:bsu_control/model/check_list_model.dart';
+import 'package:bsu_control/model/service_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:mobx/mobx.dart';
+import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:universal_html/html.dart' as html;
 import 'package:url_launcher/url_launcher_string.dart';
 
 import '../widgets/backgraund_page.dart';
 import '../widgets/card_infor_widget.dart';
 import '../widgets/cars_chart_widget.dart';
-import '../widgets/checklist_table_view.dart';
 import '../widgets/config_view_widget.dart';
-import '../widgets/images_changes_view_widget.dart';
 import '../widgets/limit_table_widget.dart';
 import '../widgets/pagination_widget.dart';
+import '../widgets/table_widget.dart';
+import '../widgets/tag_widget.dart';
 import '../widgets/textfield_widget.dart';
 import 'view/widgets/period_chart_widget.dart';
 
@@ -53,7 +56,7 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     controller = HomeController(config: config);
 
-    controller.setDateRangeChecklist(
+    controller.setDateRange(
         dateStart: app.dateStartConfig, dateFinish: app.dateFinishConfig);
 
     timer = Timer.periodic(const Duration(seconds: 1), (_) {
@@ -63,11 +66,11 @@ class _HomePageState extends State<HomePage> {
     rec = autorun((_) {
       controller.setLoading(true);
       subscription = controller
-          .listenChecklistPeriod(
+          .listenServices(
               dateStart: controller.dateReferenceStart,
               dateFinish: controller.dateReferenceFinish)
           .listen((result) {
-        controller.setChecklistPeriod(result);
+        controller.setServicesPeriod(result);
         controller.setLoading(false);
       });
     });
@@ -379,13 +382,13 @@ class _HomePageState extends State<HomePage> {
                                           onReset: () {
                                             app.cleanExibitionConfig();
 
-                                            controller.setDateRangeChecklist(
+                                            controller.setDateRange(
                                                 dateStart: app.dateStartConfig,
                                                 dateFinish:
                                                     app.dateFinishConfig);
                                           },
                                           onChange: () {
-                                            controller.setDateRangeChecklist(
+                                            controller.setDateRange(
                                                 dateStart: app.dateStartConfig,
                                                 dateFinish:
                                                     app.dateFinishConfig);
@@ -437,7 +440,7 @@ class _HomePageState extends State<HomePage> {
                               Observer(builder: (_) {
                                 return IgnorePointer(
                                   ignoring:
-                                      controller.checklistPeriodSort.isEmpty,
+                                      controller.servicesPeriodSort.isEmpty,
                                   child: Container(
                                     margin: const EdgeInsets.only(top: 10),
                                     width:
@@ -470,7 +473,7 @@ class _HomePageState extends State<HomePage> {
                             if (controller.loading) {
                               return const Center(
                                   child: LinearProgressIndicator());
-                            } else if (controller.checklistPeriodSort.isEmpty) {
+                            } else if (controller.servicesPeriodSort.isEmpty) {
                               return Text(
                                 'Ops ! Nenhum registro encontrado.',
                                 style: Constants.subtitleHint,
@@ -485,44 +488,240 @@ class _HomePageState extends State<HomePage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'Exibindo 1 a ${controller.checklistPeriodSort.length} de ${controller.checklistsPeriod.length} entradas',
+                                      'Exibindo 1 a ${controller.servicesPeriodSort.length} de ${controller.checklistsPeriod.length} entradas',
                                       style: Constants.subtitleHint,
                                     ),
                                     Expanded(
-                                      child: ChecklistTableView(
-                                        values: controller.checklistPeriodSort,
-                                        obms: app.obms,
-                                        onContact: (contact) async {
-                                          final path = kIsWeb
-                                              ? "https://wa.me/+55$contact/?text=${Uri.encodeFull('Olá, tudo bem ?')}"
-                                              : "whatsapp://send?phone=+55$contact&text=${Uri.encodeFull('Olá, tudo bem ?')}";
+                                      child: AppDataTable<ServiceModel>(
+                                        data: List<ServiceModel>.from(
+                                            controller.servicesPeriodSort),
+                                        columnMode: ColumnWidthMode.auto,
+                                        columns: [
+                                          AppColumn(
+                                            width: 50,
+                                            name: 'details',
+                                            builder: (service) {
+                                              return InkWell(
+                                                child: Card(
+                                                  margin: EdgeInsets.zero,
+                                                  shape: RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadiusGeometry
+                                                              .circular(100)),
+                                                  child: const Padding(
+                                                    padding:
+                                                        EdgeInsets.all(5.0),
+                                                    child: Icon(Icons.search,
+                                                        size: 20,
+                                                        color: Colors.green),
+                                                  ),
+                                                ),
+                                                onTap: () {
+                                                  // app.setRouter(6);
+                                                  // Navigator.of(context).push(
+                                                  //     MaterialPageRoute(
+                                                  //         builder: (context) =>
+                                                  //             UserPageRegister(
+                                                  //               user: user,
+                                                  //             )));
+                                                },
+                                              );
+                                            },
+                                          ),
+                                          AppColumn(
+                                            width: 120,
+                                            name: 'date',
+                                            label: 'Data',
+                                            sortValue: (service) =>
+                                                service.date,
+                                            builder: (service) => Text(
+                                              Core.formatDate(service.date),
+                                              style: Constants.title,
+                                            ),
+                                          ),
+                                          AppColumn(
+                                            width: 100,
+                                            name: 'obm',
+                                            label: 'OBM',
+                                            sortable: true,
+                                            alignment: Alignment.center,
+                                            sortValue: (service) =>
+                                                service.obm.prefix,
+                                            builder: (service) => Text(
+                                                service.obm.prefix,
+                                                style: Constants.title),
+                                          ),
+                                          AppColumn(
+                                            name: 'team',
+                                            label: 'Guarnição',
+                                            sortable: true,
+                                            alignment: Alignment.center,
+                                            sortValue: (service) =>
+                                                service.team ?? '-',
+                                            builder: (service) => Text(
+                                              service.team ?? '-',
+                                              style: Constants.title,
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                          AppColumn(
+                                            name: 'responsable',
+                                            label: 'Responsável',
+                                            sortable: true,
+                                            alignment: Alignment.center,
+                                            sortValue: (service) =>
+                                                '${service.responsable.graduation} ${service.responsable.name}',
+                                            builder: (service) => Text(
+                                              '${service.responsable.graduation} ${service.responsable.name}',
+                                              style: Constants.title,
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                          AppColumn(
+                                            width: 120,
+                                            name: 'changesCar',
+                                            label: 'Alt. Viaturas',
+                                            headColor: Colors.red,
+                                            sortable: true,
+                                            alignment: Alignment.center,
+                                            sortValue: (service) =>
+                                                service.changesCar.toString(),
+                                            builder: (service) => Text(
+                                                service.changesCar
+                                                    .toString()
+                                                    .padLeft(2, '0'),
+                                                style: Constants.title),
+                                          ),
+                                          AppColumn(
+                                            width: 120,
+                                            headColor: Colors.orange,
+                                            name: 'changesMaterials',
+                                            label: 'Alt. Materiais',
+                                            sortable: true,
+                                            alignment: Alignment.center,
+                                            sortValue: (service) => service
+                                                .changesMaterials
+                                                .toString(),
+                                            builder: (service) => Text(
+                                                service.changesMaterials
+                                                    .toString()
+                                                    .padLeft(2, '0'),
+                                                style: Constants.title),
+                                          ),
+                                          AppColumn(
+                                            name: 'state',
+                                            label: 'Status',
+                                            sortable: true,
+                                            alignment: Alignment.center,
+                                            sortValue: (service) =>
+                                                service.state.label,
+                                            builder: (service) {
+                                              final state = service.state;
 
-                                          await launchUrlString(path,
-                                              mode: LaunchMode
-                                                  .externalApplication);
-                                        },
-                                        onDetails: (checklist) async {
-                                          await Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      ChecklistDetailsPage(
-                                                          checklist:
-                                                              checklist)));
-                                        },
-                                        onChanges: (changes) {
-                                          showDialog(
-                                              context: context,
-                                              builder: (context) {
-                                                return AlertDialog(
-                                                  contentPadding:
-                                                      const EdgeInsets.all(10),
-                                                  content:
-                                                      ImagesChangesViewWidget(
-                                                          changes: changes),
-                                                );
-                                              });
+                                              return TagWidget(
+                                                icon: state.icon,
+                                                label: state.label,
+                                                color: state.color,
+                                              );
+                                            },
+                                          ),
+                                          AppColumn(
+                                            name: 'contact',
+                                            label: 'Contato',
+                                            sortValue: (service) =>
+                                                service.contact,
+                                            builder: (service) {
+                                              return InkWell(
+                                                child: Card(
+                                                  margin: EdgeInsets.zero,
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            5.0),
+                                                    child: Row(
+                                                      spacing: 5,
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                      children: [
+                                                        Icon(MdiIcons.whatsapp,
+                                                            color:
+                                                                Colors.green),
+                                                        Expanded(
+                                                          child: Text(
+                                                            service.contact,
+                                                            style: Constants
+                                                                .subtitle,
+                                                            maxLines: 2,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                                onTap: () async {
+                                                  final contact = service
+                                                      .contact
+                                                      .replaceAll(' ', '')
+                                                      .replaceAll('(', '')
+                                                      .replaceAll(')', '')
+                                                      .replaceAll('-', '');
+
+                                                  final path = kIsWeb
+                                                      ? "https://wa.me/+55$contact/?text=${Uri.encodeFull('Olá, tudo bem ?')}"
+                                                      : "whatsapp://send?phone=+55$contact&text=${Uri.encodeFull('Olá, tudo bem ?')}";
+
+                                                  await launchUrlString(path,
+                                                      mode: LaunchMode
+                                                          .externalApplication);
+                                                },
+                                              );
+                                            },
+                                          ),
+                                        ],
+                                        rowId: (user) {
+                                          return user.id ?? 'err';
                                         },
                                       ),
+                                      // child: ChecklistTableView(
+                                      //   values: controller.servicesPeriodSort,
+                                      //   obms: app.obms,
+                                      //   onContact: (contact) async {
+                                      //     final path = kIsWeb
+                                      //         ? "https://wa.me/+55$contact/?text=${Uri.encodeFull('Olá, tudo bem ?')}"
+                                      //         : "whatsapp://send?phone=+55$contact&text=${Uri.encodeFull('Olá, tudo bem ?')}";
+
+                                      //     await launchUrlString(path,
+                                      //         mode: LaunchMode
+                                      //             .externalApplication);
+                                      //   },
+                                      //   onDetails: (checklist) async {
+                                      //     await Navigator.of(context).push(
+                                      //         MaterialPageRoute(
+                                      //             builder: (context) =>
+                                      //                 ChecklistDetailsPage(
+                                      //                     checklist:
+                                      //                         checklist)));
+                                      //   },
+                                      //   onChanges: (changes) {
+                                      //     showDialog(
+                                      //         context: context,
+                                      //         builder: (context) {
+                                      //           return AlertDialog(
+                                      //             contentPadding:
+                                      //                 const EdgeInsets.all(10),
+                                      //             content:
+                                      //                 ImagesChangesViewWidget(
+                                      //                     changes: changes),
+                                      //           );
+                                      //         });
+                                      //   },
+                                      // ),
                                     ),
                                     SizedBox(
                                       width: double.infinity,
@@ -546,7 +745,7 @@ class _HomePageState extends State<HomePage> {
                                                 limit: controller.limit,
                                                 page: controller.page,
                                                 length: controller
-                                                    .checklistsPeriod.length,
+                                                    .servicesPeriodSort.length,
                                                 onChange: controller.setPage,
                                               );
                                             }),

@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:bsu_control/core/core.dart';
-import 'package:bsu_control/enum/checklist_enum.dart';
+import 'package:bsu_control/enum/state_enum.dart';
 import 'package:bsu_control/model/car_changes_model.dart';
 import 'package:bsu_control/model/car_checklist.dart';
 import 'package:bsu_control/model/file_model.dart';
@@ -35,7 +35,7 @@ class ChecklistModel {
   List<StatesChecklist> states;
   List<ChecklistOutherChange>? outhers;
   List<ItemModel>? materials;
-  StateChecklist state;
+  StateProgress state;
 
   ChecklistModel(
       {required this.user,
@@ -54,7 +54,7 @@ class ChecklistModel {
       this.contact = '',
       this.obmID = '',
       this.dateFinish,
-      this.state = StateChecklist.inprogress,
+      this.state = StateProgress.inprogress,
       this.team = "",
       this.prefix = "",
       this.startKM = "",
@@ -116,7 +116,7 @@ class ChecklistModel {
       id: map['id'],
       obs: map['obs'] ?? '',
       state:
-          ChecklistEnumCore.statusChecklistFromString(map['state'] as String),
+          StateProgressEnumCore.stateProgressFromString(map['state'] as String),
       enable: map['enable'] ?? false,
       user: UserModel.fromMapResume(map['user'] as Map<String, dynamic>),
       states: (map['states'] != null)
@@ -171,7 +171,7 @@ class ChecklistModel {
     DateTime? dateFinish,
     CarCheckList? checkCar,
     List<SupplyModel>? supply,
-    StateChecklist? state,
+    StateProgress? state,
     List<StatesChecklist>? states,
     List<CarChangeModel>? changes,
     List<ChecklistOutherChange>? outhers,
@@ -207,7 +207,7 @@ class ChecklistModel {
 }
 
 class StatesChecklist {
-  final StateChecklist state;
+  final StateProgress state;
   final DateTime date;
 
   StatesChecklist({required this.state, required this.date});
@@ -222,7 +222,7 @@ class StatesChecklist {
   factory StatesChecklist.fromMap(Map<String, dynamic> map) {
     return StatesChecklist(
       state:
-          ChecklistEnumCore.statusChecklistFromString(map['state'] as String),
+          StateProgressEnumCore.stateProgressFromString(map['state'] as String),
       date: DateTime.fromMillisecondsSinceEpoch(map['date'] as int),
     );
   }
@@ -233,7 +233,7 @@ class StatesChecklist {
       StatesChecklist.fromMap(json.decode(source) as Map<String, dynamic>);
 
   StatesChecklist copyWith({
-    StateChecklist? state,
+    StateProgress? state,
     DateTime? date,
   }) {
     return StatesChecklist(

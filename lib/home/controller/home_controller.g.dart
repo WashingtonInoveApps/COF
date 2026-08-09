@@ -17,6 +17,13 @@ mixin _$HomeController on _HomeControllerBase, Store {
               () => super.checklistPeriodSort,
               name: '_HomeControllerBase.checklistPeriodSort'))
           .value;
+  Computed<List<ServiceModel>>? _$servicesPeriodSortComputed;
+
+  @override
+  List<ServiceModel> get servicesPeriodSort => (_$servicesPeriodSortComputed ??=
+          Computed<List<ServiceModel>>(() => super.servicesPeriodSort,
+              name: '_HomeControllerBase.servicesPeriodSort'))
+      .value;
 
   late final _$loadingAtom =
       Atom(name: '_HomeControllerBase.loading', context: context);
@@ -63,6 +70,22 @@ mixin _$HomeController on _HomeControllerBase, Store {
   set checklistsPeriod(List<ChecklistModel> value) {
     _$checklistsPeriodAtom.reportWrite(value, super.checklistsPeriod, () {
       super.checklistsPeriod = value;
+    });
+  }
+
+  late final _$servicesPeriodAtom =
+      Atom(name: '_HomeControllerBase.servicesPeriod', context: context);
+
+  @override
+  List<ServiceModel> get servicesPeriod {
+    _$servicesPeriodAtom.reportRead();
+    return super.servicesPeriod;
+  }
+
+  @override
+  set servicesPeriod(List<ServiceModel> value) {
+    _$servicesPeriodAtom.reportWrite(value, super.servicesPeriod, () {
+      super.servicesPeriod = value;
     });
   }
 
@@ -179,6 +202,18 @@ mixin _$HomeController on _HomeControllerBase, Store {
   }
 
   @override
+  Stream<List<ServiceModel>> listenServices(
+      {required DateTime dateStart, required DateTime dateFinish}) {
+    final _$actionInfo = _$_HomeControllerBaseActionController.startAction(
+        name: '_HomeControllerBase.listenServices');
+    try {
+      return super.listenServices(dateStart: dateStart, dateFinish: dateFinish);
+    } finally {
+      _$_HomeControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   dynamic setLoading(bool value) {
     final _$actionInfo = _$_HomeControllerBaseActionController.startAction(
         name: '_HomeControllerBase.setLoading');
@@ -190,13 +225,12 @@ mixin _$HomeController on _HomeControllerBase, Store {
   }
 
   @override
-  dynamic setDateRangeChecklist(
+  dynamic setDateRange(
       {required DateTime dateStart, required DateTime dateFinish}) {
     final _$actionInfo = _$_HomeControllerBaseActionController.startAction(
-        name: '_HomeControllerBase.setDateRangeChecklist');
+        name: '_HomeControllerBase.setDateRange');
     try {
-      return super
-          .setDateRangeChecklist(dateStart: dateStart, dateFinish: dateFinish);
+      return super.setDateRange(dateStart: dateStart, dateFinish: dateFinish);
     } finally {
       _$_HomeControllerBaseActionController.endAction(_$actionInfo);
     }
@@ -208,6 +242,17 @@ mixin _$HomeController on _HomeControllerBase, Store {
         name: '_HomeControllerBase.setChecklistPeriod');
     try {
       return super.setChecklistPeriod(value);
+    } finally {
+      _$_HomeControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setServicesPeriod(List<ServiceModel> value) {
+    final _$actionInfo = _$_HomeControllerBaseActionController.startAction(
+        name: '_HomeControllerBase.setServicesPeriod');
+    try {
+      return super.setServicesPeriod(value);
     } finally {
       _$_HomeControllerBaseActionController.endAction(_$actionInfo);
     }
@@ -263,13 +308,15 @@ mixin _$HomeController on _HomeControllerBase, Store {
 loading: ${loading},
 isOperacionalToday: ${isOperacionalToday},
 checklistsPeriod: ${checklistsPeriod},
+servicesPeriod: ${servicesPeriod},
 date: ${date},
 dateReferenceStart: ${dateReferenceStart},
 dateReferenceFinish: ${dateReferenceFinish},
 filter: ${filter},
 limit: ${limit},
 page: ${page},
-checklistPeriodSort: ${checklistPeriodSort}
+checklistPeriodSort: ${checklistPeriodSort},
+servicesPeriodSort: ${servicesPeriodSort}
     ''';
   }
 }

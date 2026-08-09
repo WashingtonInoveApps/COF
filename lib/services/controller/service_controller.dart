@@ -167,7 +167,7 @@ abstract class _ServiceControllerBase with Store {
         responsable: user,
         date: date,
         components: components,
-        obm: obm.name,
+        obm: obm,
         cia: cia,
         team: team,
         contact: contact,

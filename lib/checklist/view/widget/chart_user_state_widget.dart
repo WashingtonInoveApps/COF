@@ -1,6 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:bsu_control/core/constants.dart';
-import 'package:bsu_control/enum/checklist_enum.dart';
+import 'package:bsu_control/enum/state_enum.dart';
 import 'package:bsu_control/model/check_list_model.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -12,7 +12,7 @@ class UserStateChart extends StatelessWidget {
 
   List<StatusChartData> processStates(List<ChecklistModel> list) {
     List<StatusChartData> result = [];
-    for (final state in StateChecklist.values) {
+    for (final state in StateProgress.values) {
       final checklists = list.where((e) => e.state == state).toList();
 
       result.add(StatusChartData(state: state, value: checklists.length));
@@ -27,7 +27,7 @@ class UserStateChart extends StatelessWidget {
 
     final data = processStates(checklists);
     final completed =
-        data.where((e) => e.state == StateChecklist.completed).toList();
+        data.where((e) => e.state == StateProgress.completed).toList();
 
     if (completed.isNotEmpty) {
       final value =
@@ -203,7 +203,7 @@ class UserStateChart extends StatelessWidget {
 }
 
 class StatusChartData {
-  final StateChecklist state;
+  final StateProgress state;
   final int value;
   StatusChartData({required this.state, required this.value});
 }

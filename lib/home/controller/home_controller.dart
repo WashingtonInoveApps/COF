@@ -1,11 +1,12 @@
 import 'dart:developer';
 
 import 'package:bsu_control/core/core.dart';
-import 'package:bsu_control/enum/checklist_enum.dart';
+import 'package:bsu_control/enum/state_enum.dart';
 import 'package:bsu_control/model/check_list_model.dart';
 import 'package:bsu_control/model/config_model.dart';
 import 'package:bsu_control/home/repository/home_interface.dart';
 import 'package:bsu_control/home/repository/home_repository.dart';
+import 'package:bsu_control/model/service_model.dart';
 import 'package:mobx/mobx.dart';
 
 part 'home_controller.g.dart';
@@ -29,6 +30,9 @@ abstract class _HomeControllerBase with Store {
 
   @observable
   List<ChecklistModel> checklistsPeriod = <ChecklistModel>[].asObservable();
+
+  @observable
+  List<ServiceModel> servicesPeriod = <ServiceModel>[].asObservable();
 
   @observable
   DateTime date = DateTime.now();
@@ -67,13 +71,35 @@ abstract class _HomeControllerBase with Store {
   }
 
   @action
+  Stream<List<ServiceModel>> listenServices({
+    required DateTime dateStart,
+    required DateTime dateFinish,
+  }) {
+    loading = true;
+
+    log('Date Start: ${Core.formatDate(dateStart)}');
+    log('Date Finish: ${Core.formatDate(dateFinish)}');
+
+    final stream = repository.listenServices(
+      referenceDateStart: dateStart,
+      referenceDateFinish: dateFinish,
+    );
+
+    loading = false;
+
+    return stream;
+  }
+
+  @action
   setLoading(bool value) {
     loading = value;
   }
 
   @action
-  setDateRangeChecklist(
-      {required DateTime dateStart, required DateTime dateFinish}) {
+  setDateRange({
+    required DateTime dateStart,
+    required DateTime dateFinish,
+  }) {
     dateReferenceStart = dateStart;
     dateReferenceFinish = dateFinish;
   }
@@ -83,8 +109,7 @@ abstract class _HomeControllerBase with Store {
     if (filter.isNotEmpty) {
       final filtered = checklistsPeriod
           .where((e) =>
-              ((e.prefix?.toLowerCase().contains(filter.toLowerCase()) ??
-                      false) ||
+              ((e.prefix.toLowerCase().contains(filter.toLowerCase())) ||
                   e.obm.toLowerCase().contains(filter.toLowerCase()) ||
                   (e.cia.toLowerCase().contains(filter.toLowerCase())) ||
                   (e.team.toLowerCase().contains(filter.toLowerCase())) ||
@@ -100,10 +125,41 @@ abstract class _HomeControllerBase with Store {
     }
   }
 
+  @computed
+  List<ServiceModel> get servicesPeriodSort {
+    if (filter.isNotEmpty) {
+      final lowFilter = filter.toLowerCase();
+
+      final filtered = servicesPeriod
+          .where((e) =>
+              (e.obm.prefix.toLowerCase() == lowFilter) ||
+              (e.team?.toLowerCase() == lowFilter) ||
+              (e.components
+                  .map((e) => e.user.fullname.toLowerCase())
+                  .contains(lowFilter)))
+          .toList();
+
+      final list = Core.paginate(list: filtered, page: page, limit: limit);
+      return List<ServiceModel>.from(list);
+    } else {
+      final list =
+          Core.paginate(list: servicesPeriod, page: page, limit: limit);
+      return List<ServiceModel>.from(list);
+    }
+  }
+
   @action
   setChecklistPeriod(List<ChecklistModel> value) {
     value.sort((a, b) => b.date.compareTo(a.date));
     checklistsPeriod
+      ..clear()
+      ..addAll(value);
+  }
+
+  @action
+  setServicesPeriod(List<ServiceModel> value) {
+    value.sort((a, b) => b.date.compareTo(a.date));
+    servicesPeriod
       ..clear()
       ..addAll(value);
   }

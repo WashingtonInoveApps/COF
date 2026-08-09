@@ -7,6 +7,7 @@ import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 class AppColumn<T> {
   final String name;
   final String? label;
+  final Color? headColor;
   final Widget Function(T item) builder;
 
   /// 🔥 valor usado para ordenação (IMPORTANTE)
@@ -28,6 +29,7 @@ class AppColumn<T> {
     this.sortable = false,
     this.hasLoading = false,
     this.visible = true,
+    this.headColor,
   });
 }
 
@@ -87,6 +89,8 @@ class _AppDataTableState<T> extends State<AppDataTable<T>> {
       headerGridLinesVisibility: GridLinesVisibility.horizontal,
       rowsCacheExtent: 50, // 🚀 performance
       shrinkWrapRows: false,
+      rowHeight: 60,
+      headerRowHeight: 65,
       verticalScrollPhysics: const ClampingScrollPhysics(),
       columns: widget.columns.where((e) => e.visible).map((col) {
         return GridColumn(
@@ -94,6 +98,7 @@ class _AppDataTableState<T> extends State<AppDataTable<T>> {
           width: col.width ?? double.nan,
           label: _HeaderCell(
             label: col.label,
+            color: col.headColor,
             sortable: col.sortable,
             onSort: () => dataSource.sortData(col.name),
             isActive: dataSource.sortColumn == col.name,
@@ -108,6 +113,7 @@ class _AppDataTableState<T> extends State<AppDataTable<T>> {
 /// 🔹 HEADER COM SORT
 class _HeaderCell extends StatelessWidget {
   final String? label;
+  final Color? color;
   final bool sortable;
   final VoidCallback onSort;
   final bool isActive;
@@ -115,6 +121,7 @@ class _HeaderCell extends StatelessWidget {
 
   const _HeaderCell({
     this.label,
+    this.color,
     required this.sortable,
     required this.onSort,
     required this.isActive,
@@ -128,28 +135,43 @@ class _HeaderCell extends StatelessWidget {
         : InkWell(
             onTap: sortable ? onSort : null,
             child: Container(
-              // height: 40,
               alignment: Alignment.center,
-              margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+              margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 5),
               decoration: BoxDecoration(
-                color: Colors.grey.shade700,
+                color: color ?? Colors.green,
                 borderRadius: BorderRadius.circular(5),
               ),
               child: Row(
                 spacing: 5,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(label ?? '',
-                      style: Constants.subtitle.copyWith(color: Colors.white)),
+                  Expanded(
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(5),
+                        child: Text(
+                          label ?? '',
+                          style: Constants.title.copyWith(
+                              color: Colors.white, fontWeight: FontWeight.bold),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                  ),
                   if (sortable)
-                    Icon(
-                      isActive
-                          ? (ascending
-                              ? Icons.arrow_upward
-                              : Icons.arrow_downward)
-                          : Icons.unfold_more,
-                      size: 16,
-                      color: Colors.white,
+                    Padding(
+                      padding: const EdgeInsets.only(right: 5),
+                      child: Icon(
+                        isActive
+                            ? (ascending
+                                ? Icons.arrow_upward
+                                : Icons.arrow_downward)
+                            : Icons.unfold_more,
+                        size: 16,
+                        color: Colors.white,
+                      ),
                     )
                 ],
               ),

@@ -3,6 +3,8 @@
 import 'dart:convert';
 
 import 'package:bsu_control/enum/services_enum.dart';
+import 'package:bsu_control/enum/state_enum.dart';
+import 'package:bsu_control/model/obm_model.dart';
 import 'package:bsu_control/model/user_model.dart';
 
 class ServiceModel {
@@ -14,11 +16,14 @@ class ServiceModel {
   String? team;
   String obs;
   String? cia;
-  String obm;
+  OBMModel obm;
   String contact;
   String obmID;
   DateTime date;
   DateTime? dateFinish;
+  StateProgress state;
+  int changesCar;
+  int changesMaterials;
 
   ServiceModel({
     this.id,
@@ -27,11 +32,14 @@ class ServiceModel {
     required this.components,
     required this.obm,
     required this.componentsIDs,
+    this.state = StateProgress.inprogress,
     this.pb = "",
     this.cia,
     this.contact = '',
     this.obmID = '',
     this.dateFinish,
+    this.changesCar = 0,
+    this.changesMaterials = 0,
     this.team,
     this.obs = "",
   });
@@ -42,11 +50,14 @@ class ServiceModel {
       'responsable': responsable.toMapResume(),
       'components': components.map((x) => x.toMap()).toList(),
       'componentsIDs': componentsIDs,
+      'state': state.name,
       'pb': pb,
       'team': team,
       'obs': obs,
       'cia': cia,
-      'obm': obm,
+      'changesCar': changesCar,
+      'changesMaterials': changesMaterials,
+      'obm': obm.toMapResume(),
       'contact': contact,
       'obmID': obmID,
       'date': date.millisecondsSinceEpoch,
@@ -60,18 +71,19 @@ class ServiceModel {
       responsable:
           UserModel.fromMapResume(map['responsable'] as Map<String, dynamic>),
       components: List<ServicesComponent>.from(
-        (map['components'] as List<int>).map<ServicesComponent>(
+        (map['components'] as List).map<ServicesComponent>(
           (x) => ServicesComponent.fromMap(x as Map<String, dynamic>),
         ),
       ),
-      componentsIDs: List<String>.from(
-        (map['componentsIDs'] as List<String>),
-      ),
+      componentsIDs: List<String>.from(map['componentsIDs']),
       pb: map['pb'] as String,
       team: map['team'],
       cia: map['cia'],
+      changesCar: map['changesCar'] ?? 0,
+      changesMaterials: map['changesMaterials'] ?? 0,
       obs: map['obs'] as String,
-      obm: map['obm'] as String,
+      obm: OBMModel.fromMapResume(map['obm']),
+      state: StateProgressEnumCore.stateProgressFromString(map['state']),
       contact: map['contact'] as String,
       obmID: map['obmID'] as String,
       date: DateTime.fromMillisecondsSinceEpoch(map['date'] as int),
@@ -113,7 +125,7 @@ class ServicesComponent {
 
   factory ServicesComponent.fromMap(Map<String, dynamic> map) {
     return ServicesComponent(
-      functions: List<ServiceFunctions>.from((map['function'] as List).map(
+      functions: List<ServiceFunctions>.from((map['functions'] as List).map(
           (e) => ServiceEnumCore.stateServiceFunctionsFromString(e as String))),
       period:
           ServiceEnumCore.stateServicePeriodFromString(map['period'] as String),

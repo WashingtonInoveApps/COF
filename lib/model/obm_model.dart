@@ -26,6 +26,14 @@ class OBMModel {
     };
   }
 
+  Map<String, dynamic> toMapResume() {
+    return <String, dynamic>{
+      'id': id,
+      'prefix': prefix,
+      'name': name,
+    };
+  }
+
   factory OBMModel.fromMap(Map<String, dynamic> map) {
     return OBMModel(
         id: map['id'],
@@ -33,6 +41,15 @@ class OBMModel {
         name: map['name'] ?? '',
         team: List<String>.from((map['team'])),
         cias: List<String>.from((map['cias'])));
+  }
+
+  factory OBMModel.fromMapResume(Map<String, dynamic> map) {
+    return OBMModel(
+        id: map['id'],
+        prefix: map['prefix'] ?? '',
+        name: map['name'] ?? '',
+        cias: [],
+        team: []);
   }
 
   String toJson() => json.encode(toMap());

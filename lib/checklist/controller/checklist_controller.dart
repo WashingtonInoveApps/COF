@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:bsu_control/core/core.dart';
-import 'package:bsu_control/enum/checklist_enum.dart';
+import 'package:bsu_control/enum/state_enum.dart';
 import 'package:bsu_control/core/validation.dart';
 import 'package:bsu_control/model/car_changes_model.dart';
 import 'package:bsu_control/model/car_checklist.dart';
@@ -78,7 +78,7 @@ abstract class _CheckListControllerBase with Store {
     obs = init?.obs ?? '';
     enable = init?.enable ?? true;
     states = init?.states ??
-        [StatesChecklist(state: StateChecklist.inprogress, date: date)];
+        [StatesChecklist(state: StateProgress.inprogress, date: date)];
     supplies = init?.supply ?? [];
 
     if (init != null) {
@@ -639,7 +639,7 @@ abstract class _CheckListControllerBase with Store {
           prefix: prefix,
           obs: obs,
           team: team,
-          state: StateChecklist.inprogress,
+          state: StateProgress.inprogress,
           obmID: obm.id ?? '',
           obm: obm.prefix,
           cia: cia?.toLowerCase() ?? '',
@@ -669,7 +669,7 @@ abstract class _CheckListControllerBase with Store {
       final now = DateTime.now();
       final states = List<StatesChecklist>.from(checklist.states);
 
-      final state = StatesChecklist(state: StateChecklist.completed, date: now);
+      final state = StatesChecklist(state: StateProgress.completed, date: now);
       states.add(state);
 
       final result = await repository.finish(
