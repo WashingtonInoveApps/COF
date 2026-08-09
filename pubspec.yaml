@@ -73,6 +73,7 @@ dependencies:
   mime: ^2.0.0
   image_cropper: ^11.0.0
   image: ^4.7.2
+  dropdown_search: ^7.0.0
 
 dev_dependencies:
   mobx_codegen:

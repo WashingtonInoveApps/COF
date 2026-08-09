@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:bsu_control/core/core.dart';
-import 'package:bsu_control/core/enum.dart';
+import 'package:bsu_control/enum/checklist_enum.dart';
 import 'package:bsu_control/model/car_changes_model.dart';
 import 'package:bsu_control/model/car_checklist.dart';
 import 'package:bsu_control/model/file_model.dart';
@@ -115,7 +115,8 @@ class ChecklistModel {
       endKM: map['endKM'] ?? '',
       id: map['id'],
       obs: map['obs'] ?? '',
-      state: EnumCore.statusChecklistFromString(map['state'] as String),
+      state:
+          ChecklistEnumCore.statusChecklistFromString(map['state'] as String),
       enable: map['enable'] ?? false,
       user: UserModel.fromMapResume(map['user'] as Map<String, dynamic>),
       states: (map['states'] != null)
@@ -220,7 +221,8 @@ class StatesChecklist {
 
   factory StatesChecklist.fromMap(Map<String, dynamic> map) {
     return StatesChecklist(
-      state: EnumCore.statusChecklistFromString(map['state'] as String),
+      state:
+          ChecklistEnumCore.statusChecklistFromString(map['state'] as String),
       date: DateTime.fromMillisecondsSinceEpoch(map['date'] as int),
     );
   }

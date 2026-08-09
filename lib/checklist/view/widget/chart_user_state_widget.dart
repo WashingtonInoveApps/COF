@@ -1,6 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:bsu_control/core/constants.dart';
-import 'package:bsu_control/core/enum.dart';
+import 'package:bsu_control/enum/checklist_enum.dart';
 import 'package:bsu_control/model/check_list_model.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';

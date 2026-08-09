@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:bsu_control/core/core.dart';
-import 'package:bsu_control/core/enum.dart';
+import 'package:bsu_control/enum/checklist_enum.dart';
 import 'package:bsu_control/core/validation.dart';
 import 'package:bsu_control/model/car_changes_model.dart';
 import 'package:bsu_control/model/car_checklist.dart';
@@ -407,7 +407,7 @@ abstract class _CheckListControllerBase with Store {
 
   @computed
   List<String> get prefixs {
-    List<String> data = ['SELECIONE'];
+    List<String> data = [];
 
     if (cars.isNotEmpty) {
       final list = checklistTodays.map((e) => e.prefix).toList();

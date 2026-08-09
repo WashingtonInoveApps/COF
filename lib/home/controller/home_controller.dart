@@ -1,7 +1,7 @@
 import 'dart:developer';
 
 import 'package:bsu_control/core/core.dart';
-import 'package:bsu_control/core/enum.dart';
+import 'package:bsu_control/enum/checklist_enum.dart';
 import 'package:bsu_control/model/check_list_model.dart';
 import 'package:bsu_control/model/config_model.dart';
 import 'package:bsu_control/home/repository/home_interface.dart';
@@ -83,7 +83,8 @@ abstract class _HomeControllerBase with Store {
     if (filter.isNotEmpty) {
       final filtered = checklistsPeriod
           .where((e) =>
-              (e.prefix.toLowerCase().contains(filter.toLowerCase()) ||
+              ((e.prefix?.toLowerCase().contains(filter.toLowerCase()) ??
+                      false) ||
                   e.obm.toLowerCase().contains(filter.toLowerCase()) ||
                   (e.cia.toLowerCase().contains(filter.toLowerCase())) ||
                   (e.team.toLowerCase().contains(filter.toLowerCase())) ||

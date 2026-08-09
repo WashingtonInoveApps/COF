@@ -1,10 +1,10 @@
 import 'dart:typed_data';
 
+import 'package:bsu_control/checklist/repository/checklist_interface.dart';
 import 'package:bsu_control/core/api_client.dart';
-import 'package:bsu_control/core/enum.dart';
+import 'package:bsu_control/enum/car_enum.dart';
 import 'package:bsu_control/model/car_changes_model.dart';
 import 'package:bsu_control/model/car_model.dart';
-import 'package:bsu_control/checklist/repository/checklist_interface.dart';
 
 import '../../model/check_list_model.dart';
 

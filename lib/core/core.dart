@@ -171,13 +171,13 @@ class Core {
     return list.sublist(start, end);
   }
 
-  static bool verifyExpiresChecklist() {
-    final date = DateTime.now();
+  // static bool verifyExpiresChecklist() {
+  //   final date = DateTime.now();
 
-    if (date.hour < 8) return true;
+  //   if (date.hour < 8) return true;
 
-    return false;
-  }
+  //   return false;
+  // }
 
   static double calculateTableHeight(int rows) {
     const rowHeight = 52.0;

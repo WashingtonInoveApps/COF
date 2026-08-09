@@ -1,14 +1,14 @@
 import 'dart:async';
 
 import 'package:bsu_control/app_controller.dart';
-import 'package:bsu_control/core/constants.dart';
-import 'package:bsu_control/core/core.dart';
-import 'package:bsu_control/main.dart';
-import 'package:bsu_control/model/check_list_model.dart';
 import 'package:bsu_control/checklist/view/checklist_details_page.dart';
 import 'package:bsu_control/checklist/view/checklist_register_page.dart';
 import 'package:bsu_control/checklist/view/my_checklist_page.dart';
+import 'package:bsu_control/core/constants.dart';
+import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/home/controller/home_controller.dart';
+import 'package:bsu_control/main.dart';
+import 'package:bsu_control/model/check_list_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -17,7 +17,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:mobx/mobx.dart';
 import 'package:universal_html/html.dart' as html;
 import 'package:url_launcher/url_launcher_string.dart';
-import '../widgets/alert_message.dart';
+
 import '../widgets/backgraund_page.dart';
 import '../widgets/card_infor_widget.dart';
 import '../widgets/cars_chart_widget.dart';
@@ -85,7 +85,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final expires = Core.verifyExpiresChecklist();
+    // final expires = Core.verifyExpiresChecklist();
     final refresh = (app.version > versionCodeSystem);
 
     return PopScope(
@@ -269,31 +269,32 @@ class _HomePageState extends State<HomePage> {
                                                       return app.newRegister
                                                           ? btCustom(
                                                               label:
-                                                                  'Novo Registro',
+                                                                  'Novo Serviço',
                                                               icon: Icons.add,
                                                               color: Colors.blue
                                                                   .shade800,
                                                               onTap: () {
-                                                                if (expires) {
-                                                                  showDialog(
-                                                                      context:
-                                                                          context,
-                                                                      builder: (context) => AlertMessage(
-                                                                          title:
-                                                                              'Atenção',
-                                                                          message:
-                                                                              'Ops ! Horário para realizar um novo registro expirado, espere um novo período.',
-                                                                          onPressedOK: () =>
-                                                                              Navigator.of(context).pop()));
-                                                                } else {
-                                                                  app.setRouter(
-                                                                      2);
-                                                                  Navigator.of(
-                                                                          context)
-                                                                      .pushReplacement(MaterialPageRoute(
-                                                                          builder: (context) =>
-                                                                              const ChecklistRegisterPage()));
-                                                                }
+                                                                // if (expires) {
+                                                                //   showDialog(
+                                                                //       context:
+                                                                //           context,
+                                                                //       builder: (context) => AlertMessage(
+                                                                //           title:
+                                                                //               'Atenção',
+                                                                //           message:
+                                                                //               'Ops ! Horário para realizar um novo registro expirado, espere um novo período.',
+                                                                //           onPressedOK: () =>
+                                                                //               Navigator.of(context).pop()));
+                                                                // } else {
+                                                                app.setRouter(
+                                                                    2);
+                                                                Navigator.of(
+                                                                        context)
+                                                                    .pushReplacement(MaterialPageRoute(
+                                                                        builder:
+                                                                            (context) =>
+                                                                                const ChecklistRegisterPage()));
+                                                                // }
                                                               })
                                                           : btCustom(
                                                               label:

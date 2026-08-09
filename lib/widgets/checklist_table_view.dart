@@ -1,6 +1,6 @@
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/core.dart';
-import 'package:bsu_control/core/enum.dart';
+import 'package:bsu_control/enum/checklist_enum.dart';
 import 'package:bsu_control/model/car_changes_model.dart';
 import 'package:bsu_control/model/check_list_model.dart';
 import 'package:bsu_control/model/obm_model.dart';
@@ -370,7 +370,7 @@ class ChecklistDataSource extends DataGridSource {
                 )
               : Container();
         } else if (cell.columnName == 'state') {
-          final state = EnumCore.statusChecklistFromString(cell.value);
+          final state = ChecklistEnumCore.statusChecklistFromString(cell.value);
 
           return Center(
             child: Container(

@@ -1,19 +1,19 @@
 import 'package:bsu_control/app_controller.dart';
+import 'package:bsu_control/car/controller/car_controller.dart';
+import 'package:bsu_control/car/view/widgets/car_chats_problem_widget.dart';
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/core.dart';
+import 'package:bsu_control/enum/car_enum.dart';
 import 'package:bsu_control/main.dart';
 import 'package:bsu_control/model/car_model.dart';
 import 'package:bsu_control/model/car_status_model.dart';
 import 'package:bsu_control/model/check_list_model.dart';
-import 'package:bsu_control/car/controller/car_controller.dart';
-import 'package:bsu_control/car/view/widgets/car_chats_problem_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
-import '../../core/enum.dart';
 import '../../widgets/backgraund_page.dart';
 import '../../widgets/cars_chart_widget.dart';
 import '../../widgets/images_changes_view_widget.dart';

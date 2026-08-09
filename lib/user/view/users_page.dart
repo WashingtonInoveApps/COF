@@ -291,6 +291,9 @@ class _UsersPageState extends State<UsersPage> {
                   ),
                 );
               }),
+              const SizedBox(
+                height: 10,
+              ),
               Wrap(
                 spacing: 10,
                 runSpacing: 10,

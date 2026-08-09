@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/core.dart';
-import 'package:bsu_control/core/enum.dart';
+import 'package:bsu_control/enum/checklist_enum.dart';
 import 'package:bsu_control/main.dart';
 import 'package:bsu_control/model/check_list_model.dart';
 import 'package:bsu_control/model/itens_changes_model.dart';
@@ -232,7 +232,8 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
                   children: listStates
                       .map((e) {
                         final state =
-                            EnumCore.statusChecklistFromString(e.state.name);
+                            ChecklistEnumCore.statusChecklistFromString(
+                                e.state.name);
                         return SizedBox(
                           width: 165,
                           child: Row(

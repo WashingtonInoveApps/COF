@@ -4,7 +4,7 @@ import 'package:bsu_control/app_interface.dart';
 import 'package:bsu_control/app_repository.dart';
 import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/core/db.dart';
-import 'package:bsu_control/core/enum.dart';
+import 'package:bsu_control/enum/car_enum.dart';
 import 'package:bsu_control/model/app_model.dart';
 import 'package:bsu_control/model/car_model.dart';
 import 'package:bsu_control/model/config_model.dart';

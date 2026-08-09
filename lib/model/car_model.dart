@@ -1,7 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
-import 'package:bsu_control/core/enum.dart';
+import 'package:bsu_control/enum/car_enum.dart';
 import 'package:bsu_control/model/car_changes_model.dart';
 import 'package:bsu_control/model/car_mapa_model.dart';
 import 'package:bsu_control/model/car_status_model.dart';
@@ -133,7 +133,7 @@ class CarModel {
       obmID: map['obmID'] ?? '',
       cia: map['cia'] ?? '',
       function: map['function'] ?? '',
-      state: EnumCore.statusCarFromString(map['state'] as String),
+      state: CarEnumCore.statusCarFromString(map['state'] as String),
       itens: List<ItensChangesModel>.from(
           map['itens']?.map((x) => ItensChangesModel.fromMap(x))),
       materials: List<ItensChangesModel>.from(

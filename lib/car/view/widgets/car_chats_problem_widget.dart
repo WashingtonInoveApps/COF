@@ -1,6 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:bsu_control/core/constants.dart';
-import 'package:bsu_control/core/enum.dart';
+import 'package:bsu_control/enum/car_enum.dart';
 import 'package:bsu_control/model/car_status_model.dart';
 import 'package:flutter/material.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';

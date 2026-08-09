@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 class Constants {
   static const primary = Color.fromARGB(
       255, 27, 94, 32); //Color(0xFF2E7D32); // Colors.green.shade900;
-
+  static const second = Color.fromARGB(255, 25, 118, 210);
   static final title = GoogleFonts.poppins(fontSize: 14.0, color: Colors.black);
   static final titleButton = GoogleFonts.montserrat(
       fontSize: 14.0, color: Colors.white, fontWeight: FontWeight.bold);

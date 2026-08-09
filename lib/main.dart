@@ -37,7 +37,7 @@ void main() async {
     await Firebase.initializeApp();
   }
 
-  final controller = AppController(maxWidth: 360, config: config);
+  final controller = AppController(maxWidth: 1000, config: config);
 
   GetIt.I.registerSingleton<AppController>(controller);
   await controller.initApplication();

@@ -1,7 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
-import 'package:bsu_control/core/enum.dart';
+import 'package:bsu_control/enum/car_enum.dart';
 import 'package:bsu_control/model/user_model.dart';
 
 class CarStatusModel {
@@ -51,11 +51,11 @@ class CarStatusModel {
       id: map['id'],
       type: (map['type'] == null)
           ? null
-          : EnumCore.stateCarProblemsFromString(map['type']),
+          : CarEnumCore.stateCarProblemsFromString(map['type']),
       carID: map['carID'] ?? '',
       referenceYear: map['referenceYear'] ?? '',
       description: map['description'] ?? '',
-      state: EnumCore.statusCarFromString(map['state'] as String),
+      state: CarEnumCore.statusCarFromString(map['state'] as String),
       date: DateTime.fromMillisecondsSinceEpoch(map['date']),
       value: map['value'] ?? false,
       user: UserModel.fromMapResume(map['user']),

@@ -1,23 +1,22 @@
 import 'package:bsu_control/app_controller.dart';
-import 'package:bsu_control/core/constants.dart';
-import 'package:bsu_control/model/obm_model.dart';
-import 'package:bsu_control/model/user_model.dart';
 import 'package:bsu_control/car/view/car_register_page.dart';
 import 'package:bsu_control/car/view/cars_page.dart';
 import 'package:bsu_control/checklist/view/checklist_details_page.dart';
 import 'package:bsu_control/checklist/view/checklist_page.dart';
 import 'package:bsu_control/checklist/view/checklist_register_page.dart';
 import 'package:bsu_control/checklist/view/my_checklist_page.dart';
+import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/home/home_page.dart';
 import 'package:bsu_control/login/view/login_page.dart';
+import 'package:bsu_control/model/obm_model.dart';
+import 'package:bsu_control/model/user_model.dart';
 import 'package:bsu_control/user/view/user_register_page.dart';
 import 'package:bsu_control/user/view/users_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 
-import '../../core/core.dart';
-import 'alert_message.dart';
+import '../services/view/service_register_page.dart';
 
 class BackgraundPage extends StatefulWidget {
   final bool menu;
@@ -72,7 +71,7 @@ class _BackgraundPageState extends State<BackgraundPage> {
         user.company ||
         user.managerOperational);
 
-    final expires = Core.verifyExpiresChecklist();
+    // final expires = Core.verifyExpiresChecklist();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
@@ -193,22 +192,26 @@ class _BackgraundPageState extends State<BackgraundPage> {
                           case 3:
                             if (controller.router != 3) {
                               if (controller.newRegister) {
-                                if (expires) {
-                                  showDialog(
-                                      context: context,
-                                      builder: (context) => AlertMessage(
-                                          title: 'Atenção',
-                                          message:
-                                              'Ops ! Horário para realizar um novo registro expirado, espere um novo período.',
-                                          onPressedOK: () =>
-                                              Navigator.of(context).pop()));
-                                } else {
-                                  controller.setRouter(3);
-                                  Navigator.of(context).pushReplacement(
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              const ChecklistRegisterPage()));
-                                }
+                                // if (expires) {
+                                //   showDialog(
+                                //       context: context,
+                                //       builder: (context) => AlertMessage(
+                                //           title: 'Atenção',
+                                //           message:
+                                //               'Ops ! Horário para realizar um novo registro expirado, espere um novo período.',
+                                //           onPressedOK: () =>
+                                //               Navigator.of(context).pop()));
+                                // } else {
+                                controller.setRouter(3);
+                                Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const ServiceRegisterPage()));
+                                // Navigator.of(context).pushReplacement(
+                                //     MaterialPageRoute(
+                                //         builder: (context) =>
+                                //             const ChecklistRegisterPage()));
+                                // }
                               } else {
                                 Navigator.of(context).push(MaterialPageRoute(
                                     builder: (context) => ChecklistDetailsPage(
@@ -228,6 +231,100 @@ class _BackgraundPageState extends State<BackgraundPage> {
                             color: (controller.router == 1 ||
                                     controller.router == 2 ||
                                     controller.router == 3)
+                                ? Constants.primary
+                                : Colors.grey.shade300,
+                            borderRadius: BorderRadius.circular(5)),
+                        child: Text(
+                          'Serviços',
+                          style: Constants.titleButton,
+                        ),
+                      ),
+                      itemBuilder: (context) {
+                        return [
+                          PopupMenuItem(
+                              value: 1,
+                              child: Text(
+                                'Registrados',
+                                style: Constants.title,
+                              )),
+                          PopupMenuItem(
+                              value: 2,
+                              child: Text(
+                                'Meus registros',
+                                style: Constants.title,
+                              )),
+                          PopupMenuItem(
+                              value: 3,
+                              child: Text(
+                                controller.newRegister
+                                    ? 'Novo registro'
+                                    : 'Ver registro',
+                                style: Constants.title,
+                              )),
+                        ];
+                      }),
+                ),
+                SizedBox(
+                  width: 120,
+                  child: PopupMenuButton(
+                      onSelected: (value) {
+                        switch (value) {
+                          case 1:
+                            if (controller.router != 1) {
+                              controller.setRouter(1);
+                              Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const ChecklistPage()));
+                            }
+                            break;
+                          case 2:
+                            if (controller.router != 2) {
+                              controller.setRouter(2);
+                              Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const MyChecklistPage()));
+                            }
+                            break;
+                          case 3:
+                            if (controller.router != 3) {
+                              if (controller.newRegister) {
+                                // if (expires) {
+                                //   showDialog(
+                                //       context: context,
+                                //       builder: (context) => AlertMessage(
+                                //           title: 'Atenção',
+                                //           message:
+                                //               'Ops ! Horário para realizar um novo registro expirado, espere um novo período.',
+                                //           onPressedOK: () =>
+                                //               Navigator.of(context).pop()));
+                                // } else {
+                                controller.setRouter(3);
+                                Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const ChecklistRegisterPage()));
+                                // }
+                              } else {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) => ChecklistDetailsPage(
+                                        checklist: controller.checklistUser!)));
+                              }
+                            }
+                            break;
+                          default:
+                            return;
+                        }
+                      },
+                      child: Container(
+                        height: 35,
+                        alignment: Alignment.center,
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        decoration: BoxDecoration(
+                            color: (controller.router == 4 ||
+                                    controller.router == 5 ||
+                                    controller.router == 6)
                                 ? Constants.primary
                                 : Colors.grey.shade300,
                             borderRadius: BorderRadius.circular(5)),

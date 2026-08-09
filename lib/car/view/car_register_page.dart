@@ -1,7 +1,7 @@
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
-import 'package:bsu_control/core/enum.dart';
 import 'package:bsu_control/core/validation.dart';
+import 'package:bsu_control/enum/car_enum.dart';
 import 'package:bsu_control/main.dart';
 import 'package:bsu_control/model/car_model.dart';
 import 'package:bsu_control/model/item_model.dart';

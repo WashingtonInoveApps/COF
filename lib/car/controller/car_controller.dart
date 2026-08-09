@@ -1,6 +1,7 @@
+import 'package:bsu_control/car/repository/car_interface.dart';
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/core.dart';
-import 'package:bsu_control/core/enum.dart';
+import 'package:bsu_control/enum/car_enum.dart';
 import 'package:bsu_control/model/car_changes_model.dart';
 import 'package:bsu_control/model/check_list_model.dart';
 import 'package:bsu_control/model/config_model.dart';
@@ -8,7 +9,6 @@ import 'package:bsu_control/model/item_model.dart';
 import 'package:bsu_control/model/itens_changes_model.dart';
 import 'package:bsu_control/model/obm_model.dart';
 import 'package:bsu_control/model/user_model.dart';
-import 'package:bsu_control/car/repository/car_interface.dart';
 import 'package:mobx/mobx.dart';
 
 import '../../model/car_mapa_model.dart';

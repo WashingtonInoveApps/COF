@@ -1,6 +1,6 @@
 import 'package:bsu_control/core/constants.dart';
-import 'package:bsu_control/core/enum.dart';
 import 'package:bsu_control/core/validation.dart';
+import 'package:bsu_control/enum/car_enum.dart';
 import 'package:bsu_control/model/car_status_model.dart';
 import 'package:bsu_control/model/user_model.dart';
 import 'package:flutter/material.dart';
