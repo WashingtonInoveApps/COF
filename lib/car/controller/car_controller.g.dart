@@ -34,6 +34,13 @@ mixin _$CarController on _CarControllerBase, Store {
   int get end => (_$endComputed ??=
           Computed<int>(() => super.end, name: '_CarControllerBase.end'))
       .value;
+  Computed<bool>? _$btFinishComputed;
+
+  @override
+  bool get btFinish =>
+      (_$btFinishComputed ??= Computed<bool>(() => super.btFinish,
+              name: '_CarControllerBase.btFinish'))
+          .value;
 
   late final _$loadingAtom =
       Atom(name: '_CarControllerBase.loading', context: context);
@@ -48,6 +55,22 @@ mixin _$CarController on _CarControllerBase, Store {
   set loading(bool value) {
     _$loadingAtom.reportWrite(value, super.loading, () {
       super.loading = value;
+    });
+  }
+
+  late final _$stepAtom =
+      Atom(name: '_CarControllerBase.step', context: context);
+
+  @override
+  int get step {
+    _$stepAtom.reportRead();
+    return super.step;
+  }
+
+  @override
+  set step(int value) {
+    _$stepAtom.reportWrite(value, super.step, () {
+      super.step = value;
     });
   }
 
@@ -415,6 +438,17 @@ mixin _$CarController on _CarControllerBase, Store {
       ActionController(name: '_CarControllerBase', context: context);
 
   @override
+  void processStep(bool value) {
+    final _$actionInfo = _$_CarControllerBaseActionController.startAction(
+        name: '_CarControllerBase.processStep');
+    try {
+      return super.processStep(value);
+    } finally {
+      _$_CarControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   dynamic setStatusGeral(List<CarStatusModel> list) {
     final _$actionInfo = _$_CarControllerBaseActionController.startAction(
         name: '_CarControllerBase.setStatusGeral');
@@ -684,6 +718,7 @@ mixin _$CarController on _CarControllerBase, Store {
   String toString() {
     return '''
 loading: ${loading},
+step: ${step},
 type: ${type},
 dateKmByMonth: ${dateKmByMonth},
 function: ${function},
@@ -704,7 +739,8 @@ carChanges: ${carChanges},
 carsSorts: ${carsSorts},
 adm: ${adm},
 start: ${start},
-end: ${end}
+end: ${end},
+btFinish: ${btFinish}
     ''';
   }
 }

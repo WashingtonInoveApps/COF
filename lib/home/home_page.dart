@@ -9,7 +9,6 @@ import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/enum/state_enum.dart';
 import 'package:bsu_control/home/controller/home_controller.dart';
 import 'package:bsu_control/main.dart';
-import 'package:bsu_control/model/check_list_model.dart';
 import 'package:bsu_control/model/service_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -397,16 +396,15 @@ class _HomePageState extends State<HomePage> {
                                       );
                                     }),
                                     Observer(builder: (context) {
-                                      final list = List<ChecklistModel>.from(
-                                          controller.checklistsPeriod);
                                       return SizedBox(
                                         height: 300,
-                                        child: ChartPeriodWidget(
+                                        child: ChartChangesPeriodWidget(
                                           dateStart:
                                               controller.dateReferenceStart,
                                           dateFinish:
                                               controller.dateReferenceFinish,
-                                          checklists: list,
+                                          services: List<ServiceModel>.from(
+                                              controller.servicesPeriod),
                                         ),
                                       );
                                     })
@@ -488,7 +486,7 @@ class _HomePageState extends State<HomePage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'Exibindo 1 a ${controller.servicesPeriodSort.length} de ${controller.checklistsPeriod.length} entradas',
+                                      'Exibindo 1 a ${controller.servicesPeriodSort.length} de ${controller.servicesPeriod.length} entradas',
                                       style: Constants.subtitleHint,
                                     ),
                                     Expanded(
@@ -517,13 +515,12 @@ class _HomePageState extends State<HomePage> {
                                                   ),
                                                 ),
                                                 onTap: () {
-                                                  // app.setRouter(6);
-                                                  // Navigator.of(context).push(
-                                                  //     MaterialPageRoute(
-                                                  //         builder: (context) =>
-                                                  //             UserPageRegister(
-                                                  //               user: user,
-                                                  //             )));
+                                                  //     await Navigator.of(context).push(
+                                                  //         MaterialPageRoute(
+                                                  //             builder: (context) =>
+                                                  //                 ChecklistDetailsPage(
+                                                  //                     checklist:
+                                                  //                         checklist)));
                                                 },
                                               );
                                             },
@@ -555,7 +552,7 @@ class _HomePageState extends State<HomePage> {
                                             name: 'team',
                                             label: 'Guarnição',
                                             sortable: true,
-                                            alignment: Alignment.center,
+                                            alignment: Alignment.centerLeft,
                                             sortValue: (service) =>
                                                 service.team ?? '-',
                                             builder: (service) => Text(
@@ -684,44 +681,10 @@ class _HomePageState extends State<HomePage> {
                                             },
                                           ),
                                         ],
-                                        rowId: (user) {
-                                          return user.id ?? 'err';
+                                        rowId: (service) {
+                                          return service.id ?? 'err';
                                         },
                                       ),
-                                      // child: ChecklistTableView(
-                                      //   values: controller.servicesPeriodSort,
-                                      //   obms: app.obms,
-                                      //   onContact: (contact) async {
-                                      //     final path = kIsWeb
-                                      //         ? "https://wa.me/+55$contact/?text=${Uri.encodeFull('Olá, tudo bem ?')}"
-                                      //         : "whatsapp://send?phone=+55$contact&text=${Uri.encodeFull('Olá, tudo bem ?')}";
-
-                                      //     await launchUrlString(path,
-                                      //         mode: LaunchMode
-                                      //             .externalApplication);
-                                      //   },
-                                      //   onDetails: (checklist) async {
-                                      //     await Navigator.of(context).push(
-                                      //         MaterialPageRoute(
-                                      //             builder: (context) =>
-                                      //                 ChecklistDetailsPage(
-                                      //                     checklist:
-                                      //                         checklist)));
-                                      //   },
-                                      //   onChanges: (changes) {
-                                      //     showDialog(
-                                      //         context: context,
-                                      //         builder: (context) {
-                                      //           return AlertDialog(
-                                      //             contentPadding:
-                                      //                 const EdgeInsets.all(10),
-                                      //             content:
-                                      //                 ImagesChangesViewWidget(
-                                      //                     changes: changes),
-                                      //           );
-                                      //         });
-                                      //   },
-                                      // ),
                                     ),
                                     SizedBox(
                                       width: double.infinity,

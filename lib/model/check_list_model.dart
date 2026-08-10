@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:bsu_control/core/core.dart';
+import 'package:bsu_control/enum/checklist_enum.dart';
 import 'package:bsu_control/enum/state_enum.dart';
 import 'package:bsu_control/model/car_changes_model.dart';
 import 'package:bsu_control/model/car_checklist.dart';
@@ -29,13 +30,14 @@ class ChecklistModel {
   bool enable;
   DateTime date;
   DateTime? dateFinish;
-  CarCheckList checkCar;
+  CarChecklist checkCar;
   List<SupplyModel> supply;
   List<CarChangeModel> changes;
   List<StatesChecklist> states;
   List<ChecklistOutherChange>? outhers;
   List<ItemModel>? materials;
   StateProgress state;
+  ChecklistType type;
 
   ChecklistModel(
       {required this.user,
@@ -54,6 +56,7 @@ class ChecklistModel {
       this.contact = '',
       this.obmID = '',
       this.dateFinish,
+      this.type = ChecklistType.vehicular,
       this.state = StateProgress.inprogress,
       this.team = "",
       this.prefix = "",
@@ -79,6 +82,7 @@ class ChecklistModel {
       'endKM': endKM,
       'obm': obm,
       'id': id,
+      'type': type.name,
       'userID': userID,
       'state': state.name,
       'materials': materials?.map((e) => e.toMap()).toList(),
@@ -115,8 +119,8 @@ class ChecklistModel {
       endKM: map['endKM'] ?? '',
       id: map['id'],
       obs: map['obs'] ?? '',
-      state:
-          StateProgressEnumCore.stateProgressFromString(map['state'] as String),
+      type: ChecklistEnumCore.checklistTypeFromString(map['type']),
+      state: StateProgressEnumCore.stateProgressFromString(map['state']),
       enable: map['enable'] ?? false,
       user: UserModel.fromMapResume(map['user'] as Map<String, dynamic>),
       states: (map['states'] != null)
@@ -135,7 +139,7 @@ class ChecklistModel {
       dateFinish: map['dateFinish'] != null
           ? DateTime.fromMillisecondsSinceEpoch(map['dateFinish'])
           : null,
-      checkCar: CarCheckList.fromMap(map['checkCar']),
+      checkCar: CarChecklist.fromMap(map['checkCar']),
       supply: List<SupplyModel>.from(
           map['supply']?.map((x) => SupplyModel.fromMap(x))),
       changes: List<CarChangeModel>.from(
@@ -169,8 +173,9 @@ class ChecklistModel {
     bool? enable,
     DateTime? date,
     DateTime? dateFinish,
-    CarCheckList? checkCar,
+    CarChecklist? checkCar,
     List<SupplyModel>? supply,
+    ChecklistType? type,
     StateProgress? state,
     List<StatesChecklist>? states,
     List<CarChangeModel>? changes,
@@ -191,6 +196,7 @@ class ChecklistModel {
       state: state ?? this.state,
       signature: signature ?? this.signature,
       states: states ?? this.states,
+      type: type ?? this.type,
       outhers: outhers ?? this.outhers,
       obs: obs ?? this.obs,
       cia: cia ?? this.cia,

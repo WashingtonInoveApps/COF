@@ -617,7 +617,7 @@ abstract class _CheckListControllerBase with Store {
           date: date,
           user: user,
           userID: user.id ?? '',
-          checkCar: CarCheckList(
+          checkCar: CarChecklist(
             car: car!.copyWith(
               itens: itens.map((e) => e.copyWith(value: false)).toList(),
               materials:

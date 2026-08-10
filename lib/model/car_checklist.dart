@@ -3,7 +3,7 @@ import 'dart:convert';
 
 import 'package:bsu_control/model/car_model.dart';
 
-class CarCheckList {
+class CarChecklist {
   CarModel car;
   double oil;
   double hidra;
@@ -12,7 +12,7 @@ class CarCheckList {
   double fuel;
   String obs;
 
-  CarCheckList(
+  CarChecklist(
       {required this.car,
       this.oil = 0.0,
       this.hidra = 0.0,
@@ -33,8 +33,8 @@ class CarCheckList {
     };
   }
 
-  factory CarCheckList.fromMap(Map<String, dynamic> map) {
-    return CarCheckList(
+  factory CarChecklist.fromMap(Map<String, dynamic> map) {
+    return CarChecklist(
       car: CarModel.fromMapResume(map['car']),
       oil: map['oil']?.toDouble() ?? 0.0,
       hidra: map['hidra']?.toDouble() ?? 0.0,
@@ -47,10 +47,10 @@ class CarCheckList {
 
   String toJson() => json.encode(toMap());
 
-  factory CarCheckList.fromJson(String source) =>
-      CarCheckList.fromMap(json.decode(source));
+  factory CarChecklist.fromJson(String source) =>
+      CarChecklist.fromMap(json.decode(source));
 
-  CarCheckList copyWith({
+  CarChecklist copyWith({
     CarModel? car,
     double? oil,
     double? hidra,
@@ -59,7 +59,7 @@ class CarCheckList {
     double? fuel,
     String? obs,
   }) {
-    return CarCheckList(
+    return CarChecklist(
       car: car ?? this.car,
       oil: oil ?? this.oil,
       hidra: hidra ?? this.hidra,

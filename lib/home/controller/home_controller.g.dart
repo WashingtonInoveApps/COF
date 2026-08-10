@@ -9,6 +9,13 @@ part of 'home_controller.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$HomeController on _HomeControllerBase, Store {
+  Computed<int>? _$lengthSortingsComputed;
+
+  @override
+  int get lengthSortings =>
+      (_$lengthSortingsComputed ??= Computed<int>(() => super.lengthSortings,
+              name: '_HomeControllerBase.lengthSortings'))
+          .value;
   Computed<List<ChecklistModel>>? _$checklistPeriodSortComputed;
 
   @override
@@ -315,6 +322,7 @@ dateReferenceFinish: ${dateReferenceFinish},
 filter: ${filter},
 limit: ${limit},
 page: ${page},
+lengthSortings: ${lengthSortings},
 checklistPeriodSort: ${checklistPeriodSort},
 servicesPeriodSort: ${servicesPeriodSort}
     ''';

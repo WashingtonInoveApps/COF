@@ -18,6 +18,7 @@ final config = ConfigModel(
   appID: 'VBJM7eAETNS2pYWpfKLY',
   endpoint: 'https://us-central1-bsucos-function.cloudfunctions.net/app',
   test: false,
+  maxWidth: 1000,
 );
 
 void main() async {
@@ -37,7 +38,7 @@ void main() async {
     await Firebase.initializeApp();
   }
 
-  final controller = AppController(maxWidth: 1000, config: config);
+  final controller = AppController(config: config);
 
   GetIt.I.registerSingleton<AppController>(controller);
   await controller.initApplication();
@@ -129,6 +130,20 @@ class _AppWidgetState extends State<AppWidget> {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(5))),
           ),
+          menuTheme: MenuThemeData(
+              style: MenuStyle(
+            backgroundColor: WidgetStateProperty.all(Colors.white),
+            // minimumSize: WidgetStateProperty.all(
+            //   Size(config.maxWidth, 0),
+            // ),
+            // maximumSize:
+            //     WidgetStateProperty.all(Size(config.maxWidth, double.infinity)),
+          )),
+          menuButtonTheme: MenuButtonThemeData(
+              style: MenuItemButton.styleFrom(
+                  // maximumSize: Size(config.maxWidth, double.infinity),
+                  backgroundColor: Colors.white,
+                  side: BorderSide.none)),
           textButtonTheme: TextButtonThemeData(
             style: TextButton.styleFrom(
                 shape: RoundedRectangleBorder(

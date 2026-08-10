@@ -1,4 +1,10 @@
+import 'dart:developer';
+
 import 'package:bsu_control/app_controller.dart';
+import 'package:bsu_control/car/controller/car_register_controller.dart';
+import 'package:bsu_control/car/view/pages/car_details_page.dart';
+import 'package:bsu_control/car/view/pages/car_function_page.dart';
+import 'package:bsu_control/car/view/pages/car_infor_page.dart';
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/validation.dart';
 import 'package:bsu_control/enum/car_enum.dart';
@@ -13,6 +19,7 @@ import 'package:get_it/get_it.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 import '../../widgets/alert_message.dart';
+import '../../widgets/alert_mult_message.dart';
 import '../../widgets/backgraund_page.dart';
 import '../../widgets/car_changes_widget.dart';
 import '../../widgets/textfield_widget.dart';
@@ -33,6 +40,7 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
 
   late CarModel car;
   late CarController controller;
+  late CarRegisterController register;
 
   final _key = GlobalKey<FormState>();
   final carTypeController = TextEditingController();
@@ -56,6 +64,13 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
     controller = CarController(
       config: config,
       user: app.user,
+    );
+
+    register = CarRegisterController(
+      init: widget.car,
+      user: app.user,
+      obms: app.obms,
+      types: app.carsTypes,
     );
 
     controller.cleanSections(list: controller.sectionsItens);
@@ -302,430 +317,526 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
 
   @override
   Widget build(BuildContext context) {
+    final update = (widget.car != null);
+
+    final pages = [
+      CarRegisterInforPage(controller: register),
+      CarRegisterDetailsPage(controller: register),
+      CarRegisterFunctionPage(controller: register),
+    ];
+
     return Stack(
       children: [
-        Form(
-          key: _key,
-          child: BackgraundPage(
-            menu: (widget.car == null),
-            onBack:
-                (widget.car == null) ? null : () => Navigator.of(context).pop(),
-            top: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+        BackgraundPage(
+          menu: (widget.car == null),
+          onBack:
+              (widget.car == null) ? null : () => Navigator.of(context).pop(),
+          top: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Registro de veículo',
+                style: Constants.title.copyWith(fontSize: 18),
+              ),
+              const Divider(),
+              const SizedBox(
+                height: 10,
+              ),
+            ],
+          ),
+          contentBottom: Center(
+            child: Row(
+              spacing: 50,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  'Registro de veículo',
-                  style: Constants.title.copyWith(fontSize: 18),
-                ),
-                const Divider(),
-                const SizedBox(
-                  height: 10,
-                ),
-              ],
-            ),
-            childLeft: Column(
-              spacing: 10,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                      color: Constants.primary,
-                      borderRadius: BorderRadius.circular(5)),
-                  child: Text(
-                    "INFORMAÇÕES BÁSICAS",
-                    style: Constants.titleButton,
-                  ),
-                ),
-                Text(
-                  "ORGANIZAÇÃO",
-                  style: Constants.titleHint,
-                ),
-                Container(
-                  height: 50.0,
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(horizontal: 5),
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey),
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(5.0)),
-                  child: Observer(builder: (_) {
-                    return IgnorePointer(
-                      ignoring: !app.user.admin,
-                      child: DropdownButton<OBMModel>(
-                          isExpanded: true,
-                          value: controller.obm,
-                          underline: Container(),
-                          onChanged: controller.setOBM,
-                          items: app.obms
-                              .map((e) => DropdownMenuItem(
-                                    value: e,
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 5),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Text(
-                                            e.prefix,
-                                            style: Constants.title,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                          Text(
-                                            e.name,
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: Constants.subtitle
-                                                .copyWith(color: Colors.grey),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ))
-                              .toList()),
-                    );
-                  }),
-                ),
-                Observer(builder: (context) {
-                  return Visibility(
-                      visible: (controller.cia != null),
-                      child: Column(
-                        spacing: 10,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "COMPANHIA",
-                            style: Constants.titleHint,
-                          ),
-                          Container(
-                            height: 50.0,
-                            width: double.infinity,
-                            padding: const EdgeInsets.symmetric(horizontal: 5),
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                                border: Border.all(color: Colors.grey),
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(5.0)),
-                            child: DropdownButton<String?>(
-                                isExpanded: true,
-                                value: controller.cia,
-                                underline: Container(),
-                                onChanged: controller.setCia,
-                                items: controller.obm.cias
-                                    .map((e) => DropdownMenuItem(
-                                          value: e,
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 5),
-                                            child: Text(e.toUpperCase(),
-                                                style: Constants.title),
-                                          ),
-                                        ))
-                                    .toList()),
-                          ),
-                        ],
-                      ));
-                }),
-                Text(
-                  "PREFIXO",
-                  style: Constants.titleHint,
-                ),
-                FieldText(
-                  initValue: car.prefix,
-                  hint: "EX.: RESGATE 32",
-                  validation: Validation.validatorPreenchimento,
-                  onSaved: (value) => car.prefix = value ?? car.prefix,
-                  upper: true,
-                ),
-                Text(
-                  "MODELO",
-                  style: Constants.titleHint,
-                ),
-                FieldText(
-                  initValue: car.model,
-                  hint: "EX.: RENAULT MASTER 2.3 2010",
-                  validation: Validation.validatorPreenchimento,
-                  onSaved: (value) => car.model = value ?? car.model,
-                  upper: true,
-                ),
-                Text(
-                  "PLACA",
-                  style: Constants.titleHint,
-                ),
-                FieldText(
-                  initValue: car.plate,
-                  hint: "EX.: XXX2X45",
-                  validation: Validation.validatorPreenchimento,
-                  onSaved: (value) => car.plate = value ?? car.plate,
-                  upper: true,
-                ),
-                Text(
-                  "KM INICIAL",
-                  style: Constants.titleHint,
-                ),
-                FieldText(
-                  initValue: car.km.toString(),
-                  hint: "EX.: 1234567",
-                  inputType: TextInputType.number,
-                  validation: Validation.validatorNumber,
-                  onSaved: (value) => car.km = int.parse(value!),
-                ),
-                Text(
-                  "MODELO DO PNEU",
-                  style: Constants.titleHint,
-                ),
-                FieldText(
-                  initValue: car.modelPneu,
-                  hint: "EX.: 202/75 15",
-                  validation: Validation.validatorPreenchimento,
-                  onSaved: (value) => car.modelPneu = value ?? car.modelPneu,
-                  upper: true,
-                  mask: [maskReference],
-                ),
-                Text(
-                  "NÚMERO DO CARTÃO",
-                  style: Constants.titleHint,
-                ),
-                FieldText(
-                  initValue: car.ticket,
-                  hint: "EX.: 0000 0000 0000 0000",
-                  inputType: TextInputType.number,
-                  validation: Validation.validatorPreenchimento,
-                  onSaved: (value) => car.ticket = value ?? car.ticket,
-                  mask: [maskCard],
-                ),
-                Text(
-                  "FUNÇÃO",
-                  style: Constants.titleHint,
-                ),
-                Container(
-                  height: 45.0,
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(horizontal: 5),
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey),
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(5.0)),
-                  child: Observer(builder: (_) {
-                    return DropdownButton<String?>(
-                        isExpanded: true,
-                        value: controller.function,
-                        underline: Container(),
-                        onChanged: (value) {
-                          controller.setFunctionCar(value);
-
-                          FocusScope.of(context).unfocus();
-                        },
-                        items: Constants.carsFunctions
-                            .map((e) => DropdownMenuItem(
-                                  value: e,
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 5),
-                                    child: Text(e.toUpperCase(),
-                                        style: Constants.title),
-                                  ),
-                                ))
-                            .toList());
-                  }),
-                ),
-                Text(
-                  "TIPO DE VEÍCULO",
-                  style: Constants.titleHint,
-                ),
-                Container(
-                  height: 45.0,
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(horizontal: 5),
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey),
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(5.0)),
-                  child: Observer(builder: (_) {
-                    return DropdownButton<String?>(
-                        isExpanded: true,
-                        value: controller.type,
-                        underline: Container(),
-                        onChanged: (value) {
-                          controller.setTypeCar(value);
-                          carTypeController.text = '';
-
-                          FocusScope.of(context).unfocus();
-                        },
-                        items: app.carsTypes
-                            .map((e) => DropdownMenuItem(
-                                  value: e,
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 5),
-                                    child: Text(e.toUpperCase(),
-                                        style: Constants.title),
-                                  ),
-                                ))
-                            .toList());
-                  }),
-                ),
                 Observer(builder: (_) {
-                  return controller.fieldCarTypeVisible
-                      ? FieldText(
-                          controller: carTypeController,
-                          hint: "TIPO DE VEÍCULO",
-                          validation: Validation.validatorPreenchimento,
-                        )
-                      : Container();
+                  return (update && controller.step == 0)
+                      ? ElevatedButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.grey),
+                          child: Text(
+                            'Cancelar',
+                            style: Constants.titleButton,
+                          ))
+                      : ElevatedButton(
+                          onPressed: (controller.step > 0)
+                              ? () {
+                                  controller.processStep(false);
+                                }
+                              : null,
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.grey),
+                          child: Text(
+                            'Voltar',
+                            style: Constants.titleButton,
+                          ));
                 }),
-              ],
-            ),
-            childRight: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                      color: Constants.primary,
-                      borderRadius: BorderRadius.circular(5)),
-                  child: Text(
-                    "ITENS OU ACESSÓRIOS",
-                    style: Constants.titleButton,
-                  ),
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                Observer(builder: (context) {
-                  return listSections(
-                      context: context, list: controller.sectionsItens);
-                }),
-                const SizedBox(
-                  height: 10,
-                ),
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                      color: Constants.primary,
-                      borderRadius: BorderRadius.circular(5)),
-                  child: Text(
-                    "MATERIAIS PERMANENTES",
-                    style: Constants.titleButton,
-                  ),
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                Observer(builder: (context) {
-                  return listSections(
-                      context: context, list: controller.sectionsMaterials);
-                }),
-                const SizedBox(
-                  height: 10,
-                ),
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                      color: Constants.primary,
-                      borderRadius: BorderRadius.circular(5)),
-                  child: Text(
-                    "MATERIAIS DE CONSUMO",
-                    style: Constants.titleButton,
-                  ),
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                Observer(builder: (context) {
-                  return listSections(
-                      context: context,
-                      list: controller.sectionsMaterialsConsumable);
-                }),
-                const SizedBox(
-                  height: 20,
-                ),
-                Center(
-                  child: Observer(builder: (_) {
-                    final resultCar = car.copyWith(
-                        changes: controller.carChanges
-                            .toList()); //toList() para vê as mudanças
+                Observer(builder: (_) {
+                  return controller.btFinish
+                      ? ElevatedButton(
+                          onPressed: () {
+                            // controller.save(user: app.user).then((_) {
+                            //   if (update) {
+                            //     Navigator.of(context).pop();
+                            //   } else {
+                            //     app.setRouter(0);
+                            //     Navigator.of(context).pushReplacement(
+                            //         MaterialPageRoute(
+                            //             builder: (context) =>
+                            //                 const HomePage()));
+                            //   }
+                            // }).catchError((err) {
+                            //   showDialog(
+                            //       context: context,
+                            //       builder: (context) => AlertMessage(
+                            //             title: 'Atenção',
+                            //             message: err.toString(),
+                            //             onPressedOK: () =>
+                            //                 Navigator.of(context).pop(),
+                            //           ));
+                            // });
+                          },
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Constants.primary),
+                          child: Text(
+                            update ? 'Alterar' : 'Salvar',
+                            style: Constants.titleButton,
+                          ))
+                      : ElevatedButton(
+                          onPressed: () async {
+                            final messagesValidation =
+                                register.validationForm(controller.step);
 
-                    return CarChangesWidget(
-                      car: resultCar,
-                      remove: true,
-                      register: true,
-                      user: app.user,
-                      update: true,
-                      onChange: controller.onChangesCar,
-                      onChangeImages: (value) {
-                        images
-                          ..clear()
-                          ..addAll(value);
-                      },
-                    );
-                  }),
-                ),
-                const SizedBox(
-                  height: 15,
-                ),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: SizedBox(
-                    height: 45.0,
-                    width: 150.0,
-                    child: ElevatedButton(
-                        onPressed: () async {
-                          if (_key.currentState?.validate() ?? false) {
-                            _key.currentState!.save();
-
-                            controller
-                                .save(
-                                    car: car.copyWith(
-                                        type: controller.fieldCarTypeVisible
-                                            ? carTypeController.text
-                                            : controller.type),
-                                    images: images)
-                                .then((value) async {
+                            if (messagesValidation.isEmpty) {
+                              controller.processStep(true);
+                            } else {
                               await showDialog(
                                   context: context,
-                                  builder: (context) => AlertMessage(
-                                      title: "Atenção",
-                                      message:
-                                          "Cadastro realizado com sucesso.",
-                                      onPressedOK: () =>
-                                          Navigator.of(context).pop()));
-
-                              if (value) {
-                                Navigator.of(context).pop();
-                              }
-                            }).catchError((err) {
-                              showDialog(
-                                  context: context,
-                                  builder: (context) => AlertMessage(
-                                      title: "Atenção",
-                                      message: err.toString(),
-                                      onPressedOK: () =>
-                                          Navigator.of(context).pop()));
-                            });
-                          }
-                        },
-                        child: Text(
-                          (widget.car == null) ? "Salvar" : "Alterar",
-                          style: Constants.titleButton,
-                        )),
-                  ),
-                ),
-                const SizedBox(
-                  height: 50,
-                ),
+                                  builder: (context) => AlertMultMessage(
+                                      messages: messagesValidation));
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Constants.primary),
+                          child: Text(
+                            'Próximo',
+                            style: Constants.titleButton,
+                          ));
+                }),
               ],
             ),
           ),
+          childLeft: Observer(builder: (_) {
+            return AnimatedSwitcher(
+              duration: const Duration(milliseconds: 300),
+              child: pages[controller.step],
+            );
+          }),
+          // childLeft: Column(
+          //   spacing: 10,
+          //   crossAxisAlignment: CrossAxisAlignment.start,
+          //   children: [
+          //     Container(
+          //       width: double.infinity,
+          //       padding: const EdgeInsets.all(10),
+          //       decoration: BoxDecoration(
+          //           color: Constants.primary,
+          //           borderRadius: BorderRadius.circular(5)),
+          //       child: Text(
+          //         "INFORMAÇÕES BÁSICAS",
+          //         style: Constants.titleButton,
+          //       ),
+          //     ),
+          //     Text(
+          //       "ORGANIZAÇÃO",
+          //       style: Constants.titleHint,
+          //     ),
+          //     Container(
+          //       height: 50.0,
+          //       width: double.infinity,
+          //       padding: const EdgeInsets.symmetric(horizontal: 5),
+          //       alignment: Alignment.center,
+          //       decoration: BoxDecoration(
+          //           border: Border.all(color: Colors.grey),
+          //           color: Colors.white,
+          //           borderRadius: BorderRadius.circular(5.0)),
+          //       child: Observer(builder: (_) {
+          //         return IgnorePointer(
+          //           ignoring: !app.user.admin,
+          //           child: DropdownButton<OBMModel>(
+          //               isExpanded: true,
+          //               value: controller.obm,
+          //               underline: Container(),
+          //               onChanged: controller.setOBM,
+          //               items: app.obms
+          //                   .map((e) => DropdownMenuItem(
+          //                         value: e,
+          //                         child: Padding(
+          //                           padding: const EdgeInsets.symmetric(
+          //                               horizontal: 5),
+          //                           child: Column(
+          //                             crossAxisAlignment:
+          //                                 CrossAxisAlignment.start,
+          //                             mainAxisSize: MainAxisSize.min,
+          //                             children: [
+          //                               Text(
+          //                                 e.prefix,
+          //                                 style: Constants.title,
+          //                                 overflow: TextOverflow.ellipsis,
+          //                               ),
+          //                               Text(
+          //                                 e.name,
+          //                                 maxLines: 1,
+          //                                 overflow: TextOverflow.ellipsis,
+          //                                 style: Constants.subtitle
+          //                                     .copyWith(color: Colors.grey),
+          //                               ),
+          //                             ],
+          //                           ),
+          //                         ),
+          //                       ))
+          //                   .toList()),
+          //         );
+          //       }),
+          //     ),
+          //     Observer(builder: (context) {
+          //       return Visibility(
+          //           visible: (controller.cia != null),
+          //           child: Column(
+          //             spacing: 10,
+          //             crossAxisAlignment: CrossAxisAlignment.start,
+          //             children: [
+          //               Text(
+          //                 "COMPANHIA",
+          //                 style: Constants.titleHint,
+          //               ),
+          //               Container(
+          //                 height: 50.0,
+          //                 width: double.infinity,
+          //                 padding: const EdgeInsets.symmetric(horizontal: 5),
+          //                 alignment: Alignment.center,
+          //                 decoration: BoxDecoration(
+          //                     border: Border.all(color: Colors.grey),
+          //                     color: Colors.white,
+          //                     borderRadius: BorderRadius.circular(5.0)),
+          //                 child: DropdownButton<String?>(
+          //                     isExpanded: true,
+          //                     value: controller.cia,
+          //                     underline: Container(),
+          //                     onChanged: controller.setCia,
+          //                     items: controller.obm.cias
+          //                         .map((e) => DropdownMenuItem(
+          //                               value: e,
+          //                               child: Padding(
+          //                                 padding: const EdgeInsets.symmetric(
+          //                                     horizontal: 5),
+          //                                 child: Text(e.toUpperCase(),
+          //                                     style: Constants.title),
+          //                               ),
+          //                             ))
+          //                         .toList()),
+          //               ),
+          //             ],
+          //           ));
+          //     }),
+          //     Text(
+          //       "PREFIXO",
+          //       style: Constants.titleHint,
+          //     ),
+          //     FieldText(
+          //       initValue: car.prefix,
+          //       hint: "EX.: RESGATE 32",
+          //       validation: Validation.validatorPreenchimento,
+          //       onSaved: (value) => car.prefix = value ?? car.prefix,
+          //       upper: true,
+          //     ),
+          //     Text(
+          //       "MODELO",
+          //       style: Constants.titleHint,
+          //     ),
+          //     FieldText(
+          //       initValue: car.model,
+          //       hint: "EX.: RENAULT MASTER 2.3 2010",
+          //       validation: Validation.validatorPreenchimento,
+          //       onSaved: (value) => car.model = value ?? car.model,
+          //       upper: true,
+          //     ),
+          //     Text(
+          //       "PLACA",
+          //       style: Constants.titleHint,
+          //     ),
+          //     FieldText(
+          //       initValue: car.plate,
+          //       hint: "EX.: XXX2X45",
+          //       validation: Validation.validatorPreenchimento,
+          //       onSaved: (value) => car.plate = value ?? car.plate,
+          //       upper: true,
+          //     ),
+          //     Text(
+          //       "KM INICIAL",
+          //       style: Constants.titleHint,
+          //     ),
+          //     FieldText(
+          //       initValue: car.km.toString(),
+          //       hint: "EX.: 1234567",
+          //       inputType: TextInputType.number,
+          //       validation: Validation.validatorNumber,
+          //       onSaved: (value) => car.km = int.parse(value!),
+          //     ),
+          //     Text(
+          //       "MODELO DO PNEU",
+          //       style: Constants.titleHint,
+          //     ),
+          //     FieldText(
+          //       initValue: car.modelPneu,
+          //       hint: "EX.: 202/75 15",
+          //       validation: Validation.validatorPreenchimento,
+          //       onSaved: (value) => car.modelPneu = value ?? car.modelPneu,
+          //       upper: true,
+          //       mask: [maskReference],
+          //     ),
+          //     Text(
+          //       "NÚMERO DO CARTÃO",
+          //       style: Constants.titleHint,
+          //     ),
+          //     FieldText(
+          //       initValue: car.ticket,
+          //       hint: "EX.: 0000 0000 0000 0000",
+          //       inputType: TextInputType.number,
+          //       validation: Validation.validatorPreenchimento,
+          //       onSaved: (value) => car.ticket = value ?? car.ticket,
+          //       mask: [maskCard],
+          //     ),
+          //     Text(
+          //       "FUNÇÃO",
+          //       style: Constants.titleHint,
+          //     ),
+          //     Container(
+          //       height: 45.0,
+          //       width: double.infinity,
+          //       padding: const EdgeInsets.symmetric(horizontal: 5),
+          //       alignment: Alignment.center,
+          //       decoration: BoxDecoration(
+          //           border: Border.all(color: Colors.grey),
+          //           color: Colors.white,
+          //           borderRadius: BorderRadius.circular(5.0)),
+          //       child: Observer(builder: (_) {
+          //         return DropdownButton<String?>(
+          //             isExpanded: true,
+          //             value: controller.function,
+          //             underline: Container(),
+          //             onChanged: (value) {
+          //               controller.setFunctionCar(value);
+
+          //               FocusScope.of(context).unfocus();
+          //             },
+          //             items: Constants.carsFunctions
+          //                 .map((e) => DropdownMenuItem(
+          //                       value: e,
+          //                       child: Padding(
+          //                         padding: const EdgeInsets.symmetric(
+          //                             horizontal: 5),
+          //                         child: Text(e.toUpperCase(),
+          //                             style: Constants.title),
+          //                       ),
+          //                     ))
+          //                 .toList());
+          //       }),
+          //     ),
+          //     Text(
+          //       "TIPO DE VEÍCULO",
+          //       style: Constants.titleHint,
+          //     ),
+          //     Container(
+          //       height: 45.0,
+          //       width: double.infinity,
+          //       padding: const EdgeInsets.symmetric(horizontal: 5),
+          //       alignment: Alignment.center,
+          //       decoration: BoxDecoration(
+          //           border: Border.all(color: Colors.grey),
+          //           color: Colors.white,
+          //           borderRadius: BorderRadius.circular(5.0)),
+          //       child: Observer(builder: (_) {
+          //         return DropdownButton<String?>(
+          //             isExpanded: true,
+          //             value: controller.type,
+          //             underline: Container(),
+          //             onChanged: (value) {
+          //               controller.setTypeCar(value);
+          //               carTypeController.text = '';
+
+          //               FocusScope.of(context).unfocus();
+          //             },
+          //             items: app.carsTypes
+          //                 .map((e) => DropdownMenuItem(
+          //                       value: e,
+          //                       child: Padding(
+          //                         padding: const EdgeInsets.symmetric(
+          //                             horizontal: 5),
+          //                         child: Text(e.toUpperCase(),
+          //                             style: Constants.title),
+          //                       ),
+          //                     ))
+          //                 .toList());
+          //       }),
+          //     ),
+          //     Observer(builder: (_) {
+          //       return controller.fieldCarTypeVisible
+          //           ? FieldText(
+          //               controller: carTypeController,
+          //               hint: "TIPO DE VEÍCULO",
+          //               validation: Validation.validatorPreenchimento,
+          //             )
+          //           : Container();
+          //     }),
+          //   ],
+          // ),
+          // childRight: Column(
+          //   crossAxisAlignment: CrossAxisAlignment.start,
+          //   children: [
+          //     Container(
+          //       width: double.infinity,
+          //       padding: const EdgeInsets.all(10),
+          //       decoration: BoxDecoration(
+          //           color: Constants.primary,
+          //           borderRadius: BorderRadius.circular(5)),
+          //       child: Text(
+          //         "ITENS OU ACESSÓRIOS",
+          //         style: Constants.titleButton,
+          //       ),
+          //     ),
+          //     const SizedBox(
+          //       height: 10,
+          //     ),
+          //     Observer(builder: (context) {
+          //       return listSections(
+          //           context: context, list: controller.sectionsItens);
+          //     }),
+          //     const SizedBox(
+          //       height: 10,
+          //     ),
+          //     Container(
+          //       width: double.infinity,
+          //       padding: const EdgeInsets.all(10),
+          //       decoration: BoxDecoration(
+          //           color: Constants.primary,
+          //           borderRadius: BorderRadius.circular(5)),
+          //       child: Text(
+          //         "MATERIAIS PERMANENTES",
+          //         style: Constants.titleButton,
+          //       ),
+          //     ),
+          //     const SizedBox(
+          //       height: 10,
+          //     ),
+          //     Observer(builder: (context) {
+          //       return listSections(
+          //           context: context, list: controller.sectionsMaterials);
+          //     }),
+          //     const SizedBox(
+          //       height: 10,
+          //     ),
+          //     Container(
+          //       width: double.infinity,
+          //       padding: const EdgeInsets.all(10),
+          //       decoration: BoxDecoration(
+          //           color: Constants.primary,
+          //           borderRadius: BorderRadius.circular(5)),
+          //       child: Text(
+          //         "MATERIAIS DE CONSUMO",
+          //         style: Constants.titleButton,
+          //       ),
+          //     ),
+          //     const SizedBox(
+          //       height: 10,
+          //     ),
+          //     Observer(builder: (context) {
+          //       return listSections(
+          //           context: context,
+          //           list: controller.sectionsMaterialsConsumable);
+          //     }),
+          //     const SizedBox(
+          //       height: 20,
+          //     ),
+          //     Center(
+          //       child: Observer(builder: (_) {
+          //         final resultCar = car.copyWith(
+          //             changes: controller.carChanges
+          //                 .toList()); //toList() para vê as mudanças
+
+          //         return CarChangesWidget(
+          //           car: resultCar,
+          //           remove: true,
+          //           register: true,
+          //           user: app.user,
+          //           update: true,
+          //           onChange: controller.onChangesCar,
+          //           onChangeImages: (value) {
+          //             images
+          //               ..clear()
+          //               ..addAll(value);
+          //           },
+          //         );
+          //       }),
+          //     ),
+          //     const SizedBox(
+          //       height: 15,
+          //     ),
+          //     Align(
+          //       alignment: Alignment.centerRight,
+          //       child: SizedBox(
+          //         height: 45.0,
+          //         width: 150.0,
+          //         child: ElevatedButton(
+          //             onPressed: () async {
+          //               if (_key.currentState?.validate() ?? false) {
+          //                 _key.currentState!.save();
+
+          //                 controller
+          //                     .save(
+          //                         car: car.copyWith(
+          //                             type: controller.fieldCarTypeVisible
+          //                                 ? carTypeController.text
+          //                                 : controller.type),
+          //                         images: images)
+          //                     .then((value) async {
+          //                   await showDialog(
+          //                       context: context,
+          //                       builder: (context) => AlertMessage(
+          //                           title: "Atenção",
+          //                           message:
+          //                               "Cadastro realizado com sucesso.",
+          //                           onPressedOK: () =>
+          //                               Navigator.of(context).pop()));
+
+          //                   if (value) {
+          //                     Navigator.of(context).pop();
+          //                   }
+          //                 }).catchError((err) {
+          //                   showDialog(
+          //                       context: context,
+          //                       builder: (context) => AlertMessage(
+          //                           title: "Atenção",
+          //                           message: err.toString(),
+          //                           onPressedOK: () =>
+          //                               Navigator.of(context).pop()));
+          //                 });
+          //               }
+          //             },
+          //             child: Text(
+          //               (widget.car == null) ? "Salvar" : "Alterar",
+          //               style: Constants.titleButton,
+          //             )),
+          //       ),
+          //     ),
+          // const SizedBox(
+          //   height: 50,
+          // ),
+          // ],
+          // ),
         ),
         Observer(builder: (_) {
           return IgnorePointer(

@@ -21,11 +21,11 @@ class AppController = _AppControllerBase with _$AppController;
 
 abstract class _AppControllerBase with Store {
   final ConfigModel config;
-  final double maxWidth;
+  // final double maxWidth;
 
   late IAppRepository repository;
 
-  _AppControllerBase({required this.config, required this.maxWidth}) {
+  _AppControllerBase({required this.config}) {
     repository = AppRepository(
       appID: config.appID,
       endpoint: config.endpoint,
@@ -37,6 +37,8 @@ abstract class _AppControllerBase with Store {
   }
 
   AppModel appModel = AppModel(carsTypes: []);
+
+  double get maxWidth => config.maxWidth;
 
   @observable
   int version = 1;
@@ -248,6 +250,8 @@ abstract class _AppControllerBase with Store {
   @action
   double processWidth(
       {required double constrainedMaxWidth, required bool childRight}) {
+    final maxWidth = config.maxWidth;
+
     bool modeMOBILE = (constrainedMaxWidth > maxWidth)
         ? (maxWidth <= 500)
         : (constrainedMaxWidth <= 500);

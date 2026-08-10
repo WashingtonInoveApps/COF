@@ -283,7 +283,7 @@ class _CarsPageState extends State<CarsPage> {
                       sortable: true,
                       builder: (car) => Text(
                         car.prefix,
-                        style: Constants.subtitle,
+                        style: Constants.title,
                       ),
                     ),
                     AppColumn(
@@ -302,7 +302,7 @@ class _CarsPageState extends State<CarsPage> {
                             app.obms.firstWhere((e) => e.id == car.obmID);
                         return Text(
                           obm.prefix,
-                          style: Constants.subtitle,
+                          style: Constants.title,
                         );
                       },
                     ),
@@ -314,7 +314,7 @@ class _CarsPageState extends State<CarsPage> {
                       builder: (car) {
                         return Text(
                           car.cia.toUpperCase(),
-                          style: Constants.subtitle,
+                          style: Constants.title,
                         );
                       },
                     ),
@@ -326,7 +326,7 @@ class _CarsPageState extends State<CarsPage> {
                       builder: (car) {
                         return Text(
                           car.plate,
-                          style: Constants.subtitle,
+                          style: Constants.title,
                         );
                       },
                     ),
@@ -337,7 +337,7 @@ class _CarsPageState extends State<CarsPage> {
                       builder: (car) {
                         return Text(
                           car.type,
-                          style: Constants.subtitle,
+                          style: Constants.title,
                         );
                       },
                     ),
@@ -348,7 +348,7 @@ class _CarsPageState extends State<CarsPage> {
                       builder: (car) {
                         return Text(
                           car.function,
-                          style: Constants.subtitle,
+                          style: Constants.title,
                         );
                       },
                     ),
@@ -359,7 +359,7 @@ class _CarsPageState extends State<CarsPage> {
                       builder: (car) {
                         return Text(
                           car.km.toString(),
-                          style: Constants.subtitle,
+                          style: Constants.title,
                         );
                       },
                     ),
@@ -383,7 +383,7 @@ class _CarsPageState extends State<CarsPage> {
                                 Expanded(
                                   child: Text(
                                     car.state.label,
-                                    style: Constants.subtitle
+                                    style: Constants.title
                                         .copyWith(color: Colors.white),
                                   ),
                                 ),
@@ -405,7 +405,7 @@ class _CarsPageState extends State<CarsPage> {
                               child: Center(
                                 child: Text(
                                   car.changes.length.toString().padLeft(2, '0'),
-                                  style: Constants.subtitle,
+                                  style: Constants.title,
                                 ),
                               ),
                             ),

@@ -52,6 +52,57 @@ abstract class _HomeControllerBase with Store {
   @observable
   int page = 1;
 
+  @computed
+  int get lengthSortings {
+    if (filter.isEmpty) return servicesPeriod.length;
+
+    return servicesPeriodSort.length;
+  }
+
+  @computed
+  List<ChecklistModel> get checklistPeriodSort {
+    if (filter.isNotEmpty) {
+      final filtered = checklistsPeriod
+          .where((e) =>
+              ((e.prefix.toLowerCase().contains(filter.toLowerCase())) ||
+                  e.obm.toLowerCase().contains(filter.toLowerCase()) ||
+                  (e.cia.toLowerCase().contains(filter.toLowerCase())) ||
+                  (e.team.toLowerCase().contains(filter.toLowerCase())) ||
+                  (e.state.label.toLowerCase().contains(filter.toLowerCase()))))
+          .toList();
+
+      final list = Core.paginate(list: filtered, page: page, limit: limit);
+      return List<ChecklistModel>.from(list);
+    } else {
+      final list =
+          Core.paginate(list: checklistsPeriod, page: page, limit: limit);
+      return List<ChecklistModel>.from(list);
+    }
+  }
+
+  @computed
+  List<ServiceModel> get servicesPeriodSort {
+    if (filter.isNotEmpty) {
+      final lowFilter = filter.toLowerCase();
+
+      final filtered = servicesPeriod
+          .where((e) =>
+              (e.obm.prefix.toLowerCase() == lowFilter) ||
+              (e.team?.toLowerCase() == lowFilter) ||
+              (e.components
+                  .map((e) => e.user.fullname.toLowerCase())
+                  .contains(lowFilter)))
+          .toList();
+
+      final list = Core.paginate(list: filtered, page: page, limit: limit);
+      return List<ServiceModel>.from(list);
+    } else {
+      final list =
+          Core.paginate(list: servicesPeriod, page: page, limit: limit);
+      return List<ServiceModel>.from(list);
+    }
+  }
+
   @action
   Stream<List<ChecklistModel>> listenChecklistPeriod(
       {required DateTime dateStart, required DateTime dateFinish}) {
@@ -102,50 +153,6 @@ abstract class _HomeControllerBase with Store {
   }) {
     dateReferenceStart = dateStart;
     dateReferenceFinish = dateFinish;
-  }
-
-  @computed
-  List<ChecklistModel> get checklistPeriodSort {
-    if (filter.isNotEmpty) {
-      final filtered = checklistsPeriod
-          .where((e) =>
-              ((e.prefix.toLowerCase().contains(filter.toLowerCase())) ||
-                  e.obm.toLowerCase().contains(filter.toLowerCase()) ||
-                  (e.cia.toLowerCase().contains(filter.toLowerCase())) ||
-                  (e.team.toLowerCase().contains(filter.toLowerCase())) ||
-                  (e.state.label.toLowerCase().contains(filter.toLowerCase()))))
-          .toList();
-
-      final list = Core.paginate(list: filtered, page: page, limit: limit);
-      return List<ChecklistModel>.from(list);
-    } else {
-      final list =
-          Core.paginate(list: checklistsPeriod, page: page, limit: limit);
-      return List<ChecklistModel>.from(list);
-    }
-  }
-
-  @computed
-  List<ServiceModel> get servicesPeriodSort {
-    if (filter.isNotEmpty) {
-      final lowFilter = filter.toLowerCase();
-
-      final filtered = servicesPeriod
-          .where((e) =>
-              (e.obm.prefix.toLowerCase() == lowFilter) ||
-              (e.team?.toLowerCase() == lowFilter) ||
-              (e.components
-                  .map((e) => e.user.fullname.toLowerCase())
-                  .contains(lowFilter)))
-          .toList();
-
-      final list = Core.paginate(list: filtered, page: page, limit: limit);
-      return List<ServiceModel>.from(list);
-    } else {
-      final list =
-          Core.paginate(list: servicesPeriod, page: page, limit: limit);
-      return List<ServiceModel>.from(list);
-    }
   }
 
   @action

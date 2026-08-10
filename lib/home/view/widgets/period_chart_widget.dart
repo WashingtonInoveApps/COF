@@ -1,50 +1,56 @@
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/core.dart';
-import 'package:bsu_control/model/check_list_model.dart';
+import 'package:bsu_control/model/service_model.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
-class ChartPeriodWidget extends StatelessWidget {
+class ChartChangesPeriodWidget extends StatelessWidget {
   final DateTime dateStart;
   final DateTime dateFinish;
-  final List<ChecklistModel> checklists;
+  final List<ServiceModel> services;
 
-  const ChartPeriodWidget(
+  const ChartChangesPeriodWidget(
       {Key? key,
-      required this.checklists,
+      required this.services,
       required this.dateStart,
       required this.dateFinish})
       : super(key: key);
 
-  List<ChecklistChartData> buildChartData(List<ChecklistModel> list) {
-    Map<String, int> checklistsPorDia = {};
-    Map<String, int> alteracoesPorDia = {};
+  List<ServiceChangesData> buildChartData(List<ServiceModel> list) {
+    Map<String, int> servicesByDay = {};
+    Map<String, int> changesByDayCars = {};
+    Map<String, int> changesByDayMaterials = {};
 
     for (var c in list) {
       final date = (c.date);
       final key =
           "${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}";
 
-      checklistsPorDia[key] = (checklistsPorDia[key] ?? 0) + 1;
-      alteracoesPorDia[key] = (alteracoesPorDia[key] ?? 0) + c.changes.length;
+      servicesByDay[key] = (servicesByDay[key] ?? 0) + 1;
+      changesByDayCars[key] = (changesByDayCars[key] ?? 0) + c.changesCar;
+      changesByDayMaterials[key] =
+          (changesByDayMaterials[key] ?? 0) + c.changesMaterials;
     }
 
-    return checklistsPorDia.keys.map((day) {
-      final checks = checklistsPorDia[day] ?? 0;
-      final changes = alteracoesPorDia[day] ?? 0;
+    return servicesByDay.keys.map((day) {
+      final services = servicesByDay[day] ?? 0;
+      final changesCar = changesByDayCars[day] ?? 0;
+      final changesMaterials = changesByDayMaterials[day] ?? 0;
 
-      return ChecklistChartData(
+      return ServiceChangesData(
         day: day,
-        checklists: checks,
-        changes: changes,
-        avg: checks == 0 ? 0 : changes / checks,
+        services: services,
+        changesCar: changesCar,
+        changesMaterials: changesMaterials,
+        avgCar: services == 0 ? 0 : changesCar / services,
+        avgMaterials: services == 0 ? 0 : changesMaterials / services,
       );
     }).toList();
   }
 
   @override
   Widget build(BuildContext context) {
-    final list = List<ChecklistModel>.from(checklists);
+    final list = List<ServiceModel>.from(services);
     list.sort((a, b) => a.date.compareTo(b.date));
 
     final data = buildChartData(list);
@@ -55,7 +61,7 @@ class ChartPeriodWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'CHECKLIST X ALTERAÇÕES X MÉDIA',
+              'ALTERAÇÕES',
               style: Constants.subtitleHint,
             ),
             Text(
@@ -79,45 +85,46 @@ class ChartPeriodWidget extends StatelessWidget {
                     decimalPlaces: 0,
                     title: AxisTitle(
                         text: 'Quantidade', textStyle: Constants.subtitle)),
-                axes: <ChartAxis>[
-                  NumericAxis(
-                    name: 'avgAxis',
-                    title: AxisTitle(
-                      text: 'Média de alterações',
-                      textStyle: Constants.subtitle,
-                    ),
-                    opposedPosition: true,
-                    interval: 1,
-                    decimalPlaces: 0,
-                  ),
-                ],
                 series: <CartesianSeries>[
-                  /// CHECKLISTS
-                  ColumnSeries<ChecklistChartData, String>(
-                    name: 'Checklists',
+                  // /// ALTERAÇÕES
+                  // ColumnSeries<ServiceChangesData, String>(
+                  //   name: 'Viatura',
+                  //   dataSource: data,
+                  //   xValueMapper: (d, _) => d.day,
+                  //   yValueMapper: (d, _) => d.changesCar,
+                  //   width: 0.1,
+                  // ),
+
+                  // /// ALTERAÇÕES
+                  // ColumnSeries<ServiceChangesData, String>(
+                  //   name: 'Materiais',
+                  //   dataSource: data,
+                  //   xValueMapper: (d, _) => d.day,
+                  //   yValueMapper: (d, _) => d.changesMaterials,
+                  //   width: 0.1,
+                  // ),
+
+                  LineSeries<ServiceChangesData, String>(
+                    name: 'Viaturas',
                     dataSource: data,
                     xValueMapper: (d, _) => d.day,
-                    yValueMapper: (d, _) => d.checklists,
-                    width: 0.1,
+                    yValueMapper: (d, _) => d.avgCar,
+                    markerSettings: const MarkerSettings(
+                      isVisible: true,
+                    ),
+                    color: Colors.red,
+                    width: 3,
                   ),
 
-                  /// ALTERAÇÕES
-                  ColumnSeries<ChecklistChartData, String>(
-                    name: 'Alterações',
+                  LineSeries<ServiceChangesData, String>(
+                    name: 'Materiais',
                     dataSource: data,
+                    color: Colors.orange,
                     xValueMapper: (d, _) => d.day,
-                    yValueMapper: (d, _) => d.changes,
-                    width: 0.1,
-                  ),
-
-                  /// MÉDIA
-                  LineSeries<ChecklistChartData, String>(
-                    name: 'Média por checklist',
-                    dataSource: data,
-                    xValueMapper: (d, _) => d.day,
-                    yValueMapper: (d, _) => d.avg,
-                    yAxisName: 'avgAxis',
-                    markerSettings: const MarkerSettings(isVisible: true),
+                    yValueMapper: (d, _) => d.avgMaterials,
+                    markerSettings: const MarkerSettings(
+                      isVisible: true,
+                    ),
                     width: 3,
                   ),
                 ],
@@ -130,16 +137,20 @@ class ChartPeriodWidget extends StatelessWidget {
   }
 }
 
-class ChecklistChartData {
+class ServiceChangesData {
   final String day;
-  final int checklists;
-  final int changes;
-  final double avg;
+  final int services;
+  final int changesCar;
+  final int changesMaterials;
+  final double avgCar;
+  final double avgMaterials;
 
-  ChecklistChartData({
+  ServiceChangesData({
     required this.day,
-    required this.checklists,
-    required this.changes,
-    required this.avg,
+    required this.services,
+    required this.changesCar,
+    required this.changesMaterials,
+    required this.avgCar,
+    required this.avgMaterials,
   });
 }

@@ -36,6 +36,9 @@ abstract class _CarControllerBase with Store {
   bool loading = false;
 
   @observable
+  int step = 0;
+
+  @observable
   String type = '';
 
   @observable
@@ -120,6 +123,9 @@ abstract class _CarControllerBase with Store {
   @computed
   int get end => carsSorts.isEmpty ? 0 : start + carsSorts.length - 1;
 
+  @computed
+  bool get btFinish => step > 2;
+
   Stream<List<CarStatusModel>> listenStatus({required String carId}) {
     return repository.listenStatusCar(carId: carId);
   }
@@ -135,6 +141,15 @@ abstract class _CarControllerBase with Store {
   Future<List<ChecklistModel>> getCheckListByMonth(
       {required DateTime date}) async {
     return await repository.getChecklistByMonth(reference: date);
+  }
+
+  @action
+  void processStep(bool value) {
+    if (value) {
+      step++;
+    } else {
+      if (step > 0) step--;
+    }
   }
 
   @action

@@ -61,117 +61,177 @@ class _BackgraundPageState extends State<BackgraundPage> {
     }
   }
 
-  Widget menu({required BuildContext context, required UserModel user}) {
-    final usersEnable =
-        (user.admin || user.managerFleet || user.battalion || user.company);
+  ButtonStyle style({required int router, required List<int> selects}) {
+    return ElevatedButton.styleFrom(
+        backgroundColor: (selects.contains(router))
+            ? Constants.primary
+            : Colors.grey.shade300);
+  }
 
-    final vtrsEnable = (user.admin ||
-        user.managerFleet ||
-        user.battalion ||
-        user.company ||
-        user.managerOperational);
+  @override
+  Widget build(BuildContext context) {
+    Widget menu({required BuildContext context, required UserModel user}) {
+      final usersEnable =
+          (user.admin || user.managerFleet || user.battalion || user.company);
 
-    // final expires = Core.verifyExpiresChecklist();
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        Text(
-          'Controle Operacional de Frota',
-          style: Constants.title
-              .copyWith(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-        Text(
-          obmUser?.name ?? '',
-          style: Constants.title,
-        ),
-        const SizedBox(
-          height: 2,
-        ),
-        PopupMenuButton(
-            onSelected: (value) {
-              switch (value) {
-                case 0:
-                  Navigator.of(context)
-                      .pushAndRemoveUntil(
-                          MaterialPageRoute(
-                              builder: (conext) => const LoginPage(
-                                    exit: true,
-                                  )),
-                          (_) => false)
-                      .then((_) {
-                    controller.setRouter(0);
-                    controller.setDateStartConfig(
-                        DateTime.now().subtract(const Duration(days: 1)));
-                    controller.setDateFinishConfig(DateTime.now());
-                  });
-                  break;
-                default:
-                  break;
-              }
-            },
-            child: Row(
-              spacing: 5,
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Text(
-                  controller.user.fullname,
-                  style: Constants.titleHint,
-                ),
-                const Icon(
-                  Icons.account_circle_rounded,
-                  size: 20,
-                  color: Colors.grey,
-                ),
-              ],
-            ),
-            itemBuilder: (context) {
-              return [
-                PopupMenuItem(
-                    value: 0,
-                    child: Text(
-                      'Sair',
-                      style: Constants.title,
-                    ))
-              ];
-            }),
-        const SizedBox(
-          height: 10,
-        ),
-        Visibility(
-          visible: widget.menu,
-          child: Observer(builder: (_) {
-            return Wrap(
-              spacing: 5,
-              runSpacing: 5,
-              direction: Axis.horizontal,
-              children: [
-                SizedBox(
-                  height: 35,
-                  width: 120,
-                  child: ElevatedButton(
-                      onPressed: () {
-                        if (controller.router != 0) {
-                          controller.setRouter(0);
-                          Navigator.of(context).pushReplacement(
-                              MaterialPageRoute(
-                                  builder: (context) => const HomePage()));
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: (controller.router == 0)
-                              ? Constants.primary
-                              : Colors.grey.shade300),
+      final vtrsEnable = (user.admin ||
+          user.managerFleet ||
+          user.battalion ||
+          user.company ||
+          user.managerOperational);
+
+      // final expires = Core.verifyExpiresChecklist();
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Text(
+            'Controle Operacional de Frota',
+            style: Constants.title
+                .copyWith(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          Text(
+            obmUser?.name ?? '',
+            style: Constants.title,
+          ),
+          const SizedBox(
+            height: 2,
+          ),
+          PopupMenuButton(
+              onSelected: (value) {
+                switch (value) {
+                  case 0:
+                    Navigator.of(context)
+                        .pushAndRemoveUntil(
+                            MaterialPageRoute(
+                                builder: (conext) => const LoginPage(
+                                      exit: true,
+                                    )),
+                            (_) => false)
+                        .then((_) {
+                      controller.setRouter(0);
+                      controller.setDateStartConfig(
+                          DateTime.now().subtract(const Duration(days: 1)));
+                      controller.setDateFinishConfig(DateTime.now());
+                    });
+                    break;
+                  default:
+                    break;
+                }
+              },
+              child: Row(
+                spacing: 5,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Text(
+                    controller.user.fullname,
+                    style: Constants.titleHint,
+                  ),
+                  const Icon(
+                    Icons.account_circle_rounded,
+                    size: 20,
+                    color: Colors.grey,
+                  ),
+                ],
+              ),
+              itemBuilder: (context) {
+                return [
+                  PopupMenuItem(
+                      value: 0,
                       child: Text(
-                        'Inicío',
-                        style: Constants.titleButton,
-                      )),
-                ),
-                SizedBox(
-                  width: 120,
-                  child: PopupMenuButton(
-                      onSelected: (value) {
-                        switch (value) {
-                          case 1:
+                        'Sair',
+                        style: Constants.title,
+                      ))
+                ];
+              }),
+          const SizedBox(
+            height: 10,
+          ),
+          Visibility(
+            visible: widget.menu,
+            child: Observer(builder: (_) {
+              return Wrap(
+                spacing: 5,
+                runSpacing: 5,
+                direction: Axis.horizontal,
+                children: [
+                  ElevatedButton(
+                    style: style(router: controller.router, selects: [0]),
+                    onPressed: () {
+                      if (controller.router != 0) {
+                        controller.setRouter(0);
+                        Navigator.of(context).pushReplacement(MaterialPageRoute(
+                            builder: (context) => const HomePage()));
+                      }
+                    },
+                    child: Text(
+                      'Inicío',
+                      style: Constants.titleButton,
+                    ),
+                  ),
+                  // MenuAnchor(
+                  //     builder: (context, controller, child) {
+                  //       return ElevatedButton(
+                  //         style:
+                  //             style(router: this.controller.router, select: 2),
+                  //         onPressed: () {
+                  //           controller.isOpen
+                  //               ? controller.close()
+                  //               : controller.open();
+                  //         },
+                  //         child: Text(
+                  //           'Serviços',
+                  //           style: Constants.titleButton,
+                  //         ),
+                  //       );
+                  //     },
+                  //     menuChildren: [
+                  //       MenuItemButton(
+                  //         child: Text(
+                  //           'Registros',
+                  //           style: Constants.title,
+                  //         ),
+                  //         onPressed: () {},
+                  //       ),
+                  //       MenuItemButton(
+                  //         child: Text(
+                  //           'Meu registros',
+                  //           style: Constants.title,
+                  //         ),
+                  //         onPressed: () {},
+                  //       ),
+                  //       MenuItemButton(
+                  //         child: Text(
+                  //           'Novo registro',
+                  //           style: Constants.title,
+                  //         ),
+                  //         onPressed: () {},
+                  //       ),
+                  //     ]),
+                  MenuAnchor(
+                      builder: (context, controller, child) {
+                        return ElevatedButton(
+                          style: style(
+                            router: this.controller.router,
+                            selects: [1, 2, 3, 4],
+                          ),
+                          onPressed: () {
+                            controller.isOpen
+                                ? controller.close()
+                                : controller.open();
+                          },
+                          child: Text(
+                            'Checklist',
+                            style: Constants.titleButton,
+                          ),
+                        );
+                      },
+                      menuChildren: [
+                        MenuItemButton(
+                          child: Text(
+                            'Registros',
+                            style: Constants.title,
+                          ),
+                          onPressed: () {
                             if (controller.router != 1) {
                               controller.setRouter(1);
                               Navigator.of(context).pushReplacement(
@@ -179,8 +239,14 @@ class _BackgraundPageState extends State<BackgraundPage> {
                                       builder: (context) =>
                                           const ChecklistPage()));
                             }
-                            break;
-                          case 2:
+                          },
+                        ),
+                        MenuItemButton(
+                          child: Text(
+                            'Meu registros',
+                            style: Constants.title,
+                          ),
+                          onPressed: () {
                             if (controller.router != 2) {
                               controller.setRouter(2);
                               Navigator.of(context).pushReplacement(
@@ -188,314 +254,172 @@ class _BackgraundPageState extends State<BackgraundPage> {
                                       builder: (context) =>
                                           const MyChecklistPage()));
                             }
-                            break;
-                          case 3:
-                            if (controller.router != 3) {
-                              if (controller.newRegister) {
-                                // if (expires) {
-                                //   showDialog(
-                                //       context: context,
-                                //       builder: (context) => AlertMessage(
-                                //           title: 'Atenção',
-                                //           message:
-                                //               'Ops ! Horário para realizar um novo registro expirado, espere um novo período.',
-                                //           onPressedOK: () =>
-                                //               Navigator.of(context).pop()));
-                                // } else {
-                                controller.setRouter(3);
-                                Navigator.of(context).pushReplacement(
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            const ServiceRegisterPage()));
-                                // Navigator.of(context).pushReplacement(
-                                //     MaterialPageRoute(
-                                //         builder: (context) =>
-                                //             const ChecklistRegisterPage()));
-                                // }
-                              } else {
-                                Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) => ChecklistDetailsPage(
-                                        checklist: controller.checklistUser!)));
-                              }
-                            }
-                            break;
-                          default:
-                            return;
-                        }
-                      },
-                      child: Container(
-                        height: 35,
-                        alignment: Alignment.center,
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        decoration: BoxDecoration(
-                            color: (controller.router == 1 ||
-                                    controller.router == 2 ||
-                                    controller.router == 3)
-                                ? Constants.primary
-                                : Colors.grey.shade300,
-                            borderRadius: BorderRadius.circular(5)),
-                        child: Text(
-                          'Serviços',
-                          style: Constants.titleButton,
+                          },
                         ),
-                      ),
-                      itemBuilder: (context) {
-                        return [
-                          PopupMenuItem(
-                              value: 1,
-                              child: Text(
-                                'Registrados',
-                                style: Constants.title,
-                              )),
-                          PopupMenuItem(
-                              value: 2,
-                              child: Text(
-                                'Meus registros',
-                                style: Constants.title,
-                              )),
-                          PopupMenuItem(
-                              value: 3,
-                              child: Text(
-                                controller.newRegister
-                                    ? 'Novo registro'
-                                    : 'Ver registro',
-                                style: Constants.title,
-                              )),
-                        ];
-                      }),
-                ),
-                SizedBox(
-                  width: 120,
-                  child: PopupMenuButton(
-                      onSelected: (value) {
-                        switch (value) {
-                          case 1:
-                            if (controller.router != 1) {
-                              controller.setRouter(1);
-                              Navigator.of(context).pushReplacement(
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          const ChecklistPage()));
-                            }
-                            break;
-                          case 2:
-                            if (controller.router != 2) {
-                              controller.setRouter(2);
-                              Navigator.of(context).pushReplacement(
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          const MyChecklistPage()));
-                            }
-                            break;
-                          case 3:
-                            if (controller.router != 3) {
-                              if (controller.newRegister) {
-                                // if (expires) {
-                                //   showDialog(
-                                //       context: context,
-                                //       builder: (context) => AlertMessage(
-                                //           title: 'Atenção',
-                                //           message:
-                                //               'Ops ! Horário para realizar um novo registro expirado, espere um novo período.',
-                                //           onPressedOK: () =>
-                                //               Navigator.of(context).pop()));
-                                // } else {
-                                controller.setRouter(3);
-                                Navigator.of(context).pushReplacement(
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            const ChecklistRegisterPage()));
-                                // }
-                              } else {
-                                Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) => ChecklistDetailsPage(
-                                        checklist: controller.checklistUser!)));
-                              }
-                            }
-                            break;
-                          default:
-                            return;
-                        }
-                      },
-                      child: Container(
-                        height: 35,
-                        alignment: Alignment.center,
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        decoration: BoxDecoration(
-                            color: (controller.router == 4 ||
-                                    controller.router == 5 ||
-                                    controller.router == 6)
-                                ? Constants.primary
-                                : Colors.grey.shade300,
-                            borderRadius: BorderRadius.circular(5)),
-                        child: Text(
-                          'Checklist',
-                          style: Constants.titleButton,
-                        ),
-                      ),
-                      itemBuilder: (context) {
-                        return [
-                          PopupMenuItem(
-                              value: 1,
-                              child: Text(
-                                'Registrados',
-                                style: Constants.title,
-                              )),
-                          PopupMenuItem(
-                              value: 2,
-                              child: Text(
-                                'Meus registros',
-                                style: Constants.title,
-                              )),
-                          PopupMenuItem(
-                              value: 3,
-                              child: Text(
-                                controller.newRegister
-                                    ? 'Novo registro'
-                                    : 'Ver registro',
-                                style: Constants.title,
-                              )),
-                        ];
-                      }),
-                ),
-                Visibility(
-                  visible: vtrsEnable,
-                  child: SizedBox(
-                    width: 120,
-                    child: PopupMenuButton(
-                        onSelected: (value) {
-                          switch (value) {
-                            case 4:
-                              if (controller.router != 4) {
-                                controller.setRouter(4);
-                                Navigator.of(context).pushReplacement(
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            const CarsPage()));
-                              }
-                              break;
-                            case 5:
+                        SubmenuButton(
+                            menuChildren: [
+                              MenuItemButton(
+                                child: Text(
+                                  'Viatura',
+                                  style: Constants.title,
+                                ),
+                                onPressed: () {
+                                  if (controller.router != 3) {
+                                    if (controller.newRegister) {
+                                      // if (expires) {
+                                      //   showDialog(
+                                      //       context: context,
+                                      //       builder: (context) => AlertMessage(
+                                      //           title: 'Atenção',
+                                      //           message:
+                                      //               'Ops ! Horário para realizar um novo registro expirado, espere um novo período.',
+                                      //           onPressedOK: () =>
+                                      //               Navigator.of(context).pop()));
+                                      // } else {
+                                      controller.setRouter(3);
+                                      Navigator.of(context).pushReplacement(
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const ChecklistRegisterPage()));
+                                      // }
+                                    } else {
+                                      Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  ChecklistDetailsPage(
+                                                      checklist: controller
+                                                          .checklistUser!)));
+                                    }
+                                  }
+                                },
+                              ),
+                              MenuItemButton(
+                                child: Text(
+                                  'Material',
+                                  style: Constants.title,
+                                ),
+                                onPressed: () {},
+                              )
+                            ],
+                            child: Text(
+                              'Novo registro',
+                              style: Constants.title,
+                            ))
+                      ]),
+                  Visibility(
+                    visible: vtrsEnable,
+                    child: MenuAnchor(
+                        builder: (context, controller, child) {
+                          return ElevatedButton(
+                            style: style(
+                              router: this.controller.router,
+                              selects: [5, 6],
+                            ),
+                            onPressed: () {
+                              controller.isOpen
+                                  ? controller.close()
+                                  : controller.open();
+                            },
+                            child: Text(
+                              'Viaturas',
+                              style: Constants.titleButton,
+                            ),
+                          );
+                        },
+                        menuChildren: [
+                          MenuItemButton(
+                            child: Text(
+                              'Registros',
+                              style: Constants.title,
+                            ),
+                            onPressed: () {
                               if (controller.router != 5) {
                                 controller.setRouter(5);
                                 Navigator.of(context).pushReplacement(
                                     MaterialPageRoute(
                                         builder: (context) =>
-                                            const CarRegisterPage()));
+                                            const CarsPage()));
                               }
-                              break;
-                            default:
-                              break;
-                          }
-                        },
-                        child: Container(
-                          height: 35,
-                          alignment: Alignment.center,
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          decoration: BoxDecoration(
-                              color: (controller.router == 4 ||
-                                      controller.router == 5)
-                                  ? Constants.primary
-                                  : Colors.grey.shade300,
-                              borderRadius: BorderRadius.circular(5)),
-                          child: Text(
-                            'Viaturas',
-                            style: Constants.titleButton,
+                            },
                           ),
-                        ),
-                        itemBuilder: (context) {
-                          return [
-                            PopupMenuItem(
-                                value: 4,
-                                child: Text(
-                                  'Registrados',
-                                  style: Constants.title,
-                                )),
-                            PopupMenuItem(
-                                value: 5,
-                                enabled: (user.managerFleet || user.admin),
-                                child: Text(
-                                  'Novo registro',
-                                  style: Constants.title.copyWith(
-                                      color: (user.managerFleet || user.admin)
-                                          ? Colors.black
-                                          : Colors.grey),
-                                )),
-                          ];
-                        }),
-                  ),
-                ),
-                Visibility(
-                  visible: usersEnable,
-                  child: SizedBox(
-                    width: 120,
-                    child: PopupMenuButton(
-                        onSelected: (value) {
-                          switch (value) {
-                            case 6:
+                          MenuItemButton(
+                            child: Text(
+                              'Novo registro',
+                              style: Constants.title,
+                            ),
+                            onPressed: () {
                               if (controller.router != 6) {
                                 controller.setRouter(6);
                                 Navigator.of(context).pushReplacement(
                                     MaterialPageRoute(
                                         builder: (context) =>
-                                            const UsersPage()));
+                                            const CarRegisterPage()));
                               }
-                              break;
-                            case 7:
+                            },
+                          ),
+                        ]),
+                  ),
+                  Visibility(
+                    visible: usersEnable,
+                    child: MenuAnchor(
+                        builder: (context, controller, child) {
+                          return ElevatedButton(
+                            style: style(
+                              router: this.controller.router,
+                              selects: [7, 8],
+                            ),
+                            onPressed: () {
+                              controller.isOpen
+                                  ? controller.close()
+                                  : controller.open();
+                            },
+                            child: Text(
+                              'Usuários',
+                              style: Constants.titleButton,
+                            ),
+                          );
+                        },
+                        menuChildren: [
+                          MenuItemButton(
+                            child: Text(
+                              'Registros',
+                              style: Constants.title,
+                            ),
+                            onPressed: () {
                               if (controller.router != 7) {
                                 controller.setRouter(7);
                                 Navigator.of(context).pushReplacement(
                                     MaterialPageRoute(
                                         builder: (context) =>
+                                            const UsersPage()));
+                              }
+                            },
+                          ),
+                          MenuItemButton(
+                            child: Text(
+                              'Novo registro',
+                              style: Constants.title,
+                            ),
+                            onPressed: () {
+                              if (controller.router != 8) {
+                                controller.setRouter(8);
+                                Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                        builder: (context) =>
                                             const UserPageRegister()));
                               }
-                              break;
-                            default:
-                              break;
-                          }
-                        },
-                        child: Container(
-                          height: 35,
-                          alignment: Alignment.center,
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          decoration: BoxDecoration(
-                              color: (controller.router == 6 ||
-                                      controller.router == 7)
-                                  ? Constants.primary
-                                  : Colors.grey.shade300,
-                              borderRadius: BorderRadius.circular(5)),
-                          child: Text(
-                            'Usuários',
-                            style: Constants.titleButton,
+                            },
                           ),
-                        ),
-                        itemBuilder: (context) {
-                          return [
-                            PopupMenuItem(
-                                value: 6,
-                                child: Text(
-                                  'Registrados',
-                                  style: Constants.title,
-                                )),
-                            PopupMenuItem(
-                                value: 7,
-                                child: Text(
-                                  'Novo registro',
-                                  style: Constants.title,
-                                )),
-                          ];
-                        }),
+                        ]),
                   ),
-                ),
-              ],
-            );
-          }),
-        ),
-      ],
-    );
-  }
+                ],
+              );
+            }),
+          ),
+        ],
+      );
+    }
 
-  @override
-  Widget build(BuildContext context) {
     return Material(
       color: Constants.primary,
       child: SafeArea(
