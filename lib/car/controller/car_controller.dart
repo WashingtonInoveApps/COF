@@ -1,13 +1,8 @@
 import 'package:bsu_control/car/repository/car_interface.dart';
-import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/enum/car_enum.dart';
-import 'package:bsu_control/model/car_changes_model.dart';
 import 'package:bsu_control/model/check_list_model.dart';
 import 'package:bsu_control/model/config_model.dart';
-import 'package:bsu_control/model/item_model.dart';
-import 'package:bsu_control/model/itens_changes_model.dart';
-import 'package:bsu_control/model/obm_model.dart';
 import 'package:bsu_control/model/user_model.dart';
 import 'package:mobx/mobx.dart';
 
@@ -39,19 +34,10 @@ abstract class _CarControllerBase with Store {
   int step = 0;
 
   @observable
-  String type = '';
-
-  @observable
   DateTime dateKmByMonth = DateTime.now();
 
   @observable
-  String function = '';
-
-  @observable
   bool fieldCarTypeVisible = false;
-
-  @observable
-  String? cia;
 
   @observable
   String filter = '';
@@ -72,26 +58,8 @@ abstract class _CarControllerBase with Store {
   int page = 1;
 
   @observable
-  OBMModel obm = OBMModel(team: [], cias: []);
-
-  @observable
   ObservableList<CarStatusModel> statusGeral =
       <CarStatusModel>[].asObservable();
-
-  @observable
-  ObservableList<ItensChangesModel> sectionsItens =
-      <ItensChangesModel>[].asObservable();
-
-  @observable
-  ObservableList<ItensChangesModel> sectionsMaterials =
-      <ItensChangesModel>[].asObservable();
-
-  @observable
-  ObservableList<ItensChangesModel> sectionsMaterialsConsumable =
-      <ItensChangesModel>[].asObservable();
-
-  @observable
-  ObservableList<CarChangeModel> carChanges = <CarChangeModel>[].asObservable();
 
   bool get enable => (user.managerFleet || user.admin);
 
@@ -115,16 +83,13 @@ abstract class _CarControllerBase with Store {
   }
 
   @computed
-  bool get adm => function == Constants.carsFunctions.first;
-
-  @computed
   int get start => carsSorts.isEmpty ? 0 : ((page - 1) * limit) + 1;
 
   @computed
   int get end => carsSorts.isEmpty ? 0 : start + carsSorts.length - 1;
 
   @computed
-  bool get btFinish => step > 2;
+  bool get btFinish => step == 2;
 
   Stream<List<CarStatusModel>> listenStatus({required String carId}) {
     return repository.listenStatusCar(carId: carId);
@@ -168,17 +133,6 @@ abstract class _CarControllerBase with Store {
   }
 
   @action
-  setTypeCar(String? value) {
-    type = value ?? type;
-
-    if (type == "Outros") {
-      fieldCarTypeVisible = true;
-    } else {
-      fieldCarTypeVisible = false;
-    }
-  }
-
-  @action
   setCars(List<CarModel> values) {
     cars
       ..clear()
@@ -211,26 +165,6 @@ abstract class _CarControllerBase with Store {
   }
 
   @action
-  setFunctionCar(String? value) {
-    function = value ?? function;
-  }
-
-  @action
-  setOBM(OBMModel? value) {
-    if (value != null) {
-      if (obm != value) {
-        obm = value;
-
-        if (obm.cias.isNotEmpty) {
-          cia = obm.cias.first;
-        } else {
-          cia = null;
-        }
-      }
-    }
-  }
-
-  @action
   Future<void> setDateKmByMonth(DateTime value) async {
     if (value != dateKmByMonth) {
       dateKmByMonth = value;
@@ -238,134 +172,10 @@ abstract class _CarControllerBase with Store {
   }
 
   @action
-  setCia(String? value) => cia = value;
-
-  @action
-  onChangesCar(List<CarChangeModel> value) {
-    carChanges
-      ..clear()
-      ..addAll(value);
-  }
-
-  @action
-  removeChangesCar(int index) {
-    carChanges.removeAt(index);
-  }
-
-  @action
-  addSections(
-      {required List<ItensChangesModel> list,
-      required ItensChangesModel value}) {
-    list.add(value);
-  }
-
-  @action
-  removeSections({required List<ItensChangesModel> list, required int index}) {
-    list.removeAt(index);
-  }
-
-  @action
-  addItensSection({
-    required List<ItensChangesModel> list,
-    required int index,
-    required ItemModel value,
-  }) {
-    final section = ItensChangesModel.fromMap(list[index].toMap());
-
-    final itens = List<ItemModel>.from(section.itens);
-    itens.add(value);
-
-    list.removeAt(index);
-    list.insert(index, section.copyWith(itens: itens));
-  }
-
-  @action
-  editItensSection({
-    required List<ItensChangesModel> list,
-    required int index,
-    required int indexItem,
-    required ItemModel value,
-  }) {
-    final section = ItensChangesModel.fromMap(list[index].toMap());
-
-    final itens = List<ItemModel>.from(section.itens);
-    itens.removeAt(indexItem);
-    itens.insert(indexItem, value);
-
-    list.removeAt(index);
-    list.insert(index, section.copyWith(itens: itens));
-  }
-
-  @action
-  moveItensSection({
-    required List<ItensChangesModel> list,
-    required int index,
-    required int indexItem,
-    required bool position,
-  }) {
-    int pos = 0;
-    final section = ItensChangesModel.fromMap(list[index].toMap());
-    final itens = List<ItemModel>.from(section.itens);
-
-    if (position) {
-      pos = indexItem - 1;
-    } else {
-      pos = indexItem + 1;
-    }
-
-    if (pos == -1 || pos > (itens.length - 1)) return;
-
-    final item = ItemModel.fromMap(itens[indexItem].toMap());
-
-    itens.removeAt(indexItem);
-    itens.insert(pos, item);
-
-    list.removeAt(index);
-    list.insert(index, section.copyWith(itens: itens));
-  }
-
-  @action
-  removeItensSection({
-    required List<ItensChangesModel> list,
-    required int index,
-    required int indexItem,
-  }) {
-    final section = ItensChangesModel.fromMap(list[index].toMap());
-
-    final itens = List<ItemModel>.from(section.itens);
-    itens.removeAt(indexItem);
-
-    list.removeAt(index);
-    list.insert(index, section.copyWith(itens: itens));
-  }
-
-  @action
-  editSections(
-      {required List<ItensChangesModel> list,
-      required int index,
-      required ItensChangesModel value}) {
-    final section = list[index].copyWith(description: value.description);
-
-    list.removeAt(index);
-    list.insert(index, section);
-  }
-
-  @action
-  cleanSections({required List<ItensChangesModel> list}) {
-    list.clear();
-  }
-
-  @action
-  expansionSections(
-      {required List<ItensChangesModel> list, required int index}) {
-    final section = list[index].copyWith(value: !list[index].value);
-    list.removeAt(index);
-    list.insert(index, section);
-  }
-
-  @action
-  Future<bool> save(
-      {required CarModel car, required List<dynamic> images}) async {
+  Future<bool> save({
+    required CarModel car,
+    required List<dynamic> images,
+  }) async {
     try {
       loading = true;
 
@@ -375,24 +185,23 @@ abstract class _CarControllerBase with Store {
         }
       }
 
-      if (car.type.isEmpty && type == 'Outros') {
-        throw Exception('Insira o tipo de veículo antes de continuar.');
-      }
-
-      final result = await repository.save(
-          car: car.copyWith(
-            function: function,
-            adm: adm,
-            changes: carChanges,
-            obmID: obm.id ?? '',
-            cia: (cia?.toLowerCase()) ?? (obm.id ?? ''),
-            itens: sectionsItens,
-            materials: sectionsMaterials,
-            materialsConsumable: sectionsMaterialsConsumable,
-          ),
-          images: images);
+      final result = await repository.save(car: car, images: images);
       loading = false;
 
+      return result;
+    } catch (e) {
+      loading = false;
+      rethrow;
+    }
+  }
+
+  @action
+  Future<bool> delete({required String id}) async {
+    try {
+      loading = true;
+      final result = await repository.deleteCar(id: id);
+
+      loading = false;
       return result;
     } catch (e) {
       loading = false;
@@ -425,7 +234,10 @@ abstract class _CarControllerBase with Store {
   }
 
   @action
-  Future<bool> updateKMOil({required String id, required int value}) async {
+  Future<bool> updateKMOil({
+    required String id,
+    required int value,
+  }) async {
     loading = true;
     final result = await repository.updateKMCar(id: id, data: {'oil': value});
     loading = false;
@@ -434,7 +246,10 @@ abstract class _CarControllerBase with Store {
   }
 
   @action
-  Future<bool> updateKMArref({required String id, required int value}) async {
+  Future<bool> updateKMArref({
+    required String id,
+    required int value,
+  }) async {
     loading = true;
     final result = await repository.updateKMCar(id: id, data: {'arref': value});
     loading = false;
@@ -443,8 +258,10 @@ abstract class _CarControllerBase with Store {
   }
 
   @action
-  Future<bool> saveStatusCar(
-      {required CarModel car, CarStatusModel? status}) async {
+  Future<bool> saveStatus({
+    required CarModel car,
+    CarStatusModel? status,
+  }) async {
     loading = true;
     final result = await repository.saveStatusCar(car: car, status: status);
     loading = false;
@@ -453,8 +270,10 @@ abstract class _CarControllerBase with Store {
   }
 
   @action
-  Future<bool> deleteStatusCar(
-      {required CarModel car, required CarStatusModel status}) async {
+  Future<bool> deleteStatus({
+    required CarModel car,
+    required CarStatusModel status,
+  }) async {
     loading = true;
     final result = await repository.deleteStatusCar(car: car, status: status);
     loading = false;
@@ -463,7 +282,7 @@ abstract class _CarControllerBase with Store {
   }
 
   @action
-  Future<bool> insertMapaCar({required CarMapaModel mapa}) async {
+  Future<bool> insertMapa({required CarMapaModel mapa}) async {
     loading = true;
     final result = await repository.insertMapaCar(mapa: mapa);
     loading = false;
@@ -472,25 +291,11 @@ abstract class _CarControllerBase with Store {
   }
 
   @action
-  Future<bool> deleteCarMapa({required String id}) async {
+  Future<bool> deleteMapa({required String id}) async {
     loading = true;
     final result = await repository.deleteCarMapa(id: id);
 
     loading = false;
     return result;
-  }
-
-  @action
-  Future<bool> deleteCar({required String id}) async {
-    try {
-      loading = true;
-      final result = await repository.deleteCar(id: id);
-
-      loading = false;
-      return result;
-    } catch (e) {
-      loading = false;
-      rethrow;
-    }
   }
 }

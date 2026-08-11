@@ -142,8 +142,10 @@ class CarModel {
           map['materialsConsumable']?.map((x) => ItensChangesModel.fromMap(x))),
       changes: List<CarChangeModel>.from(
           map['changes']?.map((x) => CarChangeModel.fromMap(x))),
-      mapas: List<CarMapaModel>.from(
-          map['mapas']?.map((x) => CarMapaModel.fromMap(x))),
+      mapas: map['mapas'] != null
+          ? List<CarMapaModel>.from(
+              map['mapas']?.map((x) => CarMapaModel.fromMap(x)))
+          : null,
       images: List<FileModel?>.from(
           map['images'].map((x) => (x == null) ? null : FileModel.fromMap(x))),
       status: [],

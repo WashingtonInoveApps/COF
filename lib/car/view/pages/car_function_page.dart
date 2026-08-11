@@ -153,11 +153,12 @@ class _CarRegisterFunctionPageState extends State<CarRegisterFunctionPage> {
                   }),
                 ),
                 Observer(builder: (_) {
-                  return register.fieldCarTypeVisible
+                  return register.outherTypeField
                       ? FieldText(
-                          controller: carTypeController,
+                          initValue: register.outherType,
                           hint: "TIPO DE VEÍCULO",
                           validation: Validation.validatorPreenchimento,
+                          onChange: register.setOutherType,
                         )
                       : Container();
                 }),
@@ -201,7 +202,6 @@ class _CarRegisterFunctionPageState extends State<CarRegisterFunctionPage> {
                       list:
                           List<ItensChangesModel>.from(register.sectionsItens),
                       onAddSections: (value) {
-                        print(value.toJson());
                         register.addSections(
                           list: register.sectionsItens,
                           value: value,

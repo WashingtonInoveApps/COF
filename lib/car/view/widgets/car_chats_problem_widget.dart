@@ -40,6 +40,8 @@ class CarChartProblems extends StatelessWidget {
     final list = status.where((e) => e.state == StatusCar.baixado).toList();
     final data = buildPieData(list);
 
+    print(list.length);
+
     return Stack(
       children: [
         Column(
@@ -50,7 +52,7 @@ class CarChartProblems extends StatelessWidget {
             ),
             Expanded(
               flex: 1,
-              child: (status.isEmpty)
+              child: (list.isEmpty)
                   ? Center(
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,

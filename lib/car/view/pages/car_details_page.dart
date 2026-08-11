@@ -92,6 +92,7 @@ class _CarRegisterDetailsPageState extends State<CarRegisterDetailsPage> {
           FieldText(
             initValue: register.modelPneu,
             hint: "EX.: 202/75 15",
+            inputType: TextInputType.number,
             onChange: register.setModelPneu,
             upper: true,
             mask: [maskReference],

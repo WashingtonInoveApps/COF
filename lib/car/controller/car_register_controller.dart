@@ -1,13 +1,17 @@
+import 'package:bsu_control/core/sections_controller.dart';
+import 'package:bsu_control/enum/car_enum.dart';
 import 'package:bsu_control/model/car_changes_model.dart';
 import 'package:bsu_control/model/car_model.dart';
 import 'package:bsu_control/model/car_status_model.dart';
+import 'package:bsu_control/model/file_model.dart';
 import 'package:bsu_control/model/item_model.dart';
 import 'package:bsu_control/model/itens_changes_model.dart';
 import 'package:bsu_control/model/user_model.dart';
-import '../../enum/core_enum.dart';
+import 'package:mobx/mobx.dart';
+
+import '../../core/constants.dart';
 import '../../model/obm_model.dart';
 
-import 'package:mobx/mobx.dart';
 part 'car_register_controller.g.dart';
 
 class CarRegisterController = _CarRegisterControllerBase
@@ -30,7 +34,8 @@ abstract class _CarRegisterControllerBase with Store {
     setOBM(obms.firstWhere((e) => e.id == user.obmID));
   }
 
-  List<dynamic> images = [];
+  @observable
+  ObservableList<dynamic> images = [].asObservable();
 
   @observable
   OBMModel? obm;
@@ -45,7 +50,7 @@ abstract class _CarRegisterControllerBase with Store {
   String? type;
 
   @observable
-  bool fieldCarTypeVisible = false;
+  bool outherTypeField = false;
 
   @observable
   String prefix = '';
@@ -66,16 +71,22 @@ abstract class _CarRegisterControllerBase with Store {
   String ticket = '';
 
   @observable
+  String? outherType;
+
+  @observable
+  StatusCar state = StatusCar.waiting;
+
+  @observable
   ObservableList<ItensChangesModel> sectionsItens =
       <ItensChangesModel>[].asObservable();
 
-  @observable
-  ObservableList<ItensChangesModel> sectionsMaterials =
-      <ItensChangesModel>[].asObservable();
+  // @observable
+  // ObservableList<ItensChangesModel> sectionsMaterials =
+  //     <ItensChangesModel>[].asObservable();
 
-  @observable
-  ObservableList<ItensChangesModel> sectionsMaterialsConsumable =
-      <ItensChangesModel>[].asObservable();
+  // @observable
+  // ObservableList<ItensChangesModel> sectionsMaterialsConsumable =
+  //     <ItensChangesModel>[].asObservable();
 
   @observable
   ObservableList<CarChangeModel> changes = <CarChangeModel>[].asObservable();
@@ -84,43 +95,57 @@ abstract class _CarRegisterControllerBase with Store {
   ObservableList<CarStatusModel> status = <CarStatusModel>[].asObservable();
 
   @computed
+  bool get adm => function != Constants.carsFunctions.first;
+
+  @computed
   CarModel get car {
     return CarModel(
-        type: type ?? '',
+        id: init?.id,
+        type: outherType ?? (type ?? ''),
+        state: state,
         function: function ?? '',
+        model: model,
+        plate: plate,
+        cia: cia ?? '',
+        modelPneu: modelPneu,
+        obmID: obm?.id ?? '',
+        prefix: prefix,
+        km: int.parse(km),
+        adm: adm,
         ticket: ticket,
         itens: sectionsItens,
         changes: changes,
         status: status,
-        images: [],
-        materials: sectionsMaterials,
-        materialsConsumable: sectionsMaterialsConsumable);
+        images: List<FileModel>.from(images.whereType<FileModel>().toList()),
+        materials: [],
+        materialsConsumable: []);
   }
 
   @action
   void inicialization() {
     if (init != null) {
       sectionsItens.clear();
-      sectionsMaterials.clear();
-      sectionsMaterialsConsumable.clear();
+
+      obm = obms.firstWhere((e) => e.id == init?.obmID);
 
       type = init?.type;
       function = init?.function;
+      prefix = init?.prefix ?? '';
+      plate = init?.plate ?? '';
+      model = init?.model ?? '';
+      modelPneu = init?.modelPneu ?? '';
+      cia = init?.cia;
+      ticket = init?.ticket ?? '';
+      km = init?.km.toString() ?? '';
+      state = init?.state ?? StatusCar.waiting;
 
-      for (final itens in car.itens) {
+      for (final itens in init?.itens ?? []) {
         addSections(list: sectionsItens, value: itens.copyWith(value: false));
       }
 
-      for (final itens in car.materials) {
-        addSections(
-            list: sectionsMaterials, value: itens.copyWith(value: false));
-      }
-
-      for (final itens in car.materialsConsumable) {
-        addSections(
-            list: sectionsMaterialsConsumable,
-            value: itens.copyWith(value: false));
-      }
+      images
+        ..clear()
+        ..addAll(init?.images ?? []);
 
       changes.addAll(init?.changes ?? []);
     }
@@ -142,9 +167,9 @@ abstract class _CarRegisterControllerBase with Store {
     type = value;
 
     if (type == "Outros") {
-      fieldCarTypeVisible = true;
+      outherTypeField = true;
     } else {
-      fieldCarTypeVisible = false;
+      outherTypeField = false;
     }
   }
 
@@ -153,6 +178,9 @@ abstract class _CarRegisterControllerBase with Store {
       ..clear()
       ..addAll(value);
   }
+
+  @action
+  void setOutherType(String? value) => outherType = value;
 
   @action
   void setPrefix(String? value) => prefix = value ?? '';
@@ -180,11 +208,17 @@ abstract class _CarRegisterControllerBase with Store {
   }
 
   @action
-  expansionSections(
+  void removeChanges(int index) {
+    changes.removeAt(index);
+  }
+
+  @action
+  void expansionSections(
       {required List<ItensChangesModel> list, required int index}) {
-    final section = list[index].copyWith(value: !list[index].value);
-    list.removeAt(index);
-    list.insert(index, section);
+    SectionsController.expansionSections(
+      list: list,
+      index: index,
+    );
   }
 
   @action
@@ -192,7 +226,10 @@ abstract class _CarRegisterControllerBase with Store {
     required List<ItensChangesModel> list,
     required ItensChangesModel value,
   }) {
-    list.add(value);
+    SectionsController.addSections(
+      list: list,
+      value: value,
+    );
   }
 
   @action
@@ -201,10 +238,11 @@ abstract class _CarRegisterControllerBase with Store {
     required int index,
     required ItensChangesModel value,
   }) {
-    final section = list[index].copyWith(description: value.description);
-
-    list.removeAt(index);
-    list.insert(index, section);
+    SectionsController.editSections(
+      list: list,
+      index: index,
+      value: value,
+    );
   }
 
   @action
@@ -212,7 +250,10 @@ abstract class _CarRegisterControllerBase with Store {
     required List<ItensChangesModel> list,
     required int index,
   }) {
-    list.removeAt(index);
+    SectionsController.removeSections(
+      list: list,
+      index: index,
+    );
   }
 
   @action
@@ -221,13 +262,11 @@ abstract class _CarRegisterControllerBase with Store {
     required int index,
     required ItemModel value,
   }) {
-    final section = ItensChangesModel.fromMap(list[index].toMap());
-
-    final itens = List<ItemModel>.from(section.itens);
-    itens.add(value);
-
-    list.removeAt(index);
-    list.insert(index, section.copyWith(itens: itens));
+    SectionsController.addItensSection(
+      list: list,
+      index: index,
+      value: value,
+    );
   }
 
   @action
@@ -237,14 +276,12 @@ abstract class _CarRegisterControllerBase with Store {
     required int indexItem,
     required ItemModel value,
   }) {
-    final section = ItensChangesModel.fromMap(list[index].toMap());
-
-    final itens = List<ItemModel>.from(section.itens);
-    itens.removeAt(indexItem);
-    itens.insert(indexItem, value);
-
-    list.removeAt(index);
-    list.insert(index, section.copyWith(itens: itens));
+    SectionsController.editItensSection(
+      list: list,
+      index: index,
+      indexItem: indexItem,
+      value: value,
+    );
   }
 
   @action
@@ -254,25 +291,12 @@ abstract class _CarRegisterControllerBase with Store {
     required int indexItem,
     required MoveDirection position,
   }) {
-    int pos = 0;
-    final section = ItensChangesModel.fromMap(list[index].toMap());
-    final itens = List<ItemModel>.from(section.itens);
-
-    if (position == MoveDirection.up) {
-      pos = indexItem - 1;
-    } else {
-      pos = indexItem + 1;
-    }
-
-    if (pos == -1 || pos > (itens.length - 1)) return;
-
-    final item = ItemModel.fromMap(itens[indexItem].toMap());
-
-    itens.removeAt(indexItem);
-    itens.insert(pos, item);
-
-    list.removeAt(index);
-    list.insert(index, section.copyWith(itens: itens));
+    SectionsController.moveItensSection(
+      list: list,
+      index: index,
+      indexItem: indexItem,
+      position: position,
+    );
   }
 
   @action
@@ -281,13 +305,11 @@ abstract class _CarRegisterControllerBase with Store {
     required int index,
     required int indexItem,
   }) {
-    final section = ItensChangesModel.fromMap(list[index].toMap());
-
-    final itens = List<ItemModel>.from(section.itens);
-    itens.removeAt(indexItem);
-
-    list.removeAt(index);
-    list.insert(index, section.copyWith(itens: itens));
+    SectionsController.removeItensSection(
+      list: list,
+      index: index,
+      indexItem: indexItem,
+    );
   }
 
   List<String> validationForm(int step) {
@@ -319,6 +341,24 @@ abstract class _CarRegisterControllerBase with Store {
         }
         if (ticket.isEmpty) {
           messagesErros.add('Insira o número do cartão de abastecimento.');
+        }
+
+        return messagesErros;
+      case 2:
+        if (function?.isEmpty ?? true) {
+          messagesErros.add('Selecione a função do veículo.');
+        }
+
+        if (type?.isEmpty ?? true) {
+          messagesErros.add('Selecione o tipo do veículo.');
+        }
+
+        if (images.isEmpty) {
+          messagesErros.add('Adicione as images do veículo.');
+        }
+
+        if (outherTypeField && (outherType == null)) {
+          messagesErros.add('Insira o novo tipo do veículo.');
         }
 
         return messagesErros;

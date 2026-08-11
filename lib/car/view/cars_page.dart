@@ -62,6 +62,19 @@ class _CarsPageState extends State<CarsPage> {
     return PopScope(
       canPop: false,
       child: BackgraundPage(
+        top: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Veículos',
+              style: Constants.title.copyWith(fontSize: 18),
+            ),
+            const Divider(),
+            const SizedBox(
+              height: 10,
+            ),
+          ],
+        ),
         childLeft: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -204,7 +217,7 @@ class _CarsPageState extends State<CarsPage> {
                 direction: Axis.horizontal,
                 children: [
                   Text(
-                    'Veículos registrados',
+                    'Registrados',
                     style: Constants.title,
                   ),
                   Observer(builder: (_) {

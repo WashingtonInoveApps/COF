@@ -9,12 +9,34 @@ part of 'car_register_controller.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$CarRegisterController on _CarRegisterControllerBase, Store {
+  Computed<bool>? _$admComputed;
+
+  @override
+  bool get adm => (_$admComputed ??= Computed<bool>(() => super.adm,
+          name: '_CarRegisterControllerBase.adm'))
+      .value;
   Computed<CarModel>? _$carComputed;
 
   @override
   CarModel get car => (_$carComputed ??= Computed<CarModel>(() => super.car,
           name: '_CarRegisterControllerBase.car'))
       .value;
+
+  late final _$imagesAtom =
+      Atom(name: '_CarRegisterControllerBase.images', context: context);
+
+  @override
+  ObservableList<dynamic> get images {
+    _$imagesAtom.reportRead();
+    return super.images;
+  }
+
+  @override
+  set images(ObservableList<dynamic> value) {
+    _$imagesAtom.reportWrite(value, super.images, () {
+      super.images = value;
+    });
+  }
 
   late final _$obmAtom =
       Atom(name: '_CarRegisterControllerBase.obm', context: context);
@@ -80,19 +102,19 @@ mixin _$CarRegisterController on _CarRegisterControllerBase, Store {
     });
   }
 
-  late final _$fieldCarTypeVisibleAtom = Atom(
-      name: '_CarRegisterControllerBase.fieldCarTypeVisible', context: context);
+  late final _$outherTypeFieldAtom = Atom(
+      name: '_CarRegisterControllerBase.outherTypeField', context: context);
 
   @override
-  bool get fieldCarTypeVisible {
-    _$fieldCarTypeVisibleAtom.reportRead();
-    return super.fieldCarTypeVisible;
+  bool get outherTypeField {
+    _$outherTypeFieldAtom.reportRead();
+    return super.outherTypeField;
   }
 
   @override
-  set fieldCarTypeVisible(bool value) {
-    _$fieldCarTypeVisibleAtom.reportWrite(value, super.fieldCarTypeVisible, () {
-      super.fieldCarTypeVisible = value;
+  set outherTypeField(bool value) {
+    _$outherTypeFieldAtom.reportWrite(value, super.outherTypeField, () {
+      super.outherTypeField = value;
     });
   }
 
@@ -192,6 +214,38 @@ mixin _$CarRegisterController on _CarRegisterControllerBase, Store {
     });
   }
 
+  late final _$outherTypeAtom =
+      Atom(name: '_CarRegisterControllerBase.outherType', context: context);
+
+  @override
+  String? get outherType {
+    _$outherTypeAtom.reportRead();
+    return super.outherType;
+  }
+
+  @override
+  set outherType(String? value) {
+    _$outherTypeAtom.reportWrite(value, super.outherType, () {
+      super.outherType = value;
+    });
+  }
+
+  late final _$stateAtom =
+      Atom(name: '_CarRegisterControllerBase.state', context: context);
+
+  @override
+  StatusCar get state {
+    _$stateAtom.reportRead();
+    return super.state;
+  }
+
+  @override
+  set state(StatusCar value) {
+    _$stateAtom.reportWrite(value, super.state, () {
+      super.state = value;
+    });
+  }
+
   late final _$sectionsItensAtom =
       Atom(name: '_CarRegisterControllerBase.sectionsItens', context: context);
 
@@ -205,40 +259,6 @@ mixin _$CarRegisterController on _CarRegisterControllerBase, Store {
   set sectionsItens(ObservableList<ItensChangesModel> value) {
     _$sectionsItensAtom.reportWrite(value, super.sectionsItens, () {
       super.sectionsItens = value;
-    });
-  }
-
-  late final _$sectionsMaterialsAtom = Atom(
-      name: '_CarRegisterControllerBase.sectionsMaterials', context: context);
-
-  @override
-  ObservableList<ItensChangesModel> get sectionsMaterials {
-    _$sectionsMaterialsAtom.reportRead();
-    return super.sectionsMaterials;
-  }
-
-  @override
-  set sectionsMaterials(ObservableList<ItensChangesModel> value) {
-    _$sectionsMaterialsAtom.reportWrite(value, super.sectionsMaterials, () {
-      super.sectionsMaterials = value;
-    });
-  }
-
-  late final _$sectionsMaterialsConsumableAtom = Atom(
-      name: '_CarRegisterControllerBase.sectionsMaterialsConsumable',
-      context: context);
-
-  @override
-  ObservableList<ItensChangesModel> get sectionsMaterialsConsumable {
-    _$sectionsMaterialsConsumableAtom.reportRead();
-    return super.sectionsMaterialsConsumable;
-  }
-
-  @override
-  set sectionsMaterialsConsumable(ObservableList<ItensChangesModel> value) {
-    _$sectionsMaterialsConsumableAtom
-        .reportWrite(value, super.sectionsMaterialsConsumable, () {
-      super.sectionsMaterialsConsumable = value;
     });
   }
 
@@ -333,6 +353,17 @@ mixin _$CarRegisterController on _CarRegisterControllerBase, Store {
   }
 
   @override
+  void setOutherType(String? value) {
+    final _$actionInfo = _$_CarRegisterControllerBaseActionController
+        .startAction(name: '_CarRegisterControllerBase.setOutherType');
+    try {
+      return super.setOutherType(value);
+    } finally {
+      _$_CarRegisterControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void setPrefix(String? value) {
     final _$actionInfo = _$_CarRegisterControllerBaseActionController
         .startAction(name: '_CarRegisterControllerBase.setPrefix');
@@ -410,7 +441,18 @@ mixin _$CarRegisterController on _CarRegisterControllerBase, Store {
   }
 
   @override
-  dynamic expansionSections(
+  void removeChanges(int index) {
+    final _$actionInfo = _$_CarRegisterControllerBaseActionController
+        .startAction(name: '_CarRegisterControllerBase.removeChanges');
+    try {
+      return super.removeChanges(index);
+    } finally {
+      _$_CarRegisterControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void expansionSections(
       {required List<ItensChangesModel> list, required int index}) {
     final _$actionInfo = _$_CarRegisterControllerBaseActionController
         .startAction(name: '_CarRegisterControllerBase.expansionSections');
@@ -524,22 +566,24 @@ mixin _$CarRegisterController on _CarRegisterControllerBase, Store {
   @override
   String toString() {
     return '''
+images: ${images},
 obm: ${obm},
 cia: ${cia},
 function: ${function},
 type: ${type},
-fieldCarTypeVisible: ${fieldCarTypeVisible},
+outherTypeField: ${outherTypeField},
 prefix: ${prefix},
 model: ${model},
 modelPneu: ${modelPneu},
 plate: ${plate},
 km: ${km},
 ticket: ${ticket},
+outherType: ${outherType},
+state: ${state},
 sectionsItens: ${sectionsItens},
-sectionsMaterials: ${sectionsMaterials},
-sectionsMaterialsConsumable: ${sectionsMaterialsConsumable},
 changes: ${changes},
 status: ${status},
+adm: ${adm},
 car: ${car}
     ''';
   }

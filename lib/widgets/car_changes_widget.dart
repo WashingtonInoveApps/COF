@@ -59,8 +59,10 @@ class _CarChangesWidgetState extends State<CarChangesWidget> {
   void initState() {
     super.initState();
 
-    for (int i = 0; i < widget.car.images.length; i++) {
-      images[i] = widget.car.images[i];
+    if (widget.car.images.isNotEmpty) {
+      for (int i = 0; i < widget.car.images.length; i++) {
+        images[i] = widget.car.images[i];
+      }
     }
 
     widget.onChangeImages?.call(images);
@@ -81,7 +83,13 @@ class _CarChangesWidgetState extends State<CarChangesWidget> {
       ..clear()
       ..addAll(widget.car.changes.where((e) => e.indexImage == indexImage));
 
-    final image = images[indexImage];
+    // final image = images[indexImage];
+
+    final image = widget.register
+        ? images[indexImage]
+        : (indexImage < widget.car.images.length
+            ? widget.car.images[indexImage]
+            : null);
 
     return Container(
       width: double.infinity,

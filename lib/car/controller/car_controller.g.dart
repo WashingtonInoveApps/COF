@@ -16,12 +16,6 @@ mixin _$CarController on _CarControllerBase, Store {
       (_$carsSortsComputed ??= Computed<List<CarModel>>(() => super.carsSorts,
               name: '_CarControllerBase.carsSorts'))
           .value;
-  Computed<bool>? _$admComputed;
-
-  @override
-  bool get adm => (_$admComputed ??=
-          Computed<bool>(() => super.adm, name: '_CarControllerBase.adm'))
-      .value;
   Computed<int>? _$startComputed;
 
   @override
@@ -74,22 +68,6 @@ mixin _$CarController on _CarControllerBase, Store {
     });
   }
 
-  late final _$typeAtom =
-      Atom(name: '_CarControllerBase.type', context: context);
-
-  @override
-  String get type {
-    _$typeAtom.reportRead();
-    return super.type;
-  }
-
-  @override
-  set type(String value) {
-    _$typeAtom.reportWrite(value, super.type, () {
-      super.type = value;
-    });
-  }
-
   late final _$dateKmByMonthAtom =
       Atom(name: '_CarControllerBase.dateKmByMonth', context: context);
 
@@ -106,22 +84,6 @@ mixin _$CarController on _CarControllerBase, Store {
     });
   }
 
-  late final _$functionAtom =
-      Atom(name: '_CarControllerBase.function', context: context);
-
-  @override
-  String get function {
-    _$functionAtom.reportRead();
-    return super.function;
-  }
-
-  @override
-  set function(String value) {
-    _$functionAtom.reportWrite(value, super.function, () {
-      super.function = value;
-    });
-  }
-
   late final _$fieldCarTypeVisibleAtom =
       Atom(name: '_CarControllerBase.fieldCarTypeVisible', context: context);
 
@@ -135,21 +97,6 @@ mixin _$CarController on _CarControllerBase, Store {
   set fieldCarTypeVisible(bool value) {
     _$fieldCarTypeVisibleAtom.reportWrite(value, super.fieldCarTypeVisible, () {
       super.fieldCarTypeVisible = value;
-    });
-  }
-
-  late final _$ciaAtom = Atom(name: '_CarControllerBase.cia', context: context);
-
-  @override
-  String? get cia {
-    _$ciaAtom.reportRead();
-    return super.cia;
-  }
-
-  @override
-  set cia(String? value) {
-    _$ciaAtom.reportWrite(value, super.cia, () {
-      super.cia = value;
     });
   }
 
@@ -251,21 +198,6 @@ mixin _$CarController on _CarControllerBase, Store {
     });
   }
 
-  late final _$obmAtom = Atom(name: '_CarControllerBase.obm', context: context);
-
-  @override
-  OBMModel get obm {
-    _$obmAtom.reportRead();
-    return super.obm;
-  }
-
-  @override
-  set obm(OBMModel value) {
-    _$obmAtom.reportWrite(value, super.obm, () {
-      super.obm = value;
-    });
-  }
-
   late final _$statusGeralAtom =
       Atom(name: '_CarControllerBase.statusGeral', context: context);
 
@@ -279,71 +211,6 @@ mixin _$CarController on _CarControllerBase, Store {
   set statusGeral(ObservableList<CarStatusModel> value) {
     _$statusGeralAtom.reportWrite(value, super.statusGeral, () {
       super.statusGeral = value;
-    });
-  }
-
-  late final _$sectionsItensAtom =
-      Atom(name: '_CarControllerBase.sectionsItens', context: context);
-
-  @override
-  ObservableList<ItensChangesModel> get sectionsItens {
-    _$sectionsItensAtom.reportRead();
-    return super.sectionsItens;
-  }
-
-  @override
-  set sectionsItens(ObservableList<ItensChangesModel> value) {
-    _$sectionsItensAtom.reportWrite(value, super.sectionsItens, () {
-      super.sectionsItens = value;
-    });
-  }
-
-  late final _$sectionsMaterialsAtom =
-      Atom(name: '_CarControllerBase.sectionsMaterials', context: context);
-
-  @override
-  ObservableList<ItensChangesModel> get sectionsMaterials {
-    _$sectionsMaterialsAtom.reportRead();
-    return super.sectionsMaterials;
-  }
-
-  @override
-  set sectionsMaterials(ObservableList<ItensChangesModel> value) {
-    _$sectionsMaterialsAtom.reportWrite(value, super.sectionsMaterials, () {
-      super.sectionsMaterials = value;
-    });
-  }
-
-  late final _$sectionsMaterialsConsumableAtom = Atom(
-      name: '_CarControllerBase.sectionsMaterialsConsumable', context: context);
-
-  @override
-  ObservableList<ItensChangesModel> get sectionsMaterialsConsumable {
-    _$sectionsMaterialsConsumableAtom.reportRead();
-    return super.sectionsMaterialsConsumable;
-  }
-
-  @override
-  set sectionsMaterialsConsumable(ObservableList<ItensChangesModel> value) {
-    _$sectionsMaterialsConsumableAtom
-        .reportWrite(value, super.sectionsMaterialsConsumable, () {
-      super.sectionsMaterialsConsumable = value;
-    });
-  }
-
-  late final _$carChangesAtom =
-      Atom(name: '_CarControllerBase.carChanges', context: context);
-
-  @override
-  ObservableList<CarChangeModel> get carChanges {
-    _$carChangesAtom.reportRead();
-    return super.carChanges;
-  }
-
-  @override
-  set carChanges(ObservableList<CarChangeModel> value) {
-    _$carChangesAtom.reportWrite(value, super.carChanges, () {
-      super.carChanges = value;
     });
   }
 
@@ -362,6 +229,14 @@ mixin _$CarController on _CarControllerBase, Store {
   @override
   Future<bool> save({required CarModel car, required List<dynamic> images}) {
     return _$saveAsyncAction.run(() => super.save(car: car, images: images));
+  }
+
+  late final _$deleteAsyncAction =
+      AsyncAction('_CarControllerBase.delete', context: context);
+
+  @override
+  Future<bool> delete({required String id}) {
+    return _$deleteAsyncAction.run(() => super.delete(id: id));
   }
 
   late final _$copyAsyncAction =
@@ -390,48 +265,39 @@ mixin _$CarController on _CarControllerBase, Store {
         .run(() => super.updateKMArref(id: id, value: value));
   }
 
-  late final _$saveStatusCarAsyncAction =
-      AsyncAction('_CarControllerBase.saveStatusCar', context: context);
+  late final _$saveStatusAsyncAction =
+      AsyncAction('_CarControllerBase.saveStatus', context: context);
 
   @override
-  Future<bool> saveStatusCar({required CarModel car, CarStatusModel? status}) {
-    return _$saveStatusCarAsyncAction
-        .run(() => super.saveStatusCar(car: car, status: status));
+  Future<bool> saveStatus({required CarModel car, CarStatusModel? status}) {
+    return _$saveStatusAsyncAction
+        .run(() => super.saveStatus(car: car, status: status));
   }
 
-  late final _$deleteStatusCarAsyncAction =
-      AsyncAction('_CarControllerBase.deleteStatusCar', context: context);
+  late final _$deleteStatusAsyncAction =
+      AsyncAction('_CarControllerBase.deleteStatus', context: context);
 
   @override
-  Future<bool> deleteStatusCar(
+  Future<bool> deleteStatus(
       {required CarModel car, required CarStatusModel status}) {
-    return _$deleteStatusCarAsyncAction
-        .run(() => super.deleteStatusCar(car: car, status: status));
+    return _$deleteStatusAsyncAction
+        .run(() => super.deleteStatus(car: car, status: status));
   }
 
-  late final _$insertMapaCarAsyncAction =
-      AsyncAction('_CarControllerBase.insertMapaCar', context: context);
+  late final _$insertMapaAsyncAction =
+      AsyncAction('_CarControllerBase.insertMapa', context: context);
 
   @override
-  Future<bool> insertMapaCar({required CarMapaModel mapa}) {
-    return _$insertMapaCarAsyncAction
-        .run(() => super.insertMapaCar(mapa: mapa));
+  Future<bool> insertMapa({required CarMapaModel mapa}) {
+    return _$insertMapaAsyncAction.run(() => super.insertMapa(mapa: mapa));
   }
 
-  late final _$deleteCarMapaAsyncAction =
-      AsyncAction('_CarControllerBase.deleteCarMapa', context: context);
+  late final _$deleteMapaAsyncAction =
+      AsyncAction('_CarControllerBase.deleteMapa', context: context);
 
   @override
-  Future<bool> deleteCarMapa({required String id}) {
-    return _$deleteCarMapaAsyncAction.run(() => super.deleteCarMapa(id: id));
-  }
-
-  late final _$deleteCarAsyncAction =
-      AsyncAction('_CarControllerBase.deleteCar', context: context);
-
-  @override
-  Future<bool> deleteCar({required String id}) {
-    return _$deleteCarAsyncAction.run(() => super.deleteCar(id: id));
+  Future<bool> deleteMapa({required String id}) {
+    return _$deleteMapaAsyncAction.run(() => super.deleteMapa(id: id));
   }
 
   late final _$_CarControllerBaseActionController =
@@ -465,17 +331,6 @@ mixin _$CarController on _CarControllerBase, Store {
         name: '_CarControllerBase.onChangeFilter');
     try {
       return super.onChangeFilter(value);
-    } finally {
-      _$_CarControllerBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  dynamic setTypeCar(String? value) {
-    final _$actionInfo = _$_CarControllerBaseActionController.startAction(
-        name: '_CarControllerBase.setTypeCar');
-    try {
-      return super.setTypeCar(value);
     } finally {
       _$_CarControllerBaseActionController.endAction(_$actionInfo);
     }
@@ -537,207 +392,20 @@ mixin _$CarController on _CarControllerBase, Store {
   }
 
   @override
-  dynamic setFunctionCar(String? value) {
-    final _$actionInfo = _$_CarControllerBaseActionController.startAction(
-        name: '_CarControllerBase.setFunctionCar');
-    try {
-      return super.setFunctionCar(value);
-    } finally {
-      _$_CarControllerBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  dynamic setOBM(OBMModel? value) {
-    final _$actionInfo = _$_CarControllerBaseActionController.startAction(
-        name: '_CarControllerBase.setOBM');
-    try {
-      return super.setOBM(value);
-    } finally {
-      _$_CarControllerBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  dynamic setCia(String? value) {
-    final _$actionInfo = _$_CarControllerBaseActionController.startAction(
-        name: '_CarControllerBase.setCia');
-    try {
-      return super.setCia(value);
-    } finally {
-      _$_CarControllerBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  dynamic onChangesCar(List<CarChangeModel> value) {
-    final _$actionInfo = _$_CarControllerBaseActionController.startAction(
-        name: '_CarControllerBase.onChangesCar');
-    try {
-      return super.onChangesCar(value);
-    } finally {
-      _$_CarControllerBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  dynamic removeChangesCar(int index) {
-    final _$actionInfo = _$_CarControllerBaseActionController.startAction(
-        name: '_CarControllerBase.removeChangesCar');
-    try {
-      return super.removeChangesCar(index);
-    } finally {
-      _$_CarControllerBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  dynamic addSections(
-      {required List<ItensChangesModel> list,
-      required ItensChangesModel value}) {
-    final _$actionInfo = _$_CarControllerBaseActionController.startAction(
-        name: '_CarControllerBase.addSections');
-    try {
-      return super.addSections(list: list, value: value);
-    } finally {
-      _$_CarControllerBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  dynamic removeSections(
-      {required List<ItensChangesModel> list, required int index}) {
-    final _$actionInfo = _$_CarControllerBaseActionController.startAction(
-        name: '_CarControllerBase.removeSections');
-    try {
-      return super.removeSections(list: list, index: index);
-    } finally {
-      _$_CarControllerBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  dynamic addItensSection(
-      {required List<ItensChangesModel> list,
-      required int index,
-      required ItemModel value}) {
-    final _$actionInfo = _$_CarControllerBaseActionController.startAction(
-        name: '_CarControllerBase.addItensSection');
-    try {
-      return super.addItensSection(list: list, index: index, value: value);
-    } finally {
-      _$_CarControllerBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  dynamic editItensSection(
-      {required List<ItensChangesModel> list,
-      required int index,
-      required int indexItem,
-      required ItemModel value}) {
-    final _$actionInfo = _$_CarControllerBaseActionController.startAction(
-        name: '_CarControllerBase.editItensSection');
-    try {
-      return super.editItensSection(
-          list: list, index: index, indexItem: indexItem, value: value);
-    } finally {
-      _$_CarControllerBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  dynamic moveItensSection(
-      {required List<ItensChangesModel> list,
-      required int index,
-      required int indexItem,
-      required bool position}) {
-    final _$actionInfo = _$_CarControllerBaseActionController.startAction(
-        name: '_CarControllerBase.moveItensSection');
-    try {
-      return super.moveItensSection(
-          list: list, index: index, indexItem: indexItem, position: position);
-    } finally {
-      _$_CarControllerBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  dynamic removeItensSection(
-      {required List<ItensChangesModel> list,
-      required int index,
-      required int indexItem}) {
-    final _$actionInfo = _$_CarControllerBaseActionController.startAction(
-        name: '_CarControllerBase.removeItensSection');
-    try {
-      return super
-          .removeItensSection(list: list, index: index, indexItem: indexItem);
-    } finally {
-      _$_CarControllerBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  dynamic editSections(
-      {required List<ItensChangesModel> list,
-      required int index,
-      required ItensChangesModel value}) {
-    final _$actionInfo = _$_CarControllerBaseActionController.startAction(
-        name: '_CarControllerBase.editSections');
-    try {
-      return super.editSections(list: list, index: index, value: value);
-    } finally {
-      _$_CarControllerBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  dynamic cleanSections({required List<ItensChangesModel> list}) {
-    final _$actionInfo = _$_CarControllerBaseActionController.startAction(
-        name: '_CarControllerBase.cleanSections');
-    try {
-      return super.cleanSections(list: list);
-    } finally {
-      _$_CarControllerBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  dynamic expansionSections(
-      {required List<ItensChangesModel> list, required int index}) {
-    final _$actionInfo = _$_CarControllerBaseActionController.startAction(
-        name: '_CarControllerBase.expansionSections');
-    try {
-      return super.expansionSections(list: list, index: index);
-    } finally {
-      _$_CarControllerBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
   String toString() {
     return '''
 loading: ${loading},
 step: ${step},
-type: ${type},
 dateKmByMonth: ${dateKmByMonth},
-function: ${function},
 fieldCarTypeVisible: ${fieldCarTypeVisible},
-cia: ${cia},
 filter: ${filter},
 referenceYearProblem: ${referenceYearProblem},
 referenceYearTendencies: ${referenceYearTendencies},
 cars: ${cars},
 limit: ${limit},
 page: ${page},
-obm: ${obm},
 statusGeral: ${statusGeral},
-sectionsItens: ${sectionsItens},
-sectionsMaterials: ${sectionsMaterials},
-sectionsMaterialsConsumable: ${sectionsMaterialsConsumable},
-carChanges: ${carChanges},
 carsSorts: ${carsSorts},
-adm: ${adm},
 start: ${start},
 end: ${end},
 btFinish: ${btFinish}

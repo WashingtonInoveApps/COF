@@ -104,17 +104,18 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
           menu: false,
           onBack: () => Navigator.of(context).pop(),
           wrapAlign: WrapAlignment.spaceBetween,
-          top: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(10),
-            margin: const EdgeInsets.only(bottom: 10),
-            decoration: BoxDecoration(
-                color: Constants.primary,
-                borderRadius: BorderRadius.circular(5)),
-            child: Text(
-              car.prefix,
-              style: Constants.titleButton,
-            ),
+          top: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                car.prefix,
+                style: Constants.title.copyWith(fontSize: 18),
+              ),
+              const Divider(),
+              const SizedBox(
+                height: 10,
+              ),
+            ],
           ),
           childLeft: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -318,7 +319,7 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                               builder: (context) => DescriptionStateWidget(
                                     user: app.user,
                                     onInsert: (result) async {
-                                      await controller.saveStatusCar(
+                                      await controller.saveStatus(
                                           car: car.copyWith(
                                               enable: false, state: value),
                                           status: result.copyWith(
@@ -328,10 +329,10 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                         }
                       } else {
                         if (value == StatusCar.waiting) {
-                          await controller.saveStatusCar(
+                          await controller.saveStatus(
                               car: car.copyWith(enable: true, state: value));
                         } else {
-                          await controller.saveStatusCar(
+                          await controller.saveStatus(
                               car: car.copyWith(enable: true, state: value),
                               status: CarStatusModel(
                                   date: DateTime.now(),
@@ -394,7 +395,7 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                               status: status,
                               onDelete: controller.enable
                                   ? (value) async {
-                                      await controller.deleteStatusCar(
+                                      await controller.deleteStatus(
                                           car: car.copyWith(
                                               enable: true,
                                               state: StatusCar.waiting),
@@ -425,7 +426,7 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                 ),
               ),
               const SizedBox(
-                height: 10,
+                height: 15,
               ),
               (car.itens.isEmpty)
                   ? Text(
@@ -437,59 +438,7 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                       categories: car.itens,
                     ),
               const SizedBox(
-                height: 15.0,
-              ),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                    color: Constants.primary,
-                    borderRadius: BorderRadius.circular(5)),
-                child: Text(
-                  'MATERIAIS PERMANENTES',
-                  style: Constants.titleButton,
-                ),
-              ),
-              const SizedBox(
                 height: 10,
-              ),
-              (car.materials.isEmpty)
-                  ? Text(
-                      'Nenhum registro de itens encontrado.',
-                      style: Constants.title,
-                    )
-                  : changesListWidget(
-                      context: context,
-                      categories: car.materials,
-                    ),
-              const SizedBox(
-                height: 15.0,
-              ),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                    color: Constants.primary,
-                    borderRadius: BorderRadius.circular(5)),
-                child: Text(
-                  'MATERIAIS DE CONSUMO',
-                  style: Constants.titleButton,
-                ),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              (car.materialsConsumable.isEmpty)
-                  ? Text(
-                      'Nenhum registro de itens encontrado.',
-                      style: Constants.title,
-                    )
-                  : changesListWidget(
-                      context: context,
-                      categories: car.materialsConsumable,
-                    ),
-              const SizedBox(
-                height: 15.0,
               ),
               Visibility(
                 visible: controller.enable,
@@ -531,7 +480,7 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                                     )).then((value) {
                               if (value ?? false) {
                                 controller
-                                    .deleteCar(id: car.id ?? '')
+                                    .delete(id: car.id ?? '')
                                     .then((value) {
                                   Navigator.of(context).pop();
                                 }).catchError((err) {
@@ -644,33 +593,26 @@ Widget statusRegisters(
                   ),
                   Text(
                     Core.formatDate(state.date, largeDayHour: true),
-                    style: Constants.subtitleHint,
+                    style: Constants.titleHint,
                   ),
                   Text(
                     state.description,
-                    style: Constants.subtitle,
+                    style: Constants.title,
                   ),
                   Row(
                     spacing: 10,
                     children: [
                       Text(
                         "${state.user.graduation} ${state.user.name}",
-                        style: Constants.subtitleHint,
+                        style: Constants.titleHint,
                       ),
-                      // InkWell(
-                      //     onTap: () {},
-                      //     child: Text(
-                      //       'Ver detalhes',
-                      //       style: Constants.subtitle
-                      //           .copyWith(color: Colors.blue),
-                      //     )),
                     ],
                   ),
                   Visibility(
                     visible: state.local.isNotEmpty,
                     child: Text(
                       state.local,
-                      style: Constants.subtitleHint,
+                      style: Constants.titleHint,
                     ),
                   )
                 ],

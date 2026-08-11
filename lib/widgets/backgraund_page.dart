@@ -260,7 +260,7 @@ class _BackgraundPageState extends State<BackgraundPage> {
                             menuChildren: [
                               MenuItemButton(
                                 child: Text(
-                                  'Viatura',
+                                  'Veículo',
                                   style: Constants.title,
                                 ),
                                 onPressed: () {
@@ -321,7 +321,7 @@ class _BackgraundPageState extends State<BackgraundPage> {
                                   : controller.open();
                             },
                             child: Text(
-                              'Viaturas',
+                              'Veículos',
                               style: Constants.titleButton,
                             ),
                           );

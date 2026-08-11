@@ -1,4 +1,0 @@
-enum MoveDirection {
-  up,
-  down,
-}

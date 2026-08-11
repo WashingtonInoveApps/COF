@@ -57,7 +57,6 @@ class _ItensSectionWidgetState extends State<ItensSectionWidget> {
                   controller: controllerText,
                   hint: 'Ex: Búzina, Mangueira',
                   label: 'Item',
-                  upper: true,
                   validation: Validation.validatorPreenchimento,
                 ),
                 FieldText(

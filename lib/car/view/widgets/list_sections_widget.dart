@@ -1,7 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:developer';
-
-import 'package:bsu_control/enum/core_enum.dart';
 import 'package:flutter/material.dart';
 
 import 'package:bsu_control/car/view/widgets/section_widget.dart';
@@ -10,6 +8,7 @@ import '../../../core/constants.dart';
 import '../../../model/item_model.dart';
 import '../../../model/itens_changes_model.dart';
 import '../../../widgets/alert_message.dart';
+import '../../../core/sections_controller.dart';
 import 'itens_section_widget.dart';
 
 class ListSectionsWidget extends StatefulWidget {
@@ -218,13 +217,14 @@ class _ListSectionsWidgetState extends State<ListSectionsWidget> {
   }
 }
 
-Widget changesListWidget(
-    {required ItensChangesModel section,
-    required BuildContext context,
-    required Function(ItemModel, int) onEdit,
-    required Function(int i) onDelete,
-    required void Function(int, MoveDirection) onMove,
-    required Function() onAdd}) {
+Widget changesListWidget({
+  required ItensChangesModel section,
+  required BuildContext context,
+  required Function(ItemModel, int) onEdit,
+  required Function(int i) onDelete,
+  required void Function(int, MoveDirection) onMove,
+  required Function() onAdd,
+}) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
@@ -339,9 +339,6 @@ Widget changesListWidget(
                 ),
               ),
       ),
-      const SizedBox(
-        height: 10,
-      ),
       Center(
         child: InkWell(
           onTap: onAdd,
@@ -355,9 +352,6 @@ Widget changesListWidget(
             ),
           ),
         ),
-      ),
-      const SizedBox(
-        height: 10,
       ),
     ],
   );
