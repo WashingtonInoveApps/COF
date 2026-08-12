@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 
 import 'package:bsu_control/car/view/widgets/section_widget.dart';
 
-import '../../../core/constants.dart';
-import '../../../model/item_model.dart';
-import '../../../model/itens_changes_model.dart';
-import '../../../widgets/alert_message.dart';
-import '../../../core/sections_controller.dart';
-import 'itens_section_widget.dart';
+import '../core/constants.dart';
+import '../model/item_model.dart';
+import '../model/itens_changes_model.dart';
+import 'alert_message.dart';
+import '../core/sections_controller.dart';
+import '../car/view/widgets/itens_section_widget.dart';
 
 class ListSectionsWidget extends StatefulWidget {
   final List<ItensChangesModel> list;

@@ -3,6 +3,7 @@ import 'package:bsu_control/enum/car_enum.dart';
 import 'package:bsu_control/model/car_changes_model.dart';
 import 'package:bsu_control/model/car_model.dart';
 import 'package:bsu_control/model/car_status_model.dart';
+import 'package:bsu_control/model/cia_model.dart';
 import 'package:bsu_control/model/file_model.dart';
 import 'package:bsu_control/model/item_model.dart';
 import 'package:bsu_control/model/itens_changes_model.dart';
@@ -41,7 +42,7 @@ abstract class _CarRegisterControllerBase with Store {
   OBMModel? obm;
 
   @observable
-  String? cia;
+  CiaModel? cia;
 
   @observable
   String? function;
@@ -106,7 +107,8 @@ abstract class _CarRegisterControllerBase with Store {
         function: function ?? '',
         model: model,
         plate: plate,
-        cia: cia ?? '',
+        cia: cia,
+        ciaID: cia?.id,
         modelPneu: modelPneu,
         obmID: obm?.id ?? '',
         prefix: prefix,
@@ -116,6 +118,8 @@ abstract class _CarRegisterControllerBase with Store {
         itens: sectionsItens,
         changes: changes,
         status: status,
+        arref: init?.arref ?? 0,
+        oil: init?.oil ?? 0,
         images: List<FileModel>.from(images.whereType<FileModel>().toList()),
         materials: [],
         materialsConsumable: []);
@@ -128,13 +132,16 @@ abstract class _CarRegisterControllerBase with Store {
 
       obm = obms.firstWhere((e) => e.id == init?.obmID);
 
+      cia = obm?.cias
+          .cast<CiaModel?>()
+          .firstWhere((e) => e?.id == init?.ciaID, orElse: () => null);
+
       type = init?.type;
       function = init?.function;
       prefix = init?.prefix ?? '';
       plate = init?.plate ?? '';
       model = init?.model ?? '';
       modelPneu = init?.modelPneu ?? '';
-      cia = init?.cia;
       ticket = init?.ticket ?? '';
       km = init?.km.toString() ?? '';
       state = init?.state ?? StatusCar.waiting;
@@ -157,7 +164,7 @@ abstract class _CarRegisterControllerBase with Store {
   void setOBM(OBMModel? value) => obm = value;
 
   @action
-  void setCia(String? value) => cia = value;
+  void setCia(CiaModel? value) => cia = value;
 
   @action
   void setFunction(String? value) => function = value ?? function;

@@ -228,9 +228,10 @@ class ChecklistDataSource extends DataGridSource {
         ),
         DataGridCell<String>(
             columnName: 'obm', value: obm.prefix.toUpperCase()),
-        DataGridCell<String>(columnName: 'cia', value: check.cia.toUpperCase()),
         DataGridCell<String>(
-            columnName: 'team', value: check.team.toUpperCase()),
+            columnName: 'cia', value: check.cia?.name.toUpperCase()),
+        DataGridCell<String>(
+            columnName: 'team', value: check.team?.name.toUpperCase()),
         DataGridCell<String>(
             columnName: 'viatura', value: check.prefix.toUpperCase()),
         DataGridCell<String>(
@@ -283,9 +284,10 @@ class ChecklistDataSource extends DataGridSource {
         ),
         DataGridCell<String>(
             columnName: 'obm', value: obm.prefix.toUpperCase()),
-        DataGridCell<String>(columnName: 'cia', value: check.cia.toUpperCase()),
         DataGridCell<String>(
-            columnName: 'team', value: check.team.toUpperCase()),
+            columnName: 'cia', value: check.cia?.name.toUpperCase()),
+        DataGridCell<String>(
+            columnName: 'team', value: check.team?.name.toUpperCase()),
         DataGridCell<String>(
             columnName: 'viatura', value: check.prefix.toUpperCase()),
         DataGridCell<String>(

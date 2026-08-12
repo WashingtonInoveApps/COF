@@ -92,7 +92,7 @@ class _ChecklistFinishPageState extends State<ChecklistFinishPage> {
                   height: 10,
                 ),
                 Text(
-                  checklist.cia.toUpperCase(),
+                  checklist.cia?.name ?? '',
                   style: Constants.title.copyWith(fontWeight: FontWeight.bold),
                 ),
                 Text(

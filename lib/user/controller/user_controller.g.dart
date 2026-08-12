@@ -102,13 +102,13 @@ mixin _$UserController on _UserControllerBase, Store {
       Atom(name: '_UserControllerBase.cia', context: context);
 
   @override
-  String? get cia {
+  CiaModel? get cia {
     _$ciaAtom.reportRead();
     return super.cia;
   }
 
   @override
-  set cia(String? value) {
+  set cia(CiaModel? value) {
     _$ciaAtom.reportWrite(value, super.cia, () {
       super.cia = value;
     });
@@ -166,13 +166,13 @@ mixin _$UserController on _UserControllerBase, Store {
       Atom(name: '_UserControllerBase.obm', context: context);
 
   @override
-  OBMModel get obm {
+  OBMModel? get obm {
     _$obmAtom.reportRead();
     return super.obm;
   }
 
   @override
-  set obm(OBMModel value) {
+  set obm(OBMModel? value) {
     _$obmAtom.reportWrite(value, super.obm, () {
       super.obm = value;
     });
@@ -313,7 +313,7 @@ mixin _$UserController on _UserControllerBase, Store {
   }
 
   @override
-  dynamic onChangeFilter(String? value) {
+  void onChangeFilter(String? value) {
     final _$actionInfo = _$_UserControllerBaseActionController.startAction(
         name: '_UserControllerBase.onChangeFilter');
     try {
@@ -324,7 +324,7 @@ mixin _$UserController on _UserControllerBase, Store {
   }
 
   @override
-  dynamic setLimit(int? value) {
+  void setLimit(int? value) {
     final _$actionInfo = _$_UserControllerBaseActionController.startAction(
         name: '_UserControllerBase.setLimit');
     try {
@@ -335,7 +335,7 @@ mixin _$UserController on _UserControllerBase, Store {
   }
 
   @override
-  dynamic setPage(int value) {
+  void setPage(int value) {
     final _$actionInfo = _$_UserControllerBaseActionController.startAction(
         name: '_UserControllerBase.setPage');
     try {
@@ -346,7 +346,7 @@ mixin _$UserController on _UserControllerBase, Store {
   }
 
   @override
-  dynamic setUsers(List<UserModel> values) {
+  void setUsers(List<UserModel> values) {
     final _$actionInfo = _$_UserControllerBaseActionController.startAction(
         name: '_UserControllerBase.setUsers');
     try {
@@ -357,7 +357,7 @@ mixin _$UserController on _UserControllerBase, Store {
   }
 
   @override
-  dynamic setGraduation(String? value) {
+  void setGraduation(String? value) {
     final _$actionInfo = _$_UserControllerBaseActionController.startAction(
         name: '_UserControllerBase.setGraduation');
     try {
@@ -368,7 +368,7 @@ mixin _$UserController on _UserControllerBase, Store {
   }
 
   @override
-  dynamic setAdmin(bool? value) {
+  void setAdmin(bool? value) {
     final _$actionInfo = _$_UserControllerBaseActionController.startAction(
         name: '_UserControllerBase.setAdmin');
     try {
@@ -379,7 +379,7 @@ mixin _$UserController on _UserControllerBase, Store {
   }
 
   @override
-  dynamic setBattalion(bool? value) {
+  void setBattalion(bool? value) {
     final _$actionInfo = _$_UserControllerBaseActionController.startAction(
         name: '_UserControllerBase.setBattalion');
     try {
@@ -390,7 +390,7 @@ mixin _$UserController on _UserControllerBase, Store {
   }
 
   @override
-  dynamic setCompany(bool? value) {
+  void setCompany(bool? value) {
     final _$actionInfo = _$_UserControllerBaseActionController.startAction(
         name: '_UserControllerBase.setCompany');
     try {
@@ -401,7 +401,7 @@ mixin _$UserController on _UserControllerBase, Store {
   }
 
   @override
-  dynamic setManagerFleet(bool? value) {
+  void setManagerFleet(bool? value) {
     final _$actionInfo = _$_UserControllerBaseActionController.startAction(
         name: '_UserControllerBase.setManagerFleet');
     try {
@@ -412,7 +412,7 @@ mixin _$UserController on _UserControllerBase, Store {
   }
 
   @override
-  dynamic setManagerOperational(bool? value) {
+  void setManagerOperational(bool? value) {
     final _$actionInfo = _$_UserControllerBaseActionController.startAction(
         name: '_UserControllerBase.setManagerOperational');
     try {
@@ -423,7 +423,7 @@ mixin _$UserController on _UserControllerBase, Store {
   }
 
   @override
-  dynamic setCia(String? value) {
+  void setCia(CiaModel? value) {
     final _$actionInfo = _$_UserControllerBaseActionController.startAction(
         name: '_UserControllerBase.setCia');
     try {
@@ -434,7 +434,7 @@ mixin _$UserController on _UserControllerBase, Store {
   }
 
   @override
-  dynamic setOBM(OBMModel? value) {
+  void setOBM(OBMModel? value) {
     final _$actionInfo = _$_UserControllerBaseActionController.startAction(
         name: '_UserControllerBase.setOBM');
     try {

@@ -1,5 +1,5 @@
 import 'package:bsu_control/car/controller/car_register_controller.dart';
-import 'package:bsu_control/car/view/widgets/list_sections_widget.dart';
+import 'package:bsu_control/widgets/list_sections_widget.dart';
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/model/itens_changes_model.dart';
 import 'package:flutter/material.dart';
@@ -159,6 +159,7 @@ class _CarRegisterFunctionPageState extends State<CarRegisterFunctionPage> {
                           hint: "TIPO DE VEÍCULO",
                           validation: Validation.validatorPreenchimento,
                           onChange: register.setOutherType,
+                          upper: true,
                         )
                       : Container();
                 }),

@@ -7,6 +7,7 @@ import 'package:bsu_control/user/repository/user_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
 
+import '../../model/cia_model.dart';
 import '../../model/user_model.dart';
 
 part 'user_controller.g.dart';
@@ -47,14 +48,17 @@ abstract class _UserControllerBase with Store {
     managerOperational = value?.managerOperational ?? false;
     managerFleet = value?.managerFleet ?? false;
 
-    if (value != null) {
-      obm = obms.firstWhere((e) => e.id == value.obmID);
-      cia = value.cia;
-    } else {
-      obm = obms.firstWhere((e) => e.id == user.obmID);
-      cia = obm.cias.first;
-    }
+    final userOBM = obms
+        .cast<OBMModel?>()
+        .firstWhere((e) => e?.id == value?.obmID, orElse: () => null);
+
+    obm = userOBM;
+    cia = userOBM?.cias
+        .cast<CiaModel?>()
+        .firstWhere((e) => e?.id == value?.ciaID, orElse: () => null);
   }
+
+  List<String> messagesError = [];
 
   @observable
   bool loading = false;
@@ -66,7 +70,7 @@ abstract class _UserControllerBase with Store {
   String graduation = '';
 
   @observable
-  String? cia;
+  CiaModel? cia;
 
   @observable
   String filter = '';
@@ -78,7 +82,7 @@ abstract class _UserControllerBase with Store {
   int page = 1;
 
   @observable
-  OBMModel obm = OBMModel(team: [], cias: []);
+  OBMModel? obm;
 
   @observable
   bool admin = false;
@@ -104,14 +108,15 @@ abstract class _UserControllerBase with Store {
         id: init?.id,
         admin: admin,
         battalion: battalion,
-        cia: cia ?? '',
+        cia: cia,
+        ciaID: cia?.id ?? '',
         company: company,
         enable: enable,
         graduation: graduation,
         managerFleet: managerFleet,
         managerOperational: managerOperational,
         email: init?.email ?? '',
-        obmID: obm.id ?? '');
+        obmID: obm?.id ?? '');
   }
 
   @computed
@@ -123,7 +128,8 @@ abstract class _UserControllerBase with Store {
           users.where((e) => e.obmID == user.obmID).toList());
     } else {
       return List<UserModel>.from(users
-          .where((e) => e.cia.toLowerCase() == user.cia.toLowerCase())
+          .where(
+              (e) => e.cia?.name.toLowerCase() == user.cia?.name.toLowerCase())
           .toList());
     }
   }
@@ -135,7 +141,7 @@ abstract class _UserControllerBase with Store {
 
       final filtered = usersOBM
           .where((e) => (e.fullname.toLowerCase().contains(search) ||
-              (e.cia.toLowerCase().contains(search)) ||
+              ((e.cia?.name.toLowerCase() ?? '').contains(search)) ||
               (e.graduation.toLowerCase().contains(search)) ||
               (e.registration.toLowerCase().contains(search))))
           .toList();
@@ -162,24 +168,24 @@ abstract class _UserControllerBase with Store {
   int get end => usersSorts.isEmpty ? 0 : start + usersSorts.length - 1;
 
   @action
-  onChangeFilter(String? value) {
+  void onChangeFilter(String? value) {
     filter = value ?? '';
     page = 1;
   }
 
   @action
-  setLimit(int? value) {
+  void setLimit(int? value) {
     limit = value ?? limit;
     page = 1;
   }
 
   @action
-  setPage(int value) {
+  void setPage(int value) {
     page = value;
   }
 
   @action
-  setUsers(List<UserModel> values) {
+  void setUsers(List<UserModel> values) {
     if (values.isNotEmpty) {
       values.sort((a, b) => a.graduation.compareTo(b.graduation));
     }
@@ -190,41 +196,29 @@ abstract class _UserControllerBase with Store {
   }
 
   @action
-  setGraduation(String? value) => graduation = value ?? graduation;
+  void setGraduation(String? value) => graduation = value ?? graduation;
 
   @action
-  setAdmin(bool? value) => admin = value ?? admin;
+  void setAdmin(bool? value) => admin = value ?? admin;
 
   @action
-  setBattalion(bool? value) => battalion = value ?? battalion;
+  void setBattalion(bool? value) => battalion = value ?? battalion;
 
   @action
-  setCompany(bool? value) => company = value ?? company;
+  void setCompany(bool? value) => company = value ?? company;
 
   @action
-  setManagerFleet(bool? value) => managerFleet = value ?? managerFleet;
+  void setManagerFleet(bool? value) => managerFleet = value ?? managerFleet;
 
   @action
-  setManagerOperational(bool? value) =>
+  void setManagerOperational(bool? value) =>
       managerOperational = value ?? managerOperational;
 
   @action
-  setCia(String? value) => cia = value;
+  void setCia(CiaModel? value) => cia = value;
 
   @action
-  setOBM(OBMModel? value) {
-    if (value != null) {
-      if (obm != value) {
-        obm = value;
-
-        if (obm.cias.isNotEmpty) {
-          cia = obm.cias.first;
-        } else {
-          cia = null;
-        }
-      }
-    }
-  }
+  void setOBM(OBMModel? value) => obm = value;
 
   @action
   Future<bool> save({required UserModel user}) async {

@@ -1,3 +1,5 @@
+import 'package:bsu_control/model/cia_model.dart';
+import 'package:bsu_control/model/team_model.dart';
 import 'package:bsu_control/services/controller/service_controller.dart';
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/core.dart';
@@ -206,7 +208,7 @@ class _ServiceInforPageState extends State<ServiceInforPage> {
                           border: Border.all(color: Colors.grey),
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(5.0)),
-                      child: DropdownButton<String?>(
+                      child: DropdownButton<CiaModel?>(
                           isExpanded: true,
                           value: controller.cia,
                           underline: Container(),
@@ -224,7 +226,7 @@ class _ServiceInforPageState extends State<ServiceInforPage> {
                                       child: Padding(
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 5),
-                                        child: Text(e.toUpperCase(),
+                                        child: Text(e.name.toUpperCase(),
                                             style: Constants.title),
                                       ),
                                     ))
@@ -263,7 +265,7 @@ class _ServiceInforPageState extends State<ServiceInforPage> {
                           border: Border.all(color: Colors.grey),
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(5.0)),
-                      child: DropdownButton<String?>(
+                      child: DropdownButton<TeamModel?>(
                           isExpanded: true,
                           value: controller.team,
                           underline: Container(),
@@ -282,7 +284,7 @@ class _ServiceInforPageState extends State<ServiceInforPage> {
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 5),
                                         child: Text(
-                                          e.toUpperCase(),
+                                          e.name.toUpperCase(),
                                           style: Constants.title,
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,

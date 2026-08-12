@@ -31,7 +31,7 @@ class LimitTableWidget extends StatelessWidget {
               value: limit,
               underline: Container(),
               onChanged: onChange,
-              items: [1, 2, 5, 10, 25, 50, 75, 100]
+              items: [10, 25, 50, 75, 100]
                   .map((e) => DropdownMenuItem(
                         value: e,
                         child: Padding(

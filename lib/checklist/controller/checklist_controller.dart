@@ -7,10 +7,12 @@ import 'package:bsu_control/model/car_changes_model.dart';
 import 'package:bsu_control/model/car_checklist.dart';
 import 'package:bsu_control/model/car_model.dart';
 import 'package:bsu_control/model/check_list_model.dart';
+import 'package:bsu_control/model/cia_model.dart';
 import 'package:bsu_control/model/config_model.dart';
 import 'package:bsu_control/model/item_model.dart';
 import 'package:bsu_control/model/itens_changes_model.dart';
 import 'package:bsu_control/model/obm_model.dart';
+import 'package:bsu_control/model/team_model.dart';
 import 'package:bsu_control/model/user_model.dart';
 import 'package:bsu_control/checklist/repository/checklist_interface.dart';
 import 'package:bsu_control/checklist/repository/checklist_repository.dart';
@@ -142,7 +144,7 @@ abstract class _CheckListControllerBase with Store {
       <ChecklistOutherChange>[].asObservable();
 
   @observable
-  ObservableList<String> teams = <String>[].asObservable();
+  ObservableList<TeamModel> teams = <TeamModel>[].asObservable();
 
   @observable
   ObservableList<ItemModel> materialsConsumedUsed =
@@ -185,10 +187,10 @@ abstract class _CheckListControllerBase with Store {
   String contact = "";
 
   @observable
-  String? cia;
+  CiaModel? cia;
 
   @observable
-  String team = "";
+  TeamModel? team;
 
   @observable
   String pb = "";
@@ -253,7 +255,7 @@ abstract class _CheckListControllerBase with Store {
   List<CarModel> get carsSort {
     return cars
         .where((e) => (cia != null)
-            ? (e.cia.toLowerCase() == cia?.toLowerCase())
+            ? (e.ciaID == cia?.id)
             : (e.obmID.toLowerCase() == obm.id?.toLowerCase()))
         .toList();
   }
@@ -278,8 +280,10 @@ abstract class _CheckListControllerBase with Store {
           .where((e) =>
               (e.prefix.toLowerCase().contains(filter.toLowerCase()) ||
                   e.obm.toLowerCase().contains(filter.toLowerCase()) ||
-                  (e.cia.toLowerCase().contains(filter.toLowerCase())) ||
-                  (e.team.toLowerCase().contains(filter.toLowerCase())) ||
+                  ((e.cia?.name.toLowerCase() ?? '')
+                      .contains(filter.toLowerCase())) ||
+                  ((e.team?.name.toLowerCase() ?? '')
+                      .contains(filter.toLowerCase())) ||
                   (e.state.label.toLowerCase().contains(filter.toLowerCase()))))
           .toList();
 
@@ -394,13 +398,17 @@ abstract class _CheckListControllerBase with Store {
     }
   }
 
-  List<String> teamsValidade({required List<String> teams}) {
+  List<TeamModel> teamsValidade({required List<TeamModel> teams}) {
     if (obm.team.isEmpty) return [];
 
     final list = checklistTodays.map((e) => e.team).toList();
     final result = obm.team.where((e) => !list.contains(e)).toList();
 
-    if (update) result.insert(0, init!.team);
+    if (update) {
+      if (init?.team != null) {
+        result.insert(0, init!.team!);
+      }
+    }
 
     return result;
   }
@@ -506,7 +514,7 @@ abstract class _CheckListControllerBase with Store {
 
         teams.addAll(teamsValidade(teams: obm.team));
 
-        if (teams.isNotEmpty && team.isEmpty) team = teams.last;
+        // if (teams.isNotEmpty && team.isEmpty) team = teams.last;
 
         if (obm.cias.isNotEmpty) {
           cia = obm.cias.first;
@@ -527,10 +535,10 @@ abstract class _CheckListControllerBase with Store {
   }
 
   @action
-  setCia(String? value) => cia = value;
+  setCia(CiaModel? value) => cia = value;
 
   @action
-  setTeam(String? value) => team = value ?? team;
+  setTeam(TeamModel? value) => team = value;
 
   @action
   setContact(String? value) => contact = value ?? '';
@@ -642,7 +650,7 @@ abstract class _CheckListControllerBase with Store {
           state: StateProgress.inprogress,
           obmID: obm.id ?? '',
           obm: obm.prefix,
-          cia: cia?.toLowerCase() ?? '',
+          cia: cia,
           contact: contact,
           changes: [],
           states: states,
@@ -725,7 +733,7 @@ abstract class _CheckListControllerBase with Store {
           messagesErros.add("Insira um contato antes de prosseguir.");
         }
 
-        if (obm.team.isNotEmpty && team == "SELECIONE") {
+        if (obm.team.isNotEmpty && team == null) {
           messagesErros.add("Escolha a guarnição antes de prosseguir.");
         }
 

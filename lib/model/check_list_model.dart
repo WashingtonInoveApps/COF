@@ -7,22 +7,24 @@ import 'package:bsu_control/enum/checklist_enum.dart';
 import 'package:bsu_control/enum/state_enum.dart';
 import 'package:bsu_control/model/car_changes_model.dart';
 import 'package:bsu_control/model/car_checklist.dart';
+import 'package:bsu_control/model/cia_model.dart';
 import 'package:bsu_control/model/file_model.dart';
 import 'package:bsu_control/model/item_model.dart';
 import 'package:bsu_control/model/supply_model.dart';
+import 'package:bsu_control/model/team_model.dart';
 import 'package:bsu_control/model/user_model.dart';
 
 class ChecklistModel {
   UserModel user;
   String pb;
-  String team;
+  TeamModel? team;
   String prefix;
   String startKM;
   String endKM;
   String userID;
   String? id;
   String obs;
-  String cia;
+  CiaModel? cia;
   String obm;
   String contact;
   String obmID;
@@ -52,13 +54,13 @@ class ChecklistModel {
       this.signature,
       this.userID = '',
       this.pb = "",
-      this.cia = '',
+      this.cia,
       this.contact = '',
       this.obmID = '',
       this.dateFinish,
       this.type = ChecklistType.vehicular,
       this.state = StateProgress.inprogress,
-      this.team = "",
+      this.team,
       this.prefix = "",
       this.startKM = "",
       this.endKM = "",
@@ -73,8 +75,8 @@ class ChecklistModel {
       'user': user.toMapResume(),
       'pb': pb,
       'signature': signature?.toMap(),
-      'team': team,
-      'cia': cia,
+      'team': team?.toMap(),
+      'cia': cia?.toMap(),
       'obmID': obmID,
       'contact': contact,
       'prefix': prefix,
@@ -105,9 +107,9 @@ class ChecklistModel {
   factory ChecklistModel.fromMap(Map<String, dynamic> map) {
     return ChecklistModel(
       pb: map['pb'] ?? '',
-      team: map['team'] ?? '',
+      team: map['team'] != null ? TeamModel.fromMap(map['team']) : null,
       userID: map['userID'] ?? '',
-      cia: map['cia'] ?? '',
+      cia: map['cia'] != null ? CiaModel.fromMap(map['cia']) : null,
       obm: map['obm'] ?? '',
       signature: (map['signature'] == null)
           ? null
@@ -158,7 +160,7 @@ class ChecklistModel {
   ChecklistModel copyWith({
     UserModel? user,
     String? pb,
-    String? team,
+    TeamModel? team,
     String? prefix,
     String? startKM,
     String? endKM,
@@ -167,7 +169,7 @@ class ChecklistModel {
     String? obs,
     String? obm,
     FileModel? signature,
-    String? cia,
+    CiaModel? cia,
     String? contact,
     String? obmID,
     bool? enable,

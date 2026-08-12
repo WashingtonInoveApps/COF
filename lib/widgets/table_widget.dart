@@ -39,6 +39,7 @@ class AppDataTable<T> extends StatefulWidget {
   final List<AppColumn<T>> columns;
   final AppDataTableController<T>? controller;
   final ColumnWidthMode columnMode;
+  final int limit;
 
   /// 🔥 função pra identificar cada item (ID)
   final String Function(T item) rowId;
@@ -50,6 +51,7 @@ class AppDataTable<T> extends StatefulWidget {
     this.controller,
     this.columnMode = ColumnWidthMode.auto,
     required this.rowId,
+    required this.limit,
   }) : super(key: key);
 
   @override
@@ -82,30 +84,37 @@ class _AppDataTableState<T> extends State<AppDataTable<T>> {
 
   @override
   Widget build(BuildContext context) {
-    return SfDataGrid(
-      source: dataSource,
-      columnWidthMode: widget.columnMode,
-      gridLinesVisibility: GridLinesVisibility.horizontal,
-      headerGridLinesVisibility: GridLinesVisibility.horizontal,
-      rowsCacheExtent: 50, // 🚀 performance
-      shrinkWrapRows: false,
-      rowHeight: 60,
-      headerRowHeight: 65,
-      verticalScrollPhysics: const ClampingScrollPhysics(),
-      columns: widget.columns.where((e) => e.visible).map((col) {
-        return GridColumn(
-          columnName: col.name,
-          width: col.width ?? double.nan,
-          label: _HeaderCell(
-            label: col.label,
-            color: col.headColor,
-            sortable: col.sortable,
-            onSort: () => dataSource.sortData(col.name),
-            isActive: dataSource.sortColumn == col.name,
-            ascending: dataSource.ascending,
-          ),
-        );
-      }).toList(),
+    final height = ((widget.limit > widget.data.length
+                ? widget.data.length
+                : widget.limit) *
+            60.0) +
+        65;
+    return SizedBox(
+      height: height,
+      child: SfDataGrid(
+        source: dataSource,
+        columnWidthMode: widget.columnMode,
+        gridLinesVisibility: GridLinesVisibility.horizontal,
+        headerGridLinesVisibility: GridLinesVisibility.horizontal,
+        rowsCacheExtent: 50, // 🚀 performance
+        rowHeight: 60,
+        headerRowHeight: 65,
+        verticalScrollPhysics: const NeverScrollableScrollPhysics(),
+        columns: widget.columns.where((e) => e.visible).map((col) {
+          return GridColumn(
+            columnName: col.name,
+            width: col.width ?? double.nan,
+            label: _HeaderCell(
+              label: col.label,
+              color: col.headColor,
+              sortable: col.sortable,
+              onSort: () => dataSource.sortData(col.name),
+              isActive: dataSource.sortColumn == col.name,
+              ascending: dataSource.ascending,
+            ),
+          );
+        }).toList(),
+      ),
     );
   }
 }

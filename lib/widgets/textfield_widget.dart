@@ -47,7 +47,7 @@ class _FieldTextState extends State<FieldText> {
   @override
   Widget build(BuildContext context) {
     final mask = widget.mask ?? [];
-    // if (widget.upper) mask.add(UpperCaseTextFormatter());
+    if (widget.upper) mask.add(UpperCaseTextFormatter());
 
     return Container(
       decoration: BoxDecoration(
@@ -92,11 +92,8 @@ class _FieldTextState extends State<FieldText> {
         keyboardType: widget.inputType,
         obscureText: widget.obscure,
         onSaved: widget.onSaved,
-        textCapitalization: widget.upper
-            ? TextCapitalization.words
-            : widget.low
-                ? TextCapitalization.none
-                : TextCapitalization.sentences,
+        textCapitalization:
+            widget.low ? TextCapitalization.none : TextCapitalization.sentences,
       ),
     );
   }

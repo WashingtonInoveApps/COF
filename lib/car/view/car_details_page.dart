@@ -380,7 +380,8 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                       if (!snapshot.hasData) {
                         return const Center(child: LinearProgressIndicator());
                       } else {
-                        final status = snapshot.data ?? [];
+                        final status =
+                            List<CarStatusModel>.from(snapshot.data ?? []);
 
                         if (status.isEmpty) {
                           return Text(

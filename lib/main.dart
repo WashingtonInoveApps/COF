@@ -133,11 +133,6 @@ class _AppWidgetState extends State<AppWidget> {
           menuTheme: MenuThemeData(
               style: MenuStyle(
             backgroundColor: WidgetStateProperty.all(Colors.white),
-            // minimumSize: WidgetStateProperty.all(
-            //   Size(config.maxWidth, 0),
-            // ),
-            // maximumSize:
-            //     WidgetStateProperty.all(Size(config.maxWidth, double.infinity)),
           )),
           menuButtonTheme: MenuButtonThemeData(
               style: MenuItemButton.styleFrom(
@@ -146,9 +141,9 @@ class _AppWidgetState extends State<AppWidget> {
                   side: BorderSide.none)),
           textButtonTheme: TextButtonThemeData(
             style: TextButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadiusGeometry.circular(5)),
-                side: const BorderSide(color: Constants.primary)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadiusGeometry.circular(5)),
+            ),
           ),
           bottomSheetTheme: BottomSheetThemeData(
               surfaceTintColor: Colors.transparent,

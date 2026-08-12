@@ -46,21 +46,21 @@ extension StateCarProblemsColor on StateCarProblems {
       case StateCarProblems.airconditioning:
         return Colors.blue.shade700;
       case StateCarProblems.electric:
-        return Colors.green;
+        return Colors.green.shade700;
       case StateCarProblems.mechanics:
-        return Colors.orange;
+        return Colors.orange.shade700;
       case StateCarProblems.pneu:
-        return Colors.brown;
+        return Colors.brown.shade700;
       case StateCarProblems.brake:
-        return Colors.yellowAccent;
+        return Colors.yellowAccent.shade700;
       case StateCarProblems.cooling:
-        return Colors.blueGrey;
+        return Colors.blueGrey.shade700;
       case StateCarProblems.engine:
-        return Colors.deepPurple;
+        return Colors.deepPurple.shade700;
       case StateCarProblems.injection:
-        return Colors.pink;
+        return Colors.pink.shade700;
       case StateCarProblems.others:
-        return Colors.red;
+        return Colors.red.shade700;
     }
   }
 }

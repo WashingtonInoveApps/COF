@@ -8,6 +8,8 @@ import 'package:bsu_control/model/car_status_model.dart';
 import 'package:bsu_control/model/file_model.dart';
 import 'package:bsu_control/model/itens_changes_model.dart';
 
+import 'cia_model.dart';
+
 class CarModel {
   String? id;
   String prefix;
@@ -16,7 +18,8 @@ class CarModel {
   String modelPneu;
   String ticket;
   String obmID;
-  String cia;
+  CiaModel? cia;
+  String? ciaID;
   String type;
   String function;
   String obs;
@@ -45,7 +48,8 @@ class CarModel {
       this.ticket = "",
       this.obmID = "",
       this.function = '',
-      this.cia = "",
+      this.cia,
+      this.ciaID,
       this.state = StatusCar.waiting,
       required this.itens,
       required this.changes,
@@ -72,7 +76,8 @@ class CarModel {
         "changes": [],
         "images": [],
         "obmID": obmID,
-        "cia": cia
+        "cia": cia?.toMap(),
+        'ciaID': ciaID,
       };
 
   Map<String, dynamic> toMap() {
@@ -86,7 +91,8 @@ class CarModel {
       'ticket': ticket,
       'function': function,
       'obmID': obmID,
-      "cia": cia,
+      "cia": cia?.toMap(),
+      'ciaID': ciaID,
       'state': state.name,
       'itens': itens.map((x) => x.toMap()).toList(),
       'materials': materials.map((x) => x.toMap()).toList(),
@@ -117,7 +123,8 @@ class CarModel {
         changes: [],
         images: [],
         status: [],
-        cia: map['cia'],
+        cia: (map['cia'] != null) ? CiaModel.fromMap(map['cia']) : null,
+        ciaID: map['ciaID'] ?? '',
         obmID: map['obmID']);
   }
 
@@ -131,7 +138,8 @@ class CarModel {
       modelPneu: map['modelPneu'] ?? '',
       ticket: map['ticket'] ?? '',
       obmID: map['obmID'] ?? '',
-      cia: map['cia'] ?? '',
+      cia: (map['cia'] != null) ? CiaModel.fromMap(map['cia']) : null,
+      ciaID: map['ciaID'] ?? '',
       function: map['function'] ?? '',
       state: CarEnumCore.statusCarFromString(map['state'] as String),
       itens: List<ItensChangesModel>.from(
@@ -174,7 +182,8 @@ class CarModel {
     String? modelPneu,
     String? ticket,
     String? obmID,
-    String? cia,
+    CiaModel? cia,
+    String? ciaID,
     String? function,
     List<ItensChangesModel>? itens,
     List<ItensChangesModel>? materials,
@@ -202,6 +211,7 @@ class CarModel {
       ticket: ticket ?? this.ticket,
       obmID: obmID ?? this.obmID,
       cia: cia ?? this.cia,
+      ciaID: ciaID ?? this.ciaID,
       images: images ?? this.images,
       itens: itens ?? this.itens,
       materials: materials ?? this.materials,

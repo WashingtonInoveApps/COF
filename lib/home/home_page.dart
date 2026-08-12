@@ -9,6 +9,7 @@ import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/enum/state_enum.dart';
 import 'package:bsu_control/home/controller/home_controller.dart';
 import 'package:bsu_control/main.dart';
+import 'package:bsu_control/model/check_list_model.dart';
 import 'package:bsu_control/model/service_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -22,8 +23,6 @@ import 'package:url_launcher/url_launcher_string.dart';
 
 import '../widgets/backgraund_page.dart';
 import '../widgets/card_infor_widget.dart';
-import '../widgets/cars_chart_widget.dart';
-import '../widgets/config_view_widget.dart';
 import '../widgets/limit_table_widget.dart';
 import '../widgets/pagination_widget.dart';
 import '../widgets/table_widget.dart';
@@ -54,9 +53,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     controller = HomeController(config: config);
-
-    controller.setDateRange(
-        dateStart: app.dateStartConfig, dateFinish: app.dateFinishConfig);
+    controller.setOperationDate(value: Core.getOperationalDay(DateTime.now()));
 
     timer = Timer.periodic(const Duration(seconds: 1), (_) {
       controller.setDate(DateTime.now());
@@ -65,11 +62,9 @@ class _HomePageState extends State<HomePage> {
     rec = autorun((_) {
       controller.setLoading(true);
       subscription = controller
-          .listenServices(
-              dateStart: controller.dateReferenceStart,
-              dateFinish: controller.dateReferenceFinish)
+          .listenChecklistPeriod(operationDate: controller.operationDate)
           .listen((result) {
-        controller.setServicesPeriod(result);
+        controller.setChecklistPeriod(result);
         controller.setLoading(false);
       });
     });
@@ -88,6 +83,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     // final expires = Core.verifyExpiresChecklist();
+
     final refresh = (app.version > versionCodeSystem);
 
     return PopScope(
@@ -200,62 +196,6 @@ class _HomePageState extends State<HomePage> {
                                               ],
                                             ),
                                             const Divider(),
-                                            IntrinsicHeight(
-                                              child: Row(
-                                                spacing: 10,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  Expanded(
-                                                    child: Observer(
-                                                        builder: (context) {
-                                                      return CardInfoWidget(
-                                                          label:
-                                                              'Checklist realizados',
-                                                          icon:
-                                                              MdiIcons.checkAll,
-                                                          color: Colors
-                                                              .green.shade700,
-                                                          value: app
-                                                              .checklistsToday
-                                                              .length
-                                                              .toDouble());
-                                                    }),
-                                                  ),
-                                                  Expanded(
-                                                    child: Observer(
-                                                        builder: (context) {
-                                                      return CardInfoWidget(
-                                                          label:
-                                                              'Checklist pendentes',
-                                                          icon: MdiIcons.check,
-                                                          color: Colors
-                                                              .blue.shade700,
-                                                          value: app
-                                                              .checklistTodayPendent
-                                                              .toDouble());
-                                                    }),
-                                                  ),
-                                                  Expanded(
-                                                    child: Observer(
-                                                        builder: (context) {
-                                                      return CardInfoWidget(
-                                                          label:
-                                                              'Novas alterações',
-                                                          icon: MdiIcons
-                                                              .informationOutline,
-                                                          color: Colors
-                                                              .red.shade700,
-                                                          value: app
-                                                              .checklistTodayChanges
-                                                              .toDouble());
-                                                    }),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                            const Divider(),
                                             const SizedBox(
                                               height: 5,
                                             ),
@@ -349,17 +289,6 @@ class _HomePageState extends State<HomePage> {
                                         ),
                                       ),
                                     ),
-                                    Observer(builder: (_) {
-                                      return SizedBox(
-                                        height: 245,
-                                        width: double.infinity,
-                                        child: CarsChart(
-                                          cars: app.carsUsers,
-                                          carsTypes: app.carsTypes,
-                                          legends: false,
-                                        ),
-                                      );
-                                    }),
                                   ],
                                 ),
                               ),
@@ -370,41 +299,13 @@ class _HomePageState extends State<HomePage> {
                                 child: Column(
                                   spacing: 5,
                                   children: [
-                                    Observer(builder: (_) {
-                                      return SizedBox(
-                                        width: double.infinity,
-                                        child: ConfigViewWidget(
-                                          dateStart: app.dateStartConfig,
-                                          dateFinish: app.dateFinishConfig,
-                                          onDateStart: app.setDateStartConfig,
-                                          onDateFinish: app.setDateFinishConfig,
-                                          onReset: () {
-                                            app.cleanExibitionConfig();
-
-                                            controller.setDateRange(
-                                                dateStart: app.dateStartConfig,
-                                                dateFinish:
-                                                    app.dateFinishConfig);
-                                          },
-                                          onChange: () {
-                                            controller.setDateRange(
-                                                dateStart: app.dateStartConfig,
-                                                dateFinish:
-                                                    app.dateFinishConfig);
-                                          },
-                                        ),
-                                      );
-                                    }),
                                     Observer(builder: (context) {
                                       return SizedBox(
                                         height: 300,
                                         child: ChartChangesPeriodWidget(
-                                          dateStart:
-                                              controller.dateReferenceStart,
-                                          dateFinish:
-                                              controller.dateReferenceFinish,
-                                          services: List<ServiceModel>.from(
-                                              controller.servicesPeriod),
+                                          date: controller.operationDate,
+                                          checklists:
+                                              controller.checklistsPeriod,
                                         ),
                                       );
                                     })
@@ -428,9 +329,9 @@ class _HomePageState extends State<HomePage> {
                                 return Text.rich(
                                   TextSpan(text: 'Registros ', children: [
                                     TextSpan(
-                                        text:
-                                            '${Core.formatDate(controller.dateReferenceStart)} - ${Core.formatDate(controller.dateReferenceFinish)}',
-                                        style: Constants.subtitleHint)
+                                        text: Core.formatDate(
+                                            controller.operationDate),
+                                        style: Constants.titleHint)
                                   ]),
                                   style: Constants.title.copyWith(fontSize: 18),
                                 );
@@ -438,7 +339,7 @@ class _HomePageState extends State<HomePage> {
                               Observer(builder: (_) {
                                 return IgnorePointer(
                                   ignoring:
-                                      controller.servicesPeriodSort.isEmpty,
+                                      controller.checklistPeriodSort.isEmpty,
                                   child: Container(
                                     margin: const EdgeInsets.only(top: 10),
                                     width:
@@ -471,10 +372,10 @@ class _HomePageState extends State<HomePage> {
                             if (controller.loading) {
                               return const Center(
                                   child: LinearProgressIndicator());
-                            } else if (controller.servicesPeriodSort.isEmpty) {
+                            } else if (controller.checklistPeriodSort.isEmpty) {
                               return Text(
                                 'Ops ! Nenhum registro encontrado.',
-                                style: Constants.subtitleHint,
+                                style: Constants.titleHint,
                               );
                             } else {
                               return Padding(
@@ -486,19 +387,20 @@ class _HomePageState extends State<HomePage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'Exibindo 1 a ${controller.servicesPeriodSort.length} de ${controller.servicesPeriod.length} entradas',
+                                      'Exibindo 1 a ${controller.checklistPeriodSort.length} de ${controller.checklistsPeriod.length} entradas',
                                       style: Constants.subtitleHint,
                                     ),
                                     Expanded(
-                                      child: AppDataTable<ServiceModel>(
-                                        data: List<ServiceModel>.from(
-                                            controller.servicesPeriodSort),
+                                      child: AppDataTable<ChecklistModel>(
+                                        limit: controller.limit,
+                                        data: List<ChecklistModel>.from(
+                                            controller.checklistPeriodSort),
                                         columnMode: ColumnWidthMode.auto,
                                         columns: [
                                           AppColumn(
                                             width: 50,
                                             name: 'details',
-                                            builder: (service) {
+                                            builder: (checklist) {
                                               return InkWell(
                                                 child: Card(
                                                   margin: EdgeInsets.zero,
@@ -525,161 +427,161 @@ class _HomePageState extends State<HomePage> {
                                               );
                                             },
                                           ),
-                                          AppColumn(
-                                            width: 120,
-                                            name: 'date',
-                                            label: 'Data',
-                                            sortValue: (service) =>
-                                                service.date,
-                                            builder: (service) => Text(
-                                              Core.formatDate(service.date),
-                                              style: Constants.title,
-                                            ),
-                                          ),
-                                          AppColumn(
-                                            width: 100,
-                                            name: 'obm',
-                                            label: 'OBM',
-                                            sortable: true,
-                                            alignment: Alignment.center,
-                                            sortValue: (service) =>
-                                                service.obm.prefix,
-                                            builder: (service) => Text(
-                                                service.obm.prefix,
-                                                style: Constants.title),
-                                          ),
-                                          AppColumn(
-                                            name: 'team',
-                                            label: 'Guarnição',
-                                            sortable: true,
-                                            alignment: Alignment.centerLeft,
-                                            sortValue: (service) =>
-                                                service.team ?? '-',
-                                            builder: (service) => Text(
-                                              service.team ?? '-',
-                                              style: Constants.title,
-                                              maxLines: 2,
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                          ),
-                                          AppColumn(
-                                            name: 'responsable',
-                                            label: 'Responsável',
-                                            sortable: true,
-                                            alignment: Alignment.center,
-                                            sortValue: (service) =>
-                                                '${service.responsable.graduation} ${service.responsable.name}',
-                                            builder: (service) => Text(
-                                              '${service.responsable.graduation} ${service.responsable.name}',
-                                              style: Constants.title,
-                                              maxLines: 2,
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                          ),
-                                          AppColumn(
-                                            width: 120,
-                                            name: 'changesCar',
-                                            label: 'Alt. Viaturas',
-                                            headColor: Colors.red,
-                                            sortable: true,
-                                            alignment: Alignment.center,
-                                            sortValue: (service) =>
-                                                service.changesCar.toString(),
-                                            builder: (service) => Text(
-                                                service.changesCar
-                                                    .toString()
-                                                    .padLeft(2, '0'),
-                                                style: Constants.title),
-                                          ),
-                                          AppColumn(
-                                            width: 120,
-                                            headColor: Colors.orange,
-                                            name: 'changesMaterials',
-                                            label: 'Alt. Materiais',
-                                            sortable: true,
-                                            alignment: Alignment.center,
-                                            sortValue: (service) => service
-                                                .changesMaterials
-                                                .toString(),
-                                            builder: (service) => Text(
-                                                service.changesMaterials
-                                                    .toString()
-                                                    .padLeft(2, '0'),
-                                                style: Constants.title),
-                                          ),
-                                          AppColumn(
-                                            name: 'state',
-                                            label: 'Status',
-                                            sortable: true,
-                                            alignment: Alignment.center,
-                                            sortValue: (service) =>
-                                                service.state.label,
-                                            builder: (service) {
-                                              final state = service.state;
+                                          // AppColumn(
+                                          //   width: 120,
+                                          //   name: 'date',
+                                          //   label: 'Data',
+                                          //   sortValue: (service) =>
+                                          //       service.date,
+                                          //   builder: (service) => Text(
+                                          //     Core.formatDate(service.date),
+                                          //     style: Constants.title,
+                                          //   ),
+                                          // ),
+                                          // AppColumn(
+                                          //   width: 100,
+                                          //   name: 'obm',
+                                          //   label: 'OBM',
+                                          //   sortable: true,
+                                          //   alignment: Alignment.center,
+                                          //   sortValue: (service) =>
+                                          //       service.obm.prefix,
+                                          //   builder: (service) => Text(
+                                          //       service.obm.prefix,
+                                          //       style: Constants.title),
+                                          // ),
+                                          // AppColumn(
+                                          //   name: 'team',
+                                          //   label: 'Guarnição',
+                                          //   sortable: true,
+                                          //   alignment: Alignment.centerLeft,
+                                          //   sortValue: (service) =>
+                                          //       service.team?.name ?? '-',
+                                          //   builder: (service) => Text(
+                                          //     service.team?.name ?? '-',
+                                          //     style: Constants.title,
+                                          //     maxLines: 2,
+                                          //     overflow: TextOverflow.ellipsis,
+                                          //   ),
+                                          // ),
+                                          // AppColumn(
+                                          //   name: 'responsable',
+                                          //   label: 'Responsável',
+                                          //   sortable: true,
+                                          //   alignment: Alignment.center,
+                                          //   sortValue: (service) =>
+                                          //       '${service.responsable.graduation} ${service.responsable.name}',
+                                          //   builder: (service) => Text(
+                                          //     '${service.responsable.graduation} ${service.responsable.name}',
+                                          //     style: Constants.title,
+                                          //     maxLines: 2,
+                                          //     overflow: TextOverflow.ellipsis,
+                                          //   ),
+                                          // ),
+                                          // AppColumn(
+                                          //   width: 120,
+                                          //   name: 'changesCar',
+                                          //   label: 'Alt. Viaturas',
+                                          //   headColor: Colors.red,
+                                          //   sortable: true,
+                                          //   alignment: Alignment.center,
+                                          //   sortValue: (service) =>
+                                          //       service.changesCar.toString(),
+                                          //   builder: (service) => Text(
+                                          //       service.changesCar
+                                          //           .toString()
+                                          //           .padLeft(2, '0'),
+                                          //       style: Constants.title),
+                                          // ),
+                                          // AppColumn(
+                                          //   width: 120,
+                                          //   headColor: Colors.orange,
+                                          //   name: 'changesMaterials',
+                                          //   label: 'Alt. Materiais',
+                                          //   sortable: true,
+                                          //   alignment: Alignment.center,
+                                          //   sortValue: (service) => service
+                                          //       .changesMaterials
+                                          //       .toString(),
+                                          //   builder: (service) => Text(
+                                          //       service.changesMaterials
+                                          //           .toString()
+                                          //           .padLeft(2, '0'),
+                                          //       style: Constants.title),
+                                          // ),
+                                          // AppColumn(
+                                          //   name: 'state',
+                                          //   label: 'Status',
+                                          //   sortable: true,
+                                          //   alignment: Alignment.center,
+                                          //   sortValue: (service) =>
+                                          //       service.state.label,
+                                          //   builder: (service) {
+                                          //     final state = service.state;
 
-                                              return TagWidget(
-                                                icon: state.icon,
-                                                label: state.label,
-                                                color: state.color,
-                                              );
-                                            },
-                                          ),
-                                          AppColumn(
-                                            name: 'contact',
-                                            label: 'Contato',
-                                            sortValue: (service) =>
-                                                service.contact,
-                                            builder: (service) {
-                                              return InkWell(
-                                                child: Card(
-                                                  margin: EdgeInsets.zero,
-                                                  child: Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                            5.0),
-                                                    child: Row(
-                                                      spacing: 5,
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        Icon(MdiIcons.whatsapp,
-                                                            color:
-                                                                Colors.green),
-                                                        Expanded(
-                                                          child: Text(
-                                                            service.contact,
-                                                            style: Constants
-                                                                .subtitle,
-                                                            maxLines: 2,
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ),
-                                                onTap: () async {
-                                                  final contact = service
-                                                      .contact
-                                                      .replaceAll(' ', '')
-                                                      .replaceAll('(', '')
-                                                      .replaceAll(')', '')
-                                                      .replaceAll('-', '');
+                                          //     return TagWidget(
+                                          //       icon: state.icon,
+                                          //       label: state.label,
+                                          //       color: state.color,
+                                          //     );
+                                          //   },
+                                          // ),
+                                          // AppColumn(
+                                          //   name: 'contact',
+                                          //   label: 'Contato',
+                                          //   sortValue: (service) =>
+                                          //       service.contact,
+                                          //   builder: (service) {
+                                          //     return InkWell(
+                                          //       child: Card(
+                                          //         margin: EdgeInsets.zero,
+                                          //         child: Padding(
+                                          //           padding:
+                                          //               const EdgeInsets.all(
+                                          //                   5.0),
+                                          //           child: Row(
+                                          //             spacing: 5,
+                                          //             mainAxisAlignment:
+                                          //                 MainAxisAlignment
+                                          //                     .center,
+                                          //             children: [
+                                          //               Icon(MdiIcons.whatsapp,
+                                          //                   color:
+                                          //                       Colors.green),
+                                          //               Expanded(
+                                          //                 child: Text(
+                                          //                   service.contact,
+                                          //                   style: Constants
+                                          //                       .subtitle,
+                                          //                   maxLines: 2,
+                                          //                   overflow:
+                                          //                       TextOverflow
+                                          //                           .ellipsis,
+                                          //                 ),
+                                          //               ),
+                                          //             ],
+                                          //           ),
+                                          //         ),
+                                          //       ),
+                                          //       onTap: () async {
+                                          //         final contact = service
+                                          //             .contact
+                                          //             .replaceAll(' ', '')
+                                          //             .replaceAll('(', '')
+                                          //             .replaceAll(')', '')
+                                          //             .replaceAll('-', '');
 
-                                                  final path = kIsWeb
-                                                      ? "https://wa.me/+55$contact/?text=${Uri.encodeFull('Olá, tudo bem ?')}"
-                                                      : "whatsapp://send?phone=+55$contact&text=${Uri.encodeFull('Olá, tudo bem ?')}";
+                                          //         final path = kIsWeb
+                                          //             ? "https://wa.me/+55$contact/?text=${Uri.encodeFull('Olá, tudo bem ?')}"
+                                          //             : "whatsapp://send?phone=+55$contact&text=${Uri.encodeFull('Olá, tudo bem ?')}";
 
-                                                  await launchUrlString(path,
-                                                      mode: LaunchMode
-                                                          .externalApplication);
-                                                },
-                                              );
-                                            },
-                                          ),
+                                          //         await launchUrlString(path,
+                                          //             mode: LaunchMode
+                                          //                 .externalApplication);
+                                          //       },
+                                          //     );
+                                          //   },
+                                          // ),
                                         ],
                                         rowId: (service) {
                                           return service.id ?? 'err';
@@ -708,7 +610,7 @@ class _HomePageState extends State<HomePage> {
                                                 limit: controller.limit,
                                                 page: controller.page,
                                                 length: controller
-                                                    .servicesPeriodSort.length,
+                                                    .checklistPeriodSort.length,
                                                 onChange: controller.setPage,
                                               );
                                             }),

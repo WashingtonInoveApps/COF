@@ -121,38 +121,6 @@ mixin _$AppController on _AppControllerBase, Store {
     });
   }
 
-  late final _$dateStartConfigAtom =
-      Atom(name: '_AppControllerBase.dateStartConfig', context: context);
-
-  @override
-  DateTime get dateStartConfig {
-    _$dateStartConfigAtom.reportRead();
-    return super.dateStartConfig;
-  }
-
-  @override
-  set dateStartConfig(DateTime value) {
-    _$dateStartConfigAtom.reportWrite(value, super.dateStartConfig, () {
-      super.dateStartConfig = value;
-    });
-  }
-
-  late final _$dateFinishConfigAtom =
-      Atom(name: '_AppControllerBase.dateFinishConfig', context: context);
-
-  @override
-  DateTime get dateFinishConfig {
-    _$dateFinishConfigAtom.reportRead();
-    return super.dateFinishConfig;
-  }
-
-  @override
-  set dateFinishConfig(DateTime value) {
-    _$dateFinishConfigAtom.reportWrite(value, super.dateFinishConfig, () {
-      super.dateFinishConfig = value;
-    });
-  }
-
   late final _$userAtom =
       Atom(name: '_AppControllerBase.user', context: context);
 
@@ -293,39 +261,6 @@ mixin _$AppController on _AppControllerBase, Store {
       ActionController(name: '_AppControllerBase', context: context);
 
   @override
-  dynamic setDateStartConfig(DateTime? value) {
-    final _$actionInfo = _$_AppControllerBaseActionController.startAction(
-        name: '_AppControllerBase.setDateStartConfig');
-    try {
-      return super.setDateStartConfig(value);
-    } finally {
-      _$_AppControllerBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  dynamic setDateFinishConfig(DateTime? value) {
-    final _$actionInfo = _$_AppControllerBaseActionController.startAction(
-        name: '_AppControllerBase.setDateFinishConfig');
-    try {
-      return super.setDateFinishConfig(value);
-    } finally {
-      _$_AppControllerBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  void cleanExibitionConfig() {
-    final _$actionInfo = _$_AppControllerBaseActionController.startAction(
-        name: '_AppControllerBase.cleanExibitionConfig');
-    try {
-      return super.cleanExibitionConfig();
-    } finally {
-      _$_AppControllerBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
   dynamic setUser(UserModel value) {
     final _$actionInfo = _$_AppControllerBaseActionController.startAction(
         name: '_AppControllerBase.setUser');
@@ -421,8 +356,6 @@ mixin _$AppController on _AppControllerBase, Store {
 version: ${version},
 width: ${width},
 router: ${router},
-dateStartConfig: ${dateStartConfig},
-dateFinishConfig: ${dateFinishConfig},
 user: ${user},
 menuOpen: ${menuOpen},
 loading: ${loading},

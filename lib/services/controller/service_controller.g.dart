@@ -101,13 +101,13 @@ mixin _$ServiceController on _ServiceControllerBase, Store {
       Atom(name: '_ServiceControllerBase.cia', context: context);
 
   @override
-  String? get cia {
+  CiaModel? get cia {
     _$ciaAtom.reportRead();
     return super.cia;
   }
 
   @override
-  set cia(String? value) {
+  set cia(CiaModel? value) {
     _$ciaAtom.reportWrite(value, super.cia, () {
       super.cia = value;
     });
@@ -117,13 +117,13 @@ mixin _$ServiceController on _ServiceControllerBase, Store {
       Atom(name: '_ServiceControllerBase.team', context: context);
 
   @override
-  String? get team {
+  TeamModel? get team {
     _$teamAtom.reportRead();
     return super.team;
   }
 
   @override
-  set team(String? value) {
+  set team(TeamModel? value) {
     _$teamAtom.reportWrite(value, super.team, () {
       super.team = value;
     });
@@ -181,13 +181,13 @@ mixin _$ServiceController on _ServiceControllerBase, Store {
       Atom(name: '_ServiceControllerBase.teams', context: context);
 
   @override
-  ObservableList<String> get teams {
+  ObservableList<TeamModel> get teams {
     _$teamsAtom.reportRead();
     return super.teams;
   }
 
   @override
-  set teams(ObservableList<String> value) {
+  set teams(ObservableList<TeamModel> value) {
     _$teamsAtom.reportWrite(value, super.teams, () {
       super.teams = value;
     });
@@ -287,7 +287,7 @@ mixin _$ServiceController on _ServiceControllerBase, Store {
   }
 
   @override
-  void setCia(String? value) {
+  void setCia(CiaModel? value) {
     final _$actionInfo = _$_ServiceControllerBaseActionController.startAction(
         name: '_ServiceControllerBase.setCia');
     try {
@@ -298,7 +298,7 @@ mixin _$ServiceController on _ServiceControllerBase, Store {
   }
 
   @override
-  void setTeam(String? value) {
+  void setTeam(TeamModel? value) {
     final _$actionInfo = _$_ServiceControllerBaseActionController.startAction(
         name: '_ServiceControllerBase.setTeam');
     try {

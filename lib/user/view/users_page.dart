@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/core.dart';
@@ -14,6 +16,7 @@ import 'package:mobx/mobx.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
+import '../../model/cia_model.dart';
 import '../../widgets/backgraund_page.dart';
 import '../../widgets/limit_table_widget.dart';
 import '../../widgets/pagination_widget.dart';
@@ -48,7 +51,7 @@ class _UsersPageState extends State<UsersPage> {
     );
 
     reac = autorun((_) {
-      controller.setUsers(controller.setUsers(List<UserModel>.from(app.users)));
+      controller.setUsers(List<UserModel>.from(app.users));
     });
   }
 
@@ -114,181 +117,178 @@ class _UsersPageState extends State<UsersPage> {
               Observer(builder: (context) {
                 final obms = List<OBMModel>.from(app.obms);
                 final users = List<UserModel>.from(controller.usersSorts);
-                return Container(
-                  width: double.infinity,
-                  height: Core.calculateTableHeight(users.length),
-                  constraints: const BoxConstraints(minHeight: 250),
-                  child: AppDataTable<UserModel>(
-                    data: users,
-                    columnMode: ColumnWidthMode.auto,
-                    columns: [
-                      AppColumn(
-                        width: 60,
-                        name: 'enable',
-                        visible: app.user.admin,
-                        hasLoading: true,
-                        builder: (user) {
-                          return Switch(
-                              activeThumbColor: Constants.primary,
-                              value: user.enable,
-                              onChanged: (value) async {
-                                tableController.setRowLoading(user, true);
-                                await controller
-                                    .update(user: user.copyWith(enable: value))
-                                    .catchError((_) {});
-                                tableController.setRowLoading(user, false);
-                              });
-                        },
-                      ),
-                      AppColumn(
-                        width: 50,
-                        name: 'details',
-                        builder: (user) {
-                          return InkWell(
-                            child: Card(
-                              margin: EdgeInsets.zero,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius:
-                                      BorderRadiusGeometry.circular(100)),
-                              child: const Padding(
-                                padding: EdgeInsets.all(5.0),
-                                child: Icon(Icons.search,
-                                    size: 20, color: Colors.green),
-                              ),
+                return AppDataTable<UserModel>(
+                  data: users,
+                  limit: controller.limit,
+                  columnMode: ColumnWidthMode.auto,
+                  columns: [
+                    AppColumn(
+                      width: 60,
+                      name: 'enable',
+                      visible: app.user.admin,
+                      hasLoading: true,
+                      builder: (user) {
+                        return Switch(
+                            activeThumbColor: Constants.primary,
+                            value: user.enable,
+                            onChanged: (value) async {
+                              tableController.setRowLoading(user, true);
+
+                              await controller
+                                  .update(
+                                      user: user.copyWith(
+                                    enable: value,
+                                  ))
+                                  .catchError((_) {});
+                              tableController.setRowLoading(user, false);
+                            });
+                      },
+                    ),
+                    AppColumn(
+                      width: 50,
+                      name: 'details',
+                      builder: (user) {
+                        return InkWell(
+                          child: Card(
+                            margin: EdgeInsets.zero,
+                            shape: RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadiusGeometry.circular(100)),
+                            child: const Padding(
+                              padding: EdgeInsets.all(5.0),
+                              child: Icon(Icons.search,
+                                  size: 20, color: Colors.green),
                             ),
-                            onTap: () {
-                              app.setRouter(6);
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => UserPageRegister(
-                                        user: user,
-                                      )));
-                            },
-                          );
-                        },
+                          ),
+                          onTap: () {
+                            app.setRouter(7);
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => UserPageRegister(
+                                      user: user,
+                                    )));
+                          },
+                        );
+                      },
+                    ),
+                    AppColumn(
+                      width: 120,
+                      name: 'graduation',
+                      label: 'Graduação',
+                      sortValue: (user) => user.graduation,
+                      builder: (user) => Text(
+                        user.graduation,
+                        style: Constants.title,
                       ),
-                      AppColumn(
-                        width: 120,
-                        name: 'graduation',
-                        label: 'Graduação',
-                        sortValue: (user) => user.graduation,
-                        builder: (user) => Text(
-                          user.graduation,
-                          style: Constants.subtitle,
-                        ),
+                    ),
+                    AppColumn(
+                      width: 300,
+                      name: 'name',
+                      label: 'Nome',
+                      sortable: true,
+                      alignment: Alignment.centerLeft,
+                      sortValue: (user) => user.name,
+                      builder: (user) => Core.boldFirstName(
+                          name: user.name,
+                          fullName: user.fullname,
+                          style: Constants.title),
+                    ),
+                    AppColumn(
+                      name: 'registration',
+                      label: 'Matrícula',
+                      sortValue: (user) => user.registration,
+                      builder: (user) => Text(
+                        user.registration,
+                        style: Constants.title,
                       ),
-                      AppColumn(
-                        width: 300,
-                        name: 'name',
-                        label: 'Nome',
-                        sortable: true,
-                        alignment: Alignment.centerLeft,
-                        sortValue: (user) => user.name,
-                        builder: (user) => Core.boldFirstName(
-                            name: user.name,
-                            fullName: user.fullname,
-                            style: Constants.subtitle),
-                      ),
-                      AppColumn(
-                        name: 'registration',
-                        label: 'Matrícula',
-                        sortValue: (user) => user.registration,
-                        builder: (user) => Text(
-                          user.registration,
-                          style: Constants.subtitle,
-                        ),
-                      ),
-                      AppColumn(
-                        width: 80,
-                        name: 'obm',
-                        label: 'OBM',
-                        sortValue: (user) {
-                          final obm =
-                              obms.firstWhere((e) => e.id == user.obmID);
+                    ),
+                    AppColumn(
+                      width: 80,
+                      name: 'obm',
+                      label: 'OBM',
+                      sortValue: (user) {
+                        final obm = obms.firstWhere((e) => e.id == user.obmID);
 
-                          return obm.name;
-                        },
-                        builder: (user) {
-                          final obm =
-                              obms.firstWhere((e) => e.id == user.obmID);
+                        return obm.name;
+                      },
+                      builder: (user) {
+                        final obm = obms.firstWhere((e) => e.id == user.obmID);
 
-                          return Text(
-                            obm.prefix.toUpperCase(),
-                            style: Constants.subtitle,
-                          );
-                        },
-                      ),
-                      AppColumn(
-                        name: 'cia',
-                        label: 'Companhia',
-                        sortValue: (user) => user.cia,
-                        builder: (user) {
-                          return Text(
-                            user.cia.toUpperCase(),
-                            style: Constants.subtitle,
-                          );
-                        },
-                      ),
-                      AppColumn(
-                        width: 300,
-                        alignment: Alignment.centerLeft,
-                        name: 'email',
-                        label: 'E-mail',
-                        sortValue: (user) => user.email,
-                        builder: (user) {
-                          return Text(
-                            user.email,
-                            style: Constants.subtitle,
-                          );
-                        },
-                      ),
-                      AppColumn(
-                        name: 'contact',
-                        label: 'Contato',
-                        sortValue: (user) => user.contact,
-                        builder: (user) {
-                          return InkWell(
-                            child: Card(
-                              margin: EdgeInsets.zero,
-                              child: Padding(
-                                padding: const EdgeInsets.all(5.0),
-                                child: Row(
-                                  spacing: 5,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(MdiIcons.whatsapp,
-                                        color: Colors.green),
-                                    Expanded(
-                                      child: Text(
-                                        user.contact,
-                                        style: Constants.subtitle,
-                                      ),
+                        return Text(
+                          obm.prefix.toUpperCase(),
+                          style: Constants.title,
+                        );
+                      },
+                    ),
+                    AppColumn(
+                      name: 'cia',
+                      label: 'Companhia',
+                      sortValue: (user) => user.cia?.name ?? '',
+                      builder: (user) {
+                        return Text(
+                          user.cia?.name.toUpperCase() ?? '-',
+                          style: Constants.title,
+                        );
+                      },
+                    ),
+                    AppColumn(
+                      width: 300,
+                      alignment: Alignment.centerLeft,
+                      name: 'email',
+                      label: 'E-mail',
+                      sortValue: (user) => user.email,
+                      builder: (user) {
+                        return Text(
+                          user.email,
+                          style: Constants.title,
+                        );
+                      },
+                    ),
+                    AppColumn(
+                      name: 'contact',
+                      label: 'Contato',
+                      sortValue: (user) => user.contact,
+                      builder: (user) {
+                        return InkWell(
+                          child: Card(
+                            margin: EdgeInsets.zero,
+                            child: Padding(
+                              padding: const EdgeInsets.all(5.0),
+                              child: Row(
+                                spacing: 5,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(MdiIcons.whatsapp, color: Colors.green),
+                                  Expanded(
+                                    child: Text(
+                                      user.contact,
+                                      style: Constants.title,
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
                             ),
-                            onTap: () async {
-                              final contact = user.contact
-                                  .replaceAll(' ', '')
-                                  .replaceAll('(', '')
-                                  .replaceAll(')', '')
-                                  .replaceAll('-', '');
+                          ),
+                          onTap: () async {
+                            final contact = user.contact
+                                .replaceAll(' ', '')
+                                .replaceAll('(', '')
+                                .replaceAll(')', '')
+                                .replaceAll('-', '');
 
-                              final path = kIsWeb
-                                  ? "https://wa.me/+55$contact/?text=${Uri.encodeFull('Olá, tudo bem ?')}"
-                                  : "whatsapp://send?phone=+55$contact&text=${Uri.encodeFull('Olá, tudo bem ?')}";
+                            final path = kIsWeb
+                                ? "https://wa.me/+55$contact/?text=${Uri.encodeFull('Olá, tudo bem ?')}"
+                                : "whatsapp://send?phone=+55$contact&text=${Uri.encodeFull('Olá, tudo bem ?')}";
 
-                              await launchUrlString(path,
-                                  mode: LaunchMode.externalApplication);
-                            },
-                          );
-                        },
-                      ),
-                    ],
-                    rowId: (user) {
-                      return user.id ?? 'err';
-                    },
-                  ),
+                            await launchUrlString(path,
+                                mode: LaunchMode.externalApplication);
+                          },
+                        );
+                      },
+                    ),
+                  ],
+                  rowId: (user) {
+                    return user.id ?? 'err';
+                  },
                 );
               }),
               const SizedBox(

@@ -58,13 +58,13 @@ mixin _$CarRegisterController on _CarRegisterControllerBase, Store {
       Atom(name: '_CarRegisterControllerBase.cia', context: context);
 
   @override
-  String? get cia {
+  CiaModel? get cia {
     _$ciaAtom.reportRead();
     return super.cia;
   }
 
   @override
-  set cia(String? value) {
+  set cia(CiaModel? value) {
     _$ciaAtom.reportWrite(value, super.cia, () {
       super.cia = value;
     });
@@ -320,7 +320,7 @@ mixin _$CarRegisterController on _CarRegisterControllerBase, Store {
   }
 
   @override
-  void setCia(String? value) {
+  void setCia(CiaModel? value) {
     final _$actionInfo = _$_CarRegisterControllerBaseActionController
         .startAction(name: '_CarRegisterControllerBase.setCia');
     try {

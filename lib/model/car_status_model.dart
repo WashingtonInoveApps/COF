@@ -39,7 +39,7 @@ class CarStatusModel {
       'description': description,
       'date': date.millisecondsSinceEpoch,
       'value': value,
-      'referenceYear': date.year.toString(),
+      'referenceYear': referenceYear,
       'user': user.toMapResume(),
       'details': details?.map((e) => e.toMap()).toList(),
       'local': local,
@@ -49,20 +49,25 @@ class CarStatusModel {
   factory CarStatusModel.fromMap(Map<String, dynamic> map) {
     return CarStatusModel(
       id: map['id'],
-      type: (map['type'] == null)
-          ? null
-          : CarEnumCore.stateCarProblemsFromString(map['type']),
+      type: map['type'] != null
+          ? CarEnumCore.stateCarProblemsFromString(map['type'])
+          : null,
       carID: map['carID'] ?? '',
       referenceYear: map['referenceYear'] ?? '',
       description: map['description'] ?? '',
-      state: CarEnumCore.statusCarFromString(map['state'] as String),
+      state: CarEnumCore.statusCarFromString(map['state']),
       date: DateTime.fromMillisecondsSinceEpoch(map['date']),
       value: map['value'] ?? false,
-      user: UserModel.fromMapResume(map['user']),
-      details: (map['details'] != null)
-          ? List<CarStatusDetailsModel>.from(
-              map['details']?.map((e) => CarStatusDetailsModel.fromMap(e)))
-          : null,
+      user: UserModel.fromMapResume(
+        Map<String, dynamic>.from(map['user']),
+      ),
+      details: (map['details'] as List?)
+          ?.map(
+            (e) => CarStatusDetailsModel.fromMap(
+              Map<String, dynamic>.from(e),
+            ),
+          )
+          .toList(),
       local: map['local'] ?? '',
     );
   }
@@ -82,6 +87,8 @@ class CarStatusModel {
     UserModel? user,
     String? local,
     StatusCar? state,
+    String? referenceYear,
+    List<CarStatusDetailsModel>? details,
   }) {
     return CarStatusModel(
       id: id ?? this.id,
@@ -93,6 +100,8 @@ class CarStatusModel {
       value: value ?? this.value,
       user: user ?? this.user,
       local: local ?? this.local,
+      referenceYear: referenceYear ?? this.referenceYear,
+      details: details ?? this.details,
     );
   }
 }

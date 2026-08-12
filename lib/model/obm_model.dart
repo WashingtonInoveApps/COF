@@ -1,12 +1,15 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
+import 'package:bsu_control/model/cia_model.dart';
+import 'package:bsu_control/model/team_model.dart';
+
 class OBMModel {
   String? id;
   String prefix;
   String name;
-  List<String> team;
-  List<String> cias;
+  List<TeamModel> team;
+  List<CiaModel> cias;
 
   OBMModel({
     this.id,
@@ -21,8 +24,8 @@ class OBMModel {
       'id': id,
       'prefix': prefix,
       'name': name,
-      'team': team,
-      'cias': cias,
+      'team': team.map((e) => e.toMap()).toList(),
+      'cias': cias.map((e) => e.toMap()).toList(),
     };
   }
 
@@ -36,11 +39,14 @@ class OBMModel {
 
   factory OBMModel.fromMap(Map<String, dynamic> map) {
     return OBMModel(
-        id: map['id'],
-        prefix: map['prefix'] ?? '',
-        name: map['name'] ?? '',
-        team: List<String>.from((map['team'])),
-        cias: List<String>.from((map['cias'])));
+      id: map['id'],
+      prefix: map['prefix'] ?? '',
+      name: map['name'] ?? '',
+      team: List<TeamModel>.from(
+          (map['team'] as List).map((e) => TeamModel.fromMap(e))),
+      cias: List<CiaModel>.from(
+          (map['cias'] as List).map((e) => CiaModel.fromMap(e))),
+    );
   }
 
   factory OBMModel.fromMapResume(Map<String, dynamic> map) {

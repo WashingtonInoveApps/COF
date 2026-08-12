@@ -1,5 +1,6 @@
 import 'package:bsu_control/car/controller/car_register_controller.dart';
 import 'package:bsu_control/core/constants.dart';
+import 'package:bsu_control/model/cia_model.dart';
 import 'package:bsu_control/model/obm_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -126,7 +127,7 @@ class _CarRegisterInforPageState extends State<CarRegisterInforPage> {
                             border: Border.all(color: Colors.grey),
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(5.0)),
-                        child: DropdownButton<String?>(
+                        child: DropdownButton<CiaModel?>(
                             isExpanded: true,
                             value: register.cia,
                             underline: Container(),
@@ -145,7 +146,7 @@ class _CarRegisterInforPageState extends State<CarRegisterInforPage> {
                                               padding:
                                                   const EdgeInsets.symmetric(
                                                       horizontal: 5),
-                                              child: Text(e.toUpperCase(),
+                                              child: Text(e.name.toUpperCase(),
                                                   style: Constants.title),
                                             ),
                                           ))

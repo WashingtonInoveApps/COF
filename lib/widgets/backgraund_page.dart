@@ -109,9 +109,9 @@ class _BackgraundPageState extends State<BackgraundPage> {
                             (_) => false)
                         .then((_) {
                       controller.setRouter(0);
-                      controller.setDateStartConfig(
-                          DateTime.now().subtract(const Duration(days: 1)));
-                      controller.setDateFinishConfig(DateTime.now());
+                      // controller.setDateStartConfig(
+                      //     DateTime.now().subtract(const Duration(days: 1)));
+                      // controller.setDateFinishConfig(DateTime.now());
                     });
                     break;
                   default:
@@ -168,45 +168,6 @@ class _BackgraundPageState extends State<BackgraundPage> {
                       style: Constants.titleButton,
                     ),
                   ),
-                  // MenuAnchor(
-                  //     builder: (context, controller, child) {
-                  //       return ElevatedButton(
-                  //         style:
-                  //             style(router: this.controller.router, select: 2),
-                  //         onPressed: () {
-                  //           controller.isOpen
-                  //               ? controller.close()
-                  //               : controller.open();
-                  //         },
-                  //         child: Text(
-                  //           'Serviços',
-                  //           style: Constants.titleButton,
-                  //         ),
-                  //       );
-                  //     },
-                  //     menuChildren: [
-                  //       MenuItemButton(
-                  //         child: Text(
-                  //           'Registros',
-                  //           style: Constants.title,
-                  //         ),
-                  //         onPressed: () {},
-                  //       ),
-                  //       MenuItemButton(
-                  //         child: Text(
-                  //           'Meu registros',
-                  //           style: Constants.title,
-                  //         ),
-                  //         onPressed: () {},
-                  //       ),
-                  //       MenuItemButton(
-                  //         child: Text(
-                  //           'Novo registro',
-                  //           style: Constants.title,
-                  //         ),
-                  //         onPressed: () {},
-                  //       ),
-                  //     ]),
                   MenuAnchor(
                       builder: (context, controller, child) {
                         return ElevatedButton(
@@ -441,7 +402,7 @@ class _BackgraundPageState extends State<BackgraundPage> {
                 children: [
                   Expanded(
                     child: SingleChildScrollView(
-                      physics: const BouncingScrollPhysics(),
+                      physics: const ClampingScrollPhysics(),
                       child: Column(
                         children: [
                           Row(

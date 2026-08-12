@@ -107,7 +107,7 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
                           style: Constants.title.copyWith(fontSize: 18),
                         ),
                         Text(
-                          checklist.cia.toUpperCase(),
+                          checklist.cia?.name ?? '',
                           style: Constants.title,
                         ),
                       ],

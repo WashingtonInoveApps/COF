@@ -1,7 +1,10 @@
+import 'dart:developer';
+
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/validation.dart';
 import 'package:bsu_control/main.dart';
+import 'package:bsu_control/model/cia_model.dart';
 import 'package:bsu_control/model/obm_model.dart';
 import 'package:bsu_control/model/user_model.dart';
 import 'package:bsu_control/user/view/users_page.dart';
@@ -61,7 +64,7 @@ class _UserPageRegisterState extends State<UserPageRegister> {
   }
 
   void closePage(BuildContext context) {
-    app.setRouter(6);
+    app.setRouter(7);
     Navigator.of(context).pop();
   }
 
@@ -88,9 +91,7 @@ class _UserPageRegisterState extends State<UserPageRegister> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      register
-                          ? "Registro de usuário"
-                          : "Informações do usuário",
+                      register ? "Novo registro" : "Informações do usuário",
                       style: Constants.title.copyWith(fontSize: 18),
                     ),
                     const Divider(),
@@ -138,89 +139,108 @@ class _UserPageRegisterState extends State<UserPageRegister> {
                       child: Observer(builder: (_) {
                         return IgnorePointer(
                           ignoring: !app.user.admin,
-                          child: DropdownButton<OBMModel>(
+                          child: DropdownButton<OBMModel?>(
                               isExpanded: true,
                               value: controller.obm,
                               underline: Container(),
                               onChanged: controller.setOBM,
-                              items: app.obms
-                                  .map((e) => DropdownMenuItem(
-                                        value: e,
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 5),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Text(
-                                                e.prefix,
-                                                style: Constants.title,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                              Text(
-                                                e.name,
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                                style: Constants.subtitle
-                                                    .copyWith(
-                                                        color: Colors.grey),
-                                              ),
-                                            ],
+                              items: [
+                                DropdownMenuItem(
+                                    value: null,
+                                    child: Text(
+                                      'Selecione',
+                                      style: Constants.title,
+                                    )),
+                                ...app.obms
+                                    .map((e) => DropdownMenuItem(
+                                          value: e,
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 5),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Text(
+                                                  e.prefix,
+                                                  style: Constants.title,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
+                                                Text(
+                                                  e.name,
+                                                  maxLines: 1,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: Constants.subtitle
+                                                      .copyWith(
+                                                          color: Colors.grey),
+                                                ),
+                                              ],
+                                            ),
                                           ),
-                                        ),
-                                      ))
-                                  .toList()),
+                                        ))
+                                    .toList()
+                              ]),
                         );
                       }),
                     ),
-                    Observer(builder: (context) {
-                      return Visibility(
-                          visible: (controller.cia != null),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(
-                                height: 10.0,
-                              ),
-                              Text(
-                                "COMPANHIA",
-                                style: Constants.subtitleHint,
-                              ),
-                              const SizedBox(
-                                height: 5.0,
-                              ),
-                              Container(
-                                height: 50.0,
-                                width: double.infinity,
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 5),
-                                alignment: Alignment.center,
-                                decoration: BoxDecoration(
-                                    border: Border.all(color: Colors.grey),
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(5.0)),
-                                child: DropdownButton<String?>(
-                                    isExpanded: true,
-                                    value: controller.cia,
-                                    underline: Container(),
-                                    onChanged: controller.setCia,
-                                    items: controller.obm.cias
-                                        .map((e) => DropdownMenuItem(
-                                              value: e,
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
+                    Observer(builder: (_) {
+                      return (controller.obm?.cias.isNotEmpty ?? false)
+                          ? Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(
+                                  height: 10.0,
+                                ),
+                                Text(
+                                  "COMPANHIA",
+                                  style: Constants.subtitleHint,
+                                ),
+                                const SizedBox(
+                                  height: 5.0,
+                                ),
+                                Container(
+                                  height: 50.0,
+                                  width: double.infinity,
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 5),
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                      border: Border.all(color: Colors.grey),
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(5.0)),
+                                  child: DropdownButton<CiaModel?>(
+                                      isExpanded: true,
+                                      value: controller.cia,
+                                      underline: Container(),
+                                      onChanged: controller.setCia,
+                                      items: [
+                                        DropdownMenuItem(
+                                            value: null,
+                                            child: Text(
+                                              'Selecione',
+                                              style: Constants.title,
+                                            )),
+                                        ...controller.obm!.cias
+                                            .map((e) => DropdownMenuItem(
+                                                  value: e,
+                                                  child: Padding(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
                                                         horizontal: 5),
-                                                child: Text(e.toUpperCase(),
-                                                    style: Constants.title),
-                                              ),
-                                            ))
-                                        .toList()),
-                              ),
-                            ],
-                          ));
+                                                    child: Text(
+                                                        e.name.toUpperCase(),
+                                                        style: Constants.title),
+                                                  ),
+                                                ))
+                                            .toList()
+                                      ]),
+                                ),
+                              ],
+                            )
+                          : Container();
                     }),
                     const SizedBox(
                       height: 10,
@@ -343,6 +363,7 @@ class _UserPageRegisterState extends State<UserPageRegister> {
                         hint: "Ex.: fulano@cb.ce.gov.br",
                         label: "E-mail",
                         validation: Validation.validatorEmail,
+                        low: true,
                         onSaved: (text) {
                           user.email = text!;
                         },

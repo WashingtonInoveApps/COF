@@ -69,7 +69,8 @@ abstract class _CarControllerBase with Store {
       final filtered = cars
           .where((e) =>
               (e.prefix.toLowerCase().contains(filter.toLowerCase()) ||
-                  (e.cia.toLowerCase().contains(filter.toLowerCase())) ||
+                  ((e.cia?.name.toLowerCase() ?? '')
+                      .contains(filter.toLowerCase())) ||
                   (e.type.toLowerCase().contains(filter.toLowerCase())) ||
                   (e.state.label.toLowerCase().contains(filter.toLowerCase()))))
           .toList();

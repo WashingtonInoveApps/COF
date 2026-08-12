@@ -155,13 +155,13 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
       Atom(name: '_CheckListControllerBase.teams', context: context);
 
   @override
-  ObservableList<String> get teams {
+  ObservableList<TeamModel> get teams {
     _$teamsAtom.reportRead();
     return super.teams;
   }
 
   @override
-  set teams(ObservableList<String> value) {
+  set teams(ObservableList<TeamModel> value) {
     _$teamsAtom.reportWrite(value, super.teams, () {
       super.teams = value;
     });
@@ -348,13 +348,13 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
       Atom(name: '_CheckListControllerBase.cia', context: context);
 
   @override
-  String? get cia {
+  CiaModel? get cia {
     _$ciaAtom.reportRead();
     return super.cia;
   }
 
   @override
-  set cia(String? value) {
+  set cia(CiaModel? value) {
     _$ciaAtom.reportWrite(value, super.cia, () {
       super.cia = value;
     });
@@ -364,13 +364,13 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
       Atom(name: '_CheckListControllerBase.team', context: context);
 
   @override
-  String get team {
+  TeamModel? get team {
     _$teamAtom.reportRead();
     return super.team;
   }
 
   @override
-  set team(String value) {
+  set team(TeamModel? value) {
     _$teamAtom.reportWrite(value, super.team, () {
       super.team = value;
     });
@@ -829,7 +829,7 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
   }
 
   @override
-  dynamic setCia(String? value) {
+  dynamic setCia(CiaModel? value) {
     final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
         name: '_CheckListControllerBase.setCia');
     try {
@@ -840,7 +840,7 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
   }
 
   @override
-  dynamic setTeam(String? value) {
+  dynamic setTeam(TeamModel? value) {
     final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
         name: '_CheckListControllerBase.setTeam');
     try {

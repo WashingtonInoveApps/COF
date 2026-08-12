@@ -49,11 +49,11 @@ abstract class _AppControllerBase with Store {
   @observable
   int router = 0;
 
-  @observable
-  DateTime dateStartConfig = DateTime.now().subtract(const Duration(days: 1));
+  // @observable
+  // DateTime dateStartConfig = DateTime.now().subtract(const Duration(days: 1));
 
-  @observable
-  DateTime dateFinishConfig = DateTime.now();
+  // @observable
+  // DateTime dateFinishConfig = DateTime.now();
 
   @observable
   UserModel user = UserModel();
@@ -156,26 +156,27 @@ abstract class _AppControllerBase with Store {
           cars.where((e) => e.obmID == user.obmID).toList());
     } else {
       return List<CarModel>.from(cars
-          .where((e) => e.cia.toLowerCase() == user.cia.toLowerCase())
+          .where(
+              (e) => e.cia?.name.toLowerCase() == user.cia?.name.toLowerCase())
           .toList());
     }
   }
 
-  @action
-  setDateStartConfig(DateTime? value) {
-    dateStartConfig = value ?? dateStartConfig;
-  }
+  // @action
+  // setDateStartConfig(DateTime? value) {
+  //   dateStartConfig = value ?? dateStartConfig;
+  // }
 
-  @action
-  setDateFinishConfig(DateTime? value) {
-    dateFinishConfig = value ?? dateFinishConfig;
-  }
+  // @action
+  // setDateFinishConfig(DateTime? value) {
+  //   dateFinishConfig = value ?? dateFinishConfig;
+  // }
 
-  @action
-  void cleanExibitionConfig() {
-    dateStartConfig = DateTime.now().subtract(const Duration(days: 1));
-    dateFinishConfig = DateTime.now();
-  }
+  // @action
+  // void cleanExibitionConfig() {
+  //   dateStartConfig = DateTime.now().subtract(const Duration(days: 1));
+  //   dateFinishConfig = DateTime.now();
+  // }
 
   @action
   setUser(UserModel value) => user = value;
@@ -229,8 +230,14 @@ abstract class _AppControllerBase with Store {
     result.sort((a, b) => a.prefix.compareTo(b.prefix));
 
     for (final obm in result) {
-      if (obm.cias.isNotEmpty) obm.cias.sort((a, b) => a.compareTo(b));
-      if (obm.team.isNotEmpty) obm.team.sort((a, b) => a.compareTo(b));
+      if (obm.cias.isNotEmpty) {
+        {
+          obm.cias.sort((a, b) => a.name.compareTo(b.name));
+        }
+      }
+      if (obm.team.isNotEmpty) {
+        obm.team.sort((a, b) => a.name.compareTo(b.name));
+      }
     }
 
     obms

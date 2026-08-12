@@ -1,6 +1,8 @@
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/core.dart';
+import 'package:bsu_control/model/cia_model.dart';
 import 'package:bsu_control/model/obm_model.dart';
+import 'package:bsu_control/model/team_model.dart';
 import 'package:bsu_control/model/user_model.dart';
 import 'package:bsu_control/checklist/controller/checklist_controller.dart';
 import 'package:flutter/material.dart';
@@ -198,7 +200,7 @@ class _CheckListInforPageState extends State<CheckListInforPage> {
                           border: Border.all(color: Colors.grey),
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(5.0)),
-                      child: DropdownButton<String?>(
+                      child: DropdownButton<CiaModel?>(
                           isExpanded: true,
                           value: controller.cia,
                           underline: Container(),
@@ -209,8 +211,8 @@ class _CheckListInforPageState extends State<CheckListInforPage> {
                                     child: Padding(
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 5),
-                                      child: Text(e.toUpperCase(),
-                                          style: Constants.title),
+                                      child:
+                                          Text(e.name, style: Constants.title),
                                     ),
                                   ))
                               .toList()),
@@ -247,7 +249,7 @@ class _CheckListInforPageState extends State<CheckListInforPage> {
                           border: Border.all(color: Colors.grey),
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(5.0)),
-                      child: DropdownButton<String?>(
+                      child: DropdownButton<TeamModel?>(
                           isExpanded: true,
                           value: controller.team,
                           underline: Container(),
@@ -259,7 +261,7 @@ class _CheckListInforPageState extends State<CheckListInforPage> {
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 5),
                                       child: Text(
-                                        e.toUpperCase(),
+                                        e.name,
                                         style: Constants.title,
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,

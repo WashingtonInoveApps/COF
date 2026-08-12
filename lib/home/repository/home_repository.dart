@@ -1,11 +1,7 @@
-import 'dart:developer';
-
 import 'package:bsu_control/core/api_client.dart';
 import 'package:bsu_control/core/core.dart';
-import 'package:bsu_control/model/check_list_model.dart';
 import 'package:bsu_control/home/repository/home_interface.dart';
-
-import '../../model/service_model.dart';
+import 'package:bsu_control/model/check_list_model.dart';
 
 class HomeRepository extends APIClient implements IHomeRepository {
   HomeRepository(
@@ -13,98 +9,45 @@ class HomeRepository extends APIClient implements IHomeRepository {
       : super(endpoint: endpoint, appID: appID, test: test);
 
   @override
-  Stream<List<ChecklistModel>> listenChecklistPeriod(
-      {required DateTime referenceDateStart,
-      required DateTime referenceDateFinish}) {
-    try {
-      final start = referenceDateStart
-          .copyWith(
-              hour: 0, second: 0, minute: 0, millisecond: 0, microsecond: 0)
-          .millisecondsSinceEpoch;
-      final finish = referenceDateFinish
-          .copyWith(
-            hour: 23,
-            second: 59,
-            minute: 59,
-          )
-          .millisecondsSinceEpoch;
-
-      if ((referenceDateStart.day == referenceDateFinish.day) &&
-          (referenceDateStart.month == referenceDateFinish.month)) {
-        log('Buscando por única data');
-        return colChecklist
-            .where('referenceDate',
-                isEqualTo: Core.formatDate(referenceDateStart))
-            .snapshots()
-            .map((e) => e.docs.map((doc) {
-                  var checkList = ChecklistModel.fromMap(
-                      doc.data() as Map<String, dynamic>);
-                  checkList.id = doc.id;
-                  return checkList;
-                }).toList());
-      } else {
-        log('Buscando por intervalo de data');
-        return colChecklist
-            .where('date', isGreaterThanOrEqualTo: start)
-            .where('date', isLessThanOrEqualTo: finish)
-            .orderBy('date')
-            .snapshots()
-            .map((e) {
-          return e.docs
-              .map((doc) =>
-                  ChecklistModel.fromMap(doc.data() as Map<String, dynamic>))
-              .toList();
-        });
-      }
-    } catch (e) {
-      return Stream.value([]);
-    }
-  }
-
-  @override
-  Stream<List<ServiceModel>> listenServices({
-    required DateTime referenceDateStart,
-    required DateTime referenceDateFinish,
+  Stream<List<ChecklistModel>> listenChecklistPeriod({
+    required DateTime operationDate,
   }) {
     try {
-      final start = referenceDateStart
-          .copyWith(
-              hour: 0, second: 0, minute: 0, millisecond: 0, microsecond: 0)
-          .millisecondsSinceEpoch;
+      // final start = referenceDateStart
+      //     .copyWith(
+      //         hour: 0, second: 0, minute: 0, millisecond: 0, microsecond: 0)
+      //     .millisecondsSinceEpoch;
+      // final finish = referenceDateFinish
+      //     .copyWith(
+      //       hour: 23,
+      //       second: 59,
+      //       minute: 59,
+      //     )
+      //     .millisecondsSinceEpoch;
 
-      final finish = referenceDateFinish
-          .copyWith(
-            hour: 23,
-            second: 59,
-            minute: 59,
-          )
-          .millisecondsSinceEpoch;
-
-      if ((referenceDateStart.day == referenceDateFinish.day) &&
-          (referenceDateStart.month == referenceDateFinish.month)) {
-        return colServices
-            .where('referenceDate',
-                isEqualTo: Core.formatDate(referenceDateStart))
-            .snapshots()
-            .map((e) => e.docs.map((doc) {
-                  var checkList =
-                      ServiceModel.fromMap(doc.data() as Map<String, dynamic>);
-                  checkList.id = doc.id;
-                  return checkList;
-                }).toList());
-      } else {
-        return colServices
-            .where('date', isGreaterThanOrEqualTo: start)
-            .where('date', isLessThanOrEqualTo: finish)
-            .orderBy('date')
-            .snapshots()
-            .map((e) {
-          return e.docs
-              .map((doc) =>
-                  ServiceModel.fromMap(doc.data() as Map<String, dynamic>))
-              .toList();
-        });
-      }
+      return colChecklist
+          .where('referenceDate', isEqualTo: Core.formatDate(operationDate))
+          .snapshots()
+          .map((e) => e.docs.map((doc) {
+                var checkList =
+                    ChecklistModel.fromMap(doc.data() as Map<String, dynamic>);
+                checkList.id = doc.id;
+                return checkList;
+              }).toList());
+      // } else {
+      //   log('Buscando por intervalo de data');
+      //   return colChecklist
+      //       .where('date', isGreaterThanOrEqualTo: start)
+      //       .where('date', isLessThanOrEqualTo: finish)
+      //       .orderBy('date')
+      //       .snapshots()
+      //       .map((e) {
+      //     return e.docs
+      //         .map((doc) =>
+      //             ChecklistModel.fromMap(doc.data() as Map<String, dynamic>))
+      //         .toList();
+      //   });
+      // }
     } catch (e) {
       return Stream.value([]);
     }

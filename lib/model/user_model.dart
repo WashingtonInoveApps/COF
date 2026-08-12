@@ -1,6 +1,8 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
+import 'cia_model.dart';
+
 class UserModel {
   String? id;
   String name;
@@ -9,7 +11,8 @@ class UserModel {
   String email;
   String graduation;
   String obmID;
-  String cia;
+  String ciaID;
+  CiaModel? cia;
   String fullname;
   String acessToken;
   String codeVerifyPassword;
@@ -24,12 +27,13 @@ class UserModel {
   UserModel({
     this.id,
     this.name = '',
+    this.ciaID = '',
     this.registration = '',
     this.contact = '',
     this.email = '',
     this.graduation = '',
     this.obmID = '',
-    this.cia = '',
+    this.cia,
     this.fullname = '',
     this.acessToken = '',
     this.codeVerifyPassword = '',
@@ -45,12 +49,13 @@ class UserModel {
     return <String, dynamic>{
       'id': id,
       'name': name,
+      'ciaID': ciaID,
       'registration': registration,
       'contact': contact,
       'email': email,
       'graduation': graduation,
       'obmID': obmID,
-      'cia': cia,
+      'cia': cia?.toMapResume(),
       'fullname': fullname,
       'acessToken': acessToken,
       'codeVerifyPassword': codeVerifyPassword,
@@ -67,12 +72,13 @@ class UserModel {
     return <String, dynamic>{
       'id': id,
       'name': name,
+      'ciaID': ciaID,
       'registration': registration,
       'contact': contact,
       'email': email,
       'graduation': graduation,
       'obmID': obmID,
-      'cia': cia,
+      'cia': cia?.toMapResume(),
       'fullname': fullname
     };
   }
@@ -83,10 +89,11 @@ class UserModel {
       name: map['name'] ?? '',
       registration: map['registration'] ?? '',
       contact: map['contact'] ?? '',
+      ciaID: map['ciaID'] ?? '',
       email: map['email'] ?? '',
       graduation: map['graduation'] ?? '',
       obmID: map['obmID'] ?? '',
-      cia: map['cia'] ?? '',
+      cia: (map['cia'] != null) ? CiaModel.fromMap(map['cia']) : null,
       fullname: map['fullname'] ?? '',
       acessToken: map['acessToken'] ?? '',
       codeVerifyPassword: map['codeVerifyPassword'] ?? '',
@@ -108,7 +115,8 @@ class UserModel {
         email: map['email'] ?? '',
         graduation: map['graduation'] ?? '',
         obmID: map['obmID'] ?? '',
-        cia: map['cia'] ?? '',
+        ciaID: map['ciaID'] ?? '',
+        cia: (map['cia'] != null) ? CiaModel.fromMap(map['cia']) : null,
         fullname: map['fullname'] ?? '');
   }
 
@@ -125,8 +133,9 @@ class UserModel {
     String? email,
     String? graduation,
     String? obmID,
-    String? cia,
+    CiaModel? cia,
     String? fullname,
+    String? ciaID,
     String? acessToken,
     String? codeVerifyPassword,
     bool? admin,
@@ -142,6 +151,7 @@ class UserModel {
       registration: registration ?? this.registration,
       contact: contact ?? this.contact,
       email: email ?? this.email,
+      ciaID: ciaID ?? this.ciaID,
       graduation: graduation ?? this.graduation,
       obmID: obmID ?? this.obmID,
       cia: cia ?? this.cia,

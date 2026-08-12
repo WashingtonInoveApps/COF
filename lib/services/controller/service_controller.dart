@@ -1,5 +1,7 @@
 import 'package:bsu_control/enum/services_enum.dart';
+import 'package:bsu_control/model/cia_model.dart';
 import 'package:bsu_control/model/service_model.dart';
+import 'package:bsu_control/model/team_model.dart';
 import 'package:bsu_control/model/user_model.dart';
 import 'package:bsu_control/services/repository/service_interface.dart';
 import 'package:bsu_control/services/repository/service_repository.dart';
@@ -66,10 +68,10 @@ abstract class _ServiceControllerBase with Store {
   String contact = "";
 
   @observable
-  String? cia;
+  CiaModel? cia;
 
   @observable
-  String? team;
+  TeamModel? team;
 
   @observable
   String pb = "";
@@ -81,7 +83,7 @@ abstract class _ServiceControllerBase with Store {
   OBMModel obm = OBMModel(team: [], cias: []);
 
   @observable
-  ObservableList<String> teams = <String>[].asObservable();
+  ObservableList<TeamModel> teams = <TeamModel>[].asObservable();
 
   @observable
   ObservableList<ServicesComponent> components =
@@ -147,10 +149,10 @@ abstract class _ServiceControllerBase with Store {
   }
 
   @action
-  void setCia(String? value) => cia = value;
+  void setCia(CiaModel? value) => cia = value;
 
   @action
-  void setTeam(String? value) => team = value;
+  void setTeam(TeamModel? value) => team = value;
 
   @action
   void setContact(String? value) => contact = value ?? '';
@@ -185,7 +187,7 @@ abstract class _ServiceControllerBase with Store {
     }
   }
 
-  List<String> teamsValidade({required List<String> teams}) {
+  List<TeamModel> teamsValidade({required List<TeamModel> teams}) {
     if (obm.team.isEmpty) return [];
 
     final list = servicesToday.map((e) => e.team).toList();

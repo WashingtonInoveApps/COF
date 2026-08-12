@@ -4,7 +4,9 @@ import 'dart:convert';
 
 import 'package:bsu_control/enum/services_enum.dart';
 import 'package:bsu_control/enum/state_enum.dart';
+import 'package:bsu_control/model/cia_model.dart';
 import 'package:bsu_control/model/obm_model.dart';
+import 'package:bsu_control/model/team_model.dart';
 import 'package:bsu_control/model/user_model.dart';
 
 class ServiceModel {
@@ -13,9 +15,9 @@ class ServiceModel {
   List<ServicesComponent> components;
   List<String> componentsIDs;
   String pb;
-  String? team;
+  TeamModel? team;
   String obs;
-  String? cia;
+  CiaModel? cia;
   OBMModel obm;
   String contact;
   String obmID;
@@ -52,9 +54,9 @@ class ServiceModel {
       'componentsIDs': componentsIDs,
       'state': state.name,
       'pb': pb,
-      'team': team,
+      'team': team?.toMap(),
       'obs': obs,
-      'cia': cia,
+      'cia': cia?.toMap(),
       'changesCar': changesCar,
       'changesMaterials': changesMaterials,
       'obm': obm.toMapResume(),
@@ -77,8 +79,8 @@ class ServiceModel {
       ),
       componentsIDs: List<String>.from(map['componentsIDs']),
       pb: map['pb'] as String,
-      team: map['team'],
-      cia: map['cia'],
+      team: map['team'] != null ? TeamModel.fromMap(map['team']) : null,
+      cia: map['cia'] != null ? CiaModel.fromMap(map['cia']) : null,
       changesCar: map['changesCar'] ?? 0,
       changesMaterials: map['changesMaterials'] ?? 0,
       obs: map['obs'] as String,

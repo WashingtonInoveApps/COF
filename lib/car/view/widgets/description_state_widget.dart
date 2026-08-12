@@ -19,18 +19,15 @@ class DescriptionStateWidget extends StatefulWidget {
 }
 
 class _DescriptionStateWidgetState extends State<DescriptionStateWidget> {
-  StateCarProblems state = StateCarProblems.others;
+  StateCarProblems? state;
 
   final _controllerDesc = TextEditingController();
-  // final _controllerLocal = TextEditingController();
   final _key = GlobalKey<FormState>();
 
   @override
   void dispose() {
     super.dispose();
-
     _controllerDesc.dispose();
-    // _controllerLocal.dispose();
   }
 
   @override
@@ -59,28 +56,32 @@ class _DescriptionStateWidgetState extends State<DescriptionStateWidget> {
                     },
                     underline: Container(),
                     isExpanded: true,
-                    items:
-                        List.generate(StateCarProblems.values.length, (index) {
-                      return DropdownMenuItem<StateCarProblems>(
-                        value: StateCarProblems.values[index],
-                        child: Text(
-                          StateCarProblems.values[index].label,
-                          style: Constants.title,
-                        ),
-                      );
-                    })),
+                    items: [
+                      DropdownMenuItem(
+                          value: null,
+                          child: Text(
+                            'Selecione',
+                            style: Constants.title,
+                          )),
+                      ...List.generate(StateCarProblems.values.length, (index) {
+                        return DropdownMenuItem<StateCarProblems>(
+                          value: StateCarProblems.values[index],
+                          child: Text(
+                            StateCarProblems.values[index].label,
+                            style: Constants.title,
+                          ),
+                        );
+                      })
+                    ]),
               ),
               const SizedBox(
                 height: 10.0,
               ),
-              SizedBox(
-                height: 50,
-                child: FieldText(
-                  controller: _controllerDesc,
-                  label: 'Descrição',
-                  hint: "Ex: Vazamento de aguá pelo radiador",
-                  validation: Validation.validatorPreenchimento,
-                ),
+              FieldText(
+                controller: _controllerDesc,
+                label: 'Descrição',
+                hint: "Ex: Vazamento de aguá pelo radiador",
+                validation: Validation.validatorPreenchimento,
               ),
               // FieldText(
               //   controller: _controllerLocal,
@@ -98,8 +99,12 @@ class _DescriptionStateWidgetState extends State<DescriptionStateWidget> {
                       onPressed: () {
                         if (_key.currentState!.validate()) {
                           Navigator.of(context).pop();
+
+                          final date = DateTime.now();
+
                           widget.onInsert(CarStatusModel(
-                              date: DateTime.now(),
+                              date: date,
+                              referenceYear: date.year.toString(),
                               user: widget.user,
                               type: state,
                               description: _controllerDesc.text,
