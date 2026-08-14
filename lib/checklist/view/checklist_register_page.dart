@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/main.dart';
-import 'package:bsu_control/model/check_list_model.dart';
+import 'package:bsu_control/model/checklist_model.dart';
 import 'package:bsu_control/model/item_model.dart';
 import 'package:bsu_control/checklist/view/pages/checklist_car_page.dart';
 import 'package:bsu_control/checklist/view/pages/checklist_infor_page.dart';
@@ -39,7 +39,7 @@ class _ChecklistRegisterPageState extends State<ChecklistRegisterPage> {
       config: config,
       update: (widget.checklist != null),
       cars: app.cars,
-      checklistTodays: app.checklistsToday,
+      checklistTodays: app.checklistsOperationDay,
     );
   }
 

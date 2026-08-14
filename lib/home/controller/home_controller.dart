@@ -2,7 +2,7 @@ import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/enum/state_enum.dart';
 import 'package:bsu_control/home/repository/home_interface.dart';
 import 'package:bsu_control/home/repository/home_repository.dart';
-import 'package:bsu_control/model/check_list_model.dart';
+import 'package:bsu_control/model/checklist_model.dart';
 import 'package:bsu_control/model/config_model.dart';
 import 'package:mobx/mobx.dart';
 
@@ -56,7 +56,7 @@ abstract class _HomeControllerBase with Store {
       final filtered = checklistsPeriod
           .where((e) =>
               ((e.prefix.toLowerCase().contains(filter.toLowerCase())) ||
-                  e.obm.toLowerCase().contains(filter.toLowerCase()) ||
+                  e.obm.name.toLowerCase().contains(filter.toLowerCase()) ||
                   ((e.cia?.name.toLowerCase() ?? '')
                       .contains(filter.toLowerCase())) ||
                   ((e.team?.name.toLowerCase() ?? '')
@@ -71,21 +71,6 @@ abstract class _HomeControllerBase with Store {
           Core.paginate(list: checklistsPeriod, page: page, limit: limit);
       return List<ChecklistModel>.from(list);
     }
-  }
-
-  @action
-  Stream<List<ChecklistModel>> listenChecklistPeriod({
-    required DateTime operationDate,
-  }) {
-    loading = true;
-
-    final stream = repository.listenChecklistPeriod(
-      operationDate: operationDate,
-    );
-
-    loading = false;
-
-    return stream;
   }
 
   @action

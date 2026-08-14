@@ -7,7 +7,7 @@ import 'package:bsu_control/enum/car_enum.dart';
 import 'package:bsu_control/main.dart';
 import 'package:bsu_control/model/car_model.dart';
 import 'package:bsu_control/model/car_status_model.dart';
-import 'package:bsu_control/model/itens_changes_model.dart';
+import 'package:bsu_control/model/section_itens_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
@@ -656,8 +656,8 @@ Widget statusRegisters(
 
 Widget changesListWidget(
     {required BuildContext context,
-    required List<ItensChangesModel> categories}) {
-  final list = List<ItensChangesModel>.from(categories);
+    required List<SectionItensModel> categories}) {
+  final list = List<SectionItensModel>.from(categories);
 
   return StatefulBuilder(
     builder: (context, setState) {

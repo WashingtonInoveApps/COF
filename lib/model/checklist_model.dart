@@ -1,72 +1,67 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/enum/checklist_enum.dart';
 import 'package:bsu_control/enum/state_enum.dart';
-import 'package:bsu_control/model/car_changes_model.dart';
 import 'package:bsu_control/model/car_checklist.dart';
 import 'package:bsu_control/model/cia_model.dart';
 import 'package:bsu_control/model/file_model.dart';
-import 'package:bsu_control/model/item_model.dart';
+import 'package:bsu_control/model/materials_checlist_model.dart';
+import 'package:bsu_control/model/obm_model.dart';
 import 'package:bsu_control/model/supply_model.dart';
 import 'package:bsu_control/model/team_model.dart';
 import 'package:bsu_control/model/user_model.dart';
 
 class ChecklistModel {
-  UserModel user;
-  String pb;
-  TeamModel? team;
-  String prefix;
-  String startKM;
-  String endKM;
-  String userID;
   String? id;
+  String pb;
+  String prefix;
+  int startKM;
+  int endKM;
+  String userID;
   String obs;
-  CiaModel? cia;
-  String obm;
-  String contact;
+  OBMModel obm;
   String obmID;
-  FileModel? signature;
-  bool enable;
+  UserModel user;
   DateTime date;
   DateTime? dateFinish;
-  CarChecklist checkCar;
-  List<SupplyModel> supply;
-  List<CarChangeModel> changes;
+  TeamModel? team;
+  CiaModel? cia;
+  FileModel? signature;
+  bool enable;
+  CarChecklistModel? vehicular;
+  MaterialChecklistModel? material;
+  List<SupplyModel>? supply;
   List<StatesChecklist> states;
-  List<ChecklistOutherChange>? outhers;
-  List<ItemModel>? materials;
-  StateProgress state;
-  ChecklistType type;
 
-  ChecklistModel(
-      {required this.user,
-      required this.date,
-      required this.checkCar,
-      required this.supply,
-      required this.changes,
-      required this.states,
-      required this.obm,
-      this.outhers,
-      this.materials,
-      this.signature,
-      this.userID = '',
-      this.pb = "",
-      this.cia,
-      this.contact = '',
-      this.obmID = '',
-      this.dateFinish,
-      this.type = ChecklistType.vehicular,
-      this.state = StateProgress.inprogress,
-      this.team,
-      this.prefix = "",
-      this.startKM = "",
-      this.endKM = "",
-      this.id,
-      this.enable = true,
-      this.obs = ""});
+  ChecklistType type;
+  StateProgress state;
+
+  ChecklistModel({
+    required this.user,
+    required this.date,
+    required this.states,
+    required this.obm,
+    this.id,
+    this.cia,
+    this.supply,
+    this.vehicular,
+    this.material,
+    this.signature,
+    this.userID = '',
+    this.pb = "",
+    this.obmID = '',
+    this.dateFinish,
+    this.type = ChecklistType.vehicular,
+    this.state = StateProgress.inprogress,
+    this.team,
+    this.prefix = "",
+    this.startKM = 0,
+    this.endKM = 0,
+    this.enable = true,
+    this.obs = "",
+  });
 
   Map<String, dynamic> toMap() {
     final reference = Core.getOperationalDay(date);
@@ -78,25 +73,21 @@ class ChecklistModel {
       'team': team?.toMap(),
       'cia': cia?.toMap(),
       'obmID': obmID,
-      'contact': contact,
       'prefix': prefix,
       'startKM': startKM,
       'endKM': endKM,
-      'obm': obm,
+      'obm': obm.toMapResume(),
       'id': id,
       'type': type.name,
       'userID': userID,
       'state': state.name,
-      'materials': materials?.map((e) => e.toMap()).toList(),
       'obs': obs,
       'enable': enable,
-      'outhers': outhers?.map((e) => e.toMap()).toList(),
       'states': states.map((e) => e.toMap()).toList(),
       'date': date.millisecondsSinceEpoch,
       'dateFinish': dateFinish?.millisecondsSinceEpoch,
-      'checkCar': checkCar.toMap(),
-      'supply': supply.map((x) => x.toMap()).toList(),
-      'changes': changes.map((x) => x.toMap()).toList(),
+      'vehicular': vehicular?.toMap(),
+      'supply': supply?.map((x) => x.toMap()).toList(),
       'referenceDate': Core.formatDate(reference),
       'referenceYear': reference.year.toString(),
       'referenceMonth':
@@ -110,15 +101,14 @@ class ChecklistModel {
       team: map['team'] != null ? TeamModel.fromMap(map['team']) : null,
       userID: map['userID'] ?? '',
       cia: map['cia'] != null ? CiaModel.fromMap(map['cia']) : null,
-      obm: map['obm'] ?? '',
+      obm: OBMModel.fromMapResume(map['obm']),
       signature: (map['signature'] == null)
           ? null
           : FileModel.fromMap(map['signature']),
       obmID: map['obmID'] ?? '',
-      contact: map['contact'] ?? '',
       prefix: map['prefix'] ?? '',
-      startKM: map['startKM'] ?? '',
-      endKM: map['endKM'] ?? '',
+      startKM: map['startKM']?.toInt() ?? 0,
+      endKM: map['endKM']?.toInt() ?? 0,
       id: map['id'],
       obs: map['obs'] ?? '',
       type: ChecklistEnumCore.checklistTypeFromString(map['type']),
@@ -129,23 +119,15 @@ class ChecklistModel {
           ? List<StatesChecklist>.from(
               map['states']?.map((x) => StatesChecklist.fromMap(x)))
           : [],
-      materials: (map['materials'] != null)
-          ? List<ItemModel>.from(
-              map['materials']?.map((x) => ItemModel.fromMap(x)))
-          : [],
-      outhers: (map['outhers'] != null)
-          ? List<ChecklistOutherChange>.from(
-              map['outhers']?.map((x) => ChecklistOutherChange.fromMap(x)))
-          : [],
       date: DateTime.fromMillisecondsSinceEpoch(map['date']),
       dateFinish: map['dateFinish'] != null
           ? DateTime.fromMillisecondsSinceEpoch(map['dateFinish'])
           : null,
-      checkCar: CarChecklist.fromMap(map['checkCar']),
+      vehicular: map['vehicular'] != null
+          ? CarChecklistModel.fromMap(map['vehicular'])
+          : null,
       supply: List<SupplyModel>.from(
           map['supply']?.map((x) => SupplyModel.fromMap(x))),
-      changes: List<CarChangeModel>.from(
-          map['changes']?.map((x) => CarChangeModel.fromMap(x))),
     );
   }
 
@@ -162,27 +144,23 @@ class ChecklistModel {
     String? pb,
     TeamModel? team,
     String? prefix,
-    String? startKM,
-    String? endKM,
+    int? startKM,
+    int? endKM,
     String? userID,
     String? id,
     String? obs,
-    String? obm,
+    OBMModel? obm,
     FileModel? signature,
     CiaModel? cia,
-    String? contact,
     String? obmID,
     bool? enable,
     DateTime? date,
     DateTime? dateFinish,
-    CarChecklist? checkCar,
+    CarChecklistModel? vehicular,
     List<SupplyModel>? supply,
     ChecklistType? type,
     StateProgress? state,
     List<StatesChecklist>? states,
-    List<CarChangeModel>? changes,
-    List<ChecklistOutherChange>? outhers,
-    List<ItemModel>? materials,
   }) {
     return ChecklistModel(
       user: user ?? this.user,
@@ -190,7 +168,6 @@ class ChecklistModel {
       team: team ?? this.team,
       prefix: prefix ?? this.prefix,
       startKM: startKM ?? this.startKM,
-      changes: changes ?? this.changes,
       endKM: endKM ?? this.endKM,
       userID: userID ?? this.userID,
       id: id ?? this.id,
@@ -199,16 +176,13 @@ class ChecklistModel {
       signature: signature ?? this.signature,
       states: states ?? this.states,
       type: type ?? this.type,
-      outhers: outhers ?? this.outhers,
       obs: obs ?? this.obs,
       cia: cia ?? this.cia,
-      contact: contact ?? this.contact,
       obmID: obmID ?? this.obmID,
       enable: enable ?? this.enable,
-      materials: materials ?? this.materials,
       date: date ?? this.date,
       dateFinish: dateFinish ?? this.dateFinish,
-      checkCar: checkCar ?? this.checkCar,
+      vehicular: vehicular ?? this.vehicular,
       supply: supply ?? this.supply,
     );
   }
@@ -249,38 +223,4 @@ class StatesChecklist {
       date: date ?? this.date,
     );
   }
-}
-
-class ChecklistOutherChange {
-  String description;
-  DateTime date;
-  FileModel? image;
-  Uint8List? fileImage; //Usado apenas para salvar a data temporariamente.
-
-  ChecklistOutherChange(
-      {required this.date, this.description = '', this.image, this.fileImage});
-
-  Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      'description': description,
-      'date': date.millisecondsSinceEpoch,
-      'image': image?.toMap(),
-    };
-  }
-
-  factory ChecklistOutherChange.fromMap(Map<String, dynamic> map) {
-    return ChecklistOutherChange(
-      description: map['description'] as String,
-      date: DateTime.fromMillisecondsSinceEpoch(map['date'] as int),
-      image: map['image'] != null
-          ? FileModel.fromMap(map['image'] as Map<String, dynamic>)
-          : null,
-    );
-  }
-
-  String toJson() => json.encode(toMap());
-
-  factory ChecklistOutherChange.fromJson(String source) =>
-      ChecklistOutherChange.fromMap(
-          json.decode(source) as Map<String, dynamic>);
 }

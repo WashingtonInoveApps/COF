@@ -75,13 +75,13 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
       Atom(name: '_CheckListControllerBase.itens', context: context);
 
   @override
-  ObservableList<ItensChangesModel> get itens {
+  ObservableList<SectionItensModel> get itens {
     _$itensAtom.reportRead();
     return super.itens;
   }
 
   @override
-  set itens(ObservableList<ItensChangesModel> value) {
+  set itens(ObservableList<SectionItensModel> value) {
     _$itensAtom.reportWrite(value, super.itens, () {
       super.itens = value;
     });
@@ -107,13 +107,13 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
       Atom(name: '_CheckListControllerBase.materials', context: context);
 
   @override
-  ObservableList<ItensChangesModel> get materials {
+  ObservableList<SectionItensModel> get materials {
     _$materialsAtom.reportRead();
     return super.materials;
   }
 
   @override
-  set materials(ObservableList<ItensChangesModel> value) {
+  set materials(ObservableList<SectionItensModel> value) {
     _$materialsAtom.reportWrite(value, super.materials, () {
       super.materials = value;
     });
@@ -123,31 +123,31 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
       name: '_CheckListControllerBase.materialsConsumable', context: context);
 
   @override
-  ObservableList<ItensChangesModel> get materialsConsumable {
+  ObservableList<SectionItensModel> get materialsConsumable {
     _$materialsConsumableAtom.reportRead();
     return super.materialsConsumable;
   }
 
   @override
-  set materialsConsumable(ObservableList<ItensChangesModel> value) {
+  set materialsConsumable(ObservableList<SectionItensModel> value) {
     _$materialsConsumableAtom.reportWrite(value, super.materialsConsumable, () {
       super.materialsConsumable = value;
     });
   }
 
-  late final _$outhersAtom =
-      Atom(name: '_CheckListControllerBase.outhers', context: context);
+  late final _$othersAtom =
+      Atom(name: '_CheckListControllerBase.others', context: context);
 
   @override
-  ObservableList<ChecklistOutherChange> get outhers {
-    _$outhersAtom.reportRead();
-    return super.outhers;
+  ObservableList<OtherChangeModel> get others {
+    _$othersAtom.reportRead();
+    return super.others;
   }
 
   @override
-  set outhers(ObservableList<ChecklistOutherChange> value) {
-    _$outhersAtom.reportWrite(value, super.outhers, () {
-      super.outhers = value;
+  set others(ObservableList<OtherChangeModel> value) {
+    _$othersAtom.reportWrite(value, super.others, () {
+      super.others = value;
     });
   }
 
@@ -412,13 +412,13 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
       Atom(name: '_CheckListControllerBase.startKM', context: context);
 
   @override
-  String get startKM {
+  int get startKM {
     _$startKMAtom.reportRead();
     return super.startKM;
   }
 
   @override
-  set startKM(String value) {
+  set startKM(int value) {
     _$startKMAtom.reportWrite(value, super.startKM, () {
       super.startKM = value;
     });
@@ -428,13 +428,13 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
       Atom(name: '_CheckListControllerBase.endKM', context: context);
 
   @override
-  String get endKM {
+  int get endKM {
     _$endKMAtom.reportRead();
     return super.endKM;
   }
 
   @override
-  set endKM(String value) {
+  set endKM(int value) {
     _$endKMAtom.reportWrite(value, super.endKM, () {
       super.endKM = value;
     });
@@ -752,11 +752,11 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
   }
 
   @override
-  dynamic addOuthersChange(ChecklistOutherChange value) {
+  dynamic addOthersChange(OtherChangeModel value) {
     final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
-        name: '_CheckListControllerBase.addOuthersChange');
+        name: '_CheckListControllerBase.addOthersChange');
     try {
-      return super.addOuthersChange(value);
+      return super.addOthersChange(value);
     } finally {
       _$_CheckListControllerBaseActionController.endAction(_$actionInfo);
     }
@@ -873,7 +873,7 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
   }
 
   @override
-  dynamic setKMStart(String? value) {
+  void setKMStart(String? value) {
     final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
         name: '_CheckListControllerBase.setKMStart');
     try {
@@ -972,8 +972,8 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
   }
 
   @override
-  List<ItensChangesModel> changeList(
-      {required List<ItensChangesModel> list,
+  List<SectionItensModel> changeList(
+      {required List<SectionItensModel> list,
       required ItemModel value,
       required int indexSection,
       required int indexItem}) {
@@ -992,7 +992,7 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
 
   @override
   dynamic changeOBS(
-      {required List<ItensChangesModel> list,
+      {required List<SectionItensModel> list,
       required String obs,
       required int indexSection}) {
     final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
@@ -1024,7 +1024,7 @@ itens: ${itens},
 myChecklistUser: ${myChecklistUser},
 materials: ${materials},
 materialsConsumable: ${materialsConsumable},
-outhers: ${outhers},
+others: ${others},
 teams: ${teams},
 materialsConsumedUsed: ${materialsConsumedUsed},
 date: ${date},

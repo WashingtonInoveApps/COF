@@ -50,7 +50,7 @@ class CardCarSupply extends StatelessWidget {
                     width: 10.0,
                   ),
                   Text(
-                    supply.kmSupply,
+                    supply.km,
                     style:
                         Constants.title.copyWith(fontWeight: FontWeight.bold),
                   ),

@@ -2,14 +2,14 @@
 import 'dart:convert';
 import 'item_model.dart';
 
-class ItensChangesModel {
+class SectionItensModel {
   String id;
   String description;
   List<ItemModel> itens;
   String obs;
   bool value;
 
-  ItensChangesModel(
+  SectionItensModel(
       {required this.id,
       required this.description,
       required this.itens,
@@ -26,8 +26,8 @@ class ItensChangesModel {
     };
   }
 
-  factory ItensChangesModel.fromMap(Map<String, dynamic> map) {
-    return ItensChangesModel(
+  factory SectionItensModel.fromMap(Map<String, dynamic> map) {
+    return SectionItensModel(
       id: map['id'] ?? '',
       description: map['description'] ?? '',
       itens:
@@ -39,17 +39,17 @@ class ItensChangesModel {
 
   String toJson() => json.encode(toMap());
 
-  factory ItensChangesModel.fromJson(String source) =>
-      ItensChangesModel.fromMap(json.decode(source));
+  factory SectionItensModel.fromJson(String source) =>
+      SectionItensModel.fromMap(json.decode(source));
 
-  ItensChangesModel copyWith({
+  SectionItensModel copyWith({
     String? id,
     String? description,
     List<ItemModel>? itens,
     String? obs,
     bool? value,
   }) {
-    return ItensChangesModel(
+    return SectionItensModel(
       id: id ?? this.id,
       description: description ?? this.description,
       itens: itens ?? this.itens,

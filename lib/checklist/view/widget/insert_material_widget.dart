@@ -1,12 +1,12 @@
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/model/item_model.dart';
-import 'package:bsu_control/model/itens_changes_model.dart';
+import 'package:bsu_control/model/section_itens_model.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class InsertMaterialWidget extends StatefulWidget {
   final List<ItemModel> init;
-  final List<ItensChangesModel> materials;
+  final List<SectionItensModel> materials;
   final Function(List<ItemModel>) onInsert;
   const InsertMaterialWidget(
       {Key? key,

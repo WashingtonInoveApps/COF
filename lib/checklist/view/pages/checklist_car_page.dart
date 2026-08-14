@@ -1,13 +1,13 @@
-import 'package:bsu_control/core/constants.dart';
-import 'package:bsu_control/model/check_list_model.dart';
-import 'package:bsu_control/model/user_model.dart';
 import 'package:bsu_control/checklist/controller/checklist_controller.dart';
 import 'package:bsu_control/checklist/view/widget/fluids_widget.dart';
 import 'package:bsu_control/checklist/view/widget/fuel_widget.dart';
+import 'package:bsu_control/core/constants.dart';
+import 'package:bsu_control/model/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 
 import '../../../core/validation.dart';
+import '../../../model/outher_changes_model.dart';
 import '../../../widgets/car_changes_widget.dart';
 import '../../../widgets/card_outhers_widget.dart';
 import '../../../widgets/image_change_widget.dart';
@@ -112,7 +112,7 @@ class ChecklistCarPage extends StatelessWidget {
                       height: 5.0,
                     ),
                     FieldText(
-                        initValue: controller.startKM,
+                        initValue: controller.startKM.toString(),
                         hint: "EX.: 123456",
                         validation: Validation.validatorNumber,
                         inputType: TextInputType.number,
@@ -206,15 +206,15 @@ class ChecklistCarPage extends StatelessWidget {
                       height: 10,
                     ),
                     Observer(builder: (context) {
-                      return controller.outhers.isEmpty
+                      return controller.others.isEmpty
                           ? Text(
                               'Nenhuma outra alteração encontrada',
                               style: Constants.titleHint,
                             )
                           : Column(
-                              children: List.generate(controller.outhers.length,
+                              children: List.generate(controller.others.length,
                                       (index) {
-                                final outher = controller.outhers[index];
+                                final outher = controller.others[index];
 
                                 return CardOutherChange(
                                   outher: outher,
@@ -238,11 +238,12 @@ class ChecklistCarPage extends StatelessWidget {
                                 context: context,
                                 builder: (context) => ImageChangeWidget(
                                       onSelect: (image, description) {
-                                        controller.addOuthersChange(
-                                            ChecklistOutherChange(
-                                                date: DateTime.now(),
-                                                description: description,
-                                                fileImage: image));
+                                        controller
+                                            .addOthersChange(OtherChangeModel(
+                                          date: DateTime.now(),
+                                          description: description,
+                                          fileImage: image,
+                                        ));
                                       },
                                     ));
                           },

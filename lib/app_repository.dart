@@ -5,7 +5,7 @@ import 'package:bsu_control/core/api_client.dart';
 import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/model/app_model.dart';
 import 'package:bsu_control/model/car_model.dart';
-import 'package:bsu_control/model/check_list_model.dart';
+import 'package:bsu_control/model/checklist_model.dart';
 import 'package:bsu_control/model/obm_model.dart';
 import 'package:bsu_control/model/supply_model.dart';
 import 'package:bsu_control/model/user_model.dart';
@@ -22,14 +22,14 @@ class AppRepository extends APIClient implements IAppRepository {
       final docChecklist = colChecklist.doc(checklist.id);
       final docSupplies = colSupplies.doc(supply.id);
 
-      supply.checklistId = checklist.id;
       supply.id = docSupplies.id;
-      supply.carId = checklist.checkCar.car.id;
+      supply.checklistID = checklist.id;
+      supply.carID = checklist.vehicular?.car.id ?? '';
 
       await firebase!.runTransaction((trans) async {
         trans.set(docSupplies, supply.toMap());
 
-        var supplies = List<SupplyModel>.from(checklist.supply);
+        var supplies = List<SupplyModel>.from(checklist.supply ?? []);
         supplies.add(supply);
 
         final data = supplies.map((e) => e.toMap()).toList();
@@ -43,20 +43,16 @@ class AppRepository extends APIClient implements IAppRepository {
   }
 
   @override
-  Stream<List<ChecklistModel>> listenChecklistToday(
+  Stream<List<ChecklistModel>> listenChecklistOperationDay(
       {required DateTime referenceDate}) {
-    try {
-      log('Buscando checklist diário: ${Core.formatDate(referenceDate)}');
-      return colChecklist
-          .where('referenceDate', isEqualTo: Core.formatDate(referenceDate))
-          .snapshots()
-          .map((e) => e.docs
-              .map((doc) =>
-                  ChecklistModel.fromMap(doc.data() as Map<String, dynamic>))
-              .toList());
-    } catch (e) {
-      return Stream.value([]);
-    }
+    log('Buscando checklist diário: ${Core.formatDate(referenceDate)}');
+    return colChecklist
+        .where('referenceDate', isEqualTo: Core.formatDate(referenceDate))
+        .snapshots()
+        .map((e) => e.docs
+            .map((doc) =>
+                ChecklistModel.fromMap(doc.data() as Map<String, dynamic>))
+            .toList());
   }
 
   @override
@@ -87,7 +83,7 @@ class AppRepository extends APIClient implements IAppRepository {
       await firebase!.runTransaction((trans) async {
         trans.delete(docSupplies);
 
-        var supplies = List<SupplyModel>.from(checklist.supply);
+        var supplies = List<SupplyModel>.from(checklist.supply ?? []);
         supplies.remove(supply);
 
         final data = supplies.map((e) => e.toMap()).toList();

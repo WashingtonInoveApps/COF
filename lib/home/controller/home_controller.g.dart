@@ -157,18 +157,6 @@ mixin _$HomeController on _HomeControllerBase, Store {
       ActionController(name: '_HomeControllerBase', context: context);
 
   @override
-  Stream<List<ChecklistModel>> listenChecklistPeriod(
-      {required DateTime operationDate}) {
-    final _$actionInfo = _$_HomeControllerBaseActionController.startAction(
-        name: '_HomeControllerBase.listenChecklistPeriod');
-    try {
-      return super.listenChecklistPeriod(operationDate: operationDate);
-    } finally {
-      _$_HomeControllerBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
   dynamic setLoading(bool value) {
     final _$actionInfo = _$_HomeControllerBaseActionController.startAction(
         name: '_HomeControllerBase.setLoading');

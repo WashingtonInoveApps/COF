@@ -2,16 +2,16 @@
 import 'dart:convert';
 
 class TeamModel {
-  final String? id;
-  final String name;
-  final String obmID;
-  final String ciaID;
+  String? id;
+  String name;
+  String obmID;
+  String ciaID;
 
   TeamModel({
-    required this.id,
-    required this.name,
-    required this.obmID,
-    required this.ciaID,
+    this.id,
+    this.name = '',
+    this.obmID = '',
+    this.ciaID = '',
   });
 
   Map<String, dynamic> toMap() {

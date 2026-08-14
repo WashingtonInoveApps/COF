@@ -4,7 +4,7 @@ import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/main.dart';
-import 'package:bsu_control/model/check_list_model.dart';
+import 'package:bsu_control/model/checklist_model.dart';
 import 'package:bsu_control/checklist/controller/checklist_controller.dart';
 import 'package:bsu_control/checklist/view/checklist_details_page.dart';
 import 'package:bsu_control/checklist/view/widget/chart_user_state_widget.dart';
@@ -48,7 +48,7 @@ class _ChecklistPageState extends State<ChecklistPage> {
       config: config,
       update: false,
       cars: app.cars,
-      checklistTodays: app.checklistsToday,
+      checklistTodays: app.checklistsOperationDay,
     );
 
     controller.setDateRangeChecklist(
@@ -57,6 +57,7 @@ class _ChecklistPageState extends State<ChecklistPage> {
 
     rec = autorun((_) {
       controller.setLoading(true);
+
       subscription = controller
           .streamChecklistPeriod(
               userID: app.user.id!,

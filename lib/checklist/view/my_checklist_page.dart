@@ -1,7 +1,7 @@
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/main.dart';
-import 'package:bsu_control/model/check_list_model.dart';
+import 'package:bsu_control/model/checklist_model.dart';
 import 'package:bsu_control/checklist/controller/checklist_controller.dart';
 import 'package:bsu_control/checklist/view/checklist_details_page.dart';
 import 'package:flutter/foundation.dart';
@@ -38,7 +38,7 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
       config: config,
       update: false,
       cars: app.cars,
-      checklistTodays: app.checklistsToday,
+      checklistTodays: app.checklistsOperationDay,
     );
   }
 

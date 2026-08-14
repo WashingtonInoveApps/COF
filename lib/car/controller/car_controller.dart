@@ -1,7 +1,7 @@
 import 'package:bsu_control/car/repository/car_interface.dart';
 import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/enum/car_enum.dart';
-import 'package:bsu_control/model/check_list_model.dart';
+import 'package:bsu_control/model/checklist_model.dart';
 import 'package:bsu_control/model/config_model.dart';
 import 'package:bsu_control/model/user_model.dart';
 import 'package:mobx/mobx.dart';

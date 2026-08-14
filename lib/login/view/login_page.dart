@@ -293,7 +293,7 @@ class _LoginPageState extends State<LoginPage> {
                                             controller: controllerEmail,
                                             hint: "Ex.: fulano@cb.ce.gov.br",
                                             label: 'E-mail',
-                                            low: true,
+                                            textCase: FieldTextCase.lower,
                                             inputType:
                                                 TextInputType.emailAddress,
                                             validation:

@@ -6,11 +6,9 @@ import 'package:bsu_control/checklist/view/checklist_register_page.dart';
 import 'package:bsu_control/checklist/view/my_checklist_page.dart';
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/core.dart';
-import 'package:bsu_control/enum/state_enum.dart';
 import 'package:bsu_control/home/controller/home_controller.dart';
 import 'package:bsu_control/main.dart';
-import 'package:bsu_control/model/check_list_model.dart';
-import 'package:bsu_control/model/service_model.dart';
+import 'package:bsu_control/model/checklist_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -19,14 +17,11 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:mobx/mobx.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:universal_html/html.dart' as html;
-import 'package:url_launcher/url_launcher_string.dart';
 
 import '../widgets/backgraund_page.dart';
-import '../widgets/card_infor_widget.dart';
 import '../widgets/limit_table_widget.dart';
 import '../widgets/pagination_widget.dart';
 import '../widgets/table_widget.dart';
-import '../widgets/tag_widget.dart';
 import '../widgets/textfield_widget.dart';
 import 'view/widgets/period_chart_widget.dart';
 
@@ -60,13 +55,7 @@ class _HomePageState extends State<HomePage> {
     });
 
     rec = autorun((_) {
-      controller.setLoading(true);
-      subscription = controller
-          .listenChecklistPeriod(operationDate: controller.operationDate)
-          .listen((result) {
-        controller.setChecklistPeriod(result);
-        controller.setLoading(false);
-      });
+      controller.setChecklistPeriod(app.checklistsOperationDay);
     });
   }
 
@@ -74,9 +63,7 @@ class _HomePageState extends State<HomePage> {
   void dispose() {
     super.dispose();
     rec();
-
     timer.cancel();
-    subscription.cancel();
     searchController.dispose();
   }
 
@@ -211,8 +198,9 @@ class _HomePageState extends State<HomePage> {
                                                       return app.newRegister
                                                           ? btCustom(
                                                               label:
-                                                                  'Novo Serviço',
-                                                              icon: Icons.add,
+                                                                  'Novo Registro',
+                                                              icon:
+                                                                  MdiIcons.car,
                                                               color: Colors.blue
                                                                   .shade800,
                                                               onTap: () {
@@ -258,13 +246,11 @@ class _HomePageState extends State<HomePage> {
                                                   ),
                                                   Expanded(
                                                     child: btCustom(
-                                                        label:
-                                                            'Novo abastecimento',
-                                                        icon:
-                                                            MdiIcons.gasStation,
+                                                        label: 'Novo Registro',
+                                                        icon: MdiIcons.dolly,
                                                         color: Colors
                                                             .orange.shade700,
-                                                        onTap: null),
+                                                        onTap: () {}),
                                                   ),
                                                   Expanded(
                                                     child: btCustom(
@@ -299,16 +285,16 @@ class _HomePageState extends State<HomePage> {
                                 child: Column(
                                   spacing: 5,
                                   children: [
-                                    Observer(builder: (context) {
-                                      return SizedBox(
-                                        height: 300,
-                                        child: ChartChangesPeriodWidget(
-                                          date: controller.operationDate,
-                                          checklists:
-                                              controller.checklistsPeriod,
-                                        ),
-                                      );
-                                    })
+                                    // Observer(builder: (context) {
+                                    //   return SizedBox(
+                                    //     height: 300,
+                                    //     child: ChartChangesPeriodWidget(
+                                    //       date: controller.operationDate,
+                                    //       checklists:
+                                    //           controller.checklistsPeriod,
+                                    //     ),
+                                    //   );
+                                    // })
                                   ],
                                 ),
                               ),
@@ -664,8 +650,11 @@ Widget btCustom(
         children: [
           Icon(
             icon,
-            size: 25,
+            size: 30,
             color: Colors.white,
+          ),
+          const SizedBox(
+            height: 5,
           ),
           ...label
               .split(' ')

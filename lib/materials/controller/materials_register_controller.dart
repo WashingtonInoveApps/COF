@@ -1,37 +1,32 @@
 import 'package:bsu_control/core/sections_controller.dart';
-import 'package:bsu_control/enum/car_enum.dart';
-import 'package:bsu_control/model/car_changes_model.dart';
-import 'package:bsu_control/model/car_model.dart';
 import 'package:bsu_control/model/car_status_model.dart';
 import 'package:bsu_control/model/cia_model.dart';
-import 'package:bsu_control/model/file_model.dart';
 import 'package:bsu_control/model/item_model.dart';
+import 'package:bsu_control/model/materials_model.dart';
+import 'package:bsu_control/model/outher_changes_model.dart';
 import 'package:bsu_control/model/section_itens_model.dart';
+import 'package:bsu_control/model/team_model.dart';
 import 'package:bsu_control/model/user_model.dart';
 import 'package:mobx/mobx.dart';
 
-import '../../core/constants.dart';
 import '../../model/obm_model.dart';
 
-part 'car_register_controller.g.dart';
+part 'materials_register_controller.g.dart';
 
-class CarRegisterController = _CarRegisterControllerBase
-    with _$CarRegisterController;
+class MaterialsRegisterController = _MaterialsRegisterControllerBase
+    with _$MaterialsRegisterController;
 
-abstract class _CarRegisterControllerBase with Store {
-  final CarModel? init;
+abstract class _MaterialsRegisterControllerBase with Store {
+  final MaterialsModel? init;
   final UserModel user;
   final List<OBMModel> obms;
-  final List<String> types;
 
-  _CarRegisterControllerBase({
+  _MaterialsRegisterControllerBase({
     required this.obms,
     required this.init,
     required this.user,
-    required this.types,
   }) {
     inicialization();
-
     setOBM(obms.firstWhere((e) => e.id == user.obmID));
   }
 
@@ -45,82 +40,37 @@ abstract class _CarRegisterControllerBase with Store {
   CiaModel? cia;
 
   @observable
-  String? function;
-
-  @observable
-  String? type;
-
-  @observable
-  bool outherTypeField = false;
-
-  @observable
-  String prefix = '';
-
-  @observable
-  String model = '';
-
-  @observable
-  String modelPneu = '';
-
-  @observable
-  String plate = '';
-
-  @observable
-  String km = '';
-
-  @observable
-  String ticket = '';
-
-  @observable
-  String? outherType;
-
-  @observable
-  StatusCar state = StatusCar.waiting;
+  TeamModel? team;
 
   @observable
   ObservableList<SectionItensModel> sectionsItens =
       <SectionItensModel>[].asObservable();
 
-  // @observable
-  // ObservableList<SectionItensModel> sectionsMaterials =
-  //     <SectionItensModel>[].asObservable();
-
-  // @observable
-  // ObservableList<SectionItensModel> sectionsMaterialsConsumable =
-  //     <SectionItensModel>[].asObservable();
-
   @observable
-  ObservableList<CarChangeModel> changes = <CarChangeModel>[].asObservable();
+  ObservableList<OtherChangeModel> changes =
+      <OtherChangeModel>[].asObservable();
 
   @observable
   ObservableList<CarStatusModel> status = <CarStatusModel>[].asObservable();
 
   @computed
-  bool get adm => function != Constants.carsFunctions.first;
+  List<TeamModel> get teams {
+    if (cia == null) return [];
+
+    return obm?.team.where((e) => e.ciaID == cia?.id).toList() ?? [];
+  }
 
   @computed
-  CarModel get car {
-    return CarModel(
+  MaterialsModel get car {
+    return MaterialsModel(
       id: init?.id,
-      type: outherType ?? (type ?? ''),
-      state: state,
-      function: function ?? '',
-      model: model,
-      plate: plate,
       cia: cia,
-      ciaID: cia?.id,
-      modelPneu: modelPneu,
+      ciaID: cia?.id ?? '',
       obmID: obm?.id ?? '',
-      prefix: prefix,
-      km: int.parse(km),
-      adm: adm,
-      ticket: ticket,
       itens: sectionsItens,
-      changes: changes,
-      status: status,
-      arref: init?.arref ?? 0,
-      oil: init?.oil ?? 0,
-      images: List<FileModel>.from(images.whereType<FileModel>().toList()),
+      changes: init?.changes,
+      obm: init?.obm ?? (obm ?? OBMModel(team: [], cias: [])),
+      team: init?.team ?? team,
     );
   }
 
@@ -135,23 +85,9 @@ abstract class _CarRegisterControllerBase with Store {
           .cast<CiaModel?>()
           .firstWhere((e) => e?.id == init?.ciaID, orElse: () => null);
 
-      type = init?.type;
-      function = init?.function;
-      prefix = init?.prefix ?? '';
-      plate = init?.plate ?? '';
-      model = init?.model ?? '';
-      modelPneu = init?.modelPneu ?? '';
-      ticket = init?.ticket ?? '';
-      km = init?.km.toString() ?? '';
-      state = init?.state ?? StatusCar.waiting;
-
       for (final itens in init?.itens ?? []) {
         addSections(list: sectionsItens, value: itens.copyWith(value: false));
       }
-
-      images
-        ..clear()
-        ..addAll(init?.images ?? []);
 
       changes.addAll(init?.changes ?? []);
     }
@@ -162,6 +98,8 @@ abstract class _CarRegisterControllerBase with Store {
   @action
   void setOBM(OBMModel? value) {
     cia = null;
+    team = null;
+
     obm = value;
   }
 
@@ -169,18 +107,7 @@ abstract class _CarRegisterControllerBase with Store {
   void setCia(CiaModel? value) => cia = value;
 
   @action
-  void setFunction(String? value) => function = value ?? function;
-
-  @action
-  void setType(String? value) {
-    type = value;
-
-    if (type == "Outros") {
-      outherTypeField = true;
-    } else {
-      outherTypeField = false;
-    }
-  }
+  void setTeam(TeamModel? value) => team = value;
 
   void setImagens(List<dynamic> value) {
     images
@@ -189,28 +116,7 @@ abstract class _CarRegisterControllerBase with Store {
   }
 
   @action
-  void setOutherType(String? value) => outherType = value;
-
-  @action
-  void setPrefix(String? value) => prefix = value ?? '';
-
-  @action
-  void setModel(String? value) => model = value ?? '';
-
-  @action
-  void setModelPneu(String? value) => modelPneu = value ?? '';
-
-  @action
-  void setTicket(String? value) => ticket = value ?? '';
-
-  @action
-  void setKM(String? value) => km = value ?? '0';
-
-  @action
-  void setPlate(String? value) => plate = value ?? '';
-
-  @action
-  void onChanges(List<CarChangeModel> value) {
+  void onChanges(List<OtherChangeModel> value) {
     changes
       ..clear()
       ..addAll(value);
@@ -330,46 +236,14 @@ abstract class _CarRegisterControllerBase with Store {
           messagesErros.add('Selecione a companhia antes de continuar.');
         }
 
-        if (prefix.isEmpty) {
-          messagesErros.add('Insira um prefixo antes de continuar.');
+        if ((obm?.team.isNotEmpty ?? false) && team == null) {
+          messagesErros.add('Selecione a guarnição antes de continuar.');
         }
 
         return messagesErros;
       case 1:
-        if (model.isEmpty) {
-          messagesErros.add('Insira o modelo do veículo.');
-        }
-        if (plate.isEmpty) {
-          messagesErros.add('Insira a placa do veículo.');
-        }
-        if (km.isEmpty) {
-          messagesErros.add('Insira o KM inicial do veículo.');
-        }
-        if (modelPneu.isEmpty) {
-          messagesErros.add('Insira a referência do pneu do veículo.');
-        }
-        if (ticket.isEmpty) {
-          messagesErros.add('Insira o número do cartão de abastecimento.');
-        }
-
         return messagesErros;
       case 2:
-        if (function?.isEmpty ?? true) {
-          messagesErros.add('Selecione a função do veículo.');
-        }
-
-        if (type?.isEmpty ?? true) {
-          messagesErros.add('Selecione o tipo do veículo.');
-        }
-
-        if (images.isEmpty) {
-          messagesErros.add('Adicione as images do veículo.');
-        }
-
-        if (outherTypeField && (outherType == null)) {
-          messagesErros.add('Insira o novo tipo do veículo.');
-        }
-
         return messagesErros;
       default:
         return [];

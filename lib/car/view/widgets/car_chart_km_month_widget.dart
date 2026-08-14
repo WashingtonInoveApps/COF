@@ -1,7 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/core.dart';
-import 'package:bsu_control/model/check_list_model.dart';
+import 'package:bsu_control/model/checklist_model.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
@@ -74,8 +74,8 @@ class _CarChartKmByMonthState extends State<CarChartKmByMonth> {
       double totalKm = 0;
 
       for (int i = 1; i < list.length; i++) {
-        double atual = double.parse(list[i].startKM);
-        double anterior = double.parse(list[i - 1].startKM);
+        double atual = double.parse(list[i].startKM.toString());
+        double anterior = double.parse(list[i - 1].startKM.toString());
 
         if (atual >= anterior) {
           totalKm += (atual - anterior);

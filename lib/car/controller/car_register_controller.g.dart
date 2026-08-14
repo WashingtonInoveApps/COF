@@ -250,13 +250,13 @@ mixin _$CarRegisterController on _CarRegisterControllerBase, Store {
       Atom(name: '_CarRegisterControllerBase.sectionsItens', context: context);
 
   @override
-  ObservableList<ItensChangesModel> get sectionsItens {
+  ObservableList<SectionItensModel> get sectionsItens {
     _$sectionsItensAtom.reportRead();
     return super.sectionsItens;
   }
 
   @override
-  set sectionsItens(ObservableList<ItensChangesModel> value) {
+  set sectionsItens(ObservableList<SectionItensModel> value) {
     _$sectionsItensAtom.reportWrite(value, super.sectionsItens, () {
       super.sectionsItens = value;
     });
@@ -453,7 +453,7 @@ mixin _$CarRegisterController on _CarRegisterControllerBase, Store {
 
   @override
   void expansionSections(
-      {required List<ItensChangesModel> list, required int index}) {
+      {required List<SectionItensModel> list, required int index}) {
     final _$actionInfo = _$_CarRegisterControllerBaseActionController
         .startAction(name: '_CarRegisterControllerBase.expansionSections');
     try {
@@ -465,8 +465,8 @@ mixin _$CarRegisterController on _CarRegisterControllerBase, Store {
 
   @override
   void addSections(
-      {required List<ItensChangesModel> list,
-      required ItensChangesModel value}) {
+      {required List<SectionItensModel> list,
+      required SectionItensModel value}) {
     final _$actionInfo = _$_CarRegisterControllerBaseActionController
         .startAction(name: '_CarRegisterControllerBase.addSections');
     try {
@@ -478,9 +478,9 @@ mixin _$CarRegisterController on _CarRegisterControllerBase, Store {
 
   @override
   void editSections(
-      {required List<ItensChangesModel> list,
+      {required List<SectionItensModel> list,
       required int index,
-      required ItensChangesModel value}) {
+      required SectionItensModel value}) {
     final _$actionInfo = _$_CarRegisterControllerBaseActionController
         .startAction(name: '_CarRegisterControllerBase.editSections');
     try {
@@ -492,7 +492,7 @@ mixin _$CarRegisterController on _CarRegisterControllerBase, Store {
 
   @override
   void removeSections(
-      {required List<ItensChangesModel> list, required int index}) {
+      {required List<SectionItensModel> list, required int index}) {
     final _$actionInfo = _$_CarRegisterControllerBaseActionController
         .startAction(name: '_CarRegisterControllerBase.removeSections');
     try {
@@ -504,7 +504,7 @@ mixin _$CarRegisterController on _CarRegisterControllerBase, Store {
 
   @override
   void addItensSection(
-      {required List<ItensChangesModel> list,
+      {required List<SectionItensModel> list,
       required int index,
       required ItemModel value}) {
     final _$actionInfo = _$_CarRegisterControllerBaseActionController
@@ -518,7 +518,7 @@ mixin _$CarRegisterController on _CarRegisterControllerBase, Store {
 
   @override
   void editItensSection(
-      {required List<ItensChangesModel> list,
+      {required List<SectionItensModel> list,
       required int index,
       required int indexItem,
       required ItemModel value}) {
@@ -534,7 +534,7 @@ mixin _$CarRegisterController on _CarRegisterControllerBase, Store {
 
   @override
   void moveItensSection(
-      {required List<ItensChangesModel> list,
+      {required List<SectionItensModel> list,
       required int index,
       required int indexItem,
       required MoveDirection position}) {
@@ -550,7 +550,7 @@ mixin _$CarRegisterController on _CarRegisterControllerBase, Store {
 
   @override
   void removeItensSection(
-      {required List<ItensChangesModel> list,
+      {required List<SectionItensModel> list,
       required int index,
       required int indexItem}) {
     final _$actionInfo = _$_CarRegisterControllerBaseActionController

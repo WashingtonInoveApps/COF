@@ -1,7 +1,7 @@
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/core/validation.dart';
-import 'package:bsu_control/model/check_list_model.dart';
+import 'package:bsu_control/model/checklist_model.dart';
 import 'package:bsu_control/checklist/controller/checklist_controller.dart';
 import 'package:bsu_control/checklist/view/widget/insert_material_widget.dart';
 import 'package:flutter/material.dart';
@@ -54,7 +54,7 @@ class _ChecklistFinishPageState extends State<ChecklistFinishPage> {
 
       await widget.controller.finish(
           checklist: checklist.copyWith(
-              endKM: endKMController.text, obs: obsController.text),
+              endKM: int.parse(endKMController.text), obs: obsController.text),
           image: image);
       widget.controller.setLoading(false);
 
@@ -132,7 +132,7 @@ class _ChecklistFinishPageState extends State<ChecklistFinishPage> {
                             style: Constants.titleHint,
                           ),
                           Text(
-                            checklist.startKM,
+                            checklist.startKM.toString(),
                             style: Constants.title,
                           ),
                         ],
@@ -147,7 +147,9 @@ class _ChecklistFinishPageState extends State<ChecklistFinishPage> {
                             style: Constants.titleHint,
                           ),
                           Text(
-                            (checklist.endKM.isEmpty ? ' - ' : checklist.endKM),
+                            (checklist.endKM <= 0
+                                ? ' - '
+                                : checklist.endKM.toString()),
                             style: Constants.title,
                           ),
                         ],
@@ -231,19 +233,19 @@ class _ChecklistFinishPageState extends State<ChecklistFinishPage> {
                 Center(
                   child: IconButton(
                       onPressed: () async {
-                        showDialog(
-                            context: context,
-                            builder: (context) {
-                              return Center(
-                                child: InsertMaterialWidget(
-                                  init: widget.controller.materialsConsumedUsed,
-                                  materials: checklist
-                                      .checkCar.car.materialsConsumable,
-                                  onInsert: widget
-                                      .controller.addMaterialsConsumedUsed,
-                                ),
-                              );
-                            });
+                        // showDialog(
+                        //     context: context,
+                        //     builder: (context) {
+                        //       return Center(
+                        //         child: InsertMaterialWidget(
+                        //           init: widget.controller.materialsConsumedUsed,
+                        //           materials: checklist
+                        //               .checkCar.car.materialsConsumable,
+                        //           onInsert: widget
+                        //               .controller.addMaterialsConsumedUsed,
+                        //         ),
+                        //       );
+                        //     });
                       },
                       style: IconButton.styleFrom(
                           backgroundColor: Constants.primary),

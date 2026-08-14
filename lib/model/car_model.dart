@@ -6,7 +6,7 @@ import 'package:bsu_control/model/car_changes_model.dart';
 import 'package:bsu_control/model/car_mapa_model.dart';
 import 'package:bsu_control/model/car_status_model.dart';
 import 'package:bsu_control/model/file_model.dart';
-import 'package:bsu_control/model/itens_changes_model.dart';
+import 'package:bsu_control/model/section_itens_model.dart';
 
 import 'cia_model.dart';
 
@@ -25,9 +25,7 @@ class CarModel {
   String obs;
   StatusCar state;
 
-  List<ItensChangesModel> itens;
-  List<ItensChangesModel> materials;
-  List<ItensChangesModel> materialsConsumable;
+  List<SectionItensModel> itens;
   List<CarChangeModel> changes;
   List<CarStatusModel> status;
   List<CarMapaModel>? mapas;
@@ -55,8 +53,6 @@ class CarModel {
       required this.changes,
       required this.status,
       required this.images,
-      required this.materials,
-      required this.materialsConsumable,
       this.mapas,
       this.type = "",
       this.adm = false,
@@ -70,9 +66,6 @@ class CarModel {
         "id": id,
         "prefix": prefix,
         "itens": itens.map((e) => e.toMap()).toList(),
-        "materials": materials.map((e) => e.toMap()).toList(),
-        "materialsConsumable":
-            materialsConsumable.map((e) => e.toMap()).toList(),
         "changes": [],
         "images": [],
         "obmID": obmID,
@@ -95,8 +88,6 @@ class CarModel {
       'ciaID': ciaID,
       'state': state.name,
       'itens': itens.map((x) => x.toMap()).toList(),
-      'materials': materials.map((x) => x.toMap()).toList(),
-      'materialsConsumable': materialsConsumable.map((x) => x.toMap()).toList(),
       'changes': changes.map((x) => x.toMap()).toList(),
       'mapas': mapas?.map((x) => x.toMap()).toList(),
       "images": images.map((x) => x?.toMap()).toList(),
@@ -113,13 +104,8 @@ class CarModel {
     return CarModel(
         id: map['id'] ?? '',
         prefix: map['prefix'] ?? '',
-        itens: List<ItensChangesModel>.from(
-            map['itens']?.map((x) => ItensChangesModel.fromMap(x))),
-        materials: List<ItensChangesModel>.from(
-            map['materials']?.map((x) => ItensChangesModel.fromMap(x))),
-        materialsConsumable: List<ItensChangesModel>.from(
-            map['materialsConsumable']
-                ?.map((x) => ItensChangesModel.fromMap(x))),
+        itens: List<SectionItensModel>.from(
+            map['itens']?.map((x) => SectionItensModel.fromMap(x))),
         changes: [],
         images: [],
         status: [],
@@ -142,12 +128,8 @@ class CarModel {
       ciaID: map['ciaID'] ?? '',
       function: map['function'] ?? '',
       state: CarEnumCore.statusCarFromString(map['state'] as String),
-      itens: List<ItensChangesModel>.from(
-          map['itens']?.map((x) => ItensChangesModel.fromMap(x))),
-      materials: List<ItensChangesModel>.from(
-          map['materials']?.map((x) => ItensChangesModel.fromMap(x))),
-      materialsConsumable: List<ItensChangesModel>.from(
-          map['materialsConsumable']?.map((x) => ItensChangesModel.fromMap(x))),
+      itens: List<SectionItensModel>.from(
+          map['itens']?.map((x) => SectionItensModel.fromMap(x))),
       changes: List<CarChangeModel>.from(
           map['changes']?.map((x) => CarChangeModel.fromMap(x))),
       mapas: map['mapas'] != null
@@ -185,9 +167,7 @@ class CarModel {
     CiaModel? cia,
     String? ciaID,
     String? function,
-    List<ItensChangesModel>? itens,
-    List<ItensChangesModel>? materials,
-    List<ItensChangesModel>? materialsConsumable,
+    List<SectionItensModel>? itens,
     List<CarChangeModel>? changes,
     List<CarStatusModel>? status,
     List<CarMapaModel>? mapas,
@@ -206,7 +186,6 @@ class CarModel {
       model: model ?? this.model,
       plate: plate ?? this.plate,
       km: km ?? this.km,
-      materialsConsumable: materialsConsumable ?? this.materialsConsumable,
       modelPneu: modelPneu ?? this.modelPneu,
       ticket: ticket ?? this.ticket,
       obmID: obmID ?? this.obmID,
@@ -214,7 +193,6 @@ class CarModel {
       ciaID: ciaID ?? this.ciaID,
       images: images ?? this.images,
       itens: itens ?? this.itens,
-      materials: materials ?? this.materials,
       changes: changes ?? this.changes,
       status: status ?? this.status,
       mapas: mapas ?? this.mapas,

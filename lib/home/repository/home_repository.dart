@@ -1,7 +1,7 @@
 import 'package:bsu_control/core/api_client.dart';
 import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/home/repository/home_interface.dart';
-import 'package:bsu_control/model/check_list_model.dart';
+import 'package:bsu_control/model/checklist_model.dart';
 
 class HomeRepository extends APIClient implements IHomeRepository {
   HomeRepository(

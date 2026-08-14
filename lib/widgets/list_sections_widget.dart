@@ -1,22 +1,22 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:developer';
+
+import 'package:bsu_control/widgets/section_widget.dart';
 import 'package:flutter/material.dart';
 
-import 'package:bsu_control/car/view/widgets/section_widget.dart';
-
+import 'itens_section_widget.dart';
 import '../core/constants.dart';
-import '../model/item_model.dart';
-import '../model/itens_changes_model.dart';
-import 'alert_message.dart';
 import '../core/sections_controller.dart';
-import '../car/view/widgets/itens_section_widget.dart';
+import '../model/item_model.dart';
+import '../model/section_itens_model.dart';
+import 'alert_message.dart';
 
 class ListSectionsWidget extends StatefulWidget {
-  final List<ItensChangesModel> list;
+  final List<SectionItensModel> list;
 
-  final Function(ItensChangesModel value) onAddSections;
+  final Function(SectionItensModel value) onAddSections;
   final Function(int index) onRemoveSection;
-  final Function(ItensChangesModel value, int index) onEditSection;
+  final Function(SectionItensModel value, int index) onEditSection;
   final Function(int index) onExpansionSection;
 
   final Function(ItemModel value, int index) onAddItens;
@@ -50,7 +50,7 @@ class _ListSectionsWidgetState extends State<ListSectionsWidget> {
       children: [
         widget.list.isEmpty
             ? Text(
-                'Nenhum itens encontrado.',
+                'Nenhum item encontrado.',
                 style: Constants.title,
               )
             : Column(
@@ -218,7 +218,7 @@ class _ListSectionsWidgetState extends State<ListSectionsWidget> {
 }
 
 Widget changesListWidget({
-  required ItensChangesModel section,
+  required SectionItensModel section,
   required BuildContext context,
   required Function(ItemModel, int) onEdit,
   required Function(int i) onDelete,

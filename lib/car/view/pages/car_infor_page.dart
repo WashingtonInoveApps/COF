@@ -167,7 +167,7 @@ class _CarRegisterInforPageState extends State<CarRegisterInforPage> {
             hint: "EX.: RESGATE 32",
             validation: Validation.validatorPreenchimento,
             onChange: register.setPrefix,
-            upper: true,
+            textCase: FieldTextCase.upper,
           ),
         ],
       ),

@@ -37,13 +37,6 @@ mixin _$AppController on _AppControllerBase, Store {
           Computed<int>(() => super.checklistTodayPendent,
               name: '_AppControllerBase.checklistTodayPendent'))
       .value;
-  Computed<int>? _$checklistTodayChangesComputed;
-
-  @override
-  int get checklistTodayChanges => (_$checklistTodayChangesComputed ??=
-          Computed<int>(() => super.checklistTodayChanges,
-              name: '_AppControllerBase.checklistTodayChanges'))
-      .value;
   Computed<List<CarModel>>? _$carsADMComputed;
 
   @override
@@ -217,19 +210,20 @@ mixin _$AppController on _AppControllerBase, Store {
     });
   }
 
-  late final _$checklistsTodayAtom =
-      Atom(name: '_AppControllerBase.checklistsToday', context: context);
+  late final _$checklistsOperationDayAtom =
+      Atom(name: '_AppControllerBase.checklistsOperationDay', context: context);
 
   @override
-  List<ChecklistModel> get checklistsToday {
-    _$checklistsTodayAtom.reportRead();
-    return super.checklistsToday;
+  List<ChecklistModel> get checklistsOperationDay {
+    _$checklistsOperationDayAtom.reportRead();
+    return super.checklistsOperationDay;
   }
 
   @override
-  set checklistsToday(List<ChecklistModel> value) {
-    _$checklistsTodayAtom.reportWrite(value, super.checklistsToday, () {
-      super.checklistsToday = value;
+  set checklistsOperationDay(List<ChecklistModel> value) {
+    _$checklistsOperationDayAtom
+        .reportWrite(value, super.checklistsOperationDay, () {
+      super.checklistsOperationDay = value;
     });
   }
 
@@ -327,11 +321,11 @@ mixin _$AppController on _AppControllerBase, Store {
   }
 
   @override
-  dynamic setChecklistToday(List<ChecklistModel> value) {
+  dynamic setChecklistsOperationDay(List<ChecklistModel> value) {
     final _$actionInfo = _$_AppControllerBaseActionController.startAction(
-        name: '_AppControllerBase.setChecklistToday');
+        name: '_AppControllerBase.setChecklistsOperationDay');
     try {
-      return super.setChecklistToday(value);
+      return super.setChecklistsOperationDay(value);
     } finally {
       _$_AppControllerBaseActionController.endAction(_$actionInfo);
     }
@@ -362,13 +356,12 @@ loading: ${loading},
 checklistVeicular: ${checklistVeicular},
 modeMOBILE: ${modeMOBILE},
 cars: ${cars},
-checklistsToday: ${checklistsToday},
+checklistsOperationDay: ${checklistsOperationDay},
 users: ${users},
 carsTypes: ${carsTypes},
 newRegister: ${newRegister},
 checklistUser: ${checklistUser},
 checklistTodayPendent: ${checklistTodayPendent},
-checklistTodayChanges: ${checklistTodayChanges},
 carsADM: ${carsADM},
 carsOPR: ${carsOPR},
 prefixs: ${prefixs},

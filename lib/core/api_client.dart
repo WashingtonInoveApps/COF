@@ -56,7 +56,7 @@ class APIClient {
     colServices = docApp.collection("services");
   }
 
-  updateAcessToken({required String token}) {
+  void updateAcessToken({required String token}) {
     acessToken = token;
   }
 

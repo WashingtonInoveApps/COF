@@ -63,7 +63,7 @@ class _CarRegisterDetailsPageState extends State<CarRegisterDetailsPage> {
             initValue: register.model,
             hint: "EX.: RENAULT MASTER 2.3 2010",
             onChange: register.setModel,
-            upper: true,
+            textCase: FieldTextCase.upper,
           ),
           Text(
             "PLACA",
@@ -73,7 +73,7 @@ class _CarRegisterDetailsPageState extends State<CarRegisterDetailsPage> {
             initValue: register.plate,
             hint: "EX.: XXX2X45",
             onChange: register.setPlate,
-            upper: true,
+            textCase: FieldTextCase.upper,
           ),
           Text(
             "KM INICIAL",
@@ -94,7 +94,7 @@ class _CarRegisterDetailsPageState extends State<CarRegisterDetailsPage> {
             hint: "EX.: 202/75 15",
             inputType: TextInputType.number,
             onChange: register.setModelPneu,
-            upper: true,
+            textCase: FieldTextCase.upper,
             mask: [maskReference],
           ),
           Text(

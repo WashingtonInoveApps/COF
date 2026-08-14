@@ -1,14 +1,14 @@
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/validation.dart';
-import 'package:bsu_control/model/itens_changes_model.dart';
+import 'package:bsu_control/model/section_itens_model.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../../widgets/textfield_widget.dart';
+import 'textfield_widget.dart';
 
 class SectionWidget extends StatefulWidget {
-  final ItensChangesModel? section;
-  final Function(ItensChangesModel) onChange;
+  final SectionItensModel? section;
+  final Function(SectionItensModel) onChange;
   const SectionWidget({Key? key, this.section, required this.onChange})
       : super(key: key);
 
@@ -53,7 +53,7 @@ class _SectionWidgetState extends State<SectionWidget> {
                 controller: controllerText,
                 hint: 'Ex: EQUIPAMENTOS',
                 label: 'Seção',
-                upper: true,
+                textCase: FieldTextCase.upper,
                 validation: Validation.validatorPreenchimento,
               ),
             ),
@@ -63,7 +63,7 @@ class _SectionWidgetState extends State<SectionWidget> {
               child: ElevatedButton(
                   onPressed: () async {
                     if (formKEY.currentState!.validate()) {
-                      widget.onChange(ItensChangesModel(
+                      widget.onChange(SectionItensModel(
                           id: widget.section?.id ?? const Uuid().v4(),
                           description: controllerText.text,
                           itens: []));

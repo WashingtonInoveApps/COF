@@ -6,12 +6,13 @@ import 'package:bsu_control/core/validation.dart';
 import 'package:bsu_control/model/car_changes_model.dart';
 import 'package:bsu_control/model/car_checklist.dart';
 import 'package:bsu_control/model/car_model.dart';
-import 'package:bsu_control/model/check_list_model.dart';
+import 'package:bsu_control/model/checklist_model.dart';
 import 'package:bsu_control/model/cia_model.dart';
 import 'package:bsu_control/model/config_model.dart';
 import 'package:bsu_control/model/item_model.dart';
-import 'package:bsu_control/model/itens_changes_model.dart';
+import 'package:bsu_control/model/section_itens_model.dart';
 import 'package:bsu_control/model/obm_model.dart';
+import 'package:bsu_control/model/outher_changes_model.dart';
 import 'package:bsu_control/model/team_model.dart';
 import 'package:bsu_control/model/user_model.dart';
 import 'package:bsu_control/checklist/repository/checklist_interface.dart';
@@ -67,15 +68,14 @@ abstract class _CheckListControllerBase with Store {
 
     id = init?.id;
     prefix = init?.prefix ?? 'SELECIONE';
-    oil = init?.checkCar.oil ?? 0.0;
-    hidra = init?.checkCar.hidra ?? 0.0;
-    fr = init?.checkCar.fr ?? 0.0;
-    arref = init?.checkCar.arref ?? 0.0;
-    fuel = init?.checkCar.fuel ?? 0.0;
+    oil = init?.vehicular?.oil ?? 0.0;
+    hidra = init?.vehicular?.hidra ?? 0.0;
+    fr = init?.vehicular?.fr ?? 0.0;
+    arref = init?.vehicular?.arref ?? 0.0;
+    fuel = init?.vehicular?.fuel ?? 0.0;
     team = init?.team ?? team;
-    startKM = init?.startKM ?? '';
-    endKM = init?.endKM ?? '';
-    contact = init?.contact ?? '';
+    startKM = init?.startKM ?? 0;
+    endKM = init?.endKM ?? 0;
     date = init?.date ?? date;
     obs = init?.obs ?? '';
     enable = init?.enable ?? true;
@@ -84,35 +84,19 @@ abstract class _CheckListControllerBase with Store {
     supplies = init?.supply ?? [];
 
     if (init != null) {
-      car = cars.firstWhere((e) => e.id == init.checkCar.car.id);
+      car = cars.firstWhere((e) => e.id == init.vehicular?.car.id);
 
       itens.addAll(mergeSections(
           currentSections: deepCopySections(value: car?.itens ?? []),
           savedSections: deepCopySections(
-            value: init.checkCar.car.itens,
+            value: init.vehicular?.car.itens ?? [],
           )));
 
-      materials.addAll(mergeSections(
-          currentSections: deepCopySections(value: car?.materials ?? []),
-          savedSections: deepCopySections(
-            value: init.checkCar.car.materials,
-          )));
-
-      materialsConsumable.addAll(mergeSections(
-          currentSections:
-              deepCopySections(value: car?.materialsConsumable ?? []),
-          savedSections: deepCopySections(
-            value: init.checkCar.car.materialsConsumable,
-          )));
-
-      outhers
-        ..clear()
-        ..addAll(init.outhers ?? []);
+      // others
+      //   ..clear()
+      //   ..addAll(init.others ?? []);
     } else {
       itens.addAll(deepCopySections(value: car?.itens ?? []));
-      materials.addAll(deepCopySections(value: car?.materials ?? []));
-      materialsConsumable
-          .addAll(deepCopySections(value: car?.materialsConsumable ?? []));
     }
 
     carChanges
@@ -124,24 +108,23 @@ abstract class _CheckListControllerBase with Store {
   ObservableList<CarChangeModel> carChanges = <CarChangeModel>[].asObservable();
 
   @observable
-  ObservableList<ItensChangesModel> itens =
-      <ItensChangesModel>[].asObservable();
+  ObservableList<SectionItensModel> itens =
+      <SectionItensModel>[].asObservable();
 
   @observable
   ObservableList<ChecklistModel> myChecklistUser =
       <ChecklistModel>[].asObservable();
 
   @observable
-  ObservableList<ItensChangesModel> materials =
-      <ItensChangesModel>[].asObservable();
+  ObservableList<SectionItensModel> materials =
+      <SectionItensModel>[].asObservable();
 
   @observable
-  ObservableList<ItensChangesModel> materialsConsumable =
-      <ItensChangesModel>[].asObservable();
+  ObservableList<SectionItensModel> materialsConsumable =
+      <SectionItensModel>[].asObservable();
 
   @observable
-  ObservableList<ChecklistOutherChange> outhers =
-      <ChecklistOutherChange>[].asObservable();
+  ObservableList<OtherChangeModel> others = <OtherChangeModel>[].asObservable();
 
   @observable
   ObservableList<TeamModel> teams = <TeamModel>[].asObservable();
@@ -199,10 +182,10 @@ abstract class _CheckListControllerBase with Store {
   String obs = "";
 
   @observable
-  String startKM = "";
+  int startKM = 0;
 
   @observable
-  String endKM = "";
+  int endKM = 0;
 
   @observable
   String filter = '';
@@ -236,15 +219,7 @@ abstract class _CheckListControllerBase with Store {
 
   @computed
   bool get btFinish {
-    final materialsEmpty = car?.materials.isEmpty ?? true;
-    final materialsConsumableEmpty = car?.materialsConsumable.isEmpty ?? true;
-
-    if (materialsEmpty && step == 2) {
-      return true;
-    }
-    if (materialsConsumableEmpty && step == 3) {
-      return true;
-    } else if (step == 4) {
+    if (step == 4) {
       return true;
     }
 
@@ -279,7 +254,7 @@ abstract class _CheckListControllerBase with Store {
       final filtered = myChecklistUser
           .where((e) =>
               (e.prefix.toLowerCase().contains(filter.toLowerCase()) ||
-                  e.obm.toLowerCase().contains(filter.toLowerCase()) ||
+                  e.obm.name.toLowerCase().contains(filter.toLowerCase()) ||
                   ((e.cia?.name.toLowerCase() ?? '')
                       .contains(filter.toLowerCase())) ||
                   ((e.team?.name.toLowerCase() ?? '')
@@ -353,13 +328,13 @@ abstract class _CheckListControllerBase with Store {
   }
 
   @action
-  addOuthersChange(ChecklistOutherChange value) {
-    outhers.add(value);
+  addOthersChange(OtherChangeModel value) {
+    others.add(value);
   }
 
   @action
   deleteOuhtersChange(int index) {
-    outhers.removeAt(index);
+    others.removeAt(index);
   }
 
   @action
@@ -387,14 +362,6 @@ abstract class _CheckListControllerBase with Store {
       itens
         ..clear()
         ..addAll(deepCopySections(value: car?.itens ?? []));
-
-      materials
-        ..clear()
-        ..addAll(deepCopySections(value: car?.materials ?? []));
-
-      materialsConsumable
-        ..clear()
-        ..addAll(deepCopySections(value: car?.materialsConsumable ?? []));
     }
   }
 
@@ -433,11 +400,11 @@ abstract class _CheckListControllerBase with Store {
     return data;
   }
 
-  List<ItensChangesModel> deepCopySections({
-    required List<ItensChangesModel> value,
+  List<SectionItensModel> deepCopySections({
+    required List<SectionItensModel> value,
   }) {
     return value.map((section) {
-      return ItensChangesModel(
+      return SectionItensModel(
         id: section.id,
         description: section.description,
         value: false,
@@ -456,12 +423,12 @@ abstract class _CheckListControllerBase with Store {
   }
 
   //Criado com auxilio do ChatGPT
-  List<ItensChangesModel> mergeSections({
-    required List<ItensChangesModel> currentSections,
-    required List<ItensChangesModel> savedSections,
+  List<SectionItensModel> mergeSections({
+    required List<SectionItensModel> currentSections,
+    required List<SectionItensModel> savedSections,
   }) {
     /// 1️⃣ Cria um mapa das seções salvas usando o ID como chave
-    final Map<String, ItensChangesModel> savedSectionsMap = {
+    final Map<String, SectionItensModel> savedSectionsMap = {
       for (var section in savedSections) section.id: section
     };
 
@@ -547,7 +514,11 @@ abstract class _CheckListControllerBase with Store {
   setPB(String? value) => pb = value ?? pb;
 
   @action
-  setKMStart(String? value) => startKM = value ?? startKM;
+  void setKMStart(String? value) {
+    if (value == null) return;
+
+    startKM = int.parse(value);
+  }
 
   @action
   setOBS(String? value) => obs = value ?? obs;
@@ -582,13 +553,13 @@ abstract class _CheckListControllerBase with Store {
   }
 
   @action
-  List<ItensChangesModel> changeList({
-    required List<ItensChangesModel> list,
+  List<SectionItensModel> changeList({
+    required List<SectionItensModel> list,
     required ItemModel value,
     required int indexSection,
     required int indexItem,
   }) {
-    final section = ItensChangesModel.fromMap(list[indexSection].toMap());
+    final section = SectionItensModel.fromMap(list[indexSection].toMap());
     List<ItemModel> itens = List.from(section.itens);
 
     itens.removeAt(indexItem);
@@ -602,11 +573,11 @@ abstract class _CheckListControllerBase with Store {
 
   @action
   changeOBS({
-    required List<ItensChangesModel> list,
+    required List<SectionItensModel> list,
     required String obs,
     required int indexSection,
   }) {
-    final section = ItensChangesModel.fromMap(list[indexSection].toMap());
+    final section = SectionItensModel.fromMap(list[indexSection].toMap());
 
     list.removeAt(indexSection);
     list.insert(indexSection, section.copyWith(obs: obs));
@@ -625,14 +596,9 @@ abstract class _CheckListControllerBase with Store {
           date: date,
           user: user,
           userID: user.id ?? '',
-          checkCar: CarChecklist(
+          vehicular: CarChecklistModel(
             car: car!.copyWith(
               itens: itens.map((e) => e.copyWith(value: false)).toList(),
-              materials:
-                  materials.map((e) => e.copyWith(value: false)).toList(),
-              materialsConsumable: materialsConsumable
-                  .map((e) => e.copyWith(value: false))
-                  .toList(),
             ),
             arref: arref,
             fr: fr,
@@ -649,17 +615,15 @@ abstract class _CheckListControllerBase with Store {
           team: team,
           state: StateProgress.inprogress,
           obmID: obm.id ?? '',
-          obm: obm.prefix,
+          obm: obm,
           cia: cia,
-          contact: contact,
-          changes: [],
           states: states,
           supply: supplies);
 
       final result = await repository.save(
         checklist: checklist,
         changes: carChanges,
-        outhers: outhers,
+        others: others,
       );
 
       loading = false;
@@ -683,7 +647,7 @@ abstract class _CheckListControllerBase with Store {
       final result = await repository.finish(
           checklist: checklist.copyWith(
               state: state.state,
-              materials: materialsConsumedUsed,
+              // materials: materialsConsumedUsed,
               states: states,
               dateFinish: now,
               enable: false),
@@ -702,10 +666,17 @@ abstract class _CheckListControllerBase with Store {
     try {
       loading = true;
 
-      final car = cars.firstWhere((e) => e.id == checklist.checkCar.car.id);
+      final car = cars.cast<CarModel?>().firstWhere(
+          (e) => e?.id == checklist.vehicular?.car.id,
+          orElse: () => null);
+
+      if (car == null) {
+        throw Exception('Veículo não encontrado.');
+      }
+
       final changes = List<CarChangeModel>.from(car.changes);
 
-      for (final change in checklist.changes) {
+      for (final change in (checklist.vehicular?.changes ?? [])) {
         changes.removeWhere(
             (e) => (e.checklistID != null) && (e.checklistID == checklist.id));
       }
@@ -743,7 +714,7 @@ abstract class _CheckListControllerBase with Store {
           messagesErros
               .add("Escolha o prefixo do veiculo antes de prosseguir.");
         }
-        if (startKM.isEmpty) {
+        if (startKM <= 0) {
           messagesErros.add("Insira o KM inicial antes de prosseguir.");
         }
         if (oil == 0.0 || fr == 0.0 || hidra == 0.0 || arref == 0.0) {

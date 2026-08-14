@@ -12,7 +12,7 @@ import 'package:bsu_control/model/obm_model.dart';
 import 'package:bsu_control/model/user_model.dart';
 import 'package:mobx/mobx.dart';
 
-import 'model/check_list_model.dart';
+import 'model/checklist_model.dart';
 
 part 'app_controller.g.dart';
 
@@ -74,7 +74,8 @@ abstract class _AppControllerBase with Store {
   List<CarModel> cars = <CarModel>[].asObservable();
 
   @observable
-  List<ChecklistModel> checklistsToday = <ChecklistModel>[].asObservable();
+  List<ChecklistModel> checklistsOperationDay =
+      <ChecklistModel>[].asObservable();
 
   @observable
   List<UserModel> users = <UserModel>[].asObservable();
@@ -110,9 +111,10 @@ abstract class _AppControllerBase with Store {
 
   @computed
   ChecklistModel? get checklistUser {
-    if (checklistsToday.isEmpty) return null;
+    if (checklistsOperationDay.isEmpty) return null;
 
-    final list = checklistsToday.where((e) => e.userID == user.id).toList();
+    final list =
+        checklistsOperationDay.where((e) => e.userID == user.id).toList();
 
     if (list.isEmpty) return null;
 
@@ -126,17 +128,17 @@ abstract class _AppControllerBase with Store {
     final carsOperating =
         cars.where((e) => e.state == StatusCar.operando).length;
 
-    return (carsOperating - checklistsToday.length);
+    return (carsOperating - checklistsOperationDay.length);
   }
 
-  @computed
-  int get checklistTodayChanges {
-    if (checklistsToday.isEmpty) return 0;
+  // @computed
+  // int get checklistTodayChanges {
+  //   if (checklistsOperationDay.isEmpty) return 0;
 
-    return checklistsToday
-        .map((e) => e.changes.length)
-        .reduce((value, next) => value + next);
-  }
+  //   return checklistsOperationDay
+  //       .map((e) => e.changes.length)
+  //       .reduce((value, next) => value + next);
+  // }
 
   @computed
   List<CarModel> get carsADM => cars.where((e) => e.adm).toList();
@@ -162,22 +164,6 @@ abstract class _AppControllerBase with Store {
     }
   }
 
-  // @action
-  // setDateStartConfig(DateTime? value) {
-  //   dateStartConfig = value ?? dateStartConfig;
-  // }
-
-  // @action
-  // setDateFinishConfig(DateTime? value) {
-  //   dateFinishConfig = value ?? dateFinishConfig;
-  // }
-
-  // @action
-  // void cleanExibitionConfig() {
-  //   dateStartConfig = DateTime.now().subtract(const Duration(days: 1));
-  //   dateFinishConfig = DateTime.now();
-  // }
-
   @action
   setUser(UserModel value) => user = value;
 
@@ -193,11 +179,12 @@ abstract class _AppControllerBase with Store {
   @action
   setCheckListVeicular(bool value) => checklistVeicular = value;
 
-  Stream<List<ChecklistModel>> listenChecklistToday() {
+  Stream<List<ChecklistModel>> listenChecklistOperationDay() {
     final dateReference = Core.getOperationalDay(DateTime.now());
 
     log('Data Operacional: ${Core.formatDate(dateReference)}');
-    return repository.listenChecklistToday(referenceDate: dateReference);
+
+    return repository.listenChecklistOperationDay(referenceDate: dateReference);
   }
 
   @action
@@ -217,9 +204,10 @@ abstract class _AppControllerBase with Store {
   }
 
   @action
-  setChecklistToday(List<ChecklistModel> value) {
+  setChecklistsOperationDay(List<ChecklistModel> value) {
     value.sort((a, b) => a.date.compareTo(b.date));
-    checklistsToday
+
+    checklistsOperationDay
       ..clear()
       ..addAll(value);
   }

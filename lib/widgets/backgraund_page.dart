@@ -8,6 +8,9 @@ import 'package:bsu_control/checklist/view/my_checklist_page.dart';
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/home/home_page.dart';
 import 'package:bsu_control/login/view/login_page.dart';
+import 'package:bsu_control/materials/view/material_checklist_register_page.dart';
+import 'package:bsu_control/materials/view/material_warehouse_page.dart';
+import 'package:bsu_control/materials/view/materials_page.dart';
 import 'package:bsu_control/model/obm_model.dart';
 import 'package:bsu_control/model/user_model.dart';
 import 'package:bsu_control/user/view/user_register_page.dart';
@@ -15,8 +18,6 @@ import 'package:bsu_control/user/view/users_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
-
-import '../services/view/service_register_page.dart';
 
 class BackgraundPage extends StatefulWidget {
   final bool menu;
@@ -76,6 +77,11 @@ class _BackgraundPageState extends State<BackgraundPage> {
 
       final vtrsEnable = (user.admin ||
           user.managerFleet ||
+          user.battalion ||
+          user.company ||
+          user.managerOperational);
+
+      final materialEnable = (user.admin ||
           user.battalion ||
           user.company ||
           user.managerOperational);
@@ -221,7 +227,7 @@ class _BackgraundPageState extends State<BackgraundPage> {
                             menuChildren: [
                               MenuItemButton(
                                 child: Text(
-                                  'Veículo',
+                                  'Veicular',
                                   style: Constants.title,
                                 ),
                                 onPressed: () {
@@ -290,7 +296,7 @@ class _BackgraundPageState extends State<BackgraundPage> {
                         menuChildren: [
                           MenuItemButton(
                             child: Text(
-                              'Registros',
+                              'Registrados',
                               style: Constants.title,
                             ),
                             onPressed: () {
@@ -321,13 +327,138 @@ class _BackgraundPageState extends State<BackgraundPage> {
                         ]),
                   ),
                   Visibility(
+                    visible: materialEnable,
+                    child: MenuAnchor(
+                        builder: (context, controller, child) {
+                          return ElevatedButton(
+                            style: style(
+                              router: this.controller.router,
+                              selects: [7, 8, 9],
+                            ),
+                            onPressed: () {
+                              controller.isOpen
+                                  ? controller.close()
+                                  : controller.open();
+                            },
+                            child: Text(
+                              'Materiais',
+                              style: Constants.titleButton,
+                            ),
+                          );
+                        },
+                        menuChildren: [
+                          SubmenuButton(
+                              menuChildren: [
+                                MenuItemButton(
+                                  child: Text(
+                                    'Registrados',
+                                    style: Constants.title,
+                                  ),
+                                  onPressed: () {
+                                    if (controller.router != 7) {
+                                      controller.setRouter(7);
+                                      Navigator.of(context).pushReplacement(
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const MaterialsPage()));
+                                    }
+                                  },
+                                ),
+                                MenuItemButton(
+                                  child: Text(
+                                    'Novo registro',
+                                    style: Constants.title,
+                                  ),
+                                  onPressed: () {
+                                    if (controller.router != 8) {
+                                      controller.setRouter(8);
+                                      Navigator.of(context).pushReplacement(
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const MaterialChecklistRegisterPage()));
+                                    }
+                                  },
+                                )
+                              ],
+                              child: Text(
+                                'Checklist',
+                                style: Constants.title,
+                              )),
+                          MenuItemButton(
+                            child: Text(
+                              'Almoxarifado',
+                              style: Constants.title,
+                            ),
+                            onPressed: () {
+                              if (controller.router != 9) {
+                                controller.setRouter(9);
+                                Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const MaterialWarehousePage()));
+                              }
+                            },
+                          ),
+                        ]),
+                    // child: MenuAnchor(
+                    //     builder: (context, controller, child) {
+                    //       return ElevatedButton(
+                    //         style: style(
+                    //           router: this.controller.router,
+                    //           selects: [7, 8],
+                    //         ),
+                    //         onPressed: () {
+                    //           controller.isOpen
+                    //               ? controller.close()
+                    //               : controller.open();
+                    //         },
+                    //         child: Text(
+                    //           'Materiais',
+                    //           style: Constants.titleButton,
+                    //         ),
+                    //       );
+                    //     },
+                    //     menuChildren: [
+                    //       MenuItemButton(
+                    //         child: Text(
+                    //           'Registrados',
+                    //           style: Constants.title,
+                    //         ),
+                    //         onPressed: () {
+                    //           if (controller.router != 7) {
+                    //             controller.setRouter(7);
+                    //             Navigator.of(context).pushReplacement(
+                    //                 MaterialPageRoute(
+                    //                     builder: (context) =>
+                    //                         const MaterialsPage()));
+                    //           }
+                    //         },
+                    //       ),
+                    //       MenuItemButton(
+                    //         child: Text(
+                    //           'Novo registro',
+                    //           style: Constants.title,
+                    //         ),
+                    //         onPressed: () {
+                    //           if (controller.router != 8) {
+                    //             controller.setRouter(8);
+                    //             Navigator.of(context).pushReplacement(
+                    //                 MaterialPageRoute(
+                    //                     builder: (context) =>
+                    //                         const MaterialRegisterPage()));
+                    //           }
+                    //         },
+                    //       ),
+                    //     ]),
+                  ),
+                  Visibility(
                     visible: usersEnable,
                     child: MenuAnchor(
                         builder: (context, controller, child) {
                           return ElevatedButton(
                             style: style(
                               router: this.controller.router,
-                              selects: [7, 8],
+                              selects: [10, 11],
                             ),
                             onPressed: () {
                               controller.isOpen
@@ -347,8 +478,8 @@ class _BackgraundPageState extends State<BackgraundPage> {
                               style: Constants.title,
                             ),
                             onPressed: () {
-                              if (controller.router != 7) {
-                                controller.setRouter(7);
+                              if (controller.router != 10) {
+                                controller.setRouter(10);
                                 Navigator.of(context).pushReplacement(
                                     MaterialPageRoute(
                                         builder: (context) =>
@@ -362,8 +493,8 @@ class _BackgraundPageState extends State<BackgraundPage> {
                               style: Constants.title,
                             ),
                             onPressed: () {
-                              if (controller.router != 8) {
-                                controller.setRouter(8);
+                              if (controller.router != 11) {
+                                controller.setRouter(11);
                                 Navigator.of(context).pushReplacement(
                                     MaterialPageRoute(
                                         builder: (context) =>

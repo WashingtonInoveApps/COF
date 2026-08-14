@@ -1,6 +1,6 @@
 import 'package:bsu_control/model/app_model.dart';
 import 'package:bsu_control/model/car_model.dart';
-import 'package:bsu_control/model/check_list_model.dart';
+import 'package:bsu_control/model/checklist_model.dart';
 import 'package:bsu_control/model/obm_model.dart';
 import 'package:bsu_control/model/user_model.dart';
 
@@ -10,7 +10,7 @@ abstract class IAppRepository {
   Future<bool> saveSupplies(
       {required SupplyModel supply, required ChecklistModel checklist});
 
-  Stream<List<ChecklistModel>> listenChecklistToday(
+  Stream<List<ChecklistModel>> listenChecklistOperationDay(
       {required DateTime referenceDate});
 
   Stream<List<CarModel>> listenCar();

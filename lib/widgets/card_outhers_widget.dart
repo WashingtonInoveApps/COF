@@ -1,18 +1,18 @@
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/core.dart';
-import 'package:bsu_control/model/check_list_model.dart';
+import 'package:bsu_control/model/outher_changes_model.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class CardOutherChange extends StatelessWidget {
-  final ChecklistOutherChange outher;
+  final OtherChangeModel outher;
   final Function()? onDelete;
   const CardOutherChange({Key? key, required this.outher, this.onDelete})
       : super(key: key);
 
   Widget image(
-      {required ChecklistOutherChange value,
+      {required OtherChangeModel value,
       double heigth = 100,
       double width = 140}) {
     return ClipRRect(

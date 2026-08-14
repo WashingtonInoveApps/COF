@@ -1,4 +1,4 @@
-import 'package:bsu_control/model/check_list_model.dart';
+import 'package:bsu_control/model/checklist_model.dart';
 
 import '../../model/car_mapa_model.dart';
 import '../../model/car_model.dart';

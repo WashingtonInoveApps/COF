@@ -1,3 +1,5 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/enum/car_enum.dart';
@@ -7,121 +9,155 @@ import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
-class CarsChart extends StatefulWidget {
+class CarsChart extends StatelessWidget {
   final List<String> carsTypes;
   final List<CarModel> cars;
   final bool legends;
   final Function(List<DetailsCarsModel>)? onDetails;
 
-  const CarsChart(
-      {Key? key,
-      required this.cars,
-      required this.carsTypes,
-      this.onDetails,
-      this.legends = true})
-      : super(key: key);
+  const CarsChart({
+    Key? key,
+    required this.carsTypes,
+    required this.cars,
+    this.legends = true,
+    this.onDetails,
+  }) : super(key: key);
 
-  @override
-  State<CarsChart> createState() => _CarsChartState();
-}
+  /// Processa toda a frota uma única vez.
+  ///
+  /// O mesmo resultado é utilizado pelo gráfico, legendas e detalhes.
+  FleetSummary _processFleet() {
+    final operatingCars = <CarModel>[];
+    final reserveCars = <CarModel>[];
+    final loweredCars = <CarModel>[];
+    final waitingCars = <CarModel>[];
+    final disabledCars = <CarModel>[];
 
-class _CarsChartState extends State<CarsChart> {
-  final scrollController = ScrollController();
+    for (final car in cars) {
+      if (!car.enable) {
+        disabledCars.add(car);
+      }
 
-  List<DetailsCarsModel> processInforsCars({required List<CarModel> cars}) {
-    List<DetailsCarsModel> inforsCars = [];
+      switch (car.state) {
+        case StatusCar.operando:
+          operatingCars.add(car);
+          break;
 
-    if (widget.cars.isNotEmpty) {
-      inforsCars.clear();
+        case StatusCar.reserva:
+          reserveCars.add(car);
+          break;
 
-      for (final type in widget.carsTypes) {
-        final cars = widget.cars.where((e) => e.type == type).toList();
+        case StatusCar.waiting:
+          waitingCars.add(car);
+          break;
 
-        int operatingType = 0;
-        int reserveType = 0;
-        int loweredType = 0;
-
-        for (final car in cars) {
-          if (car.state != StatusCar.waiting) {
-            if (car.state == StatusCar.operando) {
-              operatingType++;
-            } else if (car.state == StatusCar.reserva) {
-              reserveType++;
-            } else {
-              loweredType++;
-            }
-          }
-        }
-
-        if (cars.isNotEmpty) {
-          inforsCars.add(DetailsCarsModel(
-              label: type,
-              color: Core.corEscuraAleatoria(),
-              operating: operatingType,
-              lowered: loweredType,
-              reserve: reserveType,
-              cars: cars));
-        }
+        default:
+          loweredCars.add(car);
+          break;
       }
     }
 
-    return inforsCars;
-  }
+    final details = <DetailsCarsModel>[];
 
-  List<_ChartData> processDataCharts({required List<CarModel> cars}) {
-    List<_ChartData> data = [];
+    for (final type in carsTypes) {
+      final typeCars = cars.where((car) => car.type == type).toList();
 
-    int operating = 0;
-    int reserve = 0;
-    int lowered = 0;
+      if (typeCars.isEmpty) {
+        continue;
+      }
 
-    if (widget.cars.isNotEmpty) {
-      for (final type in widget.carsTypes) {
-        final cars = widget.cars.where((e) => e.type == type).toList();
+      int operating = 0;
+      int reserve = 0;
+      int lowered = 0;
 
-        int operatingType = 0;
-        int reserveType = 0;
-        int loweredType = 0;
+      for (final car in typeCars) {
+        switch (car.state) {
+          case StatusCar.operando:
+            operating++;
+            break;
 
-        for (final car in cars) {
-          if (car.state != StatusCar.waiting) {
-            if (car.state == StatusCar.operando) {
-              operating++;
-            } else if (car.state == StatusCar.reserva) {
-              reserve++;
-            } else {
-              lowered++;
-            }
-          }
+          case StatusCar.reserva:
+            reserve++;
+            break;
+
+          case StatusCar.waiting:
+            break;
+
+          default:
+            lowered++;
+            break;
         }
       }
+
+      details.add(
+        DetailsCarsModel(
+          label: type,
+          color: Core.corEscuraAleatoria(),
+          operating: operating,
+          reserve: reserve,
+          lowered: lowered,
+          cars: typeCars,
+        ),
+      );
     }
 
-    data
-      ..clear()
-      ..addAll([
-        _ChartData('Operando', operating, Colors.green.shade700),
-        _ChartData('Reservas', reserve, Colors.orange.shade700),
-        _ChartData('Baixadas', lowered, Colors.red.shade700)
-      ]);
-
-    return data;
+    return FleetSummary(
+      total: cars.length,
+      operating: operatingCars,
+      reserve: reserveCars,
+      lowered: loweredCars,
+      waiting: waitingCars,
+      disabled: disabledCars,
+      details: details,
+    );
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-    scrollController.dispose();
+  List<_ChartData> _chartData(FleetSummary summary) {
+    return [
+      _ChartData(
+        'Operando',
+        summary.operating.length,
+        Colors.green.shade700,
+      ),
+      _ChartData(
+        'Reservas',
+        summary.reserve.length,
+        Colors.orange.shade700,
+      ),
+      _ChartData(
+        'Baixadas',
+        summary.lowered.length,
+        Colors.red.shade700,
+      ),
+    ];
+  }
+
+  void _showFleetSummary(
+    BuildContext context,
+    FleetSummary summary,
+  ) {
+    onDetails?.call(summary.details);
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return _FleetSummaryDialog(summary: summary);
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final data = processDataCharts(cars: widget.cars);
-    final inforsCars = processInforsCars(cars: widget.cars);
+    final summary = _processFleet();
+    final data = _chartData(summary);
+
+    final operationalTotal = summary.operating.length +
+        summary.reserve.length +
+        summary.lowered.length;
 
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(10.0),
+        padding: const EdgeInsets.all(10),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -129,30 +165,39 @@ class _CarsChartState extends State<CarsChart> {
             Stack(
               alignment: Alignment.center,
               children: [
-                ClipRect(
-                  child: Align(
-                    alignment: Alignment.topCenter,
-                    heightFactor: 0.5,
-                    child: SfCircularChart(
-                      series: <CircularSeries>[
-                        DoughnutSeries<_ChartData, String>(
-                          dataSource: data.where((e) => (e.value > 0)).toList(),
-                          xValueMapper: (d, _) => d.label,
-                          yValueMapper: (d, _) => d.value,
-                          pointColorMapper: (d, _) => d.color,
-                          startAngle: -90, // 🔥 COMEÇA EMBAIXO
-                          endAngle: 90, // 🔥 TERMINA EM CIMA (180°)
-                          innerRadius: '65%',
-                          dataLabelSettings: DataLabelSettings(
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: ClipRect(
+                    child: Align(
+                      alignment: Alignment.topCenter,
+                      heightFactor: 0.5,
+                      child: SfCircularChart(
+                        margin: EdgeInsets.zero,
+                        series: <CircularSeries>[
+                          DoughnutSeries<_ChartData, String>(
+                            dataSource:
+                                data.where((item) => item.value > 0).toList(),
+                            xValueMapper: (item, _) => item.label,
+                            yValueMapper: (item, _) => item.value,
+                            pointColorMapper: (item, _) => item.color,
+                            startAngle: -90,
+                            endAngle: 90,
+                            innerRadius: '65%',
+                            dataLabelSettings: DataLabelSettings(
                               isVisible: true,
                               textStyle: Constants.title.copyWith(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold)),
-                        ),
-                      ],
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
+
+                /// Título + botão de detalhes
                 Positioned(
                   top: 0,
                   left: 0,
@@ -161,78 +206,28 @@ class _CarsChartState extends State<CarsChart> {
                     children: [
                       Expanded(
                         child: Text(
-                          'DETALHES DA FROTA ( ${Core.formatDate(DateTime.now(), largeDay: true)} )',
+                          'DETALHES DA FROTA ',
                           style: Constants.subtitleHint,
                         ),
                       ),
-                      (widget.legends || widget.cars.isEmpty)
-                          ? Container()
-                          : IconButton(
-                              onPressed: () {
-                                showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return AlertDialog(
-                                        contentPadding:
-                                            const EdgeInsets.all(10),
-                                        content: SingleChildScrollView(
-                                          child: Column(
-                                            children: [
-                                              Align(
-                                                alignment:
-                                                    Alignment.centerRight,
-                                                child: InkWell(
-                                                  onTap: () =>
-                                                      Navigator.of(context)
-                                                          .pop(),
-                                                  child: CircleAvatar(
-                                                      radius: 15,
-                                                      backgroundColor:
-                                                          Colors.black45,
-                                                      child: Icon(
-                                                        MdiIcons.close,
-                                                        size: 20,
-                                                        color: Colors.white,
-                                                      )),
-                                                ),
-                                              ),
-                                              const SizedBox(
-                                                height: 10,
-                                              ),
-                                              Column(
-                                                children: List.generate(
-                                                        inforsCars.length,
-                                                        (index) {
-                                                  final infor =
-                                                      inforsCars[index];
-
-                                                  return detailsWidget(infor);
-                                                })
-                                                    .expand((widget) => [
-                                                          widget,
-                                                          Divider(
-                                                            color: Colors
-                                                                .grey.shade200,
-                                                          )
-                                                        ])
-                                                    .toList()
-                                                  ..removeLast(),
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                      );
-                                    });
-                              },
-                              tooltip: 'Detalhes da frota',
-                              icon: const Icon(
-                                Icons.info,
-                                size: 20,
-                                color: Colors.grey,
-                              ))
+                      if (!legends || cars.isEmpty)
+                        IconButton(
+                          onPressed: () => _showFleetSummary(
+                            context,
+                            summary,
+                          ),
+                          tooltip: 'Resumo da frota',
+                          icon: const Icon(
+                            Icons.info_outline,
+                            size: 20,
+                            color: Colors.grey,
+                          ),
+                        ),
                     ],
                   ),
                 ),
+
+                /// Total no centro do gráfico
                 Positioned(
                   bottom: 0,
                   left: 0,
@@ -241,10 +236,7 @@ class _CarsChartState extends State<CarsChart> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        data
-                            .map((e) => e.value)
-                            .reduce((value, next) => value + next)
-                            .toString(),
+                        operationalTotal.toString(),
                         style: Constants.title.copyWith(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -253,21 +245,25 @@ class _CarsChartState extends State<CarsChart> {
                       Text(
                         'Viaturas',
                         style: Constants.subtitle,
-                      )
+                      ),
                     ],
                   ),
                 ),
               ],
             ),
-            const SizedBox(
-              height: 15,
-            ),
+
+            const SizedBox(height: 10),
+
+            /// Legendas
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: data.map((state) {
+                final percentage = operationalTotal == 0
+                    ? 0.0
+                    : (state.value / operationalTotal) * 100;
+
                 return Expanded(
                   child: Row(
-                    spacing: 10,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(
@@ -275,16 +271,20 @@ class _CarsChartState extends State<CarsChart> {
                         color: state.color,
                         size: 20,
                       ),
+                      const SizedBox(width: 8),
                       Expanded(
                         child: Text.rich(
-                          TextSpan(text: '${state.label} ', children: [
-                            TextSpan(
-                              text: widget.cars.isEmpty
-                                  ? ''
-                                  : '( ${((state.value / widget.cars.length) * 100).toString()}% )',
-                              style: Constants.subtitleHint,
-                            )
-                          ]),
+                          TextSpan(
+                            text: '${state.label} ',
+                            children: [
+                              TextSpan(
+                                text: state.value == 0
+                                    ? ''
+                                    : '(${percentage.toStringAsFixed(0)}%)',
+                                style: Constants.subtitleHint,
+                              ),
+                            ],
+                          ),
                           overflow: TextOverflow.ellipsis,
                           style: Constants.subtitle,
                         ),
@@ -294,38 +294,6 @@ class _CarsChartState extends State<CarsChart> {
                 );
               }).toList(),
             ),
-            // (widget.legends && widget.cars.isNotEmpty)
-            //     ? Expanded(
-            //         child: Column(
-            //           children: [
-            //             const Divider(),
-            //             Expanded(
-            //               child: SizedBox(
-            //                 width: double.infinity,
-            //                 child: Scrollbar(
-            //                   thumbVisibility: true,
-            //                   trackVisibility: true,
-            //                   thickness: 10,
-            //                   controller: scrollController,
-            //                   child: SingleChildScrollView(
-            //                     physics: const ClampingScrollPhysics(),
-            //                     controller: scrollController,
-            //                     child: Padding(
-            //                       padding: const EdgeInsets.only(right: 20),
-            //                       child: Column(
-            //                         children: inforsCars.map((infor) {
-            //                           return detailsWidget(infor);
-            //                         }).toList(),
-            //                       ),
-            //                     ),
-            //                   ),
-            //                 ),
-            //               ),
-            //             )
-            //           ],
-            //         ),
-            //       )
-            //     : Container()
           ],
         ),
       ),
@@ -333,60 +301,488 @@ class _CarsChartState extends State<CarsChart> {
   }
 }
 
-Widget detailsWidget(DetailsCarsModel infor) {
-  return Row(
-    spacing: 10,
-    children: [
-      Expanded(
-        flex: 2,
-        child: Text(
-          infor.label,
-          style: Constants.title,
+/// ---------------------------------------------------------------------------
+/// RESUMO DA FROTA
+/// ---------------------------------------------------------------------------
+
+class FleetSummary {
+  final int total;
+  final List<CarModel> operating;
+  final List<CarModel> reserve;
+  final List<CarModel> lowered;
+  final List<CarModel> waiting;
+  final List<CarModel> disabled;
+  final List<DetailsCarsModel> details;
+
+  const FleetSummary({
+    required this.total,
+    required this.operating,
+    required this.reserve,
+    required this.lowered,
+    required this.waiting,
+    required this.disabled,
+    required this.details,
+  });
+
+  int get operationalTotal =>
+      operating.length + reserve.length + lowered.length;
+
+  int get availableTotal => operating.length + reserve.length;
+
+  double percentage(int value) {
+    if (operationalTotal == 0) {
+      return 0;
+    }
+
+    return (value / operationalTotal) * 100;
+  }
+}
+
+/// ---------------------------------------------------------------------------
+/// DIALOG DE RESUMO
+/// ---------------------------------------------------------------------------
+
+class _FleetSummaryDialog extends StatelessWidget {
+  final FleetSummary summary;
+
+  const _FleetSummaryDialog({
+    required this.summary,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      titlePadding: const EdgeInsets.all(10),
+      contentPadding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+      title: Row(
+        children: [
+          Expanded(
+            child: Text(
+              'RESUMO DA FROTA',
+              style: Constants.title.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          IconButton(
+            tooltip: 'Fechar',
+            onPressed: () => Navigator.of(context).pop(),
+            icon: const Icon(Icons.close),
+          ),
+        ],
+      ),
+      content: ConstrainedBox(
+        constraints: const BoxConstraints(
+          maxWidth: 650,
+          maxHeight: 650,
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _summaryHeader(),
+              const SizedBox(height: 5),
+              const Divider(),
+              const SizedBox(height: 5),
+              Text(
+                'SITUAÇÃO ATUAL',
+                style: Constants.subtitleHint.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 10),
+              _statusCard(
+                label: 'Operando',
+                value: summary.operating.length,
+                color: Colors.green.shade700,
+                percentage: summary.percentage(
+                  summary.operating.length,
+                ),
+              ),
+              _statusCard(
+                label: 'Reservas',
+                value: summary.reserve.length,
+                color: Colors.orange.shade700,
+                percentage: summary.percentage(
+                  summary.reserve.length,
+                ),
+              ),
+              _statusCard(
+                label: 'Baixadas',
+                value: summary.lowered.length,
+                color: Colors.red.shade700,
+                percentage: summary.percentage(
+                  summary.lowered.length,
+                ),
+              ),
+              if (summary.waiting.isNotEmpty)
+                _statusCard(
+                  label: 'Aguardando',
+                  value: summary.waiting.length,
+                  color: Colors.grey.shade600,
+                  percentage: summary.total == 0
+                      ? 0
+                      : (summary.waiting.length / summary.total) * 100,
+                ),
+              if (summary.disabled.isNotEmpty)
+                _statusCard(
+                  label: 'Desabilitadas',
+                  value: summary.disabled.length,
+                  color: Colors.black54,
+                  percentage: summary.total == 0
+                      ? 0
+                      : (summary.disabled.length / summary.total) * 100,
+                ),
+              const SizedBox(height: 5),
+              if (summary.details.isNotEmpty) ...[
+                const Divider(),
+                const SizedBox(height: 5),
+                Text(
+                  'RESUMO POR TIPO',
+                  style: Constants.subtitleHint.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                ...summary.details.map(
+                  (detail) => _typeSummary(detail),
+                ),
+              ],
+              const SizedBox(height: 5),
+              const Divider(),
+              const SizedBox(height: 5),
+              Text(
+                'VIATURAS ATUAIS',
+                style: Constants.subtitleHint.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 10),
+              ..._buildCarsList(),
+            ],
+          ),
         ),
       ),
-      Expanded(
+    );
+  }
+
+  Widget _summaryHeader() {
+    return Row(
+      children: [
+        Expanded(
+          child: _headerItem(
+            'Total',
+            summary.total,
+            Colors.blueGrey.shade700,
+          ),
+        ),
+        Expanded(
+          child: _headerItem(
+            'Operacionais',
+            summary.operationalTotal,
+            Colors.green.shade700,
+          ),
+        ),
+        Expanded(
+          child: _headerItem(
+            'Disponíveis',
+            summary.availableTotal,
+            Colors.blue.shade700,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _headerItem(
+    String label,
+    int value,
+    Color color,
+  ) {
+    return Column(
+      children: [
+        Icon(
+          MdiIcons.car,
+          color: color,
+          size: 25,
+        ),
+        const SizedBox(height: 4),
+        Text(
+          value.toString(),
+          style: Constants.title.copyWith(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: color,
+          ),
+        ),
+        Text(
+          label,
+          textAlign: TextAlign.center,
+          style: Constants.subtitleHint,
+        ),
+      ],
+    );
+  }
+
+  Widget _statusCard({
+    required String label,
+    required int value,
+    required Color color,
+    required double percentage,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 7),
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 12,
+          vertical: 9,
+        ),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: color.withValues(alpha: 0.15),
+          ),
+        ),
         child: Row(
-          spacing: 5,
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             Icon(
               Icons.circle,
-              color: Colors.green.shade700,
-              size: 15,
+              size: 13,
+              color: color,
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                label,
+                style: Constants.subtitle,
+              ),
             ),
             Text(
-              infor.operating.toString(),
-              style: Constants.title,
+              value.toString(),
+              style: Constants.title.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            Icon(
-              Icons.circle,
-              color: Colors.orange.shade700,
-              size: 15,
-            ),
-            Text(
-              infor.reserve.toString(),
-              style: Constants.title,
-            ),
-            Icon(
-              Icons.circle,
-              color: Colors.red.shade700,
-              size: 15,
-            ),
-            Text(
-              infor.lowered.toString(),
-              style: Constants.title,
+            const SizedBox(width: 8),
+            SizedBox(
+              width: 55,
+              child: Text(
+                '${percentage.toStringAsFixed(0)}%',
+                textAlign: TextAlign.right,
+                style: Constants.subtitleHint,
+              ),
             ),
           ],
         ),
       ),
-    ],
-  );
+    );
+  }
+
+  Widget _typeSummary(DetailsCarsModel detail) {
+    final total = detail.operating + detail.reserve + detail.lowered;
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 2,
+            child: Text(
+              detail.label.isEmpty ? 'Sem tipo' : detail.label,
+              style: Constants.title.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          _miniStatus(
+            Icons.circle,
+            Colors.green.shade700,
+            detail.operating,
+          ),
+          _miniStatus(
+            Icons.circle,
+            Colors.orange.shade700,
+            detail.reserve,
+          ),
+          _miniStatus(
+            Icons.circle,
+            Colors.red.shade700,
+            detail.lowered,
+          ),
+          SizedBox(
+            width: 40,
+            child: Text(
+              total.toString(),
+              textAlign: TextAlign.right,
+              style: Constants.title.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _miniStatus(
+    IconData icon,
+    Color color,
+    int value,
+  ) {
+    return Expanded(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            icon,
+            color: color,
+            size: 11,
+          ),
+          const SizedBox(width: 4),
+          Text(
+            value.toString(),
+            style: Constants.subtitle,
+          ),
+        ],
+      ),
+    );
+  }
+
+  List<Widget> _buildCarsList() {
+    final widgets = <Widget>[];
+
+    final allCars = [
+      ...summary.operating,
+      ...summary.reserve,
+      ...summary.lowered,
+      ...summary.waiting,
+    ];
+
+    for (final car in allCars) {
+      widgets.add(
+        _carItem(car),
+      );
+    }
+
+    return widgets;
+  }
+
+  Widget _carItem(CarModel car) {
+    final color = _stateColor(car.state);
+    final label = _stateLabel(car.state);
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 10,
+          vertical: 8,
+        ),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(7),
+          border: Border.all(
+            color: Colors.grey.shade200,
+          ),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              MdiIcons.car,
+              size: 20,
+              color: color,
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    car.prefix.isEmpty ? 'Sem prefixo' : car.prefix,
+                    style: Constants.title.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  if (car.model.isNotEmpty || car.function.isNotEmpty)
+                    Text(
+                      [
+                        if (car.model.isNotEmpty) car.model,
+                        if (car.function.isNotEmpty) car.function,
+                      ].join(' • '),
+                      overflow: TextOverflow.ellipsis,
+                      style: Constants.subtitleHint,
+                    ),
+                ],
+              ),
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  label,
+                  style: Constants.subtitle.copyWith(
+                    color: color,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                if (car.plate.isNotEmpty)
+                  Text(
+                    car.plate,
+                    style: Constants.subtitleHint,
+                  ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Color _stateColor(StatusCar state) {
+    switch (state) {
+      case StatusCar.operando:
+        return Colors.green.shade700;
+
+      case StatusCar.reserva:
+        return Colors.orange.shade700;
+
+      case StatusCar.waiting:
+        return Colors.grey.shade600;
+
+      default:
+        return Colors.red.shade700;
+    }
+  }
+
+  String _stateLabel(StatusCar state) {
+    switch (state) {
+      case StatusCar.operando:
+        return 'Operando';
+
+      case StatusCar.reserva:
+        return 'Reserva';
+
+      case StatusCar.waiting:
+        return 'Aguardando';
+
+      default:
+        return 'Baixada';
+    }
+  }
 }
 
-class _ChartData {
-  String label;
-  int value;
-  Color color;
+/// ---------------------------------------------------------------------------
+/// DADOS DO GRÁFICO
+/// ---------------------------------------------------------------------------
 
-  _ChartData(this.label, this.value, this.color);
+class _ChartData {
+  final String label;
+  final int value;
+  final Color color;
+
+  const _ChartData(
+    this.label,
+    this.value,
+    this.color,
+  );
 }

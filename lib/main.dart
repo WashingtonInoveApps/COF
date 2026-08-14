@@ -70,8 +70,9 @@ class _AppWidgetState extends State<AppWidget> {
       controller.setCars(result);
     });
 
-    checklistTodayDispose = controller.listenChecklistToday().listen((result) {
-      controller.setChecklistToday(result);
+    checklistTodayDispose =
+        controller.listenChecklistOperationDay().listen((result) {
+      controller.setChecklistsOperationDay(result);
     });
 
     usersDispose = controller.listenUsers.listen((result) {

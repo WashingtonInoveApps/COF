@@ -1,8 +1,8 @@
 import 'package:bsu_control/app_controller.dart';
+import 'package:bsu_control/checklist/view/widget/checklist_item_widget.dart';
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/model/item_model.dart';
-import 'package:bsu_control/model/itens_changes_model.dart';
-import 'package:bsu_control/checklist/view/widget/checklist_item_widget.dart';
+import 'package:bsu_control/model/section_itens_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
@@ -11,7 +11,7 @@ import '../../../widgets/textfield_widget.dart';
 class ChecklistSectionPage extends StatefulWidget {
   final String title;
   final double width;
-  final List<ItensChangesModel> list;
+  final List<SectionItensModel> list;
   final Function(String, int) onChangeOBS;
   final Function(ItemModel, int indexSection, int indexItem) onChangeItem;
 

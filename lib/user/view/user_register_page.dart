@@ -363,7 +363,7 @@ class _UserPageRegisterState extends State<UserPageRegister> {
                         hint: "Ex.: fulano@cb.ce.gov.br",
                         label: "E-mail",
                         validation: Validation.validatorEmail,
-                        low: true,
+                        textCase: FieldTextCase.lower,
                         onSaved: (text) {
                           user.email = text!;
                         },

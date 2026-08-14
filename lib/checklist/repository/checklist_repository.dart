@@ -5,8 +5,9 @@ import 'package:bsu_control/core/api_client.dart';
 import 'package:bsu_control/enum/car_enum.dart';
 import 'package:bsu_control/model/car_changes_model.dart';
 import 'package:bsu_control/model/car_model.dart';
+import 'package:bsu_control/model/outher_changes_model.dart';
 
-import '../../model/check_list_model.dart';
+import '../../model/checklist_model.dart';
 
 class CheckListRepository extends APIClient implements ICheckListRepository {
   CheckListRepository(
@@ -17,11 +18,11 @@ class CheckListRepository extends APIClient implements ICheckListRepository {
   Future<bool> save({
     required ChecklistModel checklist,
     required List<CarChangeModel> changes,
-    required List<ChecklistOutherChange> outhers,
+    required List<OtherChangeModel> others,
   }) async {
     try {
       var doc = colChecklist.doc(checklist.id);
-      var docCar = colCars.doc(checklist.checkCar.car.id);
+      var docCar = colCars.doc(checklist.vehicular?.car.id);
 
       checklist.id = doc.id;
 
@@ -46,7 +47,7 @@ class CheckListRepository extends APIClient implements ICheckListRepository {
           }
         }
 
-        for (var outher in outhers) {
+        for (var outher in others) {
           if (outher.fileImage != null) {
             outher.image = await saveFile(
                 pathStorage: 'imagens/changes/${checklist.prefix}',
@@ -61,22 +62,23 @@ class CheckListRepository extends APIClient implements ICheckListRepository {
           }
         }
 
-        trans.set(
-            doc,
-            checklist
-                .copyWith(
-                    outhers: outhers,
-                    changes: changes
-                        .where((e) => e.checklistID == checklist.id)
-                        .toList())
-                .toMap());
+        // trans.set(
+        //     doc,
+        //     checklist
+        //         .copyWith(
+        //             outhers: outhers,
+        //             vehicular: checklist.vehicular?.copyWith(
+        //                 changes: changes
+        //                     .where((e) => e.checklistID == checklist.id)
+        //                     .toList()))
+        //         .toMap());
 
         trans.update(
             docCar,
             car
                 .copyWith(
                     changes: changes,
-                    km: int.parse(checklist.startKM),
+                    km: checklist.startKM,
                     state: StatusCar.operando)
                 .toMap());
       });
@@ -92,7 +94,7 @@ class CheckListRepository extends APIClient implements ICheckListRepository {
       {required ChecklistModel checklist, Uint8List? image}) async {
     try {
       var docChecklist = colChecklist.doc(checklist.id);
-      var docCar = colCars.doc(checklist.checkCar.car.id);
+      var docCar = colCars.doc(checklist.vehicular?.car.id);
 
       if (image == null) {
         throw Exception(
@@ -110,7 +112,7 @@ class CheckListRepository extends APIClient implements ICheckListRepository {
       }
 
       await firebase!.runTransaction((trans) async {
-        trans.update(docCar, {"km": int.parse(checklist.endKM)});
+        trans.update(docCar, {"km": checklist.endKM});
 
         trans.update(
             docChecklist, checklist.copyWith(signature: result).toMap());
@@ -180,7 +182,7 @@ class CheckListRepository extends APIClient implements ICheckListRepository {
         trans.delete(docChecklist);
       });
 
-      for (final change in checklist.changes) {
+      for (final change in (checklist.vehicular?.changes ?? [])) {
         if (change.image != null) {
           await deleteFile(
               path: 'imagens/changes/${car.prefix}',
@@ -188,13 +190,13 @@ class CheckListRepository extends APIClient implements ICheckListRepository {
         }
       }
 
-      for (final outher in (checklist.outhers ?? [])) {
-        if (outher.image != null) {
-          await deleteFile(
-              path: 'imagens/changes/${car.prefix}',
-              filename: outher.image!.name);
-        }
-      }
+      // for (final outher in (checklist.outhers ?? [])) {
+      //   if (outher.image != null) {
+      //     await deleteFile(
+      //         path: 'imagens/changes/${car.prefix}',
+      //         filename: outher.image!.name);
+      //   }
+      // }
 
       return true;
     } catch (e) {

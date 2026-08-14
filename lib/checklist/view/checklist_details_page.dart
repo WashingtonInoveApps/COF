@@ -1,16 +1,16 @@
 import 'dart:async';
 
 import 'package:bsu_control/app_controller.dart';
-import 'package:bsu_control/core/constants.dart';
-import 'package:bsu_control/core/core.dart';
-import 'package:bsu_control/enum/state_enum.dart';
-import 'package:bsu_control/main.dart';
-import 'package:bsu_control/model/check_list_model.dart';
-import 'package:bsu_control/model/itens_changes_model.dart';
 import 'package:bsu_control/checklist/view/checklist_finish_page.dart';
 import 'package:bsu_control/checklist/view/checklist_register_page.dart';
 import 'package:bsu_control/checklist/view/widget/fluids_widget.dart';
 import 'package:bsu_control/checklist/view/widget/fuel_widget.dart';
+import 'package:bsu_control/core/constants.dart';
+import 'package:bsu_control/core/core.dart';
+import 'package:bsu_control/enum/state_enum.dart';
+import 'package:bsu_control/main.dart';
+import 'package:bsu_control/model/checklist_model.dart';
+import 'package:bsu_control/model/section_itens_model.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -20,7 +20,6 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import '../../widgets/alert_message.dart';
 import '../../widgets/backgraund_page.dart';
 import '../../widgets/car_changes_widget.dart';
-import '../../widgets/card_outhers_widget.dart';
 import '../controller/checklist_controller.dart';
 
 class ChecklistDetailsPage extends StatefulWidget {
@@ -50,7 +49,7 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
       config: config,
       update: false,
       cars: app.cars,
-      checklistTodays: app.checklistsToday,
+      checklistTodays: app.checklistsOperationDay,
     );
 
     subscription = controller
@@ -71,7 +70,7 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
   @override
   Widget build(BuildContext context) {
     final obm = app.obms.firstWhere((e) => e.id == checklist.obmID);
-    final car = app.cars.firstWhere((e) => e.id == checklist.checkCar.car.id);
+    final car = app.cars.firstWhere((e) => e.id == checklist.vehicular?.car.id);
 
     final listStates = List<StatesChecklist>.from(checklist.states);
     listStates.sort((a, b) => a.date.compareTo(b.date));
@@ -322,7 +321,7 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
                           style: Constants.titleHint,
                         ),
                         Text(
-                          checklist.startKM,
+                          checklist.startKM.toString(),
                           style: Constants.title,
                         ),
                       ],
@@ -337,7 +336,9 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
                           style: Constants.titleHint,
                         ),
                         Text(
-                          (checklist.endKM.isEmpty ? ' - ' : checklist.endKM),
+                          (checklist.endKM <= 0
+                              ? ' - '
+                              : checklist.endKM.toString()),
                           style: Constants.title,
                         ),
                       ],
@@ -366,10 +367,10 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
                 width: double.infinity,
                 alignment: Alignment.center,
                 child: FluidsWidget(
-                  oil: checklist.checkCar.oil,
-                  hidra: checklist.checkCar.hidra,
-                  fr: checklist.checkCar.fr,
-                  arref: checklist.checkCar.arref,
+                  oil: checklist.vehicular?.oil ?? 0,
+                  hidra: checklist.vehicular?.hidra ?? 0,
+                  fr: checklist.vehicular?.fr ?? 0,
+                  arref: checklist.vehicular?.arref ?? 0,
                 ),
               ),
               const SizedBox(
@@ -377,7 +378,7 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
               ),
               SizedBox(
                   width: double.infinity,
-                  child: FuelWidget(fuel: checklist.checkCar.fuel)),
+                  child: FuelWidget(fuel: checklist.vehicular?.fuel ?? 0.0)),
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(10),
@@ -393,7 +394,7 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
                 height: 5,
               ),
               Text(
-                '${checklist.changes.length} alteração registrada',
+                '${checklist.vehicular?.changes?.length ?? 0} alteração registrada',
                 style: Constants.subtitleHint,
               ),
               const SizedBox(
@@ -422,22 +423,22 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
               const SizedBox(
                 height: 10,
               ),
-              (checklist.outhers?.isEmpty ?? true)
-                  ? Text(
-                      'Nenhuma outra alteração encontrada',
-                      style: Constants.titleHint,
-                    )
-                  : Column(
-                      children:
-                          List.generate(checklist.outhers!.length, (index) {
-                        final outher = checklist.outhers![index];
+              // (checklist.outhers?.isEmpty ?? true)
+              //     ? Text(
+              //         'Nenhuma outra alteração encontrada',
+              //         style: Constants.titleHint,
+              //       )
+              //     : Column(
+              //         children:
+              //             List.generate(checklist.outhers!.length, (index) {
+              //           final outher = checklist.outhers![index];
 
-                        return CardOutherChange(
-                          outher: outher,
-                        );
-                      }).expand((widget) => [widget, const Divider()]).toList()
-                            ..removeLast(),
-                    ),
+              //           return CardOutherChange(
+              //             outher: outher,
+              //           );
+              //         }).expand((widget) => [widget, const Divider()]).toList()
+              //               ..removeLast(),
+              //       ),
               const SizedBox(
                 height: 10,
               ),
@@ -463,14 +464,14 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
               const SizedBox(
                 height: 10,
               ),
-              (checklist.checkCar.car.itens.isEmpty)
+              (checklist.vehicular?.car.itens.isEmpty ?? true)
                   ? Text(
                       'Nenhum registro de itens encontrado.',
                       style: Constants.title,
                     )
                   : changesListWidget(
                       context: context,
-                      categories: checklist.checkCar.car.itens,
+                      categories: checklist.vehicular?.car.itens ?? [],
                     ),
               const SizedBox(
                 height: 10,
@@ -489,18 +490,6 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
               const SizedBox(
                 height: 10,
               ),
-              (checklist.checkCar.car.materials.isEmpty)
-                  ? Text(
-                      'Nenhum registro de itens encontrado.',
-                      style: Constants.title,
-                    )
-                  : changesListWidget(
-                      context: context,
-                      categories: checklist.checkCar.car.materials,
-                    ),
-              const SizedBox(
-                height: 10,
-              ),
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(10),
@@ -512,18 +501,6 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
                   style: Constants.titleButton,
                 ),
               ),
-              const SizedBox(
-                height: 10,
-              ),
-              (checklist.checkCar.car.materialsConsumable.isEmpty)
-                  ? Text(
-                      'Nenhum registro de itens encontrado.',
-                      style: Constants.title,
-                    )
-                  : changesListWidget(
-                      context: context,
-                      categories: checklist.checkCar.car.materialsConsumable,
-                    ),
               const SizedBox(
                 height: 10,
               ),
@@ -543,37 +520,37 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
                           style: Constants.titleButton,
                         ),
                       ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      (checklist.materials?.isEmpty ?? false)
-                          ? Text(
-                              'Nenhum material utilizado',
-                              style: Constants.titleHint,
-                            )
-                          : Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: List.generate(
-                                      checklist.materials!.length, (index) {
-                                final material = checklist.materials![index];
-                                return Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      material.description,
-                                      style: Constants.title,
-                                    ),
-                                    Text(
-                                      '${material.quantity.toString().padLeft(2, '0')} unidade(s)',
-                                      style: Constants.subtitleHint,
-                                    ),
-                                  ],
-                                );
-                              })
-                                  .expand((widget) => [widget, const Divider()])
-                                  .toList()
-                                ..removeLast(),
-                            ),
+                      // const SizedBox(
+                      //   height: 10,
+                      // ),
+                      // (checklist.materials?.isEmpty ?? false)
+                      //     ? Text(
+                      //         'Nenhum material utilizado',
+                      //         style: Constants.titleHint,
+                      //       )
+                      //     : Column(
+                      //         crossAxisAlignment: CrossAxisAlignment.start,
+                      //         children: List.generate(
+                      //                 checklist.materials!.length, (index) {
+                      //           final material = checklist.materials![index];
+                      //           return Column(
+                      //             crossAxisAlignment: CrossAxisAlignment.start,
+                      //             children: [
+                      //               Text(
+                      //                 material.description,
+                      //                 style: Constants.title,
+                      //               ),
+                      //               Text(
+                      //                 '${material.quantity.toString().padLeft(2, '0')} unidade(s)',
+                      //                 style: Constants.subtitleHint,
+                      //               ),
+                      //             ],
+                      //           );
+                      //         })
+                      //             .expand((widget) => [widget, const Divider()])
+                      //             .toList()
+                      //           ..removeLast(),
+                      //       ),
                       const SizedBox(
                         height: 10,
                       ),
@@ -660,8 +637,8 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
 
 Widget changesListWidget(
     {required BuildContext context,
-    required List<ItensChangesModel> categories}) {
-  final list = List<ItensChangesModel>.from(categories);
+    required List<SectionItensModel> categories}) {
+  final list = List<SectionItensModel>.from(categories);
 
   return StatefulBuilder(
     builder: (context, setState) {

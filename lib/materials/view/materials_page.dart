@@ -1,5 +1,6 @@
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
+import 'package:bsu_control/main.dart';
 import 'package:bsu_control/materials/controller/materials_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -10,14 +11,14 @@ import '../../widgets/limit_table_widget.dart';
 import '../../widgets/pagination_widget.dart';
 import '../../widgets/textfield_widget.dart';
 
-class CarsPage extends StatefulWidget {
-  const CarsPage({Key? key}) : super(key: key);
+class MaterialsPage extends StatefulWidget {
+  const MaterialsPage({Key? key}) : super(key: key);
 
   @override
-  State<CarsPage> createState() => _CarsPageState();
+  State<MaterialsPage> createState() => _MaterialsPageState();
 }
 
-class _CarsPageState extends State<CarsPage> {
+class _MaterialsPageState extends State<MaterialsPage> {
   late MaterialsController controller;
   final app = GetIt.I.get<AppController>();
   final searchController = TextEditingController();
@@ -26,7 +27,10 @@ class _CarsPageState extends State<CarsPage> {
   void initState() {
     super.initState();
 
-    controller = MaterialsController();
+    controller = MaterialsController(
+      config: config,
+      obmID: app.user.obmID,
+    );
   }
 
   @override
@@ -133,7 +137,7 @@ class _CarsPageState extends State<CarsPage> {
               //               ),
               //             ),
               //             onTap: () {
-              //               Navigator.of(context).push(MaterialPageRoute(
+              //               Navigator.of(context).push(MaterialsPageRoute(
               //                   builder: (context) => CarDetailsPage(
               //                         carID: car.id ?? '',
               //                       )));

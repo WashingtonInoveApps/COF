@@ -2,7 +2,7 @@ import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/enum/state_enum.dart';
 import 'package:bsu_control/model/car_changes_model.dart';
-import 'package:bsu_control/model/check_list_model.dart';
+import 'package:bsu_control/model/checklist_model.dart';
 import 'package:bsu_control/model/obm_model.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -43,7 +43,7 @@ class _ChecklistTableViewState extends State<ChecklistTableView> {
         },
         onChanges: (id) {
           final checklist = widget.values.firstWhere((e) => e.id == id);
-          widget.onChanges?.call(checklist.changes);
+          widget.onChanges?.call([]);
         },
         onSortChanged: () {
           setState(() {});
@@ -241,15 +241,13 @@ class ChecklistDataSource extends DataGridSource {
         DataGridCell<String>(columnName: 'state', value: state.state.name),
         DataGridCell<String>(
           columnName: 'contact',
-          value: check.contact,
+          value: 'check.contact',
         ),
-        DataGridCell<String>(columnName: 'kmStart', value: check.startKM),
-        DataGridCell<String>(
-            columnName: 'kmFinish',
-            value: check.endKM.isEmpty ? ' - ' : check.endKM),
+        DataGridCell<int>(columnName: 'kmStart', value: check.startKM),
+        DataGridCell<int>(columnName: 'kmFinish', value: check.endKM ?? 0),
         DataGridCell<String>(
             columnName: 'changes',
-            value: '${check.changes.length}/${check.id}'),
+            value: '${(check.vehicular?.changes?.length ?? 0)}/${check.id}'),
       ]);
     }).toList();
 
@@ -297,15 +295,13 @@ class ChecklistDataSource extends DataGridSource {
         DataGridCell<String>(columnName: 'state', value: state.state.name),
         DataGridCell<String>(
           columnName: 'contact',
-          value: check.contact,
+          value: 'check.contact',
         ),
-        DataGridCell<String>(columnName: 'kmStart', value: check.startKM),
-        DataGridCell<String>(
-            columnName: 'kmFinish',
-            value: check.endKM.isEmpty ? ' - ' : check.endKM),
+        DataGridCell<int>(columnName: 'kmStart', value: check.startKM),
+        DataGridCell<int>(columnName: 'kmFinish', value: check.endKM ?? 0),
         DataGridCell<String>(
             columnName: 'changes',
-            value: '${check.changes.length}/${check.id}'),
+            value: '${(check.vehicular?.changes?.length ?? 0)}/${check.id}'),
       ]);
     }).toList();
   }
