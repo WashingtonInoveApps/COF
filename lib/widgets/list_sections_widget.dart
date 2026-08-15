@@ -12,6 +12,7 @@ import '../model/section_itens_model.dart';
 import 'alert_message.dart';
 
 class ListSectionsWidget extends StatefulWidget {
+  final List<ItemModel>? itensMaterials;
   final List<SectionItensModel> list;
 
   final Function(SectionItensModel value) onAddSections;
@@ -35,6 +36,7 @@ class ListSectionsWidget extends StatefulWidget {
     required this.onEditItens,
     required this.onAddItens,
     required this.onMoveItens,
+    this.itensMaterials,
   }) : super(key: key);
 
   @override
@@ -156,6 +158,8 @@ class _ListSectionsWidgetState extends State<ListSectionsWidget> {
                                           context: context,
                                           builder: (context) => Center(
                                                 child: ItensSectionWidget(
+                                                  itensMaterials:
+                                                      widget.itensMaterials,
                                                   onChange: (value) {
                                                     widget.onAddItens
                                                         .call(value, index);
@@ -220,10 +224,10 @@ class _ListSectionsWidgetState extends State<ListSectionsWidget> {
 Widget changesListWidget({
   required SectionItensModel section,
   required BuildContext context,
-  required Function(ItemModel, int) onEdit,
   required Function(int i) onDelete,
   required void Function(int, MoveDirection) onMove,
   required Function() onAdd,
+  required Function(ItemModel, int) onEdit,
 }) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -313,7 +317,7 @@ Widget changesListWidget({
                                               size: 15,
                                             ),
                                           ),
-                                          onTap: () => onEdit(
+                                          onTap: () => onEdit.call(
                                               section.itens[index], index),
                                         ),
                                         InkWell(

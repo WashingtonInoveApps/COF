@@ -35,7 +35,7 @@ class _MaterialWarehousePageState extends State<MaterialWarehousePage> {
 
   late MaterialsController controller;
   late ReactionDisposer rec;
-  late StreamSubscription subscription;
+  StreamSubscription? subscription;
 
   @override
   void initState() {
@@ -48,6 +48,8 @@ class _MaterialWarehousePageState extends State<MaterialWarehousePage> {
 
     controller.setLoading(true);
     rec = autorun((_) {
+      subscription?.cancel().then((_) {});
+
       subscription = controller.listenMaterialsWarehouse().listen((value) {
         controller.setMaterialsWarehouse(value);
         controller.setLoading(false);
@@ -60,7 +62,7 @@ class _MaterialWarehousePageState extends State<MaterialWarehousePage> {
     super.dispose();
     searchController.dispose();
     rec();
-    subscription.cancel();
+    subscription?.cancel();
   }
 
   @override
@@ -176,7 +178,7 @@ class _MaterialWarehousePageState extends State<MaterialWarehousePage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Exibindo ${controller.startMaterial} a ${controller.endMaterial} de ${controller.materialsWarehouse.length} entradas',
+                            'Exibindo ${controller.startItensWarehouse} a ${controller.endItensWarehouse} de ${controller.materialsWarehouse.length} entradas',
                             style: Constants.subtitleHint,
                           ),
                           const SizedBox(
@@ -414,7 +416,8 @@ class _MaterialWarehousePageState extends State<MaterialWarehousePage> {
                                   child: PaginationWidget(
                                     limit: controller.limit,
                                     page: controller.page,
-                                    length: 0,
+                                    length:
+                                        controller.lengthItensWarehouseSortings,
                                     onChange: controller.setPage,
                                   ),
                                 ),

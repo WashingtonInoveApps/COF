@@ -2,15 +2,15 @@
 import 'dart:convert';
 
 import 'package:bsu_control/model/cia_model.dart';
-import 'package:bsu_control/model/item_model.dart';
 import 'package:bsu_control/model/obm_model.dart';
 import 'package:bsu_control/model/outher_changes_model.dart';
 import 'package:bsu_control/model/section_itens_model.dart';
 import 'package:bsu_control/model/team_model.dart';
+import 'package:bsu_control/model/user_model.dart';
 
 import 'materials_consumed_model.dart';
 
-class MaterialsModel {
+class MaterialChecklistModel {
   String? id;
   OBMModel obm;
   TeamModel? team;
@@ -18,12 +18,14 @@ class MaterialsModel {
   String ciaID;
   String obmID;
   String teamID;
+  UserModel user;
   List<SectionItensModel> itens;
   List<OtherChangeModel>? changes;
   List<MaterialsConsumed>? lastMaterialsConsumed;
 
-  MaterialsModel(
+  MaterialChecklistModel(
       {this.id,
+      required this.user,
       required this.obm,
       required this.team,
       required this.itens,
@@ -37,6 +39,7 @@ class MaterialsModel {
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'id': id,
+      'user': user.toMapResume(),
       'obm': obm.toMap(),
       'team': team?.toMap(),
       'cia': cia?.toMap(),
@@ -50,9 +53,10 @@ class MaterialsModel {
     };
   }
 
-  factory MaterialsModel.fromMap(Map<String, dynamic> map) {
-    return MaterialsModel(
+  factory MaterialChecklistModel.fromMap(Map<String, dynamic> map) {
+    return MaterialChecklistModel(
       id: map['id'] != null ? map['id'] as String : null,
+      user: UserModel.fromMapResume(map['user'] as Map<String, dynamic>),
       obm: OBMModel.fromMap(map['obm'] as Map<String, dynamic>),
       team: map['team'] != null
           ? TeamModel.fromMap(map['team'] as Map<String, dynamic>)
@@ -75,16 +79,48 @@ class MaterialsModel {
               ),
             )
           : null,
-      lastMaterialsConsumed: List<MaterialsConsumed>.from(
-        (map['lastMaterialsConsumed'] as List).map<MaterialsConsumed>(
-          (x) => MaterialsConsumed.fromMap(x as Map<String, dynamic>),
-        ),
-      ),
+      lastMaterialsConsumed: map['lastMaterialsConsumed'] != null
+          ? List<MaterialsConsumed>.from(
+              (map['lastMaterialsConsumed'] as List).map<MaterialsConsumed>(
+                (x) => MaterialsConsumed.fromMap(x as Map<String, dynamic>),
+              ),
+            )
+          : null,
     );
   }
 
   String toJson() => json.encode(toMap());
 
-  factory MaterialsModel.fromJson(String source) =>
-      MaterialsModel.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory MaterialChecklistModel.fromJson(String source) =>
+      MaterialChecklistModel.fromMap(
+          json.decode(source) as Map<String, dynamic>);
+
+  MaterialChecklistModel copyWith({
+    String? id,
+    UserModel? user,
+    OBMModel? obm,
+    TeamModel? team,
+    CiaModel? cia,
+    String? ciaID,
+    String? obmID,
+    String? teamID,
+    List<SectionItensModel>? itens,
+    List<OtherChangeModel>? changes,
+    List<MaterialsConsumed>? lastMaterialsConsumed,
+  }) {
+    return MaterialChecklistModel(
+      id: id ?? this.id,
+      user: user ?? this.user,
+      obm: obm ?? this.obm,
+      team: team ?? this.team,
+      cia: cia ?? this.cia,
+      ciaID: ciaID ?? this.ciaID,
+      obmID: obmID ?? this.obmID,
+      teamID: teamID ?? this.teamID,
+      itens: itens ?? this.itens,
+      changes: changes ?? this.changes,
+      lastMaterialsConsumed:
+          lastMaterialsConsumed ?? this.lastMaterialsConsumed,
+    );
+  }
 }

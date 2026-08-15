@@ -505,7 +505,7 @@ class _CarsPageState extends State<CarsPage> {
                                   return PaginationWidget(
                                     limit: carController.limit,
                                     page: carController.page,
-                                    length: carController.cars.length,
+                                    length: carController.lengthSortings,
                                     onChange: carController.setPage,
                                   );
                                 }),

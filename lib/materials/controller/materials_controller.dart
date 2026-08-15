@@ -5,6 +5,8 @@ import 'package:bsu_control/model/item_model.dart';
 import 'package:mobx/mobx.dart';
 
 import '../../core/core.dart';
+import '../../model/material_checklist_model.dart';
+import '../../model/outher_changes_model.dart';
 import '../repository/material_repository.dart';
 part 'materials_controller.g.dart';
 
@@ -27,8 +29,16 @@ abstract class _MaterialsControllerBase with Store {
     return repository.listenMaterialsWarehouse();
   }
 
+  Stream<List<MaterialChecklistModel>> listenMaterialChecklist() {
+    return repository.listenMaterialChecklist();
+  }
+
   @observable
   ObservableList<ItemModel> materialsWarehouse = <ItemModel>[].asObservable();
+
+  @observable
+  ObservableList<MaterialChecklistModel> materialsChecklist =
+      <MaterialChecklistModel>[].asObservable();
 
   @observable
   bool loading = false;
@@ -42,20 +52,47 @@ abstract class _MaterialsControllerBase with Store {
   @observable
   int page = 1;
 
-  @observable
-  int step = 0;
+  @computed
+  int get startItensWarehouse {
+    if (materialsWarehouseSort.isEmpty) return 0;
+
+    return ((page - 1) * limit) + 1;
+  }
 
   @computed
-  bool get btFinish => step == 2;
+  int get endItensWarehouse {
+    if (materialsWarehouseSort.isEmpty) return 0;
+
+    return startItensWarehouse + materialsWarehouseSort.length - 1;
+  }
 
   @computed
-  int get startMaterial =>
-      materialsWarehouseSort.isEmpty ? 0 : ((page - 1) * limit) + 1;
+  int get startMaterialsChecklist {
+    if (materialChecklistSort.isEmpty) return 0;
+
+    return ((page - 1) * limit) + 1;
+  }
 
   @computed
-  int get endMaterial => materialsWarehouseSort.isEmpty
-      ? 0
-      : startMaterial + materialsWarehouseSort.length - 1;
+  int get endMaterialsChecklist {
+    if (materialChecklistSort.isEmpty) return 0;
+
+    return startMaterialsChecklist + materialChecklistSort.length - 1;
+  }
+
+  @computed
+  int get lengthItensWarehouseSortings {
+    if (filter.isEmpty) return materialsWarehouse.length;
+
+    return materialsWarehouseSort.length;
+  }
+
+  @computed
+  int get lengthMaterialChecklistSortings {
+    if (filter.isEmpty) return materialsChecklist.length;
+
+    return materialChecklistSort.length;
+  }
 
   @computed
   List<ItemModel> get materialsWarehouseSort {
@@ -71,6 +108,24 @@ abstract class _MaterialsControllerBase with Store {
       final list =
           Core.paginate(list: materialsWarehouse, page: page, limit: limit);
       return List<ItemModel>.from(list);
+    }
+  }
+
+  @computed
+  List<MaterialChecklistModel> get materialChecklistSort {
+    if (filter.isNotEmpty) {
+      final filtered = materialsChecklist
+          .where((e) =>
+              (e.team?.name.toLowerCase().contains(filter.toLowerCase()) ??
+                  false))
+          .toList();
+
+      final list = Core.paginate(list: filtered, page: page, limit: limit);
+      return List<MaterialChecklistModel>.from(list);
+    } else {
+      final list =
+          Core.paginate(list: materialsChecklist, page: page, limit: limit);
+      return List<MaterialChecklistModel>.from(list);
     }
   }
 
@@ -90,6 +145,13 @@ abstract class _MaterialsControllerBase with Store {
     }
 
     materialsWarehouse
+      ..clear()
+      ..addAll(value);
+  }
+
+  @action
+  void setMaterialsChecklist(List<MaterialChecklistModel> value) {
+    materialsChecklist
       ..clear()
       ..addAll(value);
   }
@@ -152,11 +214,34 @@ abstract class _MaterialsControllerBase with Store {
   }
 
   @action
-  void processStep(bool value) {
-    if (value) {
-      step++;
-    } else {
-      if (step > 0) step--;
+  Future<List<ItemModel>?> getMaterialsWarehouse() async {
+    try {
+      loading = true;
+      final result = repository.getMaterialsWarehouse();
+      loading = false;
+
+      return result;
+    } catch (e) {
+      loading = false;
+      return null;
+    }
+  }
+
+  @action
+  Future<void> saveMaterialChecklist({
+    required MaterialChecklistModel material,
+    required List<OtherChangeModel> changes,
+  }) async {
+    try {
+      loading = true;
+      await repository.saveMaterialChecklist(
+          material: material, changes: changes);
+      loading = false;
+
+      return;
+    } catch (e) {
+      loading = false;
+      rethrow;
     }
   }
 }

@@ -4,12 +4,19 @@ import 'dart:typed_data';
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/core.dart';
 import 'package:flutter/material.dart';
+import 'package:image_cropper/image_cropper.dart';
 
 import 'textfield_widget.dart';
 
 class ImageChangeWidget extends StatefulWidget {
+  final CropAspectRatio? aspectRatio;
   final Function(dynamic image, String description) onSelect;
-  const ImageChangeWidget({Key? key, required this.onSelect}) : super(key: key);
+
+  const ImageChangeWidget({
+    Key? key,
+    required this.onSelect,
+    this.aspectRatio = const CropAspectRatio(ratioX: 3, ratioY: 2),
+  }) : super(key: key);
 
   @override
   State createState() => _ImageChangeWidgetState();
@@ -37,10 +44,8 @@ class _ImageChangeWidgetState extends State<ImageChangeWidget> {
               GestureDetector(
                   onTap: () async {
                     Core.pickerImage(
-                      context: context,
-                      // height: heightImage,
-                      // width: widthImage,
-                    ).then((result) {
+                            context: context, aspectRatio: widget.aspectRatio)
+                        .then((result) {
                       if (result != null) {
                         image = result;
                         setState(() {});

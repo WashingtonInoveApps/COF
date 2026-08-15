@@ -55,6 +55,7 @@ class Core {
 
   static Future<Uint8List?> pickerImage({
     required BuildContext context,
+    CropAspectRatio? aspectRatio,
   }) async {
     try {
       final image = await ImagePicker()
@@ -64,14 +65,14 @@ class Core {
         final croppedFile = await ImageCropper().cropImage(
           sourcePath: image.path,
           compressFormat: ImageCompressFormat.png,
-          aspectRatio: const CropAspectRatio(ratioX: 3, ratioY: 2),
+          aspectRatio: aspectRatio,
           uiSettings: [
             AndroidUiSettings(
-              lockAspectRatio: true,
-            ),
+                // lockAspectRatio: true,
+                ),
             IOSUiSettings(
-              aspectRatioLockEnabled: true,
-            ),
+                // aspectRatioLockEnabled: true,
+                ),
             WebUiSettings(
               context: context,
             ),

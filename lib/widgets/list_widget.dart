@@ -104,12 +104,12 @@ class _ListWidgetState<T> extends State<ListWidget<T>> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            height: 50,
+            height: 60,
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 5),
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey),
+              border: Border.all(color: Colors.grey.shade700),
               color: Colors.white,
               borderRadius: BorderRadius.circular(5),
             ),

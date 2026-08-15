@@ -5,7 +5,7 @@ import 'package:bsu_control/model/car_changes_model.dart';
 import 'package:bsu_control/model/car_model.dart';
 import 'package:bsu_control/model/outher_changes_model.dart';
 
-class CarChecklistModel {
+class ChecklistCarModel {
   CarModel car;
   List<CarChangeModel>? changes;
   List<OtherChangeModel>? others;
@@ -16,7 +16,7 @@ class CarChecklistModel {
   double fuel;
   String obs;
 
-  CarChecklistModel({
+  ChecklistCarModel({
     required this.car,
     this.others,
     this.changes,
@@ -42,8 +42,8 @@ class CarChecklistModel {
     };
   }
 
-  factory CarChecklistModel.fromMap(Map<String, dynamic> map) {
-    return CarChecklistModel(
+  factory ChecklistCarModel.fromMap(Map<String, dynamic> map) {
+    return ChecklistCarModel(
       car: CarModel.fromMapResume(map['car']),
       changes: map['changes'] != null
           ? List<CarChangeModel>.from(
@@ -64,10 +64,10 @@ class CarChecklistModel {
 
   String toJson() => json.encode(toMap());
 
-  factory CarChecklistModel.fromJson(String source) =>
-      CarChecklistModel.fromMap(json.decode(source));
+  factory ChecklistCarModel.fromJson(String source) =>
+      ChecklistCarModel.fromMap(json.decode(source));
 
-  CarChecklistModel copyWith({
+  ChecklistCarModel copyWith({
     CarModel? car,
     List<CarChangeModel>? changes,
     List<OtherChangeModel>? others,
@@ -78,7 +78,7 @@ class CarChecklistModel {
     double? fuel,
     String? obs,
   }) {
-    return CarChecklistModel(
+    return ChecklistCarModel(
       car: car ?? this.car,
       changes: changes ?? this.changes,
       others: others ?? this.others,

@@ -6,6 +6,7 @@ import 'package:bsu_control/model/car_changes_model.dart';
 import 'package:bsu_control/model/car_mapa_model.dart';
 import 'package:bsu_control/model/car_status_model.dart';
 import 'package:bsu_control/model/file_model.dart';
+import 'package:bsu_control/model/outher_changes_model.dart';
 import 'package:bsu_control/model/section_itens_model.dart';
 
 import 'cia_model.dart';
@@ -29,6 +30,7 @@ class CarModel {
   List<CarChangeModel> changes;
   List<CarStatusModel> status;
   List<CarMapaModel>? mapas;
+  List<OtherChangeModel>? others;
   List<FileModel?> images;
 
   int km;
@@ -53,6 +55,7 @@ class CarModel {
       required this.changes,
       required this.status,
       required this.images,
+      this.others,
       this.mapas,
       this.type = "",
       this.adm = false,
@@ -90,6 +93,7 @@ class CarModel {
       'itens': itens.map((x) => x.toMap()).toList(),
       'changes': changes.map((x) => x.toMap()).toList(),
       'mapas': mapas?.map((x) => x.toMap()).toList(),
+      'others': others?.map((x) => x.toMap()).toList(),
       "images": images.map((x) => x?.toMap()).toList(),
       'type': type,
       'adm': adm,
@@ -136,6 +140,10 @@ class CarModel {
           ? List<CarMapaModel>.from(
               map['mapas']?.map((x) => CarMapaModel.fromMap(x)))
           : null,
+      others: map['others'] != null
+          ? List<OtherChangeModel>.from(
+              map['others']?.map((x) => OtherChangeModel.fromMap(x)))
+          : null,
       images: List<FileModel?>.from(
           map['images'].map((x) => (x == null) ? null : FileModel.fromMap(x))),
       status: [],
@@ -172,6 +180,7 @@ class CarModel {
     List<CarStatusModel>? status,
     List<CarMapaModel>? mapas,
     List<FileModel>? images,
+    List<OtherChangeModel>? others,
     StatusCar? state,
     String? type,
     bool? adm,
@@ -196,6 +205,7 @@ class CarModel {
       changes: changes ?? this.changes,
       status: status ?? this.status,
       mapas: mapas ?? this.mapas,
+      others: others ?? this.others,
       function: function ?? this.function,
       type: type ?? this.type,
       adm: adm ?? this.adm,

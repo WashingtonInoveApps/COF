@@ -28,6 +28,13 @@ mixin _$CarController on _CarControllerBase, Store {
   int get end => (_$endComputed ??=
           Computed<int>(() => super.end, name: '_CarControllerBase.end'))
       .value;
+  Computed<int>? _$lengthSortingsComputed;
+
+  @override
+  int get lengthSortings =>
+      (_$lengthSortingsComputed ??= Computed<int>(() => super.lengthSortings,
+              name: '_CarControllerBase.lengthSortings'))
+          .value;
   Computed<bool>? _$btFinishComputed;
 
   @override
@@ -408,6 +415,7 @@ statusGeral: ${statusGeral},
 carsSorts: ${carsSorts},
 start: ${start},
 end: ${end},
+lengthSortings: ${lengthSortings},
 btFinish: ${btFinish}
     ''';
   }

@@ -10,7 +10,7 @@ import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 import '../../../core/core.dart';
 import '../../controller/service_controller.dart';
-import '../widget/list_widget.dart';
+import '../../../widgets/list_widget.dart';
 
 class ServiceDetailsPage extends StatefulWidget {
   final List<OBMModel> obms;

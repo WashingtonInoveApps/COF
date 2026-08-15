@@ -9,26 +9,49 @@ part of 'materials_controller.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$MaterialsController on _MaterialsControllerBase, Store {
-  Computed<bool>? _$btFinishComputed;
+  Computed<int>? _$startItensWarehouseComputed;
 
   @override
-  bool get btFinish =>
-      (_$btFinishComputed ??= Computed<bool>(() => super.btFinish,
-              name: '_MaterialsControllerBase.btFinish'))
+  int get startItensWarehouse => (_$startItensWarehouseComputed ??=
+          Computed<int>(() => super.startItensWarehouse,
+              name: '_MaterialsControllerBase.startItensWarehouse'))
+      .value;
+  Computed<int>? _$endItensWarehouseComputed;
+
+  @override
+  int get endItensWarehouse => (_$endItensWarehouseComputed ??= Computed<int>(
+          () => super.endItensWarehouse,
+          name: '_MaterialsControllerBase.endItensWarehouse'))
+      .value;
+  Computed<int>? _$startMaterialsChecklistComputed;
+
+  @override
+  int get startMaterialsChecklist => (_$startMaterialsChecklistComputed ??=
+          Computed<int>(() => super.startMaterialsChecklist,
+              name: '_MaterialsControllerBase.startMaterialsChecklist'))
+      .value;
+  Computed<int>? _$endMaterialsChecklistComputed;
+
+  @override
+  int get endMaterialsChecklist => (_$endMaterialsChecklistComputed ??=
+          Computed<int>(() => super.endMaterialsChecklist,
+              name: '_MaterialsControllerBase.endMaterialsChecklist'))
+      .value;
+  Computed<int>? _$lengthItensWarehouseSortingsComputed;
+
+  @override
+  int get lengthItensWarehouseSortings =>
+      (_$lengthItensWarehouseSortingsComputed ??= Computed<int>(
+              () => super.lengthItensWarehouseSortings,
+              name: '_MaterialsControllerBase.lengthItensWarehouseSortings'))
           .value;
-  Computed<int>? _$startMaterialComputed;
+  Computed<int>? _$lengthMaterialChecklistSortingsComputed;
 
   @override
-  int get startMaterial =>
-      (_$startMaterialComputed ??= Computed<int>(() => super.startMaterial,
-              name: '_MaterialsControllerBase.startMaterial'))
-          .value;
-  Computed<int>? _$endMaterialComputed;
-
-  @override
-  int get endMaterial =>
-      (_$endMaterialComputed ??= Computed<int>(() => super.endMaterial,
-              name: '_MaterialsControllerBase.endMaterial'))
+  int get lengthMaterialChecklistSortings =>
+      (_$lengthMaterialChecklistSortingsComputed ??= Computed<int>(
+              () => super.lengthMaterialChecklistSortings,
+              name: '_MaterialsControllerBase.lengthMaterialChecklistSortings'))
           .value;
   Computed<List<ItemModel>>? _$materialsWarehouseSortComputed;
 
@@ -37,6 +60,15 @@ mixin _$MaterialsController on _MaterialsControllerBase, Store {
       (_$materialsWarehouseSortComputed ??= Computed<List<ItemModel>>(
               () => super.materialsWarehouseSort,
               name: '_MaterialsControllerBase.materialsWarehouseSort'))
+          .value;
+  Computed<List<MaterialChecklistModel>>? _$materialChecklistSortComputed;
+
+  @override
+  List<MaterialChecklistModel> get materialChecklistSort =>
+      (_$materialChecklistSortComputed ??=
+              Computed<List<MaterialChecklistModel>>(
+                  () => super.materialChecklistSort,
+                  name: '_MaterialsControllerBase.materialChecklistSort'))
           .value;
 
   late final _$materialsWarehouseAtom = Atom(
@@ -52,6 +84,22 @@ mixin _$MaterialsController on _MaterialsControllerBase, Store {
   set materialsWarehouse(ObservableList<ItemModel> value) {
     _$materialsWarehouseAtom.reportWrite(value, super.materialsWarehouse, () {
       super.materialsWarehouse = value;
+    });
+  }
+
+  late final _$materialsChecklistAtom = Atom(
+      name: '_MaterialsControllerBase.materialsChecklist', context: context);
+
+  @override
+  ObservableList<MaterialChecklistModel> get materialsChecklist {
+    _$materialsChecklistAtom.reportRead();
+    return super.materialsChecklist;
+  }
+
+  @override
+  set materialsChecklist(ObservableList<MaterialChecklistModel> value) {
+    _$materialsChecklistAtom.reportWrite(value, super.materialsChecklist, () {
+      super.materialsChecklist = value;
     });
   }
 
@@ -119,22 +167,6 @@ mixin _$MaterialsController on _MaterialsControllerBase, Store {
     });
   }
 
-  late final _$stepAtom =
-      Atom(name: '_MaterialsControllerBase.step', context: context);
-
-  @override
-  int get step {
-    _$stepAtom.reportRead();
-    return super.step;
-  }
-
-  @override
-  set step(int value) {
-    _$stepAtom.reportWrite(value, super.step, () {
-      super.step = value;
-    });
-  }
-
   late final _$saveMaterialWarehouseAsyncAction = AsyncAction(
       '_MaterialsControllerBase.saveMaterialWarehouse',
       context: context);
@@ -165,6 +197,28 @@ mixin _$MaterialsController on _MaterialsControllerBase, Store {
         .run(() => super.deleteMaterialWarehouse(material: material));
   }
 
+  late final _$getMaterialsWarehouseAsyncAction = AsyncAction(
+      '_MaterialsControllerBase.getMaterialsWarehouse',
+      context: context);
+
+  @override
+  Future<List<ItemModel>?> getMaterialsWarehouse() {
+    return _$getMaterialsWarehouseAsyncAction
+        .run(() => super.getMaterialsWarehouse());
+  }
+
+  late final _$saveMaterialChecklistAsyncAction = AsyncAction(
+      '_MaterialsControllerBase.saveMaterialChecklist',
+      context: context);
+
+  @override
+  Future<void> saveMaterialChecklist(
+      {required MaterialChecklistModel material,
+      required List<OtherChangeModel> changes}) {
+    return _$saveMaterialChecklistAsyncAction.run(() =>
+        super.saveMaterialChecklist(material: material, changes: changes));
+  }
+
   late final _$_MaterialsControllerBaseActionController =
       ActionController(name: '_MaterialsControllerBase', context: context);
 
@@ -185,6 +239,17 @@ mixin _$MaterialsController on _MaterialsControllerBase, Store {
         name: '_MaterialsControllerBase.setMaterialsWarehouse');
     try {
       return super.setMaterialsWarehouse(value);
+    } finally {
+      _$_MaterialsControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setMaterialsChecklist(List<MaterialChecklistModel> value) {
+    final _$actionInfo = _$_MaterialsControllerBaseActionController.startAction(
+        name: '_MaterialsControllerBase.setMaterialsChecklist');
+    try {
+      return super.setMaterialsChecklist(value);
     } finally {
       _$_MaterialsControllerBaseActionController.endAction(_$actionInfo);
     }
@@ -224,29 +289,22 @@ mixin _$MaterialsController on _MaterialsControllerBase, Store {
   }
 
   @override
-  void processStep(bool value) {
-    final _$actionInfo = _$_MaterialsControllerBaseActionController.startAction(
-        name: '_MaterialsControllerBase.processStep');
-    try {
-      return super.processStep(value);
-    } finally {
-      _$_MaterialsControllerBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
   String toString() {
     return '''
 materialsWarehouse: ${materialsWarehouse},
+materialsChecklist: ${materialsChecklist},
 loading: ${loading},
 filter: ${filter},
 limit: ${limit},
 page: ${page},
-step: ${step},
-btFinish: ${btFinish},
-startMaterial: ${startMaterial},
-endMaterial: ${endMaterial},
-materialsWarehouseSort: ${materialsWarehouseSort}
+startItensWarehouse: ${startItensWarehouse},
+endItensWarehouse: ${endItensWarehouse},
+startMaterialsChecklist: ${startMaterialsChecklist},
+endMaterialsChecklist: ${endMaterialsChecklist},
+lengthItensWarehouseSortings: ${lengthItensWarehouseSortings},
+lengthMaterialChecklistSortings: ${lengthMaterialChecklistSortings},
+materialsWarehouseSort: ${materialsWarehouseSort},
+materialChecklistSort: ${materialChecklistSort}
     ''';
   }
 }

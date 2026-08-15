@@ -1,8 +1,7 @@
 import 'package:bsu_control/core/sections_controller.dart';
-import 'package:bsu_control/model/car_status_model.dart';
 import 'package:bsu_control/model/cia_model.dart';
 import 'package:bsu_control/model/item_model.dart';
-import 'package:bsu_control/model/materials_model.dart';
+import 'package:bsu_control/model/material_checklist_model.dart';
 import 'package:bsu_control/model/outher_changes_model.dart';
 import 'package:bsu_control/model/section_itens_model.dart';
 import 'package:bsu_control/model/team_model.dart';
@@ -17,7 +16,7 @@ class MaterialsRegisterController = _MaterialsRegisterControllerBase
     with _$MaterialsRegisterController;
 
 abstract class _MaterialsRegisterControllerBase with Store {
-  final MaterialsModel? init;
+  final MaterialChecklistModel? init;
   final UserModel user;
   final List<OBMModel> obms;
 
@@ -47,11 +46,12 @@ abstract class _MaterialsRegisterControllerBase with Store {
       <SectionItensModel>[].asObservable();
 
   @observable
-  ObservableList<OtherChangeModel> changes =
-      <OtherChangeModel>[].asObservable();
+  ObservableList<SectionItensModel> sectionsMaterials =
+      <SectionItensModel>[].asObservable();
 
   @observable
-  ObservableList<CarStatusModel> status = <CarStatusModel>[].asObservable();
+  ObservableList<OtherChangeModel> changes =
+      <OtherChangeModel>[].asObservable();
 
   @computed
   List<TeamModel> get teams {
@@ -61,16 +61,18 @@ abstract class _MaterialsRegisterControllerBase with Store {
   }
 
   @computed
-  MaterialsModel get car {
-    return MaterialsModel(
+  MaterialChecklistModel get material {
+    return MaterialChecklistModel(
       id: init?.id,
+      user: user,
       cia: cia,
       ciaID: cia?.id ?? '',
       obmID: obm?.id ?? '',
       itens: sectionsItens,
-      changes: init?.changes,
-      obm: init?.obm ?? (obm ?? OBMModel(team: [], cias: [])),
-      team: init?.team ?? team,
+      changes: [],
+      obm: (obm ?? OBMModel(team: [], cias: [])),
+      team: team,
+      teamID: team?.id ?? '',
     );
   }
 
@@ -116,10 +118,13 @@ abstract class _MaterialsRegisterControllerBase with Store {
   }
 
   @action
-  void onChanges(List<OtherChangeModel> value) {
-    changes
-      ..clear()
-      ..addAll(value);
+  addChange(OtherChangeModel value) {
+    changes.add(value);
+  }
+
+  @action
+  deleteChange(int index) {
+    changes.removeAt(index);
   }
 
   @action
@@ -227,26 +232,39 @@ abstract class _MaterialsRegisterControllerBase with Store {
     );
   }
 
-  List<String> validationForm(int step) {
+  List<String> validationForm() {
     List<String> messagesErros = [];
 
-    switch (step) {
-      case 0:
-        if ((obm?.cias.isNotEmpty ?? false) && cia == null) {
-          messagesErros.add('Selecione a companhia antes de continuar.');
-        }
-
-        if ((obm?.team.isNotEmpty ?? false) && team == null) {
-          messagesErros.add('Selecione a guarnição antes de continuar.');
-        }
-
-        return messagesErros;
-      case 1:
-        return messagesErros;
-      case 2:
-        return messagesErros;
-      default:
-        return [];
+    if ((obm?.cias.isNotEmpty ?? false) && cia == null) {
+      messagesErros.add('Selecione a companhia antes de continuar.');
     }
+
+    if ((obm?.team.isNotEmpty ?? false) && team == null) {
+      messagesErros.add('Selecione a guarnição antes de continuar.');
+    }
+
+    if (sectionsMaterials.isEmpty) {
+      messagesErros.add('Adicione itens ao checklist antes de continuar.');
+    }
+
+    if (sectionsMaterials.isNotEmpty) {
+      for (final section in sectionsMaterials) {
+        if (section.itens.isEmpty) {
+          messagesErros.add(
+              'Adicione itens à seção de materiais ${section.description}, antes de continuar ou exclua a seção.');
+        }
+      }
+    }
+
+    if (sectionsItens.isNotEmpty) {
+      for (final section in sectionsItens) {
+        if (section.itens.isEmpty) {
+          messagesErros.add(
+              'Adicione itens à seção de itens ${section.description}, antes de continuar ou exclua a seção.');
+        }
+      }
+    }
+
+    return messagesErros;
   }
 }

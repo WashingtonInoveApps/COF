@@ -4,10 +4,10 @@ import 'dart:convert';
 import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/enum/checklist_enum.dart';
 import 'package:bsu_control/enum/state_enum.dart';
-import 'package:bsu_control/model/car_checklist.dart';
+import 'package:bsu_control/model/checklist_car_model.dart';
 import 'package:bsu_control/model/cia_model.dart';
 import 'package:bsu_control/model/file_model.dart';
-import 'package:bsu_control/model/materials_checlist_model.dart';
+import 'package:bsu_control/model/checklist_material_model.dart';
 import 'package:bsu_control/model/obm_model.dart';
 import 'package:bsu_control/model/supply_model.dart';
 import 'package:bsu_control/model/team_model.dart';
@@ -30,8 +30,8 @@ class ChecklistModel {
   CiaModel? cia;
   FileModel? signature;
   bool enable;
-  CarChecklistModel? vehicular;
-  MaterialChecklistModel? material;
+  ChecklistCarModel? vehicular;
+  ChecklistMaterialModel? material;
   List<SupplyModel>? supply;
   List<StatesChecklist> states;
 
@@ -124,7 +124,7 @@ class ChecklistModel {
           ? DateTime.fromMillisecondsSinceEpoch(map['dateFinish'])
           : null,
       vehicular: map['vehicular'] != null
-          ? CarChecklistModel.fromMap(map['vehicular'])
+          ? ChecklistCarModel.fromMap(map['vehicular'])
           : null,
       supply: List<SupplyModel>.from(
           map['supply']?.map((x) => SupplyModel.fromMap(x))),
@@ -156,7 +156,7 @@ class ChecklistModel {
     bool? enable,
     DateTime? date,
     DateTime? dateFinish,
-    CarChecklistModel? vehicular,
+    ChecklistCarModel? vehicular,
     List<SupplyModel>? supply,
     ChecklistType? type,
     StateProgress? state,

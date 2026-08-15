@@ -16,13 +16,13 @@ mixin _$MaterialsRegisterController on _MaterialsRegisterControllerBase, Store {
       (_$teamsComputed ??= Computed<List<TeamModel>>(() => super.teams,
               name: '_MaterialsRegisterControllerBase.teams'))
           .value;
-  Computed<MaterialsModel>? _$carComputed;
+  Computed<MaterialChecklistModel>? _$materialComputed;
 
   @override
-  MaterialsModel get car =>
-      (_$carComputed ??= Computed<MaterialsModel>(() => super.car,
-              name: '_MaterialsRegisterControllerBase.car'))
-          .value;
+  MaterialChecklistModel get material => (_$materialComputed ??=
+          Computed<MaterialChecklistModel>(() => super.material,
+              name: '_MaterialsRegisterControllerBase.material'))
+      .value;
 
   late final _$imagesAtom =
       Atom(name: '_MaterialsRegisterControllerBase.images', context: context);
@@ -104,6 +104,23 @@ mixin _$MaterialsRegisterController on _MaterialsRegisterControllerBase, Store {
     });
   }
 
+  late final _$sectionsMaterialsAtom = Atom(
+      name: '_MaterialsRegisterControllerBase.sectionsMaterials',
+      context: context);
+
+  @override
+  ObservableList<SectionItensModel> get sectionsMaterials {
+    _$sectionsMaterialsAtom.reportRead();
+    return super.sectionsMaterials;
+  }
+
+  @override
+  set sectionsMaterials(ObservableList<SectionItensModel> value) {
+    _$sectionsMaterialsAtom.reportWrite(value, super.sectionsMaterials, () {
+      super.sectionsMaterials = value;
+    });
+  }
+
   late final _$changesAtom =
       Atom(name: '_MaterialsRegisterControllerBase.changes', context: context);
 
@@ -117,22 +134,6 @@ mixin _$MaterialsRegisterController on _MaterialsRegisterControllerBase, Store {
   set changes(ObservableList<OtherChangeModel> value) {
     _$changesAtom.reportWrite(value, super.changes, () {
       super.changes = value;
-    });
-  }
-
-  late final _$statusAtom =
-      Atom(name: '_MaterialsRegisterControllerBase.status', context: context);
-
-  @override
-  ObservableList<CarStatusModel> get status {
-    _$statusAtom.reportRead();
-    return super.status;
-  }
-
-  @override
-  set status(ObservableList<CarStatusModel> value) {
-    _$statusAtom.reportWrite(value, super.status, () {
-      super.status = value;
     });
   }
 
@@ -189,11 +190,23 @@ mixin _$MaterialsRegisterController on _MaterialsRegisterControllerBase, Store {
   }
 
   @override
-  void onChanges(List<OtherChangeModel> value) {
+  dynamic addChange(OtherChangeModel value) {
     final _$actionInfo = _$_MaterialsRegisterControllerBaseActionController
-        .startAction(name: '_MaterialsRegisterControllerBase.onChanges');
+        .startAction(name: '_MaterialsRegisterControllerBase.addChange');
     try {
-      return super.onChanges(value);
+      return super.addChange(value);
+    } finally {
+      _$_MaterialsRegisterControllerBaseActionController
+          .endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic deleteChange(int index) {
+    final _$actionInfo = _$_MaterialsRegisterControllerBaseActionController
+        .startAction(name: '_MaterialsRegisterControllerBase.deleteChange');
+    try {
+      return super.deleteChange(index);
     } finally {
       _$_MaterialsRegisterControllerBaseActionController
           .endAction(_$actionInfo);
@@ -342,10 +355,10 @@ obm: ${obm},
 cia: ${cia},
 team: ${team},
 sectionsItens: ${sectionsItens},
+sectionsMaterials: ${sectionsMaterials},
 changes: ${changes},
-status: ${status},
 teams: ${teams},
-car: ${car}
+material: ${material}
     ''';
   }
 }

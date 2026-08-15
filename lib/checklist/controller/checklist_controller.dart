@@ -4,7 +4,7 @@ import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/enum/state_enum.dart';
 import 'package:bsu_control/core/validation.dart';
 import 'package:bsu_control/model/car_changes_model.dart';
-import 'package:bsu_control/model/car_checklist.dart';
+import 'package:bsu_control/model/checklist_car_model.dart';
 import 'package:bsu_control/model/car_model.dart';
 import 'package:bsu_control/model/checklist_model.dart';
 import 'package:bsu_control/model/cia_model.dart';
@@ -596,7 +596,7 @@ abstract class _CheckListControllerBase with Store {
           date: date,
           user: user,
           userID: user.id ?? '',
-          vehicular: CarChecklistModel(
+          vehicular: ChecklistCarModel(
             car: car!.copyWith(
               itens: itens.map((e) => e.copyWith(value: false)).toList(),
             ),

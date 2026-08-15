@@ -90,6 +90,13 @@ abstract class _CarControllerBase with Store {
   int get end => carsSorts.isEmpty ? 0 : start + carsSorts.length - 1;
 
   @computed
+  int get lengthSortings {
+    if (filter.isEmpty) return cars.length;
+
+    return carsSorts.length;
+  }
+
+  @computed
   bool get btFinish => step == 2;
 
   Stream<List<CarStatusModel>> listenStatus({required String carId}) {

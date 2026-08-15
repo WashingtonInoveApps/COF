@@ -2,17 +2,17 @@
 import 'dart:convert';
 
 import 'package:bsu_control/model/item_model.dart';
-import 'package:bsu_control/model/materials_model.dart';
+import 'package:bsu_control/model/material_checklist_model.dart';
 import 'package:bsu_control/model/outher_changes_model.dart';
 
-class MaterialChecklistModel {
+class ChecklistMaterialModel {
   String? id;
-  MaterialsModel material;
+  MaterialChecklistModel material;
   List<ItemModel>? materialsConsumed;
   List<OtherChangeModel>? others;
   String obs;
 
-  MaterialChecklistModel({
+  ChecklistMaterialModel({
     this.id,
     required this.material,
     this.materialsConsumed,
@@ -30,10 +30,11 @@ class MaterialChecklistModel {
     };
   }
 
-  factory MaterialChecklistModel.fromMap(Map<String, dynamic> map) {
-    return MaterialChecklistModel(
+  factory ChecklistMaterialModel.fromMap(Map<String, dynamic> map) {
+    return ChecklistMaterialModel(
       id: map['id'] != null ? map['id'] as String : null,
-      material: MaterialsModel.fromMap(map['material'] as Map<String, dynamic>),
+      material: MaterialChecklistModel.fromMap(
+          map['material'] as Map<String, dynamic>),
       materialsConsumed: map['materialsConsumed'] != null
           ? List<ItemModel>.from(
               (map['materialsConsumed'] as List).map<ItemModel?>(
@@ -54,7 +55,7 @@ class MaterialChecklistModel {
 
   String toJson() => json.encode(toMap());
 
-  factory MaterialChecklistModel.fromJson(String source) =>
-      MaterialChecklistModel.fromMap(
+  factory ChecklistMaterialModel.fromJson(String source) =>
+      ChecklistMaterialModel.fromMap(
           json.decode(source) as Map<String, dynamic>);
 }
