@@ -26,13 +26,13 @@ mixin _$CarRegisterController on _CarRegisterControllerBase, Store {
       Atom(name: '_CarRegisterControllerBase.images', context: context);
 
   @override
-  ObservableList<dynamic> get images {
+  ObservableList<FileModel?> get images {
     _$imagesAtom.reportRead();
     return super.images;
   }
 
   @override
-  set images(ObservableList<dynamic> value) {
+  set images(ObservableList<FileModel?> value) {
     _$imagesAtom.reportWrite(value, super.images, () {
       super.images = value;
     });
@@ -74,13 +74,13 @@ mixin _$CarRegisterController on _CarRegisterControllerBase, Store {
       Atom(name: '_CarRegisterControllerBase.function', context: context);
 
   @override
-  String? get function {
+  FunctionCar? get function {
     _$functionAtom.reportRead();
     return super.function;
   }
 
   @override
-  set function(String? value) {
+  set function(FunctionCar? value) {
     _$functionAtom.reportWrite(value, super.function, () {
       super.function = value;
     });
@@ -102,19 +102,19 @@ mixin _$CarRegisterController on _CarRegisterControllerBase, Store {
     });
   }
 
-  late final _$outherTypeFieldAtom = Atom(
-      name: '_CarRegisterControllerBase.outherTypeField', context: context);
+  late final _$otherTypeFieldAtom =
+      Atom(name: '_CarRegisterControllerBase.otherTypeField', context: context);
 
   @override
-  bool get outherTypeField {
-    _$outherTypeFieldAtom.reportRead();
-    return super.outherTypeField;
+  bool get otherTypeField {
+    _$otherTypeFieldAtom.reportRead();
+    return super.otherTypeField;
   }
 
   @override
-  set outherTypeField(bool value) {
-    _$outherTypeFieldAtom.reportWrite(value, super.outherTypeField, () {
-      super.outherTypeField = value;
+  set otherTypeField(bool value) {
+    _$otherTypeFieldAtom.reportWrite(value, super.otherTypeField, () {
+      super.otherTypeField = value;
     });
   }
 
@@ -214,19 +214,19 @@ mixin _$CarRegisterController on _CarRegisterControllerBase, Store {
     });
   }
 
-  late final _$outherTypeAtom =
-      Atom(name: '_CarRegisterControllerBase.outherType', context: context);
+  late final _$otherTypeAtom =
+      Atom(name: '_CarRegisterControllerBase.otherType', context: context);
 
   @override
-  String? get outherType {
-    _$outherTypeAtom.reportRead();
-    return super.outherType;
+  String? get otherType {
+    _$otherTypeAtom.reportRead();
+    return super.otherType;
   }
 
   @override
-  set outherType(String? value) {
-    _$outherTypeAtom.reportWrite(value, super.outherType, () {
-      super.outherType = value;
+  set otherType(String? value) {
+    _$otherTypeAtom.reportWrite(value, super.otherType, () {
+      super.otherType = value;
     });
   }
 
@@ -278,6 +278,22 @@ mixin _$CarRegisterController on _CarRegisterControllerBase, Store {
     });
   }
 
+  late final _$othersAtom =
+      Atom(name: '_CarRegisterControllerBase.others', context: context);
+
+  @override
+  ObservableList<OtherChangeModel> get others {
+    _$othersAtom.reportRead();
+    return super.others;
+  }
+
+  @override
+  set others(ObservableList<OtherChangeModel> value) {
+    _$othersAtom.reportWrite(value, super.others, () {
+      super.others = value;
+    });
+  }
+
   late final _$statusAtom =
       Atom(name: '_CarRegisterControllerBase.status', context: context);
 
@@ -309,6 +325,28 @@ mixin _$CarRegisterController on _CarRegisterControllerBase, Store {
   }
 
   @override
+  dynamic addOtherChange(OtherChangeModel value) {
+    final _$actionInfo = _$_CarRegisterControllerBaseActionController
+        .startAction(name: '_CarRegisterControllerBase.addOtherChange');
+    try {
+      return super.addOtherChange(value);
+    } finally {
+      _$_CarRegisterControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic deleteOtherChange(int index) {
+    final _$actionInfo = _$_CarRegisterControllerBaseActionController
+        .startAction(name: '_CarRegisterControllerBase.deleteOtherChange');
+    try {
+      return super.deleteOtherChange(index);
+    } finally {
+      _$_CarRegisterControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void setOBM(OBMModel? value) {
     final _$actionInfo = _$_CarRegisterControllerBaseActionController
         .startAction(name: '_CarRegisterControllerBase.setOBM');
@@ -331,7 +369,7 @@ mixin _$CarRegisterController on _CarRegisterControllerBase, Store {
   }
 
   @override
-  void setFunction(String? value) {
+  void setFunction(FunctionCar? value) {
     final _$actionInfo = _$_CarRegisterControllerBaseActionController
         .startAction(name: '_CarRegisterControllerBase.setFunction');
     try {
@@ -353,11 +391,11 @@ mixin _$CarRegisterController on _CarRegisterControllerBase, Store {
   }
 
   @override
-  void setOutherType(String? value) {
+  void setOtherType(String? value) {
     final _$actionInfo = _$_CarRegisterControllerBaseActionController
-        .startAction(name: '_CarRegisterControllerBase.setOutherType');
+        .startAction(name: '_CarRegisterControllerBase.setOtherType');
     try {
-      return super.setOutherType(value);
+      return super.setOtherType(value);
     } finally {
       _$_CarRegisterControllerBaseActionController.endAction(_$actionInfo);
     }
@@ -571,17 +609,18 @@ obm: ${obm},
 cia: ${cia},
 function: ${function},
 type: ${type},
-outherTypeField: ${outherTypeField},
+otherTypeField: ${otherTypeField},
 prefix: ${prefix},
 model: ${model},
 modelPneu: ${modelPneu},
 plate: ${plate},
 km: ${km},
 ticket: ${ticket},
-outherType: ${outherType},
+otherType: ${otherType},
 state: ${state},
 sectionsItens: ${sectionsItens},
 changes: ${changes},
+others: ${others},
 status: ${status},
 adm: ${adm},
 car: ${car}

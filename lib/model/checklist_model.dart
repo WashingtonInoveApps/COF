@@ -17,6 +17,7 @@ class ChecklistModel {
   String? id;
   String pb;
   String prefix;
+  String carID;
   int startKM;
   int endKM;
   String userID;
@@ -52,6 +53,7 @@ class ChecklistModel {
     this.userID = '',
     this.pb = "",
     this.obmID = '',
+    this.carID = '',
     this.dateFinish,
     this.type = ChecklistType.vehicular,
     this.state = StateProgress.inprogress,
@@ -83,6 +85,7 @@ class ChecklistModel {
       'state': state.name,
       'obs': obs,
       'enable': enable,
+      'carID': carID,
       'states': states.map((e) => e.toMap()).toList(),
       'date': date.millisecondsSinceEpoch,
       'dateFinish': dateFinish?.millisecondsSinceEpoch,
@@ -111,6 +114,7 @@ class ChecklistModel {
       endKM: map['endKM']?.toInt() ?? 0,
       id: map['id'],
       obs: map['obs'] ?? '',
+      carID: map['carID'] ?? '',
       type: ChecklistEnumCore.checklistTypeFromString(map['type']),
       state: StateProgressEnumCore.stateProgressFromString(map['state']),
       enable: map['enable'] ?? false,
@@ -144,6 +148,7 @@ class ChecklistModel {
     String? pb,
     TeamModel? team,
     String? prefix,
+    String? carID,
     int? startKM,
     int? endKM,
     String? userID,
@@ -166,6 +171,7 @@ class ChecklistModel {
       user: user ?? this.user,
       pb: pb ?? this.pb,
       team: team ?? this.team,
+      carID: carID ?? this.carID,
       prefix: prefix ?? this.prefix,
       startKM: startKM ?? this.startKM,
       endKM: endKM ?? this.endKM,

@@ -77,20 +77,27 @@ class _LoginPageState extends State<LoginPage> {
             constraints: BoxConstraints(maxWidth: app.maxWidth),
             margin: const EdgeInsets.all(5),
             padding: const EdgeInsets.all(10),
-            color: Colors.white,
+            decoration: BoxDecoration(
+                color: Colors.white, borderRadius: BorderRadius.circular(5)),
             child: Column(
               children: [
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Image.asset(
                     'assets/cbmce.png',
-                    fit: BoxFit.fitHeight,
-                    height: 70,
+                    width: app.modeMOBILE ? 200 : 250,
+                    fit: BoxFit.fitWidth,
                   ),
                 ),
                 Expanded(
                   child: Center(
                     child: SingleChildScrollView(
+                      physics: const ClampingScrollPhysics(),
+                      keyboardDismissBehavior:
+                          ScrollViewKeyboardDismissBehavior.onDrag,
+                      padding: EdgeInsets.only(
+                        bottom: MediaQuery.of(context).viewInsets.bottom,
+                      ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisSize: MainAxisSize.min,
@@ -207,6 +214,7 @@ class _LoginPageState extends State<LoginPage> {
                                           hint: 'Nova senha',
                                           validation:
                                               Validation.validatorPassoword,
+                                          textCase: FieldTextCase.lower,
                                         ),
                                         const SizedBox(
                                           height: 10,
@@ -224,6 +232,7 @@ class _LoginPageState extends State<LoginPage> {
 
                                             return 'Senhas não conferem';
                                           },
+                                          textCase: FieldTextCase.lower,
                                         ),
                                         const SizedBox(
                                           height: 10,
@@ -310,6 +319,7 @@ class _LoginPageState extends State<LoginPage> {
                                             obscure: true,
                                             validation:
                                                 Validation.validatorPassoword,
+                                            textCase: FieldTextCase.lower,
                                           ),
                                           const SizedBox(
                                             height: 10.0,

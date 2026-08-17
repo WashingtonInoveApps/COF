@@ -58,21 +58,25 @@ class Core {
     CropAspectRatio? aspectRatio,
   }) async {
     try {
-      final image = await ImagePicker()
-          .pickImage(source: ImageSource.gallery, imageQuality: 100);
+      // final image = await ImagePicker()
+      //     .pickImage(source: ImageSource.gallery, imageQuality: 100);
+
+      final image = await ImagePicker().pickImage(
+        source: ImageSource.gallery,
+        // imageQuality: 85,
+      );
 
       if (image != null) {
         final croppedFile = await ImageCropper().cropImage(
           sourcePath: image.path,
-          compressFormat: ImageCompressFormat.png,
+          // compressFormat: ImageCompressFormat.png,
+          compressFormat: ImageCompressFormat.jpg,
+          compressQuality: 85, maxWidth: 1600,
+          maxHeight: 1600,
           aspectRatio: aspectRatio,
           uiSettings: [
-            AndroidUiSettings(
-                // lockAspectRatio: true,
-                ),
-            IOSUiSettings(
-                // aspectRatioLockEnabled: true,
-                ),
+            AndroidUiSettings(),
+            IOSUiSettings(),
             WebUiSettings(
               context: context,
             ),
@@ -82,16 +86,6 @@ class Core {
         if (croppedFile == null) return null;
 
         final bytes = await croppedFile.readAsBytes();
-        // final original = img.decodeImage(bytes)!;
-
-        // final resized = img.copyResize(
-        //   original,
-        //   width: width.toInt(),
-        //   height: height.toInt(),
-        // );
-
-        // return Uint8List.fromList(img.encodePng(resized));
-
         return bytes;
       }
 

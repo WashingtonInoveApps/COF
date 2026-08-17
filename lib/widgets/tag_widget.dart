@@ -17,27 +17,23 @@ class TagWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Container(
-        width: width,
-        padding: const EdgeInsets.all(5),
-        decoration:
-            BoxDecoration(color: color, borderRadius: BorderRadius.circular(5)),
-        child: Row(
-          spacing: 5,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            icon == null ? Container() : Icon(icon, color: Colors.white),
-            Expanded(
-              child: Center(
-                child: Text(
-                  label,
-                  style: Constants.subtitle.copyWith(color: Colors.white),
-                ),
-              ),
+    return Container(
+      width: width,
+      padding: const EdgeInsets.all(5),
+      decoration:
+          BoxDecoration(color: color, borderRadius: BorderRadius.circular(5)),
+      child: Row(
+        spacing: 5,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          icon == null ? Container() : Icon(icon, color: Colors.white),
+          Expanded(
+            child: Text(
+              label,
+              style: Constants.subtitle.copyWith(color: Colors.white),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

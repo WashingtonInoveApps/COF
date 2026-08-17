@@ -214,10 +214,10 @@ class ChecklistCarPage extends StatelessWidget {
                           : Column(
                               children: List.generate(controller.others.length,
                                       (index) {
-                                final outher = controller.others[index];
+                                final other = controller.others[index];
 
                                 return CardOutherChange(
-                                  outher: outher,
+                                  other: other,
                                   onDelete: () {
                                     controller.deleteOuhtersChange(index);
                                   },
@@ -238,12 +238,13 @@ class ChecklistCarPage extends StatelessWidget {
                                 context: context,
                                 builder: (context) => ImageChangeWidget(
                                       onSelect: (image, description) {
-                                        controller
-                                            .addOthersChange(OtherChangeModel(
-                                          date: DateTime.now(),
-                                          description: description,
-                                          fileImage: image,
-                                        ));
+                                        controller.addOthersChange(
+                                          OtherChangeModel(
+                                            date: DateTime.now(),
+                                            description: description,
+                                            image: image,
+                                          ),
+                                        );
                                       },
                                     ));
                           },

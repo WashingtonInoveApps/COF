@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/car/controller/car_register_controller.dart';
 import 'package:bsu_control/car/view/cars_page.dart';
@@ -118,6 +120,7 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                                   .save(
                                 car: register.car,
                                 images: register.images,
+                                others: register.others,
                               )
                                   .then((_) {
                                 if (update) {

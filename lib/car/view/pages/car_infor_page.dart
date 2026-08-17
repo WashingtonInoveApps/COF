@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 
 import '../../../core/validation.dart';
+import '../../../widgets/container_custom_widget.dart';
 import '../../../widgets/textfield_widget.dart';
 
 class CarRegisterInforPage extends StatefulWidget {
@@ -37,16 +38,8 @@ class _CarRegisterInforPageState extends State<CarRegisterInforPage> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-                color: Constants.primary,
-                borderRadius: BorderRadius.circular(5)),
-            child: Text(
-              "INFORMAÇÕES BÁSICAS",
-              style: Constants.titleButton,
-            ),
+          const ContainerCustom(
+            label: "INFORMAÇÕES BÁSICAS",
           ),
           Text(
             "ORGANIZAÇÃO",

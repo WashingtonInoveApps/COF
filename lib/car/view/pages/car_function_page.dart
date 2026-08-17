@@ -1,4 +1,5 @@
 import 'package:bsu_control/car/controller/car_register_controller.dart';
+import 'package:bsu_control/model/car_changes_model.dart';
 import 'package:bsu_control/widgets/list_sections_widget.dart';
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/model/section_itens_model.dart';
@@ -6,7 +7,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 
 import '../../../core/validation.dart';
+import '../../../enum/car_enum.dart';
+import '../../../model/outher_changes_model.dart';
 import '../../../widgets/car_changes_widget.dart';
+import '../../../widgets/card_outhers_widget.dart';
+import '../../../widgets/container_custom_widget.dart';
+import '../../../widgets/image_change_widget.dart';
 import '../../../widgets/textfield_widget.dart';
 
 class CarRegisterFunctionPage extends StatefulWidget {
@@ -53,19 +59,11 @@ class _CarRegisterFunctionPageState extends State<CarRegisterFunctionPage> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                      color: Constants.primary,
-                      borderRadius: BorderRadius.circular(5)),
-                  child: Text(
-                    "DETALHES DO VEÍCULO",
-                    style: Constants.titleButton,
-                  ),
+                const ContainerCustom(
+                  label: "DETALHES DO VEÍCULO",
                 ),
                 Text(
-                  "FUNÇÃO",
+                  "Função",
                   style: Constants.titleHint,
                 ),
                 Container(
@@ -78,7 +76,7 @@ class _CarRegisterFunctionPageState extends State<CarRegisterFunctionPage> {
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(5.0)),
                   child: Observer(builder: (_) {
-                    return DropdownButton<String?>(
+                    return DropdownButton<FunctionCar?>(
                         isExpanded: true,
                         value: register.function,
                         underline: Container(),
@@ -93,13 +91,13 @@ class _CarRegisterFunctionPageState extends State<CarRegisterFunctionPage> {
                                 'Selecione',
                                 style: Constants.title,
                               )),
-                          ...Constants.carsFunctions
+                          ...FunctionCar.values
                               .map((e) => DropdownMenuItem(
                                     value: e,
                                     child: Padding(
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 5),
-                                      child: Text(e.toUpperCase(),
+                                      child: Text(e.label.toUpperCase(),
                                           style: Constants.title),
                                     ),
                                   ))
@@ -108,7 +106,7 @@ class _CarRegisterFunctionPageState extends State<CarRegisterFunctionPage> {
                   }),
                 ),
                 Text(
-                  "TIPO DE VEÍCULO",
+                  "Tipo",
                   style: Constants.titleHint,
                 ),
                 Container(
@@ -153,12 +151,12 @@ class _CarRegisterFunctionPageState extends State<CarRegisterFunctionPage> {
                   }),
                 ),
                 Observer(builder: (_) {
-                  return register.outherTypeField
+                  return register.otherTypeField
                       ? FieldText(
-                          initValue: register.outherType,
+                          initValue: register.otherType,
                           hint: "TIPO DE VEÍCULO",
                           validation: Validation.validatorPreenchimento,
-                          onChange: register.setOutherType,
+                          onChange: register.setOtherType,
                           textCase: FieldTextCase.upper,
                         )
                       : Container();
@@ -167,6 +165,7 @@ class _CarRegisterFunctionPageState extends State<CarRegisterFunctionPage> {
                   child: Observer(builder: (_) {
                     return CarChangesWidget(
                       car: register.car,
+                      changes: List<CarChangeModel>.from(register.changes),
                       remove: true,
                       register: true,
                       user: register.user,
@@ -175,6 +174,9 @@ class _CarRegisterFunctionPageState extends State<CarRegisterFunctionPage> {
                       onChangeImages: register.setImagens,
                     );
                   }),
+                ),
+                const SizedBox(
+                  height: 5,
                 ),
               ],
             ),
@@ -187,16 +189,58 @@ class _CarRegisterFunctionPageState extends State<CarRegisterFunctionPage> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                      color: Constants.primary,
-                      borderRadius: BorderRadius.circular(5)),
-                  child: Text(
-                    "ITENS OU ACESSÓRIOS",
-                    style: Constants.titleButton,
-                  ),
+                const ContainerCustom(
+                  label: "OUTRAS ALTERAÇÕES",
+                ),
+                Observer(builder: (context) {
+                  return register.others.isEmpty
+                      ? Text(
+                          'Nenhuma outra alteração encontrada',
+                          style: Constants.titleHint,
+                        )
+                      : Column(
+                          children:
+                              List.generate(register.others.length, (index) {
+                            final other = register.others[index];
+
+                            return CardOutherChange(
+                              other: other,
+                              onDelete: () {
+                                register.deleteOtherChange(index);
+                              },
+                            );
+                          })
+                                  .expand((widget) => [widget, const Divider()])
+                                  .toList()
+                                ..removeLast(),
+                        );
+                }),
+                Center(
+                    child: IconButton(
+                        onPressed: () async {
+                          await showDialog(
+                              context: context,
+                              builder: (context) => ImageChangeWidget(
+                                    aspectRatio: null,
+                                    onSelect: (image, description) {
+                                      register.addOtherChange(
+                                        OtherChangeModel(
+                                          date: DateTime.now(),
+                                          description: description,
+                                          image: image,
+                                        ),
+                                      );
+                                    },
+                                  ));
+                        },
+                        style: IconButton.styleFrom(
+                            backgroundColor: Constants.primary),
+                        icon: const Icon(
+                          Icons.add,
+                          color: Colors.white,
+                        ))),
+                const ContainerCustom(
+                  label: "ITENS OU ACESSÓRIOS",
                 ),
                 Observer(builder: (context) {
                   return ListSectionsWidget(

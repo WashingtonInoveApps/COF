@@ -20,7 +20,7 @@ class CarStatusModel {
   CarStatusModel(
       {this.id,
       this.type,
-      this.state = StatusCar.baixado,
+      this.state = StatusCar.broken,
       this.description = "",
       this.carID = '',
       this.referenceYear = '',
@@ -39,7 +39,7 @@ class CarStatusModel {
       'description': description,
       'date': date.millisecondsSinceEpoch,
       'value': value,
-      'referenceYear': referenceYear,
+      'referenceYear': date.year.toString(),
       'user': user.toMapResume(),
       'details': details?.map((e) => e.toMap()).toList(),
       'local': local,

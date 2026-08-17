@@ -1,13 +1,15 @@
-import 'dart:typed_data';
+import 'dart:developer';
 
+import 'package:bsu_control/car/repository/car_interface.dart';
 import 'package:bsu_control/core/api_client.dart';
+import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/model/checklist_model.dart';
 import 'package:bsu_control/model/file_model.dart';
-import 'package:bsu_control/car/repository/car_interface.dart';
 
 import '../../model/car_mapa_model.dart';
 import '../../model/car_model.dart';
 import '../../model/car_status_model.dart';
+import '../../model/outher_changes_model.dart';
 
 class CarRepository extends APIClient implements ICarRepository {
   CarRepository(
@@ -15,12 +17,12 @@ class CarRepository extends APIClient implements ICarRepository {
       : super(endpoint: endpoint, appID: appID, test: test);
 
   @override
-  Stream<List<CarStatusModel>> listenStatusCar({required String carId}) {
-    return colStatusCars.where('carID', isEqualTo: carId).snapshots().map((e) =>
-        e.docs
-            .map((doc) =>
-                CarStatusModel.fromMap(doc.data() as Map<String, dynamic>))
-            .toList());
+  Future<List<CarStatusModel>> getStatusCar({required String carID}) async {
+    return colStatusCars.where('carID', isEqualTo: carID).get().then((e) => e
+        .docs
+        .map(
+            (doc) => CarStatusModel.fromMap(doc.data() as Map<String, dynamic>))
+        .toList());
   }
 
   @override
@@ -36,73 +38,96 @@ class CarRepository extends APIClient implements ICarRepository {
   }
 
   @override
-  Future<bool> save(
-      {required CarModel car, required List<dynamic> images}) async {
+  Future<bool> save({
+    required CarModel car,
+    required List<FileModel?> images,
+    required List<OtherChangeModel> others,
+  }) async {
     try {
       var doc = colCars.doc(car.id);
       car.id = doc.id;
 
+      List<FileModel?> imagesProcess =
+          List.filled(images.length, null, growable: true);
+
       final prefix = car.prefix.replaceAll(" ", "");
 
       for (final change in car.changes) {
-        if (change.fileImage != null) {
+        if (change.image?.data != null) {
           final image = await saveFile(
-              pathStorage: 'imagens/changes/$prefix',
-              data: change.fileImage!,
-              filename: '${prefix}_changes.png');
+              pathStorage: '${Constants.pathCarChangeImages}/$prefix',
+              data: change.image!.data!,
+              filename: prefix);
 
           if (image == null) {
             throw Exception('Falha ao salvar imagem da alteração.');
           }
 
-          change.image = image;
+          change.image =
+              change.image?.copyWith(name: image.name, url: image.url);
         }
       }
 
-      List<FileModel?> imagesProcess =
-          List.filled(4, FileModel(url: '', name: ''), growable: true);
+      for (OtherChangeModel other in others) {
+        if (other.image.data != null) {
+          final image = await saveFile(
+              pathStorage: '${Constants.pathCarOtherImages}/$prefix',
+              data: other.image.data!,
+              filename: prefix);
+
+          if (image == null) {
+            throw Exception('Falha ao salvar imagem da alteração do material.');
+          }
+
+          other.image = other.image.copyWith(name: image.name, url: image.url);
+        }
+      }
 
       for (int i = 0; i < images.length; i++) {
-        if (images[i] is Uint8List) {
+        if (images[i]?.data != null) {
           final image = await saveFile(
-              pathStorage: 'imagens/cars/$prefix',
-              data: images[i],
-              filename: '${prefix}_${i.toString().padLeft(2, '0')}.png');
+              pathStorage: Constants.pathCarImages,
+              data: images[i]!.data!,
+              filename: i.toString().padLeft(2, '0'));
 
           if (image == null) {
             throw Exception('Falha ao salvar imagem da vista do carro.');
           }
 
-          imagesProcess[i] = image;
+          imagesProcess[i] =
+              images[i]?.copyWith(name: image.name, url: image.url);
         } else {
           imagesProcess[i] = images[i];
         }
       }
 
-      car.images = imagesProcess;
-      await doc.set(car.toMap());
+      await doc.set(car
+          .copyWith(
+            others: others,
+            images: imagesProcess,
+          )
+          .toMap());
 
       return true;
     } catch (e) {
+      log('Error ao salvar carro:', error: e);
       rethrow;
     }
   }
 
   @override
   Future<bool> saveStatusCar(
-      {required CarModel car, CarStatusModel? status}) async {
+      {required CarModel car, required CarStatusModel status}) async {
     try {
       final docCar = colCars.doc(car.id);
       final docStatus = colStatusCars.doc();
+      status.id = docStatus.id;
 
       await firebase!.runTransaction((trans) async {
-        if (status != null) {
-          status.id = docStatus.id;
-          trans.set(docStatus, status.toMap());
-        }
-
+        trans.set(docStatus, status.toMap());
         trans.update(docCar, car.toMap());
       });
+
       return true;
     } catch (e) {
       return false;
@@ -122,9 +147,50 @@ class CarRepository extends APIClient implements ICarRepository {
   }
 
   @override
-  Future<bool> deleteCar({required String id}) async {
+  Future<bool> delete({required CarModel car}) async {
     try {
-      await colCars.doc(id).delete();
+      List<String> statusIDs = [];
+
+      final query = await colStatusCars.where('carID', isEqualTo: car.id).get();
+
+      for (final doc in query.docs) {
+        if (doc.exists) {
+          statusIDs.add(doc.id);
+        }
+      }
+
+      await firebase!.runTransaction((trans) async {
+        for (final id in statusIDs) {
+          trans.delete(colStatusCars.doc(id));
+        }
+
+        trans.delete(colCars.doc(car.id));
+      });
+
+      //Erros de exclusão de imagens irrelevantes.
+      //Não excluo as imagens dos veiculos pois podem está sendo usado por outros.
+      // for (final image in car.images) {
+      //   if (image?.name.isEmpty ?? true) continue;
+
+      //   await deleteFile(
+      //       path: Constants.pathCarImages, filename: image?.name ?? '');
+      // }
+
+      for (final change in car.changes) {
+        if (change.image?.name.isEmpty ?? true) continue;
+
+        await deleteFile(
+            path: Constants.pathCarChangeImages,
+            filename: change.image?.name ?? '');
+      }
+
+      for (final other in car.others ?? []) {
+        if (other.image?.name.isEmpty ?? true) continue;
+
+        await deleteFile(
+            path: Constants.pathCarOtherImages,
+            filename: other.image?.name ?? '');
+      }
 
       return true;
     } catch (e) {
@@ -179,7 +245,7 @@ class CarRepository extends APIClient implements ICarRepository {
       {required CarModel car, required CarStatusModel status}) async {
     try {
       final docCar = colCars.doc(car.id);
-      final docStatus = docCar.collection('status').doc(status.id);
+      final docStatus = colStatusCars.doc(status.id);
 
       await firebase!.runTransaction((trans) async {
         trans.update(docCar, car.toMap());
@@ -205,13 +271,15 @@ class CarRepository extends APIClient implements ICarRepository {
   }
 
   @override
-  Future<List<ChecklistModel>> getChecklistByMonth(
-      {required DateTime reference}) async {
+  Future<List<ChecklistModel>> getChecklistByMonth({
+    required DateTime reference,
+  }) async {
     try {
       return await colChecklist
           .where('referenceMonth',
               isEqualTo:
                   "${reference.month.toString().padLeft(2, '0')}/${reference.year}")
+          .where('type', isEqualTo: 'vehicular')
           .get()
           .then((result) => result.docs
               .map((e) =>

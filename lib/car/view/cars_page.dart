@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/car/controller/car_controller.dart';
 import 'package:bsu_control/car/view/widgets/car_chats_problem_widget.dart';
@@ -6,17 +8,15 @@ import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/enum/car_enum.dart';
 import 'package:bsu_control/main.dart';
 import 'package:bsu_control/model/car_model.dart';
-import 'package:bsu_control/model/car_status_model.dart';
-import 'package:bsu_control/model/checklist_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
+import 'package:month_picker_dialog/month_picker_dialog.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
 import '../../widgets/backgraund_page.dart';
 import '../../widgets/cars_chart_widget.dart';
-import '../../widgets/images_changes_view_widget.dart';
 import '../../widgets/limit_table_widget.dart';
 import '../../widgets/pagination_widget.dart';
 import '../../widgets/table_widget.dart';
@@ -36,18 +36,40 @@ class _CarsPageState extends State<CarsPage> {
   final app = GetIt.I.get<AppController>();
   final searchController = TextEditingController();
 
-  late CarController carController;
+  late CarController controller;
   late ReactionDisposer rec;
+  late ReactionDisposer recDate;
+  late ReactionDisposer recChecklistDate;
+  StreamSubscription? subscription;
 
   @override
   void initState() {
     super.initState();
-    carController = CarController(config: config, user: app.user);
-    carController.setDateKmByMonth(DateTime.now());
+    controller = CarController(config: config, user: app.user);
+    controller.setDateKmByMonth(DateTime.now());
 
     rec = autorun((_) {
-      carController.setCars(List<CarModel>.from(app.carsUsers));
+      controller.setCars(List<CarModel>.from(app.cars));
     });
+
+    recDate = autorun(
+      (_) {
+        subscription?.cancel();
+        subscription = controller
+            .listenStatusGeral(date: controller.referenceDateDashboard)
+            .listen((value) {
+          controller.setStatusGeral(value);
+        });
+      },
+    );
+
+    recChecklistDate = autorun(
+      (_) {
+        controller
+            .getCheckListByMonth(date: controller.dateKmByMonth)
+            .then(controller.setChecklistKMByMonth);
+      },
+    );
   }
 
   @override
@@ -55,6 +77,9 @@ class _CarsPageState extends State<CarsPage> {
     super.dispose();
     searchController.dispose();
     rec();
+    recDate();
+    recChecklistDate();
+    subscription?.cancel();
   }
 
   @override
@@ -65,9 +90,43 @@ class _CarsPageState extends State<CarsPage> {
         top: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Veículos',
-              style: Constants.title.copyWith(fontSize: 18),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'Veículos',
+                    style: Constants.title.copyWith(fontSize: 18),
+                  ),
+                ),
+                IconButton(
+                  onPressed: () async {
+                    await showYearPicker(
+                      context: context,
+                      initialDate: controller.referenceDateDashboard,
+                      firstDate: DateTime(2026),
+                      lastDate: DateTime(
+                        DateTime.now().year + 1,
+                      ),
+                    ).then((value) {
+                      if (value != null) {
+                        controller.setReferenceDateDashboard(
+                          DateTime(
+                            value,
+                            1,
+                            1,
+                          ),
+                        );
+                      }
+                    });
+                  },
+                  tooltip: 'Alterar ano',
+                  icon: const Icon(
+                    Icons.calendar_month,
+                    size: 20,
+                    color: Colors.grey,
+                  ),
+                ),
+              ],
             ),
             const Divider(),
             const SizedBox(
@@ -93,8 +152,7 @@ class _CarsPageState extends State<CarsPage> {
                         SizedBox(
                           height: 230,
                           child: Observer(builder: (_) {
-                            final cars =
-                                List<CarModel>.from(carController.cars);
+                            final cars = List<CarModel>.from(controller.cars);
                             final types = List<String>.from(app.carsTypes);
 
                             return CarsChart(
@@ -110,25 +168,11 @@ class _CarsPageState extends State<CarsPage> {
                               height: 328,
                               width: double.infinity,
                               padding: const EdgeInsets.all(10),
-                              child: FutureBuilder<List<ChecklistModel>>(
-                                  future: carController.getCheckListByMonth(
-                                      date: carController.dateKmByMonth),
-                                  builder: (context, snapshot) {
-                                    if (!snapshot.hasData) {
-                                      return const Center(
-                                        child: CircularProgressIndicator(),
-                                      );
-                                    }
-
-                                    final checklists = snapshot.data ?? [];
-                                    return CarChartKmByMonth(
-                                      referenceDate:
-                                          carController.dateKmByMonth,
-                                      checklists: checklists,
-                                      onChangeDate:
-                                          carController.setDateKmByMonth,
-                                    );
-                                  }),
+                              child: CarChartKmByMonth(
+                                referenceDate: controller.dateKmByMonth,
+                                checklists: controller.checklistKMByMonth,
+                                onChangeDate: controller.setDateKmByMonth,
+                              ),
                             ),
                           );
                         })
@@ -139,68 +183,36 @@ class _CarsPageState extends State<CarsPage> {
                     width: (app.modeMOBILE
                         ? double.infinity
                         : app.maxWidth * 0.45),
-                    child: Column(
-                      spacing: 5,
-                      children: [
-                        Card(
-                          child: Container(
-                            height: 275,
-                            width: double.infinity,
-                            padding: const EdgeInsets.all(10),
-                            child: Observer(builder: (_) {
-                              return StreamBuilder<List<CarStatusModel>>(
-                                  stream: carController.listenStatusGeral(
-                                      date: carController
-                                          .referenceYearTendencies),
-                                  builder: (context, snapshot) {
-                                    if (!snapshot.hasData) {
-                                      return const Center(
-                                        child: CircularProgressIndicator(),
-                                      );
-                                    }
-
-                                    final status = snapshot.data ?? [];
-
-                                    return CarChartAvailability(
-                                      reference:
-                                          carController.referenceYearTendencies,
-                                      status: status,
-                                      onChangeDate: carController
-                                          .setReferenceYearTendencies,
-                                    );
-                                  });
-                            }),
+                    child: Observer(builder: (_) {
+                      return Column(
+                        spacing: 5,
+                        children: [
+                          Card(
+                            child: Container(
+                              height: 275,
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(10),
+                              child: CarChartAvailability(
+                                reference: controller.referenceDateDashboard,
+                                status: controller.statusGeral,
+                              ),
+                            ),
                           ),
-                        ),
-                        Card(
-                          child: Container(
-                            height: 275,
-                            width: double.infinity,
-                            padding: const EdgeInsets.all(10),
-                            child: StreamBuilder<List<CarStatusModel>>(
-                                stream: carController.listenStatusGeral(
-                                    date: carController.referenceYearProblem),
-                                builder: (context, snapshot) {
-                                  if (!snapshot.hasData) {
-                                    return const Center(
-                                      child: CircularProgressIndicator(),
-                                    );
-                                  }
-
-                                  final status = snapshot.data ?? [];
-                                  return CarChartProblems(
-                                    reference:
-                                        carController.referenceYearProblem,
-                                    status: status,
-                                    cars: app.cars,
-                                    onChangeDate:
-                                        carController.setReferenceYearProblem,
-                                  );
-                                }),
+                          Card(
+                            child: Container(
+                              height: 275,
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(10),
+                              child: CarChartProblems(
+                                reference: controller.referenceDateDashboard,
+                                status: controller.statusGeral,
+                                cars: app.carsUsers,
+                              ),
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
+                        ],
+                      );
+                    }),
                   ),
                 ],
               ),
@@ -228,10 +240,10 @@ class _CarsPageState extends State<CarsPage> {
                         search: true,
                         controller: searchController,
                         hint: 'Ex.: Digite algo para pesquisar',
-                        onChange: carController.onChangeFilter,
+                        onChange: controller.onChangeFilter,
                         onClear: () {
                           searchController.clear();
-                          carController.onChangeFilter('');
+                          controller.onChangeFilter('');
                         },
                       ),
                     );
@@ -244,14 +256,14 @@ class _CarsPageState extends State<CarsPage> {
               height: 10,
             ),
             Observer(builder: (_) {
-              final cars = List<CarModel>.from(carController.carsSorts);
+              final cars = List<CarModel>.from(controller.carsSorts);
 
               return cars.isNotEmpty
                   ? Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Exibindo ${carController.start} a ${carController.end} de ${carController.cars.length} entradas',
+                          'Exibindo ${controller.start} a ${controller.end} de ${controller.cars.length} entradas',
                           style: Constants.subtitleHint,
                         ),
                         const SizedBox(
@@ -262,7 +274,7 @@ class _CarsPageState extends State<CarsPage> {
                           height: Core.calculateTableHeight(cars.length),
                           constraints: const BoxConstraints(minHeight: 250),
                           child: AppDataTable<CarModel>(
-                            limit: carController.limit,
+                            limit: controller.limit,
                             data: cars,
                             columnMode: ColumnWidthMode.auto,
                             columns: [
@@ -288,6 +300,7 @@ class _CarsPageState extends State<CarsPage> {
                                           MaterialPageRoute(
                                               builder: (context) =>
                                                   CarDetailsPage(
+                                                    controller: controller,
                                                     carID: car.id ?? '',
                                                   )));
                                     },
@@ -395,10 +408,10 @@ class _CarsPageState extends State<CarsPage> {
                               AppColumn(
                                 name: 'function',
                                 label: 'Função',
-                                sortValue: (car) => car.function,
+                                sortValue: (car) => car.function.label,
                                 builder: (car) {
                                   return Text(
-                                    car.function,
+                                    car.function.label,
                                     style: Constants.title,
                                   );
                                 },
@@ -411,66 +424,6 @@ class _CarsPageState extends State<CarsPage> {
                                   return Text(
                                     car.km.toString(),
                                     style: Constants.title,
-                                  );
-                                },
-                              ),
-                              AppColumn(
-                                name: 'changes',
-                                label: 'Alterações',
-                                builder: (car) {
-                                  return Row(
-                                    spacing: 5,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Expanded(
-                                        child: Center(
-                                          child: Text(
-                                            car.changes.length
-                                                .toString()
-                                                .padLeft(2, '0'),
-                                            style: Constants.title,
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Center(
-                                          child: InkWell(
-                                            onTap: (car.changes.isNotEmpty)
-                                                ? () async {
-                                                    showDialog(
-                                                        context: context,
-                                                        builder: (context) {
-                                                          return AlertDialog(
-                                                            contentPadding:
-                                                                const EdgeInsets
-                                                                    .all(10),
-                                                            content:
-                                                                ImagesChangesViewWidget(
-                                                                    changes: car
-                                                                        .changes),
-                                                          );
-                                                        });
-                                                  }
-                                                : null,
-                                            child: Card(
-                                              margin: EdgeInsets.zero,
-                                              shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadiusGeometry
-                                                          .circular(100)),
-                                              child: const Padding(
-                                                padding: EdgeInsets.all(5.0),
-                                                child: Icon(
-                                                  Icons.list_alt_rounded,
-                                                  size: 20,
-                                                  color: Constants.primary,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
                                   );
                                 },
                               ),
@@ -494,8 +447,8 @@ class _CarsPageState extends State<CarsPage> {
                                 width: 150,
                                 child: Observer(builder: (_) {
                                   return LimitTableWidget(
-                                    limit: carController.limit,
-                                    onChange: carController.setLimit,
+                                    limit: controller.limit,
+                                    onChange: controller.setLimit,
                                   );
                                 }),
                               ),
@@ -503,10 +456,10 @@ class _CarsPageState extends State<CarsPage> {
                                 width: 220,
                                 child: Observer(builder: (context) {
                                   return PaginationWidget(
-                                    limit: carController.limit,
-                                    page: carController.page,
-                                    length: carController.lengthSortings,
-                                    onChange: carController.setPage,
+                                    limit: controller.limit,
+                                    page: controller.page,
+                                    length: controller.lengthSortings,
+                                    onChange: controller.setPage,
                                   );
                                 }),
                               ),

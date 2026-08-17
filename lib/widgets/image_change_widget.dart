@@ -3,14 +3,16 @@ import 'dart:typed_data';
 
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/core.dart';
+import 'package:bsu_control/model/file_model.dart';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
+import 'package:uuid/uuid.dart';
 
 import 'textfield_widget.dart';
 
 class ImageChangeWidget extends StatefulWidget {
   final CropAspectRatio? aspectRatio;
-  final Function(dynamic image, String description) onSelect;
+  final Function(FileModel image, String description) onSelect;
 
   const ImageChangeWidget({
     Key? key,
@@ -23,7 +25,7 @@ class ImageChangeWidget extends StatefulWidget {
 }
 
 class _ImageChangeWidgetState extends State<ImageChangeWidget> {
-  Uint8List? image;
+  Uint8List? data;
   final controller = TextEditingController();
 
   double heightImage = 300;
@@ -47,7 +49,7 @@ class _ImageChangeWidgetState extends State<ImageChangeWidget> {
                             context: context, aspectRatio: widget.aspectRatio)
                         .then((result) {
                       if (result != null) {
-                        image = result;
+                        data = result;
                         setState(() {});
                       }
                     });
@@ -58,9 +60,9 @@ class _ImageChangeWidgetState extends State<ImageChangeWidget> {
                         border: Border.all(color: Colors.grey.shade400),
                         borderRadius: BorderRadius.circular(5),
                         color: Colors.grey.shade200),
-                    child: image != null
+                    child: data != null
                         ? Image.memory(
-                            image!,
+                            data!,
                             width: widthImage,
                             height: heightImage,
                             fit: BoxFit.cover,
@@ -100,8 +102,14 @@ class _ImageChangeWidgetState extends State<ImageChangeWidget> {
                   width: double.infinity,
                   child: ElevatedButton(
                       onPressed: () {
-                        if (image != null) {
-                          widget.onSelect(image!, controller.text);
+                        if (data != null) {
+                          widget.onSelect(
+                              FileModel(
+                                  id: const Uuid().v4(),
+                                  name: '',
+                                  url: '',
+                                  data: data!),
+                              controller.text);
                         }
 
                         Navigator.of(context).pop();

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
-enum StatusCar { operando, reserva, baixado, waiting }
+enum StatusCar { operating, broken, waiting }
+
+enum FunctionCar { operational, administrative }
 
 enum StateCarProblems {
   airconditioning,
@@ -40,6 +42,43 @@ extension StateCarProblemsLabel on StateCarProblems {
   }
 }
 
+extension CarStateLabel on StatusCar {
+  String get label {
+    switch (this) {
+      case StatusCar.operating:
+        return "Operando";
+      case StatusCar.broken:
+        return "Baixado";
+      case StatusCar.waiting:
+        return "Em espera";
+    }
+  }
+}
+
+extension FunctionCarLabel on FunctionCar {
+  String get label {
+    switch (this) {
+      case FunctionCar.operational:
+        return "Operacional";
+      case FunctionCar.administrative:
+        return "Administrativo";
+    }
+  }
+}
+
+extension CarStateEnable on StatusCar {
+  bool get enable {
+    switch (this) {
+      case StatusCar.operating:
+        return true;
+      case StatusCar.broken:
+        return false;
+      case StatusCar.waiting:
+        return true;
+    }
+  }
+}
+
 extension StateCarProblemsColor on StateCarProblems {
   Color get color {
     switch (this) {
@@ -65,29 +104,12 @@ extension StateCarProblemsColor on StateCarProblems {
   }
 }
 
-extension CarStateLabel on StatusCar {
-  String get label {
-    switch (this) {
-      case StatusCar.operando:
-        return "Operando";
-      case StatusCar.reserva:
-        return "Reserva";
-      case StatusCar.baixado:
-        return "Baixado";
-      case StatusCar.waiting:
-        return "Em espera";
-    }
-  }
-}
-
 extension CarStateColor on StatusCar {
   Color get color {
     switch (this) {
-      case StatusCar.operando:
+      case StatusCar.operating:
         return Colors.green.shade800;
-      case StatusCar.reserva:
-        return Colors.orange;
-      case StatusCar.baixado:
+      case StatusCar.broken:
         return Colors.red;
 
       case StatusCar.waiting:
@@ -99,11 +121,9 @@ extension CarStateColor on StatusCar {
 extension CarStateIcon on StatusCar {
   IconData get icon {
     switch (this) {
-      case StatusCar.operando:
+      case StatusCar.operating:
         return Icons.check_circle;
-      case StatusCar.reserva:
-        return Icons.info_rounded;
-      case StatusCar.baixado:
+      case StatusCar.broken:
         return MdiIcons.closeCircle;
       case StatusCar.waiting:
         return MdiIcons.clockTimeEight;
@@ -115,7 +135,7 @@ class CarEnumCore {
   static StatusCar statusCarFromString(String value) {
     return StatusCar.values.firstWhere(
       (e) => e.name == value,
-      orElse: () => StatusCar.operando,
+      orElse: () => StatusCar.operating,
     );
   }
 
@@ -123,6 +143,13 @@ class CarEnumCore {
     return StateCarProblems.values.firstWhere(
       (e) => e.name == value,
       orElse: () => StateCarProblems.others,
+    );
+  }
+
+  static FunctionCar functionCarFromString(String value) {
+    return FunctionCar.values.firstWhere(
+      (e) => e.name == value,
+      orElse: () => FunctionCar.operational,
     );
   }
 }

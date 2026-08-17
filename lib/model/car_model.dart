@@ -22,7 +22,7 @@ class CarModel {
   CiaModel? cia;
   String? ciaID;
   String type;
-  String function;
+  FunctionCar function;
   String obs;
   StatusCar state;
 
@@ -34,36 +34,39 @@ class CarModel {
   List<FileModel?> images;
 
   int km;
+  int distance;
   int oil;
   int arref;
   bool adm;
   bool enable;
 
-  CarModel(
-      {this.prefix = "",
-      this.model = "",
-      this.plate = "",
-      this.km = 0,
-      this.modelPneu = "",
-      this.ticket = "",
-      this.obmID = "",
-      this.function = '',
-      this.cia,
-      this.ciaID,
-      this.state = StatusCar.waiting,
-      required this.itens,
-      required this.changes,
-      required this.status,
-      required this.images,
-      this.others,
-      this.mapas,
-      this.type = "",
-      this.adm = false,
-      this.enable = true,
-      this.obs = "",
-      this.id,
-      this.oil = 0,
-      this.arref = 0});
+  CarModel({
+    this.prefix = "",
+    this.model = "",
+    this.plate = "",
+    this.km = 0,
+    this.modelPneu = "",
+    this.ticket = "",
+    this.obmID = "",
+    this.function = FunctionCar.operational,
+    this.cia,
+    this.ciaID,
+    this.state = StatusCar.waiting,
+    required this.itens,
+    required this.changes,
+    required this.status,
+    required this.images,
+    this.others,
+    this.mapas,
+    this.type = "",
+    this.adm = false,
+    this.enable = true,
+    this.obs = "",
+    this.id,
+    this.oil = 0,
+    this.arref = 0,
+    this.distance = 0,
+  });
 
   Map<String, dynamic> toMapResume() => {
         "id": id,
@@ -72,7 +75,7 @@ class CarModel {
         "changes": [],
         "images": [],
         "obmID": obmID,
-        "cia": cia?.toMap(),
+        "cia": cia?.toMapResume(),
         'ciaID': ciaID,
       };
 
@@ -85,9 +88,9 @@ class CarModel {
       'km': km,
       'modelPneu': modelPneu,
       'ticket': ticket,
-      'function': function,
+      'function': function.name,
       'obmID': obmID,
-      "cia": cia?.toMap(),
+      "cia": cia?.toMapResume(),
       'ciaID': ciaID,
       'state': state.name,
       'itens': itens.map((x) => x.toMap()).toList(),
@@ -101,6 +104,7 @@ class CarModel {
       'obs': obs,
       'oil': oil,
       'arref': arref,
+      'distance': distance,
     };
   }
 
@@ -130,7 +134,7 @@ class CarModel {
       obmID: map['obmID'] ?? '',
       cia: (map['cia'] != null) ? CiaModel.fromMap(map['cia']) : null,
       ciaID: map['ciaID'] ?? '',
-      function: map['function'] ?? '',
+      function: CarEnumCore.functionCarFromString(map['function'] as String),
       state: CarEnumCore.statusCarFromString(map['state'] as String),
       itens: List<SectionItensModel>.from(
           map['itens']?.map((x) => SectionItensModel.fromMap(x))),
@@ -152,6 +156,7 @@ class CarModel {
       enable: map['enable'] ?? false,
       obs: map['obs'] ?? '',
       oil: map['oil']?.toInt() ?? 0,
+      distance: map['distance']?.toInt() ?? 0,
       arref: map['arref']?.toInt() ?? 0,
     );
   }
@@ -174,12 +179,12 @@ class CarModel {
     String? obmID,
     CiaModel? cia,
     String? ciaID,
-    String? function,
+    FunctionCar? function,
     List<SectionItensModel>? itens,
     List<CarChangeModel>? changes,
     List<CarStatusModel>? status,
     List<CarMapaModel>? mapas,
-    List<FileModel>? images,
+    List<FileModel?>? images,
     List<OtherChangeModel>? others,
     StatusCar? state,
     String? type,
@@ -188,6 +193,7 @@ class CarModel {
     String? obs,
     int? oil,
     int? arref,
+    int? distance,
   }) {
     return CarModel(
       id: id ?? this.id,
@@ -214,6 +220,7 @@ class CarModel {
       obs: obs ?? this.obs,
       oil: oil ?? this.oil,
       arref: arref ?? this.arref,
+      distance: distance ?? this.distance,
     );
   }
 }

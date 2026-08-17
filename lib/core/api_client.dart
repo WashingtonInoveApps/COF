@@ -10,6 +10,7 @@ import 'package:mime/mime.dart';
 // ignore: depend_on_referenced_packages
 import 'package:path/path.dart' as path;
 import 'package:universal_html/html.dart' as html;
+import 'package:uuid/uuid.dart';
 
 class APIClient {
   late Dio? dio;
@@ -114,7 +115,7 @@ class APIClient {
     try {
       String extensionFile = path.extension(filename);
 
-      if (extensionFile.isEmpty) extensionFile = '.png';
+      if (extensionFile.isEmpty) extensionFile = '.jpg'; //'.png';
 
       final contentType = _getMimeType(extensionFile);
       final name =
@@ -134,7 +135,7 @@ class APIClient {
       TaskSnapshot? uploadTask = await ref.putData(data, metadata);
       final downloadUrl = await uploadTask.ref.getDownloadURL();
 
-      return FileModel(name: name, url: downloadUrl);
+      return FileModel(id: const Uuid().v4(), name: name, url: downloadUrl);
     } catch (e) {
       log('Erro ao salvar arquivo: ${e.toString()}');
       return null;

@@ -53,7 +53,7 @@ class _ListSectionsWidgetState extends State<ListSectionsWidget> {
         widget.list.isEmpty
             ? Text(
                 'Nenhum item encontrado.',
-                style: Constants.title,
+                style: Constants.titleHint,
               )
             : Column(
                 children: List.generate(widget.list.length, (index) {

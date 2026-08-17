@@ -49,12 +49,6 @@ abstract class _AppControllerBase with Store {
   @observable
   int router = 0;
 
-  // @observable
-  // DateTime dateStartConfig = DateTime.now().subtract(const Duration(days: 1));
-
-  // @observable
-  // DateTime dateFinishConfig = DateTime.now();
-
   @observable
   UserModel user = UserModel();
 
@@ -126,19 +120,10 @@ abstract class _AppControllerBase with Store {
   @computed
   int get checklistTodayPendent {
     final carsOperating =
-        cars.where((e) => e.state == StatusCar.operando).length;
+        cars.where((e) => e.state == StatusCar.operating).length;
 
     return (carsOperating - checklistsOperationDay.length);
   }
-
-  // @computed
-  // int get checklistTodayChanges {
-  //   if (checklistsOperationDay.isEmpty) return 0;
-
-  //   return checklistsOperationDay
-  //       .map((e) => e.changes.length)
-  //       .reduce((value, next) => value + next);
-  // }
 
   @computed
   List<CarModel> get carsADM => cars.where((e) => e.adm).toList();

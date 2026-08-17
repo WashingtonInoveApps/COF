@@ -83,18 +83,21 @@ class MaterialRepository extends APIClient implements IMaterialRepository {
       material.id = docMaterials.id;
 
       for (OtherChangeModel change in changes) {
-        if (change.fileImage != null) {
+        if (change.image.data != null) {
           final path = material.team?.id ??
               DateTime.now().microsecondsSinceEpoch.toString();
 
-          change.image = await saveFile(
+          final image = await saveFile(
               pathStorage: 'imagens/material/changes/$path',
-              data: change.fileImage!,
-              filename: '${path}_${DateTime.now().millisecondsSinceEpoch}.png');
+              data: change.image.data!,
+              filename: '${path}_${DateTime.now().millisecondsSinceEpoch}');
 
-          if (change.image == null) {
+          if (image == null) {
             throw Exception('Falha ao salvar imagem da alteração do material.');
           }
+
+          change.image =
+              change.image.copyWith(name: image.name, url: image.url);
         }
       }
 

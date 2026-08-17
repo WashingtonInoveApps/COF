@@ -290,7 +290,7 @@ class _MaterialChecklistRegisterPageState
                             final outher = register.changes[index];
 
                             return CardOutherChange(
-                              outher: outher,
+                              other: outher,
                               onDelete: () {
                                 // controller.deleteOuhtersChange(index);
                               },
@@ -312,7 +312,7 @@ class _MaterialChecklistRegisterPageState
                                     register.addChange(OtherChangeModel(
                                       date: DateTime.now(),
                                       description: description,
-                                      fileImage: image,
+                                      image: image,
                                     ));
                                   },
                                 ));

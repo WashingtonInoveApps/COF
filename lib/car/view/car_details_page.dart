@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:developer';
+
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/car/controller/car_controller.dart';
 import 'package:bsu_control/core/constants.dart';
@@ -16,13 +19,20 @@ import 'package:mobx/mobx.dart';
 import '../../widgets/alert_message.dart';
 import '../../widgets/backgraund_page.dart';
 import '../../widgets/car_changes_widget.dart';
+import '../../widgets/card_outhers_widget.dart';
+import '../../widgets/container_custom_widget.dart';
+import '../../widgets/tag_widget.dart';
 import '../../widgets/textfield_widget.dart';
 import 'car_register_page.dart';
 import 'widgets/description_state_widget.dart';
 
 class CarDetailsPage extends StatefulWidget {
+  final CarController controller;
   final String carID;
-  const CarDetailsPage({Key? key, required this.carID}) : super(key: key);
+
+  const CarDetailsPage(
+      {Key? key, required this.carID, required this.controller})
+      : super(key: key);
 
   @override
   State createState() => _CarDetailsPageState();
@@ -33,17 +43,18 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
   late ReactionDisposer rec;
   late CarController controller;
 
+  StreamSubscription? subscriptionStatus;
+
+  final app = GetIt.I.get<AppController>();
+
   final _controller = TextEditingController();
   final _key = GlobalKey<FormState>();
-  final app = GetIt.I.get<AppController>();
 
   @override
   void initState() {
     super.initState();
-    controller = CarController(
-      config: config,
-      user: app.user,
-    );
+
+    controller = widget.controller;
 
     rec = autorun((_) {
       setState(() {
@@ -109,27 +120,22 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
             children: [
               Text(
                 car.prefix,
-                style: Constants.title.copyWith(fontSize: 18),
+                style: Constants.title.copyWith(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const Divider(),
               const SizedBox(
-                height: 10,
+                height: 5,
               ),
             ],
           ),
           childLeft: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                    color: Constants.primary,
-                    borderRadius: BorderRadius.circular(5)),
-                child: Text(
-                  'INFORMAÇÕES BÁSICAS',
-                  style: Constants.titleButton,
-                ),
+              const ContainerCustom(
+                label: 'INFORMAÇÕES BÁSICAS',
               ),
               const SizedBox(
                 height: 10.0,
@@ -140,10 +146,10 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
               ),
               SelectableText(
                 "${car.km.toString()} KM",
-                style: Constants.title.copyWith(fontSize: 16),
+                style: Constants.title,
               ),
               const SizedBox(
-                height: 10.0,
+                height: 5.0,
               ),
               Text(
                 "Modelo",
@@ -151,10 +157,10 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
               ),
               SelectableText(
                 car.model,
-                style: Constants.title.copyWith(fontSize: 16),
+                style: Constants.title,
               ),
               const SizedBox(
-                height: 10.0,
+                height: 5.0,
               ),
               Text(
                 "Placa",
@@ -162,21 +168,21 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
               ),
               SelectableText(
                 car.plate,
-                style: Constants.title.copyWith(fontSize: 16),
+                style: Constants.title,
               ),
               const SizedBox(
-                height: 10.0,
+                height: 5.0,
               ),
               Text(
                 "Referência do pneu",
                 style: Constants.subtitleHint,
               ),
               SelectableText(
-                car.modelPneu,
-                style: Constants.title.copyWith(fontSize: 16),
+                car.modelPneu.isEmpty ? '-' : car.modelPneu,
+                style: Constants.title,
               ),
               const SizedBox(
-                height: 10.0,
+                height: 5.0,
               ),
               controller.enable
                   ? Column(
@@ -187,58 +193,63 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                           style: Constants.subtitleHint,
                         ),
                         SelectableText(
-                          car.ticket,
-                          style: Constants.title.copyWith(fontSize: 16),
+                          car.ticket.isEmpty ? '-' : car.ticket,
+                          style: Constants.title,
                         ),
                       ],
                     )
                   : Container(),
               const SizedBox(
-                height: 5,
+                height: 10,
               ),
-              const Divider(),
+              const ContainerCustom(
+                label: 'MANUTENÇÃO',
+              ),
               const SizedBox(
-                height: 5.0,
+                height: 10.0,
               ),
               Row(
                 spacing: 10,
                 children: [
                   Expanded(
-                      child: Text(
-                    "Troca de óleo (KM)",
-                    style: Constants.title,
+                      child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Troca de óleo (KM)",
+                        style: Constants.subtitleHint,
+                      ),
+                      Text(
+                        car.oil.toString(),
+                        style: Constants.title.copyWith(
+                            fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                    ],
                   )),
-                  Text(
-                    car.oil.toString(),
-                    style: Constants.title
-                        .copyWith(fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
-                  controller.enable
-                      ? TextButton(
-                          style: TextButton.styleFrom(
-                              padding: const EdgeInsets.all(5),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                              side: BorderSide(
-                                  color: Theme.of(context).primaryColor)),
-                          onPressed: () async {
-                            await showDialog(
-                                context: context,
-                                builder: (context) => kmChangeWidget(
-                                      onUpdate: (value) async {
-                                        await controller.updateKMOil(
-                                            id: car.id!, value: value);
-                                        _controller.clear();
-                                      },
-                                    ));
-                          },
-                          child: Text(
-                            "Alterar",
-                            style: Constants.title.copyWith(
-                                color: Theme.of(context).primaryColor),
-                          ))
-                      : Container(),
+                  if (controller.enable)
+                    TextButton(
+                        style: TextButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                            side: BorderSide(
+                                color: Theme.of(context).primaryColor)),
+                        onPressed: () async {
+                          await showDialog(
+                              context: context,
+                              builder: (context) => kmChangeWidget(
+                                    onUpdate: (value) async {
+                                      await controller.updateKMOil(
+                                          id: car.id!, value: value);
+                                      _controller.clear();
+                                    },
+                                  ));
+                        },
+                        child: Text(
+                          "Alterar",
+                          style: Constants.subtitle
+                              .copyWith(color: Theme.of(context).primaryColor),
+                        )),
                 ],
               ),
               const SizedBox(
@@ -248,42 +259,51 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                 spacing: 10,
                 children: [
                   Expanded(
-                      child: Text(
-                    "Troca do arrefecimento (KM)",
-                    style: Constants.title,
+                      child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Troca do arrefecimento (KM)",
+                        style: Constants.subtitleHint,
+                      ),
+                      Text(
+                        car.arref.toString(),
+                        style: Constants.title.copyWith(
+                            fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                    ],
                   )),
-                  Text(
-                    car.arref.toString(),
-                    style: Constants.title
-                        .copyWith(fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
-                  controller.enable
-                      ? TextButton(
-                          style: TextButton.styleFrom(
-                              padding: const EdgeInsets.all(5),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                              side: BorderSide(
-                                  color: Theme.of(context).primaryColor)),
-                          onPressed: () async {
-                            await showDialog(
-                                context: context,
-                                builder: (context) => kmChangeWidget(
-                                      onUpdate: (value) async {
-                                        await controller.updateKMArref(
-                                            id: car.id!, value: value);
-                                        _controller.clear();
-                                      },
-                                    ));
-                          },
-                          child: Text(
-                            "Alterar",
-                            style: Constants.title.copyWith(
-                                color: Theme.of(context).primaryColor),
-                          ))
-                      : Container(),
+                  if (controller.enable)
+                    TextButton(
+                        style: TextButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                            side: BorderSide(
+                                color: Theme.of(context).primaryColor)),
+                        onPressed: () async {
+                          await showDialog(
+                              context: context,
+                              builder: (context) => kmChangeWidget(
+                                    onUpdate: (value) async {
+                                      await controller.updateKMArref(
+                                          id: car.id!, value: value);
+                                      _controller.clear();
+                                    },
+                                  ));
+                        },
+                        child: Text(
+                          "Alterar",
+                          style: Constants.subtitle
+                              .copyWith(color: Theme.of(context).primaryColor),
+                        )),
                 ],
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              const ContainerCustom(
+                label: 'ALTERAÇÕES',
               ),
               const SizedBox(
                 height: 10.0,
@@ -296,116 +316,101 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                 ),
               ),
               const SizedBox(
+                height: 5.0,
+              ),
+              Align(
+                alignment: Alignment.centerRight,
+                child: PopupMenuButton<StatusCar>(
+                  enabled: controller.enable,
+                  initialValue: car.state,
+                  onSelected: (StatusCar value) async {
+                    if (value == StatusCar.broken) {
+                      showDialog(
+                          context: context,
+                          builder: (context) => DescriptionStateWidget(
+                                user: app.user,
+                                onInsert: (result) async {
+                                  await controller.saveStatus(
+                                      car: car.copyWith(
+                                        enable: false,
+                                        state: value,
+                                      ),
+                                      status: result.copyWith(
+                                        carID: car.id!,
+                                        state: value,
+                                      ));
+                                },
+                              ));
+                    } else {
+                      await controller.saveStatus(
+                          car: car.copyWith(enable: true, state: value),
+                          status: CarStatusModel(
+                              date: DateTime.now(),
+                              user: app.user,
+                              carID: car.id ?? '',
+                              state: value,
+                              value: value.enable));
+                    }
+                  },
+                  itemBuilder: (context) => StatusCar.values.map((state) {
+                    return PopupMenuItem<StatusCar>(
+                      enabled: (state != car.state),
+                      value: state,
+                      child: Text(
+                        state.label,
+                        style: Constants.title,
+                      ),
+                    );
+                  }).toList(),
+                  child: TextButton.icon(
+                      style: TextButton.styleFrom(
+                          side: BorderSide(color: car.state.color)),
+                      onPressed: null,
+                      icon: Icon(
+                        car.state.icon,
+                        color: car.state.color,
+                        size: 20.0,
+                      ),
+                      label: Text(
+                        car.state.label,
+                        style: Constants.title.copyWith(color: car.state.color),
+                      )),
+                ),
+              ),
+              const SizedBox(
                 height: 10.0,
               ),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Expanded(
-                    flex: 2,
-                    child: Text(
-                      "Funcionamento",
-                      style: Constants.titleHint,
-                    ),
-                  ),
-                  PopupMenuButton<StatusCar>(
-                    enabled: controller.enable,
-                    initialValue: car.state,
-                    onSelected: (StatusCar value) async {
-                      if (value == StatusCar.baixado) {
-                        if (car.enable) {
-                          showDialog(
-                              context: context,
-                              builder: (context) => DescriptionStateWidget(
-                                    user: app.user,
-                                    onInsert: (result) async {
-                                      await controller.saveStatus(
-                                          car: car.copyWith(
-                                              enable: false, state: value),
-                                          status: result.copyWith(
-                                              carID: car.id!, state: value));
-                                    },
-                                  ));
-                        }
-                      } else {
-                        if (value == StatusCar.waiting) {
-                          await controller.saveStatus(
-                              car: car.copyWith(enable: true, state: value));
-                        } else {
-                          await controller.saveStatus(
-                              car: car.copyWith(enable: true, state: value),
-                              status: CarStatusModel(
-                                  date: DateTime.now(),
-                                  user: app.user,
-                                  carID: car.id ?? '',
-                                  description: value.label,
-                                  state: value,
-                                  value: true));
-                        }
-                      }
-                    },
-                    itemBuilder: (context) => StatusCar.values.map((state) {
-                      return PopupMenuItem<StatusCar>(
-                        enabled: (state != car.state),
-                        value: state,
-                        child: Text(
-                          state.label,
-                          style: Constants.title,
-                        ),
-                      );
-                    }).toList(),
-                    child: TextButton.icon(
-                        style: TextButton.styleFrom(
-                            side: BorderSide(color: car.state.color)),
-                        onPressed: null,
-                        icon: Icon(
-                          car.state.icon,
-                          color: car.state.color,
-                          size: 20.0,
-                        ),
-                        label: Text(
-                          car.state.label,
-                          style:
-                              Constants.title.copyWith(color: car.state.color),
-                        )),
-                  ),
-                ],
+              const ContainerCustom(
+                label: 'FUNCIONAMENTO',
               ),
-              const Divider(),
+              const SizedBox(
+                height: 10.0,
+              ),
               SizedBox(
                 width: double.infinity,
-                child: StreamBuilder<List<CarStatusModel>>(
-                    stream: controller.listenStatus(carId: car.id!),
-                    builder: (context, snapshot) {
-                      if (!snapshot.hasData) {
-                        return const Center(child: LinearProgressIndicator());
-                      } else {
-                        final status =
-                            List<CarStatusModel>.from(snapshot.data ?? []);
-
-                        if (status.isEmpty) {
-                          return Text(
-                            'Nenhum registro de problemas encontrado.',
-                            style: Constants.subtitleHint,
-                          );
-                        } else {
-                          status.sort((a, b) => b.date.compareTo(a.date));
-
-                          return statusRegisters(
-                              context: context,
-                              status: status,
-                              onDelete: controller.enable
-                                  ? (value) async {
-                                      await controller.deleteStatus(
-                                          car: car.copyWith(
-                                              enable: true,
-                                              state: StatusCar.waiting),
-                                          status: value);
-                                    }
-                                  : null);
-                        }
-                      }
-                    }),
+                child: Observer(builder: (context) {
+                  {
+                    if (controller.statusGeral.isEmpty) {
+                      return Text(
+                        'Nenhum registro encontrado.',
+                        style: Constants.titleHint,
+                      );
+                    } else {
+                      return statusRegisters(
+                          context: context,
+                          status: controller.statusGeral,
+                          onDelete: controller.enable
+                              ? (value) async {
+                                  await controller.deleteStatus(
+                                      car: car.copyWith(
+                                          enable: true,
+                                          state: StatusCar.waiting),
+                                      status: value);
+                                }
+                              : null);
+                    }
+                  }
+                }),
               ),
               const SizedBox(
                 height: 10.0,
@@ -413,21 +418,32 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
             ],
           ),
           childRight: Column(
+            spacing: 10,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                    color: Constants.primary,
-                    borderRadius: BorderRadius.circular(5)),
-                child: Text(
-                  'ITENS OU ACESSÓRIOS',
-                  style: Constants.titleButton,
-                ),
+              const ContainerCustom(
+                label: 'OUTRAS ALTERAÇÕES',
               ),
+              (car.others?.isEmpty ?? true)
+                  ? Text(
+                      'Nenhuma outra alteração encontrada',
+                      style: Constants.titleHint,
+                    )
+                  : Column(
+                      children: List.generate(car.others!.length, (index) {
+                        final other = car.others![index];
+
+                        return CardOutherChange(
+                          other: other,
+                        );
+                      }).expand((widget) => [widget, const Divider()]).toList()
+                        ..removeLast(),
+                    ),
               const SizedBox(
-                height: 15,
+                height: 10.0,
+              ),
+              const ContainerCustom(
+                label: 'ITENS OU ACESSÓRIOS',
               ),
               (car.itens.isEmpty)
                   ? Text(
@@ -447,101 +463,88 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                   spacing: 10,
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    SizedBox(
-                      width: 80.0,
-                      child: TextButton(
-                          onPressed: () async {
-                            await Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => CarRegisterPage(
-                                      car: car,
-                                    )));
-                          },
-                          child: Text(
-                            "Editar",
-                            style: Constants.title.copyWith(
-                                color: Theme.of(context).primaryColor),
-                          )),
-                    ),
-                    SizedBox(
-                      width: 80.0,
-                      child: TextButton(
-                          onPressed: () {
-                            showDialog(
-                                context: context,
-                                builder: (context) => AlertMessage(
-                                      title: 'Atenção',
-                                      message:
-                                          'Deseja deletar o registro desse veículo ?',
-                                      cancel: true,
-                                      titleOK: 'Sim',
-                                      onPressedOK: () =>
-                                          Navigator.of(context).pop(true),
-                                      onPressedCancel: () =>
-                                          Navigator.of(context).pop(false),
-                                    )).then((value) {
-                              if (value ?? false) {
-                                controller
-                                    .delete(id: car.id ?? '')
-                                    .then((value) {
-                                  Navigator.of(context).pop();
-                                }).catchError((err) {
-                                  showDialog(
-                                      context: context,
-                                      builder: (context) => AlertMessage(
-                                            title: 'Atenção',
-                                            message: err.toString(),
-                                            onPressedOK: () =>
-                                                Navigator.of(context).pop(),
-                                          ));
-                                });
-                              }
-                            });
-                          },
-                          child: Text(
-                            "Excluir",
-                            style: Constants.title.copyWith(
-                                color: Theme.of(context).primaryColor),
-                          )),
-                    ),
-                    SizedBox(
-                      width: 80.0,
-                      child: TextButton(
-                          onPressed: () {
-                            showDialog(
-                                context: context,
-                                builder: (context) => AlertMessage(
-                                      title: '',
-                                      message:
-                                          'Deseja criar uma copia atual desse veiculo ?',
-                                      cancel: true,
-                                      titleOK: 'Sim',
-                                      onPressedOK: () =>
-                                          Navigator.of(context).pop(true),
-                                      onPressedCancel: () =>
-                                          Navigator.of(context).pop(false),
-                                    )).then((value) async {
-                              if (value ?? false) {
-                                controller.copy(car: car).then((value) {
-                                  Navigator.of(context).pop();
-                                }).catchError((err) {
-                                  showDialog(
-                                      context: context,
-                                      builder: (context) => AlertMessage(
-                                            title: 'Atenção',
-                                            message: err.toString(),
-                                            onPressedOK: () =>
-                                                Navigator.of(context).pop(),
-                                          ));
-                                });
-                              }
-                            });
-                          },
-                          child: Text(
-                            "Copiar",
-                            style: Constants.title.copyWith(
-                                color: Theme.of(context).primaryColor),
-                          )),
-                    ),
+                    const Spacer(),
+                    ElevatedButton(
+                        onPressed: () async {
+                          await Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => CarRegisterPage(
+                                    car: car,
+                                  )));
+                        },
+                        child: Text(
+                          "Editar",
+                          style: Constants.titleButton,
+                        )),
+                    ElevatedButton(
+                        onPressed: () {
+                          showDialog(
+                              context: context,
+                              builder: (context) => AlertMessage(
+                                    title: 'Atenção',
+                                    message:
+                                        'Deseja deletar o registro desse veículo ?',
+                                    cancel: true,
+                                    titleOK: 'Sim',
+                                    onPressedOK: () =>
+                                        Navigator.of(context).pop(true),
+                                    onPressedCancel: () =>
+                                        Navigator.of(context).pop(false),
+                                  )).then((value) {
+                            if (value ?? false) {
+                              controller.delete(car: car).then((value) {
+                                Navigator.of(context).pop();
+                              }).catchError((err) {
+                                showDialog(
+                                    context: context,
+                                    builder: (context) => AlertMessage(
+                                          title: 'Atenção',
+                                          message: err.toString(),
+                                          onPressedOK: () =>
+                                              Navigator.of(context).pop(),
+                                        ));
+                              });
+                            }
+                          });
+                        },
+                        child: Text(
+                          "Excluir",
+                          style: Constants.titleButton,
+                        )),
+                    ElevatedButton(
+                        onPressed: () {
+                          showDialog(
+                              context: context,
+                              builder: (context) => AlertMessage(
+                                    title: '',
+                                    message:
+                                        'Deseja criar uma copia atual desse veiculo ?',
+                                    cancel: true,
+                                    titleOK: 'Sim',
+                                    onPressedOK: () =>
+                                        Navigator.of(context).pop(true),
+                                    onPressedCancel: () =>
+                                        Navigator.of(context).pop(false),
+                                  )).then((value) async {
+                            if (value ?? false) {
+                              controller.copy(car: car).then((value) {
+                                Navigator.of(context).pop();
+                              }).catchError((err) {
+                                showDialog(
+                                    context: context,
+                                    builder: (context) => AlertMessage(
+                                          title: 'Atenção',
+                                          message: err.toString(),
+                                          onPressedOK: () =>
+                                              Navigator.of(context).pop(),
+                                        ));
+                              });
+                            }
+                          });
+                        },
+                        child: Text(
+                          "Copiar",
+                          style: Constants.titleButton,
+                        )),
                   ],
                 ),
               ),
@@ -578,73 +581,68 @@ Widget statusRegisters(
       final state = status[index];
       return Container(
         width: double.infinity,
-        margin: const EdgeInsets.only(bottom: 5.0),
-        child: Row(
+        margin: const EdgeInsets.symmetric(vertical: 5),
+        child: Column(
+          spacing: 2,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Visibility(
-                    visible: !state.value,
-                    child: Text(
-                      "Registros de problemas",
-                      style: Constants.subtitle.copyWith(color: Colors.red),
+            Row(
+              children: [
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: TagWidget(
+                      width: 120,
+                      label: state.state.label,
+                      color: state.state.color,
+                      icon: state.state.icon,
                     ),
                   ),
-                  Text(
-                    Core.formatDate(state.date, largeDayHour: true),
-                    style: Constants.titleHint,
-                  ),
-                  Text(
-                    state.description,
-                    style: Constants.title,
-                  ),
-                  Row(
-                    spacing: 10,
-                    children: [
-                      Text(
-                        "${state.user.graduation} ${state.user.name}",
-                        style: Constants.titleHint,
-                      ),
-                    ],
-                  ),
-                  Visibility(
-                    visible: state.local.isNotEmpty,
-                    child: Text(
-                      state.local,
-                      style: Constants.titleHint,
-                    ),
-                  )
-                ],
-              ),
+                ),
+                if ((index == 0 && !state.value && onDelete != null))
+                  IconButton(
+                      onPressed: () async {
+                        showDialog(
+                            context: context,
+                            builder: (context) => AlertMessage(
+                                  title: '',
+                                  message:
+                                      'Deseja deletar esse registro do estado de funcionamento ?',
+                                  cancel: true,
+                                  onPressedOK: () =>
+                                      Navigator.of(context).pop(true),
+                                  onPressedCancel: () =>
+                                      Navigator.of(context).pop(false),
+                                )).then((value) async {
+                          if (value ?? false) {
+                            onDelete?.call(state);
+                          }
+                        });
+                      },
+                      icon: const Icon(
+                        Icons.delete,
+                        size: 20,
+                        color: Colors.grey,
+                      )),
+              ],
             ),
-            Visibility(
-              visible: (index == 0 && !state.value && onDelete != null),
-              child: IconButton(
-                  onPressed: () async {
-                    showDialog(
-                        context: context,
-                        builder: (context) => AlertMessage(
-                              title: '',
-                              message:
-                                  'Deseja deletar esse registro do estado de funcionamento ?',
-                              cancel: true,
-                              onPressedOK: () =>
-                                  Navigator.of(context).pop(true),
-                              onPressedCancel: () =>
-                                  Navigator.of(context).pop(false),
-                            )).then((value) async {
-                      if (value ?? false) {
-                        onDelete?.call(state);
-                      }
-                    });
-                  },
-                  icon: const Icon(
-                    Icons.delete,
-                    size: 20,
-                    color: Colors.grey,
-                  )),
+            if (state.description.isNotEmpty)
+              Text(
+                state.description,
+                style: Constants.title,
+              ),
+            Text(
+              "${state.user.graduation} ${state.user.name}",
+              style: Constants.titleHint,
+            ),
+            if (state.local.isNotEmpty)
+              Text(
+                state.local,
+                style: Constants.titleHint,
+              ),
+            Text(
+              Core.formatDate(state.date, largeDayHour: true),
+              style: Constants.subtitleHint,
             ),
           ],
         ),

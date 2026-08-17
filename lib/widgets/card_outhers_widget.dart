@@ -6,9 +6,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class CardOutherChange extends StatelessWidget {
-  final OtherChangeModel outher;
+  final OtherChangeModel other;
   final Function()? onDelete;
-  const CardOutherChange({Key? key, required this.outher, this.onDelete})
+  const CardOutherChange({Key? key, required this.other, this.onDelete})
       : super(key: key);
 
   Widget image(
@@ -17,22 +17,22 @@ class CardOutherChange extends StatelessWidget {
       double width = 140}) {
     return ClipRRect(
       borderRadius: BorderRadiusGeometry.circular(5),
-      child: value.fileImage != null
+      child: value.image.data != null
           ? Image.memory(
-              value.fileImage!,
+              value.image.data!,
               height: heigth,
               width: width,
-              fit: BoxFit.contain,
+              fit: BoxFit.cover,
             )
           : kIsWeb
               ? Image.network(
-                  value.image?.url ?? '',
+                  value.image.url,
                   height: heigth,
                   width: width,
-                  fit: BoxFit.contain,
+                  fit: BoxFit.cover,
                 )
               : CachedNetworkImage(
-                  imageUrl: value.image?.url ?? '',
+                  imageUrl: value.image.url,
                   height: heigth,
                   width: width,
                   progressIndicatorBuilder: (context, url, downloadProgress) =>
@@ -46,7 +46,7 @@ class CardOutherChange extends StatelessWidget {
                     Icons.error,
                     size: 60.0,
                   )),
-                  fit: BoxFit.contain,
+                  fit: BoxFit.cover,
                 ),
     );
   }
@@ -62,38 +62,77 @@ class CardOutherChange extends StatelessWidget {
                   context: context,
                   builder: (context) => AlertDialog(
                         contentPadding: const EdgeInsets.all(5),
-                        content: Stack(
+                        content: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            image(value: outher, heigth: 300, width: 450),
-                            Positioned(
-                                top: 10,
-                                right: 10,
-                                child: IconButton(
-                                    style: IconButton.styleFrom(
-                                        backgroundColor: Colors.black45),
-                                    onPressed: () =>
-                                        Navigator.of(context).pop(),
-                                    icon: const Icon(
-                                      Icons.close,
-                                      size: 20,
-                                      color: Colors.white,
-                                    )))
+                            Stack(
+                              children: [
+                                image(value: other, heigth: 400, width: 400),
+                                Positioned(
+                                    top: 5,
+                                    right: 5,
+                                    child: IconButton(
+                                        style: IconButton.styleFrom(
+                                            backgroundColor: Colors.black45),
+                                        onPressed: () =>
+                                            Navigator.of(context).pop(),
+                                        icon: const Icon(
+                                          Icons.close,
+                                          size: 20,
+                                          color: Colors.white,
+                                        )))
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Padding(
+                              padding: const EdgeInsetsGeometry.all(5),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    other.description,
+                                    style: Constants.title,
+                                  ),
+                                  Text(
+                                    Core.formatDate(other.date,
+                                        largeDayHour: true),
+                                    style: Constants.titleHint,
+                                  ),
+                                ],
+                              ),
+                            )
                           ],
                         ),
                       ));
             },
-            child:
-                Tooltip(message: 'Abrir imagem', child: image(value: outher))),
+            child: Tooltip(
+                message: 'Abrir imagem',
+                child: Stack(
+                  children: [
+                    image(value: other),
+                    const Positioned(
+                        bottom: 5,
+                        left: 10,
+                        child: Icon(
+                          Icons.image_search_rounded,
+                          size: 30,
+                          color: Colors.black45,
+                        ))
+                  ],
+                ))),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                outher.description,
+                other.description,
                 style: Constants.title,
               ),
               Text(
-                Core.formatDate(outher.date, largeDayHour: true),
+                Core.formatDate(other.date, largeDayHour: true),
                 style: Constants.subtitleHint,
               )
             ],

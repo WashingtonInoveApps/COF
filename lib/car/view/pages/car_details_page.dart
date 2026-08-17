@@ -3,6 +3,7 @@ import 'package:bsu_control/core/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
+import '../../../widgets/container_custom_widget.dart';
 import '../../../widgets/textfield_widget.dart';
 
 class CarRegisterDetailsPage extends StatefulWidget {
@@ -44,19 +45,11 @@ class _CarRegisterDetailsPageState extends State<CarRegisterDetailsPage> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-                color: Constants.primary,
-                borderRadius: BorderRadius.circular(5)),
-            child: Text(
-              "INFORMAÇÕES DO VEÍCULO",
-              style: Constants.titleButton,
-            ),
+          const ContainerCustom(
+            label: "INFORMAÇÕES DO VEÍCULO",
           ),
           Text(
-            "MODELO",
+            "Modelo",
             style: Constants.titleHint,
           ),
           FieldText(
@@ -66,7 +59,7 @@ class _CarRegisterDetailsPageState extends State<CarRegisterDetailsPage> {
             textCase: FieldTextCase.upper,
           ),
           Text(
-            "PLACA",
+            "Placa",
             style: Constants.titleHint,
           ),
           FieldText(
@@ -76,7 +69,7 @@ class _CarRegisterDetailsPageState extends State<CarRegisterDetailsPage> {
             textCase: FieldTextCase.upper,
           ),
           Text(
-            "KM INICIAL",
+            "KM Inicial",
             style: Constants.titleHint,
           ),
           FieldText(
@@ -86,7 +79,7 @@ class _CarRegisterDetailsPageState extends State<CarRegisterDetailsPage> {
             onChange: register.setKM,
           ),
           Text(
-            "MODELO DO PNEU",
+            "Modelo de Pneu",
             style: Constants.titleHint,
           ),
           FieldText(
@@ -98,7 +91,7 @@ class _CarRegisterDetailsPageState extends State<CarRegisterDetailsPage> {
             mask: [maskReference],
           ),
           Text(
-            "NÚMERO DO CARTÃO",
+            "Número do Cartão",
             style: Constants.titleHint,
           ),
           FieldText(

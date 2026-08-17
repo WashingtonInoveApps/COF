@@ -77,11 +77,15 @@ class _DescriptionStateWidgetState extends State<DescriptionStateWidget> {
               const SizedBox(
                 height: 10.0,
               ),
-              FieldText(
-                controller: _controllerDesc,
-                label: 'Descrição',
-                hint: "Ex: Vazamento de aguá pelo radiador",
-                validation: Validation.validatorPreenchimento,
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxHeight: 100),
+                child: FieldText(
+                  controller: _controllerDesc,
+                  label: 'Descrição',
+                  hint: "Ex: Vazamento de aguá pelo radiador",
+                  validation: Validation.validatorPreenchimento,
+                  maxLines: null,
+                ),
               ),
               // FieldText(
               //   controller: _controllerLocal,

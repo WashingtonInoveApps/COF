@@ -123,37 +123,20 @@ mixin _$CarController on _CarControllerBase, Store {
     });
   }
 
-  late final _$referenceYearProblemAtom =
-      Atom(name: '_CarControllerBase.referenceYearProblem', context: context);
+  late final _$referenceDateDashboardAtom =
+      Atom(name: '_CarControllerBase.referenceDateDashboard', context: context);
 
   @override
-  DateTime get referenceYearProblem {
-    _$referenceYearProblemAtom.reportRead();
-    return super.referenceYearProblem;
+  DateTime get referenceDateDashboard {
+    _$referenceDateDashboardAtom.reportRead();
+    return super.referenceDateDashboard;
   }
 
   @override
-  set referenceYearProblem(DateTime value) {
-    _$referenceYearProblemAtom.reportWrite(value, super.referenceYearProblem,
-        () {
-      super.referenceYearProblem = value;
-    });
-  }
-
-  late final _$referenceYearTendenciesAtom = Atom(
-      name: '_CarControllerBase.referenceYearTendencies', context: context);
-
-  @override
-  DateTime get referenceYearTendencies {
-    _$referenceYearTendenciesAtom.reportRead();
-    return super.referenceYearTendencies;
-  }
-
-  @override
-  set referenceYearTendencies(DateTime value) {
-    _$referenceYearTendenciesAtom
-        .reportWrite(value, super.referenceYearTendencies, () {
-      super.referenceYearTendencies = value;
+  set referenceDateDashboard(DateTime value) {
+    _$referenceDateDashboardAtom
+        .reportWrite(value, super.referenceDateDashboard, () {
+      super.referenceDateDashboard = value;
     });
   }
 
@@ -170,6 +153,22 @@ mixin _$CarController on _CarControllerBase, Store {
   set cars(ObservableList<CarModel> value) {
     _$carsAtom.reportWrite(value, super.cars, () {
       super.cars = value;
+    });
+  }
+
+  late final _$checklistKMByMonthAtom =
+      Atom(name: '_CarControllerBase.checklistKMByMonth', context: context);
+
+  @override
+  ObservableList<ChecklistModel> get checklistKMByMonth {
+    _$checklistKMByMonthAtom.reportRead();
+    return super.checklistKMByMonth;
+  }
+
+  @override
+  set checklistKMByMonth(ObservableList<ChecklistModel> value) {
+    _$checklistKMByMonthAtom.reportWrite(value, super.checklistKMByMonth, () {
+      super.checklistKMByMonth = value;
     });
   }
 
@@ -234,16 +233,20 @@ mixin _$CarController on _CarControllerBase, Store {
       AsyncAction('_CarControllerBase.save', context: context);
 
   @override
-  Future<bool> save({required CarModel car, required List<dynamic> images}) {
-    return _$saveAsyncAction.run(() => super.save(car: car, images: images));
+  Future<bool> save(
+      {required CarModel car,
+      required List<FileModel?> images,
+      required List<OtherChangeModel> others}) {
+    return _$saveAsyncAction
+        .run(() => super.save(car: car, images: images, others: others));
   }
 
   late final _$deleteAsyncAction =
       AsyncAction('_CarControllerBase.delete', context: context);
 
   @override
-  Future<bool> delete({required String id}) {
-    return _$deleteAsyncAction.run(() => super.delete(id: id));
+  Future<bool> delete({required CarModel car}) {
+    return _$deleteAsyncAction.run(() => super.delete(car: car));
   }
 
   late final _$copyAsyncAction =
@@ -276,7 +279,8 @@ mixin _$CarController on _CarControllerBase, Store {
       AsyncAction('_CarControllerBase.saveStatus', context: context);
 
   @override
-  Future<bool> saveStatus({required CarModel car, CarStatusModel? status}) {
+  Future<bool> saveStatus(
+      {required CarModel car, required CarStatusModel status}) {
     return _$saveStatusAsyncAction
         .run(() => super.saveStatus(car: car, status: status));
   }
@@ -311,11 +315,33 @@ mixin _$CarController on _CarControllerBase, Store {
       ActionController(name: '_CarControllerBase', context: context);
 
   @override
+  void setLoading(bool value) {
+    final _$actionInfo = _$_CarControllerBaseActionController.startAction(
+        name: '_CarControllerBase.setLoading');
+    try {
+      return super.setLoading(value);
+    } finally {
+      _$_CarControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void processStep(bool value) {
     final _$actionInfo = _$_CarControllerBaseActionController.startAction(
         name: '_CarControllerBase.processStep');
     try {
       return super.processStep(value);
+    } finally {
+      _$_CarControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setChecklistKMByMonth(List<ChecklistModel> value) {
+    final _$actionInfo = _$_CarControllerBaseActionController.startAction(
+        name: '_CarControllerBase.setChecklistKMByMonth');
+    try {
+      return super.setChecklistKMByMonth(value);
     } finally {
       _$_CarControllerBaseActionController.endAction(_$actionInfo);
     }
@@ -355,22 +381,11 @@ mixin _$CarController on _CarControllerBase, Store {
   }
 
   @override
-  dynamic setReferenceYearProblem(DateTime? value) {
+  dynamic setReferenceDateDashboard(DateTime? value) {
     final _$actionInfo = _$_CarControllerBaseActionController.startAction(
-        name: '_CarControllerBase.setReferenceYearProblem');
+        name: '_CarControllerBase.setReferenceDateDashboard');
     try {
-      return super.setReferenceYearProblem(value);
-    } finally {
-      _$_CarControllerBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  dynamic setReferenceYearTendencies(DateTime? value) {
-    final _$actionInfo = _$_CarControllerBaseActionController.startAction(
-        name: '_CarControllerBase.setReferenceYearTendencies');
-    try {
-      return super.setReferenceYearTendencies(value);
+      return super.setReferenceDateDashboard(value);
     } finally {
       _$_CarControllerBaseActionController.endAction(_$actionInfo);
     }
@@ -406,9 +421,9 @@ step: ${step},
 dateKmByMonth: ${dateKmByMonth},
 fieldCarTypeVisible: ${fieldCarTypeVisible},
 filter: ${filter},
-referenceYearProblem: ${referenceYearProblem},
-referenceYearTendencies: ${referenceYearTendencies},
+referenceDateDashboard: ${referenceDateDashboard},
 cars: ${cars},
+checklistKMByMonth: ${checklistKMByMonth},
 limit: ${limit},
 page: ${page},
 statusGeral: ${statusGeral},

@@ -30,37 +30,37 @@ class CheckListRepository extends APIClient implements ICheckListRepository {
         final carData = await docCar.get();
         final car = CarModel.fromMap(carData.data() as Map<String, dynamic>);
 
-        for (var change in changes) {
-          if (change.fileImage != null) {
-            change.image = await saveFile(
-                pathStorage: 'imagens/changes/${checklist.prefix}',
-                data: change.fileImage!,
-                filename:
-                    '${checklist.prefix}_${DateTime.now().millisecondsSinceEpoch}.png');
+        // for (var change in changes) {
+        //   if (change.fileImage != null) {
+        //     change.image = await saveFile(
+        //         pathStorage: 'imagens/changes/${checklist.prefix}',
+        //         data: change.fileImage!,
+        //         filename:
+        //             '${checklist.prefix}_${DateTime.now().millisecondsSinceEpoch}.png');
 
-            if (change.image == null) {
-              return Exception(
-                  'Falha ao salvar imagem da alteração do veículo.');
-            }
+        //     if (change.image == null) {
+        //       return Exception(
+        //           'Falha ao salvar imagem da alteração do veículo.');
+        //     }
 
-            change.checklistID = checklist.id;
-          }
-        }
+        //     change.checklistID = checklist.id;
+        //   }
+        // }
 
-        for (var outher in others) {
-          if (outher.fileImage != null) {
-            outher.image = await saveFile(
-                pathStorage: 'imagens/changes/${checklist.prefix}',
-                data: outher.fileImage!,
-                filename:
-                    '${checklist.prefix}_outher_${DateTime.now().millisecondsSinceEpoch}.png');
+        // for (var outher in others) {
+        //   if (outher.fileImage != null) {
+        //     outher.image = await saveFile(
+        //         pathStorage: 'imagens/changes/${checklist.prefix}',
+        //         data: outher.fileImage!,
+        //         filename:
+        //             '${checklist.prefix}_outher_${DateTime.now().millisecondsSinceEpoch}.png');
 
-            if (outher.image == null) {
-              return Exception(
-                  'Falha ao salvar imagem de outras alterações do veículo.');
-            }
-          }
-        }
+        //     if (outher.image == null) {
+        //       return Exception(
+        //           'Falha ao salvar imagem de outras alterações do veículo.');
+        //     }
+        //   }
+        // }
 
         // trans.set(
         //     doc,
@@ -79,7 +79,7 @@ class CheckListRepository extends APIClient implements ICheckListRepository {
                 .copyWith(
                     changes: changes,
                     km: checklist.startKM,
-                    state: StatusCar.operando)
+                    state: StatusCar.operating)
                 .toMap());
       });
 

@@ -54,9 +54,9 @@ class ImagesChangesViewWidget extends StatelessWidget {
                     children: [
                       ClipRRect(
                         borderRadius: BorderRadiusGeometry.circular(5),
-                        child: change.fileImage != null
+                        child: change.image?.data != null
                             ? Image.memory(
-                                change.fileImage!,
+                                change.image!.data!,
                                 height: height,
                                 width: width,
                                 fit: BoxFit.fill,

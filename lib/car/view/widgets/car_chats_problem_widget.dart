@@ -5,14 +5,12 @@ import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/enum/car_enum.dart';
 import 'package:bsu_control/model/car_status_model.dart';
 import 'package:flutter/material.dart';
-import 'package:month_picker_dialog/month_picker_dialog.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../../../model/car_model.dart';
 
 class CarChartProblems extends StatelessWidget {
   final DateTime reference;
-  final Function(DateTime)? onChangeDate;
   final List<CarStatusModel> status;
   final List<CarModel> cars;
 
@@ -20,7 +18,6 @@ class CarChartProblems extends StatelessWidget {
     Key? key,
     required this.status,
     required this.reference,
-    this.onChangeDate,
     required this.cars,
   }) : super(key: key);
 
@@ -242,7 +239,7 @@ class CarChartProblems extends StatelessWidget {
     /// Somente baixas do ano selecionado.
     final list = status
         .where(
-          (e) => e.state == StatusCar.baixado && e.date.year == reference.year,
+          (e) => e.state == StatusCar.broken && e.date.year == reference.year,
         )
         .toList();
 
@@ -382,43 +379,9 @@ class CarChartProblems extends StatelessWidget {
         Positioned(
           right: 0,
           left: 0,
-          child: Row(
-            children: [
-              Expanded(
-                child: Text(
-                  'BAIXAS POR TIPO DE DEFEITO ( ${reference.year} )',
-                  style: Constants.subtitleHint,
-                ),
-              ),
-              IconButton(
-                onPressed: () async {
-                  await showYearPicker(
-                    context: context,
-                    initialDate: reference,
-                    firstDate: DateTime(2026),
-                    lastDate: DateTime(
-                      DateTime.now().year + 1,
-                    ),
-                  ).then((value) {
-                    if (value != null) {
-                      onChangeDate?.call(
-                        DateTime(
-                          value,
-                          1,
-                          1,
-                        ),
-                      );
-                    }
-                  });
-                },
-                tooltip: 'Alterar ano',
-                icon: const Icon(
-                  Icons.calendar_month,
-                  size: 20,
-                  color: Colors.grey,
-                ),
-              ),
-            ],
+          child: Text(
+            'BAIXAS POR TIPO DE DEFEITO ( ${reference.year} )',
+            style: Constants.subtitleHint,
           ),
         ),
 

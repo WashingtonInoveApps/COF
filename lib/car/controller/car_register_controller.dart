@@ -11,7 +11,9 @@ import 'package:bsu_control/model/user_model.dart';
 import 'package:mobx/mobx.dart';
 
 import '../../core/constants.dart';
+import '../../core/validation.dart';
 import '../../model/obm_model.dart';
+import '../../model/outher_changes_model.dart';
 
 part 'car_register_controller.g.dart';
 
@@ -32,11 +34,11 @@ abstract class _CarRegisterControllerBase with Store {
   }) {
     inicialization();
 
-    setOBM(obms.firstWhere((e) => e.id == user.obmID));
+    if (init == null) setOBM(obms.firstWhere((e) => e.id == user.obmID));
   }
 
   @observable
-  ObservableList<dynamic> images = [].asObservable();
+  ObservableList<FileModel?> images = <FileModel?>[].asObservable();
 
   @observable
   OBMModel? obm;
@@ -45,13 +47,13 @@ abstract class _CarRegisterControllerBase with Store {
   CiaModel? cia;
 
   @observable
-  String? function;
+  FunctionCar? function;
 
   @observable
   String? type;
 
   @observable
-  bool outherTypeField = false;
+  bool otherTypeField = false;
 
   @observable
   String prefix = '';
@@ -72,7 +74,7 @@ abstract class _CarRegisterControllerBase with Store {
   String ticket = '';
 
   @observable
-  String? outherType;
+  String? otherType;
 
   @observable
   StatusCar state = StatusCar.waiting;
@@ -81,16 +83,11 @@ abstract class _CarRegisterControllerBase with Store {
   ObservableList<SectionItensModel> sectionsItens =
       <SectionItensModel>[].asObservable();
 
-  // @observable
-  // ObservableList<SectionItensModel> sectionsMaterials =
-  //     <SectionItensModel>[].asObservable();
-
-  // @observable
-  // ObservableList<SectionItensModel> sectionsMaterialsConsumable =
-  //     <SectionItensModel>[].asObservable();
-
   @observable
   ObservableList<CarChangeModel> changes = <CarChangeModel>[].asObservable();
+
+  @observable
+  ObservableList<OtherChangeModel> others = <OtherChangeModel>[].asObservable();
 
   @observable
   ObservableList<CarStatusModel> status = <CarStatusModel>[].asObservable();
@@ -102,9 +99,9 @@ abstract class _CarRegisterControllerBase with Store {
   CarModel get car {
     return CarModel(
       id: init?.id,
-      type: outherType ?? (type ?? ''),
+      type: otherType ?? (type ?? ''),
       state: state,
-      function: function ?? '',
+      function: function ?? FunctionCar.operational,
       model: model,
       plate: plate,
       cia: cia,
@@ -130,7 +127,6 @@ abstract class _CarRegisterControllerBase with Store {
       sectionsItens.clear();
 
       obm = obms.firstWhere((e) => e.id == init?.obmID);
-
       cia = obm?.cias
           .cast<CiaModel?>()
           .firstWhere((e) => e?.id == init?.ciaID, orElse: () => null);
@@ -153,10 +149,24 @@ abstract class _CarRegisterControllerBase with Store {
         ..clear()
         ..addAll(init?.images ?? []);
 
+      others
+        ..clear()
+        ..addAll(init?.others ?? []);
+
       changes.addAll(init?.changes ?? []);
     }
 
     return;
+  }
+
+  @action
+  addOtherChange(OtherChangeModel value) {
+    others.add(value);
+  }
+
+  @action
+  deleteOtherChange(int index) {
+    others.removeAt(index);
   }
 
   @action
@@ -169,27 +179,27 @@ abstract class _CarRegisterControllerBase with Store {
   void setCia(CiaModel? value) => cia = value;
 
   @action
-  void setFunction(String? value) => function = value ?? function;
+  void setFunction(FunctionCar? value) => function = value ?? function;
 
   @action
   void setType(String? value) {
     type = value;
 
     if (type == "Outros") {
-      outherTypeField = true;
+      otherTypeField = true;
     } else {
-      outherTypeField = false;
+      otherTypeField = false;
     }
   }
 
-  void setImagens(List<dynamic> value) {
+  void setImagens(List<FileModel?> value) {
     images
       ..clear()
       ..addAll(value);
   }
 
   @action
-  void setOutherType(String? value) => outherType = value;
+  void setOtherType(String? value) => otherType = value;
 
   @action
   void setPrefix(String? value) => prefix = value ?? '';
@@ -336,38 +346,48 @@ abstract class _CarRegisterControllerBase with Store {
 
         return messagesErros;
       case 1:
-        if (model.isEmpty) {
+        if (Validation.validatorPreenchimento(model) != null) {
           messagesErros.add('Insira o modelo do veículo.');
         }
-        if (plate.isEmpty) {
+        if (Validation.validatorPreenchimento(plate) != null) {
           messagesErros.add('Insira a placa do veículo.');
         }
-        if (km.isEmpty) {
+        if (Validation.validatorNumber(km) != null) {
           messagesErros.add('Insira o KM inicial do veículo.');
         }
-        if (modelPneu.isEmpty) {
-          messagesErros.add('Insira a referência do pneu do veículo.');
-        }
-        if (ticket.isEmpty) {
-          messagesErros.add('Insira o número do cartão de abastecimento.');
-        }
+        // if (modelPneu.isEmpty) {
+        //   messagesErros.add('Insira a referência do pneu do veículo.');
+        // }
+        // if (ticket.isEmpty) {
+        //   messagesErros.add('Insira o número do cartão de abastecimento.');
+        // }
 
         return messagesErros;
       case 2:
-        if (function?.isEmpty ?? true) {
+        if (function == null) {
           messagesErros.add('Selecione a função do veículo.');
         }
 
-        if (type?.isEmpty ?? true) {
+        if (Validation.validatorPreenchimento(type) != null) {
           messagesErros.add('Selecione o tipo do veículo.');
         }
 
-        if (images.isEmpty) {
+        if (Validation.validatorListImage(images) != null) {
           messagesErros.add('Adicione as images do veículo.');
         }
 
-        if (outherTypeField && (outherType == null)) {
+        if (otherTypeField &&
+            (Validation.validatorPreenchimento(otherType) != null)) {
           messagesErros.add('Insira o novo tipo do veículo.');
+        }
+
+        if (sectionsItens.isNotEmpty) {
+          for (final section in sectionsItens) {
+            if (section.itens.isEmpty) {
+              messagesErros.add(
+                  'Adicione itens à seção de itens ${section.description}, antes de continuar ou exclua a seção.');
+            }
+          }
         }
 
         return messagesErros;

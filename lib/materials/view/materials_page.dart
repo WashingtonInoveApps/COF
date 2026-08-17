@@ -201,7 +201,7 @@ class _MaterialsPageState extends State<MaterialsPage> {
                               ),
                               AppColumn(
                                 name: 'responsable',
-                                label: 'Responsavél',
+                                label: 'Responsável',
                                 builder: (material) {
                                   return Core.boldFirstName(
                                       name: material.user.name,

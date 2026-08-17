@@ -39,13 +39,13 @@ class CarsChart extends StatelessWidget {
       }
 
       switch (car.state) {
-        case StatusCar.operando:
+        case StatusCar.operating:
           operatingCars.add(car);
           break;
 
-        case StatusCar.reserva:
-          reserveCars.add(car);
-          break;
+        // case StatusCar.reserva:
+        //   reserveCars.add(car);
+        //   break;
 
         case StatusCar.waiting:
           waitingCars.add(car);
@@ -72,13 +72,13 @@ class CarsChart extends StatelessWidget {
 
       for (final car in typeCars) {
         switch (car.state) {
-          case StatusCar.operando:
+          case StatusCar.operating:
             operating++;
             break;
 
-          case StatusCar.reserva:
-            reserve++;
-            break;
+          // case StatusCar.reserva:
+          //   reserve++;
+          //   break;
 
           case StatusCar.waiting:
             break;
@@ -669,8 +669,8 @@ class _FleetSummaryDialog extends StatelessWidget {
   }
 
   Widget _carItem(CarModel car) {
-    final color = _stateColor(car.state);
-    final label = _stateLabel(car.state);
+    // final color = _stateColor(car.state);
+    // final label = _stateLabel(car.state);
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 6),
@@ -690,7 +690,7 @@ class _FleetSummaryDialog extends StatelessWidget {
             Icon(
               MdiIcons.car,
               size: 20,
-              color: color,
+              color: car.state.color,
             ),
             const SizedBox(width: 10),
             Expanded(
@@ -703,11 +703,11 @@ class _FleetSummaryDialog extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  if (car.model.isNotEmpty || car.function.isNotEmpty)
+                  if (car.model.isNotEmpty)
                     Text(
                       [
                         if (car.model.isNotEmpty) car.model,
-                        if (car.function.isNotEmpty) car.function,
+                        car.function.label,
                       ].join(' • '),
                       overflow: TextOverflow.ellipsis,
                       style: Constants.subtitleHint,
@@ -719,9 +719,9 @@ class _FleetSummaryDialog extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  label,
+                  car.state.label,
                   style: Constants.subtitle.copyWith(
-                    color: color,
+                    color: car.state.color,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -736,38 +736,6 @@ class _FleetSummaryDialog extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  Color _stateColor(StatusCar state) {
-    switch (state) {
-      case StatusCar.operando:
-        return Colors.green.shade700;
-
-      case StatusCar.reserva:
-        return Colors.orange.shade700;
-
-      case StatusCar.waiting:
-        return Colors.grey.shade600;
-
-      default:
-        return Colors.red.shade700;
-    }
-  }
-
-  String _stateLabel(StatusCar state) {
-    switch (state) {
-      case StatusCar.operando:
-        return 'Operando';
-
-      case StatusCar.reserva:
-        return 'Reserva';
-
-      case StatusCar.waiting:
-        return 'Aguardando';
-
-      default:
-        return 'Baixada';
-    }
   }
 }
 

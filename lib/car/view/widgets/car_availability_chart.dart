@@ -4,19 +4,16 @@ import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/enum/car_enum.dart';
 import 'package:bsu_control/model/car_status_model.dart';
 import 'package:flutter/material.dart';
-import 'package:month_picker_dialog/month_picker_dialog.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class CarChartAvailability extends StatelessWidget {
   final DateTime reference;
-  final Function(DateTime)? onChangeDate;
   final List<CarStatusModel> status;
 
   const CarChartAvailability({
     Key? key,
     required this.status,
     required this.reference,
-    this.onChangeDate,
   }) : super(key: key);
 
   List<AvailabilityChartData> processAvailabilityData({
@@ -91,12 +88,11 @@ class CarChartAvailability extends StatelessWidget {
         }
 
         switch (lastStatus.state) {
-          case StatusCar.operando:
-          case StatusCar.reserva:
+          case StatusCar.operating:
             available++;
             break;
 
-          case StatusCar.baixado:
+          case StatusCar.broken:
             unavailable++;
             break;
 
@@ -197,34 +193,6 @@ class CarChartAvailability extends StatelessWidget {
               child: Text(
                 'DISPONIBILIDADE DA FROTA ( ${reference.year} )',
                 style: Constants.subtitleHint,
-              ),
-            ),
-            IconButton(
-              onPressed: () async {
-                await showYearPicker(
-                  context: context,
-                  initialDate: reference,
-                  firstDate: DateTime(2026),
-                  lastDate: DateTime(
-                    DateTime.now().year + 1,
-                  ),
-                ).then((value) {
-                  if (value != null) {
-                    onChangeDate?.call(
-                      DateTime(
-                        value,
-                        1,
-                        1,
-                      ),
-                    );
-                  }
-                });
-              },
-              tooltip: 'Alterar ano',
-              icon: const Icon(
-                Icons.calendar_month,
-                size: 20,
-                color: Colors.grey,
               ),
             ),
             if (status.isNotEmpty)

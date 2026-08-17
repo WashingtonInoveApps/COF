@@ -21,13 +21,13 @@ class CarChartTendencies extends StatelessWidget {
   List<TendenciesChartData> processTendenciesData(
       {required List<CarStatusModel> status, required int referenceYear}) {
     final lows = status
-        .where((e) => e.state == StatusCar.baixado)
+        .where((e) => e.state == StatusCar.broken)
         .map((e) => e.date)
         .toList();
 
     final operatings = status
         .where((e) =>
-            (e.state != StatusCar.baixado) && (e.state != StatusCar.waiting))
+            (e.state != StatusCar.broken) && (e.state != StatusCar.waiting))
         .map((e) => e.date)
         .toList();
 

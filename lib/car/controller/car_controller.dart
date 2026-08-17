@@ -3,12 +3,14 @@ import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/enum/car_enum.dart';
 import 'package:bsu_control/model/checklist_model.dart';
 import 'package:bsu_control/model/config_model.dart';
+import 'package:bsu_control/model/outher_changes_model.dart';
 import 'package:bsu_control/model/user_model.dart';
 import 'package:mobx/mobx.dart';
 
 import '../../model/car_mapa_model.dart';
 import '../../model/car_model.dart';
 import '../../model/car_status_model.dart';
+import '../../model/file_model.dart';
 import '../repository/car_repository.dart';
 
 part 'car_controller.g.dart';
@@ -43,13 +45,14 @@ abstract class _CarControllerBase with Store {
   String filter = '';
 
   @observable
-  DateTime referenceYearProblem = DateTime.now();
-
-  @observable
-  DateTime referenceYearTendencies = DateTime.now();
+  DateTime referenceDateDashboard = DateTime.now();
 
   @observable
   ObservableList<CarModel> cars = <CarModel>[].asObservable();
+
+  @observable
+  ObservableList<ChecklistModel> checklistKMByMonth =
+      <ChecklistModel>[].asObservable();
 
   @observable
   int limit = 10;
@@ -99,8 +102,8 @@ abstract class _CarControllerBase with Store {
   @computed
   bool get btFinish => step == 2;
 
-  Stream<List<CarStatusModel>> listenStatus({required String carId}) {
-    return repository.listenStatusCar(carId: carId);
+  Future<List<CarStatusModel>> getStatusCar({required String carID}) async {
+    return repository.getStatusCar(carID: carID);
   }
 
   Stream<List<CarStatusModel>> listenStatusGeral({required DateTime date}) {
@@ -117,6 +120,9 @@ abstract class _CarControllerBase with Store {
   }
 
   @action
+  void setLoading(bool value) => loading = value;
+
+  @action
   void processStep(bool value) {
     if (value) {
       step++;
@@ -126,8 +132,15 @@ abstract class _CarControllerBase with Store {
   }
 
   @action
+  void setChecklistKMByMonth(List<ChecklistModel> value) {
+    checklistKMByMonth
+      ..clear()
+      ..addAll(value);
+  }
+
+  @action
   setStatusGeral(List<CarStatusModel> list) {
-    list.sort((a, b) => a.date.compareTo(b.date));
+    list.sort((a, b) => b.date.compareTo(a.date));
 
     statusGeral
       ..clear()
@@ -148,16 +161,9 @@ abstract class _CarControllerBase with Store {
   }
 
   @action
-  setReferenceYearProblem(DateTime? value) {
+  setReferenceDateDashboard(DateTime? value) {
     if (value != null) {
-      referenceYearProblem = value;
-    }
-  }
-
-  @action
-  setReferenceYearTendencies(DateTime? value) {
-    if (value != null) {
-      referenceYearTendencies = value;
+      referenceDateDashboard = value;
     }
   }
 
@@ -182,7 +188,8 @@ abstract class _CarControllerBase with Store {
   @action
   Future<bool> save({
     required CarModel car,
-    required List<dynamic> images,
+    required List<FileModel?> images,
+    required List<OtherChangeModel> others,
   }) async {
     try {
       loading = true;
@@ -193,7 +200,11 @@ abstract class _CarControllerBase with Store {
         }
       }
 
-      final result = await repository.save(car: car, images: images);
+      final result = await repository.save(
+        car: car,
+        images: images,
+        others: others,
+      );
       loading = false;
 
       return result;
@@ -204,12 +215,12 @@ abstract class _CarControllerBase with Store {
   }
 
   @action
-  Future<bool> delete({required String id}) async {
+  Future<bool> delete({required CarModel car}) async {
     try {
       loading = true;
-      final result = await repository.deleteCar(id: id);
-
+      final result = await repository.delete(car: car);
       loading = false;
+
       return result;
     } catch (e) {
       loading = false;
@@ -268,7 +279,7 @@ abstract class _CarControllerBase with Store {
   @action
   Future<bool> saveStatus({
     required CarModel car,
-    CarStatusModel? status,
+    required CarStatusModel status,
   }) async {
     loading = true;
     final result = await repository.saveStatusCar(car: car, status: status);

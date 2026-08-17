@@ -27,8 +27,8 @@ class _ImageViewChangeWidgetState extends State<ImageViewChangeWidget> {
   Uint8List? image;
   final controller = TextEditingController();
 
-  double heightImage = 300;
-  double widthImage = 400;
+  // double heightImage = 400;
+  double widthImage = 500;
 
   @override
   Widget build(BuildContext context) {
@@ -44,23 +44,23 @@ class _ImageViewChangeWidgetState extends State<ImageViewChangeWidget> {
           children: [
             Stack(
               children: [
-                widget.change.fileImage != null
+                widget.change.image?.data != null
                     ? Image.memory(
-                        widget.change.fileImage!,
-                        height: heightImage,
+                        widget.change.image!.data!,
+                        // height: heightImage,
                         width: widthImage,
                         fit: BoxFit.cover,
                       )
                     : kIsWeb
                         ? Image.network(
                             widget.change.image?.url ?? '',
-                            height: heightImage,
+                            // height: heightImage,
                             width: widthImage,
                             fit: BoxFit.cover,
                           )
                         : CachedNetworkImage(
                             imageUrl: widget.change.image?.url ?? '',
-                            height: heightImage,
+                            // height: heightImage,
                             width: widthImage,
                             progressIndicatorBuilder:
                                 (context, url, downloadProgress) => Center(
@@ -73,7 +73,7 @@ class _ImageViewChangeWidgetState extends State<ImageViewChangeWidget> {
                               Icons.error,
                               size: 60.0,
                             )),
-                            fit: BoxFit.contain,
+                            fit: BoxFit.cover,
                           ),
                 Positioned(
                     top: 10.0,

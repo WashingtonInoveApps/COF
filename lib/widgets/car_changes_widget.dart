@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/model/car_changes_model.dart';
@@ -6,7 +8,9 @@ import 'package:bsu_control/model/user_model.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../model/file_model.dart';
 import 'alert_message.dart';
@@ -17,6 +21,7 @@ import 'images_changes_view_widget.dart';
 class CarChangesWidget extends StatefulWidget {
   final int region;
   final CarModel car;
+  final List<CarChangeModel>? changes;
   final bool add;
   final bool remove;
   final UserModel user;
@@ -25,7 +30,7 @@ class CarChangesWidget extends StatefulWidget {
   final String? checklistID;
 
   final Function(List<CarChangeModel> change)? onChange;
-  final Function(List<dynamic> images)? onChangeImages;
+  final Function(List<FileModel?> images)? onChangeImages;
 
   const CarChangesWidget(
       {Key? key,
@@ -38,7 +43,8 @@ class CarChangesWidget extends StatefulWidget {
       this.onChange,
       required this.user,
       this.update = false,
-      this.onChangeImages})
+      this.onChangeImages,
+      this.changes})
       : super(key: key);
 
   @override
@@ -53,7 +59,7 @@ class _CarChangesWidgetState extends State<CarChangesWidget> {
   double widthImage = 600;
 
   List<CarChangeModel> changes = [];
-  List<dynamic> images = List.filled(4, null, growable: true);
+  List<FileModel?> images = List.filled(4, null, growable: true);
 
   @override
   void initState() {
@@ -68,10 +74,10 @@ class _CarChangesWidgetState extends State<CarChangesWidget> {
     widget.onChangeImages?.call(images);
   }
 
-  hasImageChange(dynamic image) {
-    if (image != null) {
-      if (image is FileModel) return image.url.isNotEmpty;
-      if (image is Uint8List) return true;
+  bool hasImageChange(FileModel? image) {
+    if ((image?.data?.isNotEmpty ?? false) ||
+        (image?.url.isNotEmpty ?? false)) {
+      return true;
     }
 
     return false;
@@ -81,11 +87,9 @@ class _CarChangesWidgetState extends State<CarChangesWidget> {
   Widget build(BuildContext context) {
     changes
       ..clear()
-      ..addAll(widget.car.changes.where((e) => e.indexImage == indexImage));
+      ..addAll((widget.changes ?? widget.car.changes));
 
-    // final image = images[indexImage];
-
-    final image = widget.register
+    final FileModel? image = widget.register
         ? images[indexImage]
         : (indexImage < widget.car.images.length
             ? widget.car.images[indexImage]
@@ -128,9 +132,9 @@ class _CarChangesWidgetState extends State<CarChangesWidget> {
                             Center(
                               child: ClipRRect(
                                 borderRadius: BorderRadiusGeometry.circular(5),
-                                child: (image is Uint8List)
+                                child: (image?.data is Uint8List)
                                     ? Image.memory(
-                                        image,
+                                        image!.data!,
                                         height: heightImage,
                                         width: widthImage,
                                         fit: BoxFit.contain,
@@ -228,8 +232,11 @@ class _CarChangesWidgetState extends State<CarChangesWidget> {
                                           context: context,
                                           builder: (context) =>
                                               ImageChangeWidget(
-                                                onSelect: (image, description) {
+                                                aspectRatio: null,
+                                                onSelect: (value, description) {
                                                   final change = CarChangeModel(
+                                                    id: const Uuid().v4(),
+                                                    imageID: image?.id ?? '',
                                                     checklistID:
                                                         widget.checklistID,
                                                     user: widget.user,
@@ -237,7 +244,7 @@ class _CarChangesWidgetState extends State<CarChangesWidget> {
                                                     dx: tapDx, // 🔥 SALVA PROPORCIONAL
                                                     dy: tapDy,
                                                     description: description,
-                                                    fileImage: image,
+                                                    image: value,
                                                     indexImage: indexImage,
                                                     date: DateTime.now(),
                                                   );
@@ -259,20 +266,10 @@ class _CarChangesWidgetState extends State<CarChangesWidget> {
                                 child: paintChangesImage(
                                     key: paintKey,
                                     changes: changes,
+                                    imageID: image?.id ?? '',
                                     checklistID: widget.checklistID,
                                     heightImage: heightImage,
                                     widthImage: widthImage),
-                                // child: CustomPaint(
-                                //   key: paintKey,
-                                //   foregroundPainter: MyCustomPainter(
-                                //       changes: changes,
-                                //       checklistID: widget.checklistID),
-                                //   child: Container(
-                                //     height: heightImage, // 🔒 TAMANHO FIXO
-                                //     width: widthImage,
-                                //     color: Colors.transparent,
-                                //   ),
-                                // ),
                               ),
                             ),
                           ],
@@ -318,13 +315,19 @@ class _CarChangesWidgetState extends State<CarChangesWidget> {
                   ? InkWell(
                       onTap: () {
                         Core.pickerImage(
-                          context: context,
-                          // height: heightImage,
-                          // width: widthImage,
-                        ).then((data) {
+                                context: context,
+                                aspectRatio:
+                                    const CropAspectRatio(ratioX: 3, ratioY: 2))
+                            .then((data) {
                           if (data != null) {
                             setState(() {
-                              images[indexImage] = data;
+                              images[indexImage] = FileModel(
+                                id: const Uuid().v4(),
+                                name: '',
+                                url: '',
+                                data: data,
+                              );
+
                               widget.onChangeImages?.call(images);
                             });
                           }
@@ -393,13 +396,22 @@ class _CarChangesWidgetState extends State<CarChangesWidget> {
                                             .pop(true))).then((value) {
                                   if (value ?? false) {
                                     Core.pickerImage(
-                                      context: context,
-                                      // height: heightImage,
-                                      // width: widthImage,
-                                    ).then((data) {
+                                            context: context,
+                                            aspectRatio: const CropAspectRatio(
+                                                ratioX: 3, ratioY: 2)
+                                            // height: heightImage,
+                                            // width: widthImage,
+                                            )
+                                        .then((data) {
                                       if (data != null) {
                                         setState(() {
-                                          images[indexImage] = data;
+                                          images[indexImage] = FileModel(
+                                            id: const Uuid().v4(),
+                                            name: '',
+                                            url: '',
+                                            data: data,
+                                          );
+
                                           widget.onChangeImages?.call(images);
 
                                           List<CarChangeModel> carChanges =
@@ -574,10 +586,15 @@ Widget menuView({required int indexImage, required Function(int) onChange}) {
 
 Widget paintChangesImage(
     {Key? key,
+    required String imageID,
     required List<CarChangeModel> changes,
     String? checklistID,
     required double heightImage,
     required double widthImage}) {
+  final changesImage = changes.where((e) => e.imageID == imageID).toList();
+
+  log('Changes Image: ${changesImage.length}');
+
   return Stack(
     key: key,
     children: [
@@ -586,8 +603,10 @@ Widget paintChangesImage(
         width: widthImage,
         // color: Colors.transparent,
       ),
-      ...List.generate(changes.length, (index) {
-        final change = changes[index];
+      ...List.generate(changesImage.length, (index) {
+        final change = changesImage[index];
+
+        log(change.toJson());
 
         final px = change.dx * widthImage;
         final py = change.dy * heightImage;
@@ -598,6 +617,7 @@ Widget paintChangesImage(
                 ? true
                 : false;
 
+        final position = changes.indexWhere((e) => e.id == change.id) + 1;
         return Positioned(
           left: px - 12,
           top: py - 12,
@@ -605,11 +625,11 @@ Widget paintChangesImage(
             radius: 12,
             backgroundColor: isToday ? Colors.red : Colors.blue,
             child: Text(
-              (index + 1).toString().padLeft(2, '0'),
+              position.toString().padLeft(2, '0'),
               style: Constants.subtitle.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 10),
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         );
