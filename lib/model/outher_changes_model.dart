@@ -1,16 +1,19 @@
 import 'dart:convert';
 
 import 'package:bsu_control/model/file_model.dart';
+import 'package:bsu_control/model/user_model.dart';
 
 class OtherChangeModel {
   String description;
   DateTime date;
   FileModel image;
+  UserModel user;
 
   OtherChangeModel({
     required this.date,
     this.description = '',
     required this.image,
+    required this.user,
   });
 
   Map<String, dynamic> toMap() {
@@ -18,6 +21,7 @@ class OtherChangeModel {
       'description': description,
       'date': date.millisecondsSinceEpoch,
       'image': image.toMap(),
+      'user': user.toMapResume(),
     };
   }
 
@@ -26,6 +30,7 @@ class OtherChangeModel {
       description: map['description'] as String,
       date: DateTime.fromMillisecondsSinceEpoch(map['date'] as int),
       image: FileModel.fromMap(map['image'] as Map<String, dynamic>),
+      user: UserModel.fromMapResume(map['user']),
     );
   }
 

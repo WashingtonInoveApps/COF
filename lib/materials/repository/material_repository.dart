@@ -1,4 +1,6 @@
 import 'package:bsu_control/core/api_client.dart';
+import 'package:bsu_control/core/constants.dart';
+import 'package:bsu_control/model/file_model.dart';
 import 'package:bsu_control/model/item_model.dart';
 import 'package:bsu_control/model/outher_changes_model.dart';
 
@@ -77,9 +79,11 @@ class MaterialRepository extends APIClient implements IMaterialRepository {
   Future<bool> saveMaterialChecklist({
     required MaterialChecklistModel material,
     required List<OtherChangeModel> changes,
+    required List<FileModel> deletedFiles,
   }) async {
     try {
-      final docMaterials = colOBMs.doc(obmID).collection('materials').doc();
+      final docMaterials =
+          colOBMs.doc(obmID).collection('materials').doc(material.id);
       material.id = docMaterials.id;
 
       for (OtherChangeModel change in changes) {
@@ -88,20 +92,52 @@ class MaterialRepository extends APIClient implements IMaterialRepository {
               DateTime.now().microsecondsSinceEpoch.toString();
 
           final image = await saveFile(
-              pathStorage: 'imagens/material/changes/$path',
-              data: change.image.data!,
-              filename: '${path}_${DateTime.now().millisecondsSinceEpoch}');
+            pathStorage: '${Constants.pathMaterialChangeImages}/$path',
+            data: change.image.data!,
+            filename: path,
+          );
 
           if (image == null) {
             throw Exception('Falha ao salvar imagem da alteração do material.');
           }
 
-          change.image =
-              change.image.copyWith(name: image.name, url: image.url);
+          change.image = change.image.copyWith(
+            name: image.name,
+            url: image.url,
+            path: image.path,
+          );
+        }
+      }
+
+      if (deletedFiles.isNotEmpty) {
+        for (final file in deletedFiles) {
+          if (file.path.isNotEmpty) {
+            await deleteFile(path: file.path, filename: file.name);
+          }
         }
       }
 
       await docMaterials.set(material.copyWith(changes: changes).toMap());
+      return true;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<bool> deleteMaterialChecklist(
+      {required MaterialChecklistModel material}) async {
+    try {
+      await colOBMs
+          .doc(obmID)
+          .collection('materials')
+          .doc(material.id)
+          .delete();
+
+      for (final OtherChangeModel change in (material.changes ?? [])) {
+        await deleteFile(path: change.image.path, filename: change.image.name);
+      }
+
       return true;
     } catch (e) {
       rethrow;

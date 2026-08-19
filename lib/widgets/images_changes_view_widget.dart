@@ -48,7 +48,7 @@ class ImagesChangesViewWidget extends StatelessWidget {
             children: List.generate(list.length, (index) {
               final change = list[index];
               return Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                // crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Stack(
                     children: [
@@ -57,20 +57,20 @@ class ImagesChangesViewWidget extends StatelessWidget {
                         child: change.image?.data != null
                             ? Image.memory(
                                 change.image!.data!,
-                                height: height,
+                                // height: height,
                                 width: width,
                                 fit: BoxFit.fill,
                               )
                             : kIsWeb
                                 ? Image.network(
                                     change.image?.url ?? '',
-                                    height: height,
+                                    // height: height,
                                     width: width,
                                     fit: BoxFit.fill,
                                   )
                                 : CachedNetworkImage(
                                     imageUrl: change.image?.url ?? '',
-                                    height: height,
+                                    // height: height,
                                     width: width,
                                     progressIndicatorBuilder:
                                         (context, url, downloadProgress) =>
@@ -92,12 +92,19 @@ class ImagesChangesViewWidget extends StatelessWidget {
                         top: 5,
                         left: 5,
                         child: CircleAvatar(
-                          radius: 12,
-                          backgroundColor: Colors.black45,
-                          child: Text(
-                            ((list.length) - index).toString().padLeft(2, '0'),
-                            style: Constants.subtitle
-                                .copyWith(color: Colors.white),
+                          radius: 13,
+                          backgroundColor: Colors.white,
+                          child: CircleAvatar(
+                            radius: 12,
+                            backgroundColor: Constants.primary,
+                            child: Text(
+                              ((list.length) - index)
+                                  .toString()
+                                  .padLeft(2, '0'),
+                              style: Constants.subtitle.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold),
+                            ),
                           ),
                         ),
                       )
@@ -108,16 +115,17 @@ class ImagesChangesViewWidget extends StatelessWidget {
                   ),
                   Expanded(
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           change.description,
                           style: Constants.title,
                         ),
-                        Text(
-                          "${change.user.graduation} ${change.user.name} - ${change.user.registration}",
-                          style: Constants.subtitleHint,
-                        ),
+                        Core.boldFirstName(
+                            name: change.user.name,
+                            fullName: change.user.fullname,
+                            style: Constants.titleHint),
                         Text(
                           Core.formatDate(change.date, largeDay: true),
                           style: Constants.subtitleHint,

@@ -122,7 +122,9 @@ class _MaterialWarehousePageState extends State<MaterialWarehousePage> {
                                 onTap: () {
                                   showDialog(
                                       context: context,
-                                      builder: (context) => Center(
+                                      builder: (context) => Container(
+                                            margin: const EdgeInsets.all(20),
+                                            alignment: Alignment.center,
                                             child: ItensSectionWidget(
                                               material: true,
                                               onChange: (value) {

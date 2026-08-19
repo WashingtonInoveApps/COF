@@ -139,7 +139,7 @@ abstract class _CarControllerBase with Store {
   }
 
   @action
-  setStatusGeral(List<CarStatusModel> list) {
+  void setStatusGeral(List<CarStatusModel> list) {
     list.sort((a, b) => b.date.compareTo(a.date));
 
     statusGeral
@@ -148,33 +148,33 @@ abstract class _CarControllerBase with Store {
   }
 
   @action
-  onChangeFilter(String? value) {
+  void onChangeFilter(String? value) {
     filter = value ?? '';
     page = 1;
   }
 
   @action
-  setCars(List<CarModel> values) {
+  void setCars(List<CarModel> values) {
     cars
       ..clear()
       ..addAll(values);
   }
 
   @action
-  setReferenceDateDashboard(DateTime? value) {
+  void setReferenceDateDashboard(DateTime? value) {
     if (value != null) {
       referenceDateDashboard = value;
     }
   }
 
   @action
-  setLimit(int? value) {
+  void setLimit(int? value) {
     limit = value ?? limit;
     page = 1;
   }
 
   @action
-  setPage(int value) {
+  void setPage(int value) {
     page = value;
   }
 
@@ -190,6 +190,7 @@ abstract class _CarControllerBase with Store {
     required CarModel car,
     required List<FileModel?> images,
     required List<OtherChangeModel> others,
+    required List<FileModel> deletedFiles,
   }) async {
     try {
       loading = true;
@@ -204,7 +205,9 @@ abstract class _CarControllerBase with Store {
         car: car,
         images: images,
         others: others,
+        deletedFiles: deletedFiles,
       );
+
       loading = false;
 
       return result;
@@ -228,29 +231,29 @@ abstract class _CarControllerBase with Store {
     }
   }
 
-  @action
-  Future<bool> copy({required CarModel car}) async {
-    try {
-      loading = true;
-      final result = await repository.copy(
-          car: car.copyWith(
-              prefix: '${car.prefix} COPIA',
-              km: 0,
-              arref: 0,
-              oil: 0,
-              state: StatusCar.waiting,
-              status: [],
-              changes: [],
-              mapas: []));
+  // @action
+  // Future<bool> copy({required CarModel car}) async {
+  //   try {
+  //     loading = true;
+  //     final result = await repository.copy(
+  //         car: car.copyWith(
+  //             prefix: '${car.prefix} COPIA',
+  //             km: 0,
+  //             arref: 0,
+  //             oil: 0,
+  //             state: StatusCar.waiting,
+  //             status: [],
+  //             changes: [],
+  //             mapas: []));
 
-      loading = false;
+  //     loading = false;
 
-      return result;
-    } catch (e) {
-      loading = false;
-      rethrow;
-    }
-  }
+  //     return result;
+  //   } catch (e) {
+  //     loading = false;
+  //     rethrow;
+  //   }
+  // }
 
   @action
   Future<bool> updateKMOil({

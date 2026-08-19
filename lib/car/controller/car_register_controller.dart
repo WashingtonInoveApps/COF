@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bsu_control/core/sections_controller.dart';
 import 'package:bsu_control/enum/car_enum.dart';
 import 'package:bsu_control/model/car_changes_model.dart';
@@ -10,7 +12,6 @@ import 'package:bsu_control/model/section_itens_model.dart';
 import 'package:bsu_control/model/user_model.dart';
 import 'package:mobx/mobx.dart';
 
-import '../../core/constants.dart';
 import '../../core/validation.dart';
 import '../../model/obm_model.dart';
 import '../../model/outher_changes_model.dart';
@@ -36,6 +37,8 @@ abstract class _CarRegisterControllerBase with Store {
 
     if (init == null) setOBM(obms.firstWhere((e) => e.id == user.obmID));
   }
+
+  List<FileModel> deletFiles = [];
 
   @observable
   ObservableList<FileModel?> images = <FileModel?>[].asObservable();
@@ -93,7 +96,7 @@ abstract class _CarRegisterControllerBase with Store {
   ObservableList<CarStatusModel> status = <CarStatusModel>[].asObservable();
 
   @computed
-  bool get adm => function != Constants.carsFunctions.first;
+  bool get adm => function == FunctionCar.administrative;
 
   @computed
   CarModel get car {
@@ -160,13 +163,23 @@ abstract class _CarRegisterControllerBase with Store {
   }
 
   @action
-  addOtherChange(OtherChangeModel value) {
+  void addOtherChange(OtherChangeModel value) {
     others.add(value);
   }
 
   @action
-  deleteOtherChange(int index) {
+  void deleteOtherChange(int index) {
     others.removeAt(index);
+  }
+
+  void deletedFiles(FileModel? file) {
+    if (file == null) return;
+
+    log('File: ${file.toJson()}');
+
+    if (file.data == null) {
+      deletFiles.add(file);
+    }
   }
 
   @action

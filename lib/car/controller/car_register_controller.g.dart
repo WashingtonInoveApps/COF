@@ -325,7 +325,7 @@ mixin _$CarRegisterController on _CarRegisterControllerBase, Store {
   }
 
   @override
-  dynamic addOtherChange(OtherChangeModel value) {
+  void addOtherChange(OtherChangeModel value) {
     final _$actionInfo = _$_CarRegisterControllerBaseActionController
         .startAction(name: '_CarRegisterControllerBase.addOtherChange');
     try {
@@ -336,7 +336,7 @@ mixin _$CarRegisterController on _CarRegisterControllerBase, Store {
   }
 
   @override
-  dynamic deleteOtherChange(int index) {
+  void deleteOtherChange(int index) {
     final _$actionInfo = _$_CarRegisterControllerBaseActionController
         .startAction(name: '_CarRegisterControllerBase.deleteOtherChange');
     try {

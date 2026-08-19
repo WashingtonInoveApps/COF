@@ -11,11 +11,12 @@ abstract class ICarRepository {
     required CarModel car,
     required List<FileModel?> images,
     required List<OtherChangeModel> others,
+    required List<FileModel> deletedFiles,
   });
 
   Future<bool> delete({required CarModel car});
 
-  Future<bool> copy({required CarModel car});
+  // Future<bool> copy({required CarModel car});
 
   Future<bool> saveStatusCar({
     required CarModel car,

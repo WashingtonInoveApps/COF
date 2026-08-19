@@ -6,17 +6,17 @@ class Constants {
       255, 27, 94, 32); //Color(0xFF2E7D32); // Colors.green.shade900;
   static const second = Color.fromARGB(255, 25, 118, 210);
 
-  static final title = GoogleFonts.poppins(fontSize: 12.0, color: Colors.black);
+  static final title = GoogleFonts.poppins(fontSize: 13.0, color: Colors.black);
   static final subtitle =
-      GoogleFonts.poppins(fontSize: 11.0, color: Colors.black);
+      GoogleFonts.poppins(fontSize: 12.0, color: Colors.black);
 
   static final titleButton = GoogleFonts.montserrat(
-      fontSize: 12.0, color: Colors.white, fontWeight: FontWeight.bold);
+      fontSize: 13.0, color: Colors.white, fontWeight: FontWeight.bold);
 
   static final titleHint =
-      GoogleFonts.poppins(fontSize: 12.0, color: Colors.grey);
+      GoogleFonts.poppins(fontSize: 13.0, color: Colors.grey);
   static final subtitleHint =
-      GoogleFonts.poppins(fontSize: 11.0, color: Colors.grey);
+      GoogleFonts.poppins(fontSize: 12.0, color: Colors.grey);
 
   static final carsFunctions = ["Operacional", "Administrativo"];
 
@@ -36,6 +36,8 @@ class Constants {
   ];
 
   static const pathCarImages = 'imagens/cars';
-  static const pathCarChangeImages = 'imagens/change';
+  static const pathCarChangeImages = 'imagens/cars/change';
   static const pathCarOtherImages = 'imagens/other';
+
+  static const pathMaterialChangeImages = 'imagens/materials/change';
 }

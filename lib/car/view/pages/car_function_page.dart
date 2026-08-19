@@ -172,6 +172,7 @@ class _CarRegisterFunctionPageState extends State<CarRegisterFunctionPage> {
                       update: true,
                       onChange: register.onChanges,
                       onChangeImages: register.setImagens,
+                      onDelet: register.deletedFiles,
                     );
                   }),
                 ),
@@ -206,6 +207,7 @@ class _CarRegisterFunctionPageState extends State<CarRegisterFunctionPage> {
                             return CardOutherChange(
                               other: other,
                               onDelete: () {
+                                register.deletedFiles(other.image);
                                 register.deleteOtherChange(index);
                               },
                             );
@@ -228,6 +230,7 @@ class _CarRegisterFunctionPageState extends State<CarRegisterFunctionPage> {
                                           date: DateTime.now(),
                                           description: description,
                                           image: image,
+                                          user: register.user,
                                         ),
                                       );
                                     },

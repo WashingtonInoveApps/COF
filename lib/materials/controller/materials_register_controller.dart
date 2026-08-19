@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:bsu_control/core/sections_controller.dart';
 import 'package:bsu_control/model/cia_model.dart';
+import 'package:bsu_control/model/file_model.dart';
 import 'package:bsu_control/model/item_model.dart';
 import 'package:bsu_control/model/material_checklist_model.dart';
 import 'package:bsu_control/model/outher_changes_model.dart';
@@ -19,18 +22,23 @@ abstract class _MaterialsRegisterControllerBase with Store {
   final MaterialChecklistModel? init;
   final UserModel user;
   final List<OBMModel> obms;
+  final List<MaterialChecklistModel> checklists;
 
   _MaterialsRegisterControllerBase({
     required this.obms,
     required this.init,
     required this.user,
+    required this.checklists,
   }) {
     inicialization();
-    setOBM(obms.firstWhere((e) => e.id == user.obmID));
+
+    if (init == null) setOBM(obms.firstWhere((e) => e.id == user.obmID));
   }
 
+  List<FileModel> deletFiles = [];
+
   @observable
-  ObservableList<dynamic> images = [].asObservable();
+  ObservableList<FileModel> images = <FileModel>[].asObservable();
 
   @observable
   OBMModel? obm;
@@ -55,9 +63,14 @@ abstract class _MaterialsRegisterControllerBase with Store {
 
   @computed
   List<TeamModel> get teams {
-    if (cia == null) return [];
+    final ids = checklists.map((e) => e.teamID).toList();
 
-    return obm?.team.where((e) => e.ciaID == cia?.id).toList() ?? [];
+    if (ids.isEmpty) return obm?.team ?? [];
+
+    return obm?.team
+            .where((e) => !ids.contains(e.id) || (e.id == team?.id))
+            .toList() ??
+        [];
   }
 
   @computed
@@ -69,6 +82,7 @@ abstract class _MaterialsRegisterControllerBase with Store {
       ciaID: cia?.id ?? '',
       obmID: obm?.id ?? '',
       itens: sectionsItens,
+      materials: sectionsMaterials,
       changes: [],
       obm: (obm ?? OBMModel(team: [], cias: [])),
       team: team,
@@ -81,14 +95,25 @@ abstract class _MaterialsRegisterControllerBase with Store {
     if (init != null) {
       sectionsItens.clear();
 
-      obm = obms.firstWhere((e) => e.id == init?.obmID);
+      obm = obms
+          .cast<OBMModel?>()
+          .firstWhere((e) => e?.id == init?.obmID, orElse: () => null);
 
       cia = obm?.cias
           .cast<CiaModel?>()
           .firstWhere((e) => e?.id == init?.ciaID, orElse: () => null);
 
+      team = obm?.team
+          .cast<TeamModel?>()
+          .firstWhere((e) => e?.id == init?.teamID, orElse: () => null);
+
       for (final itens in init?.itens ?? []) {
         addSections(list: sectionsItens, value: itens.copyWith(value: false));
+      }
+
+      for (final itens in init?.materials ?? []) {
+        addSections(
+            list: sectionsMaterials, value: itens.copyWith(value: false));
       }
 
       changes.addAll(init?.changes ?? []);
@@ -111,10 +136,20 @@ abstract class _MaterialsRegisterControllerBase with Store {
   @action
   void setTeam(TeamModel? value) => team = value;
 
-  void setImagens(List<dynamic> value) {
+  void setImagens(List<FileModel> value) {
     images
       ..clear()
       ..addAll(value);
+  }
+
+  void deletedFiles(FileModel? file) {
+    if (file == null) return;
+
+    log('File: ${file.toJson()}');
+
+    if (file.data == null) {
+      deletFiles.add(file);
+    }
   }
 
   @action

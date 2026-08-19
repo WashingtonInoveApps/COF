@@ -19,7 +19,8 @@ class MaterialChecklistModel {
   String obmID;
   String teamID;
   UserModel user;
-  List<SectionItensModel> itens;
+  List<SectionItensModel>? itens;
+  List<SectionItensModel>? materials;
   List<OtherChangeModel>? changes;
   List<MaterialsConsumed>? lastMaterialsConsumed;
 
@@ -28,7 +29,8 @@ class MaterialChecklistModel {
       required this.user,
       required this.obm,
       required this.team,
-      required this.itens,
+      this.itens,
+      this.materials,
       this.ciaID = '',
       this.obmID = '',
       this.teamID = '',
@@ -40,13 +42,14 @@ class MaterialChecklistModel {
     return <String, dynamic>{
       'id': id,
       'user': user.toMapResume(),
-      'obm': obm.toMap(),
+      'obm': obm.toMapResume(),
       'team': team?.toMap(),
-      'cia': cia?.toMap(),
+      'cia': cia?.toMapResume(),
       'ciaID': ciaID,
       'obmID': obmID,
       'teamID': teamID,
-      'itens': itens.map((x) => x.toMap()).toList(),
+      'itens': itens?.map((x) => x.toMap()).toList(),
+      'materials': materials?.map((x) => x.toMap()).toList(),
       'changes': changes?.map((x) => x.toMap()).toList(),
       'lastMaterialsConsumed':
           lastMaterialsConsumed?.map((e) => e.toMap()).toList(),
@@ -57,21 +60,30 @@ class MaterialChecklistModel {
     return MaterialChecklistModel(
       id: map['id'] != null ? map['id'] as String : null,
       user: UserModel.fromMapResume(map['user'] as Map<String, dynamic>),
-      obm: OBMModel.fromMap(map['obm'] as Map<String, dynamic>),
+      obm: OBMModel.fromMapResume(map['obm'] as Map<String, dynamic>),
       team: map['team'] != null
           ? TeamModel.fromMap(map['team'] as Map<String, dynamic>)
           : null,
       cia: map['cia'] != null
-          ? CiaModel.fromMap(map['cia'] as Map<String, dynamic>)
+          ? CiaModel.fromMapResume(map['cia'] as Map<String, dynamic>)
           : null,
       ciaID: map['ciaID'] as String,
       obmID: map['obmID'] as String,
       teamID: map['teamID'] as String,
-      itens: List<SectionItensModel>.from(
-        (map['itens'] as List).map<SectionItensModel>(
-          (x) => SectionItensModel.fromMap(x as Map<String, dynamic>),
-        ),
-      ),
+      itens: map['itens'] != null
+          ? List<SectionItensModel>.from(
+              (map['itens'] as List).map<SectionItensModel?>(
+                (x) => SectionItensModel.fromMap(x as Map<String, dynamic>),
+              ),
+            )
+          : null,
+      materials: map['materials'] != null
+          ? List<SectionItensModel>.from(
+              (map['materials'] as List).map<SectionItensModel?>(
+                (x) => SectionItensModel.fromMap(x as Map<String, dynamic>),
+              ),
+            )
+          : null,
       changes: map['changes'] != null
           ? List<OtherChangeModel>.from(
               (map['changes'] as List).map<OtherChangeModel?>(
@@ -105,6 +117,7 @@ class MaterialChecklistModel {
     String? obmID,
     String? teamID,
     List<SectionItensModel>? itens,
+    List<SectionItensModel>? materials,
     List<OtherChangeModel>? changes,
     List<MaterialsConsumed>? lastMaterialsConsumed,
   }) {
@@ -118,6 +131,7 @@ class MaterialChecklistModel {
       obmID: obmID ?? this.obmID,
       teamID: teamID ?? this.teamID,
       itens: itens ?? this.itens,
+      materials: materials ?? this.materials,
       changes: changes ?? this.changes,
       lastMaterialsConsumed:
           lastMaterialsConsumed ?? this.lastMaterialsConsumed,

@@ -4,11 +4,11 @@ import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/main.dart';
 import 'package:bsu_control/materials/controller/materials_controller.dart';
+import 'package:bsu_control/materials/view/materials_details_page.dart';
 import 'package:bsu_control/model/material_checklist_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
-import 'package:mobx/mobx.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
 import '../../core/core.dart';
@@ -17,6 +17,7 @@ import '../../widgets/limit_table_widget.dart';
 import '../../widgets/pagination_widget.dart';
 import '../../widgets/table_widget.dart';
 import '../../widgets/textfield_widget.dart';
+import 'material_checklist_register_page.dart';
 
 class MaterialsPage extends StatefulWidget {
   const MaterialsPage({Key? key}) : super(key: key);
@@ -30,7 +31,6 @@ class _MaterialsPageState extends State<MaterialsPage> {
   final app = GetIt.I.get<AppController>();
   final searchController = TextEditingController();
 
-  late ReactionDisposer rec;
   StreamSubscription? subscription;
 
   @override
@@ -43,13 +43,9 @@ class _MaterialsPageState extends State<MaterialsPage> {
     );
 
     controller.setLoading(true);
-    rec = autorun((_) {
-      subscription?.cancel().then((_) {});
-
-      subscription = controller.listenMaterialChecklist().listen((value) {
-        controller.setMaterialsChecklist(value);
-        controller.setLoading(false);
-      });
+    subscription = controller.listenMaterialChecklist().listen((value) {
+      controller.setMaterialsChecklist(value);
+      controller.setLoading(false);
     });
   }
 
@@ -57,7 +53,6 @@ class _MaterialsPageState extends State<MaterialsPage> {
   void dispose() {
     super.dispose();
     searchController.dispose();
-    rec();
     subscription?.cancel();
   }
 
@@ -70,7 +65,7 @@ class _MaterialsPageState extends State<MaterialsPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Checklist de Materiais',
+              'Checklist de materiais',
               style: Constants.title.copyWith(fontSize: 18),
             ),
             const Divider(),
@@ -90,29 +85,66 @@ class _MaterialsPageState extends State<MaterialsPage> {
                 direction: Axis.horizontal,
                 children: [
                   Text(
-                    'Registrados',
+                    'Registros',
                     style: Constants.title,
                   ),
                   Observer(builder: (_) {
                     return Container(
                       margin: const EdgeInsets.only(top: 10),
-                      width: app.modeMOBILE ? double.infinity : 350,
+                      width: app.modeMOBILE ? double.infinity : 400,
                       alignment: Alignment.centerRight,
-                      child: FieldText(
-                        search: true,
-                        controller: searchController,
-                        hint: 'Ex.: Digite algo para pesquisar',
-                        onChange: (text) {},
-                        onClear: () {
-                          searchController.clear();
-                        },
+                      child: Row(
+                        spacing: 10,
+                        children: [
+                          Expanded(
+                            child: IgnorePointer(
+                              ignoring: controller.materialsChecklist.isEmpty,
+                              child: FieldText(
+                                search: true,
+                                controller: searchController,
+                                hint: 'Ex.: Digite algo para pesquisar',
+                                onChange: controller.onChangeFilter,
+                                onClear: () {
+                                  searchController.clear();
+                                  controller.onChangeFilter('');
+                                },
+                              ),
+                            ),
+                          ),
+                          InkWell(
+                              onTap: () {
+                                if (app.router != 8) {
+                                  app.setRouter(8);
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            MaterialChecklistRegisterPage(
+                                              controller: controller,
+                                            )),
+                                  );
+                                }
+                              },
+                              child: const CircleAvatar(
+                                radius: 25,
+                                backgroundColor: Constants.primary,
+                                child: Icon(
+                                  Icons.add,
+                                  size: 20,
+                                  color: Colors.white,
+                                ),
+                              ))
+                        ],
                       ),
                     );
                   }),
                 ],
               ),
             ),
-            app.modeMOBILE ? Container() : const Divider(),
+            app.modeMOBILE
+                ? const SizedBox(
+                    height: 10,
+                  )
+                : const Divider(),
             const SizedBox(
               height: 5,
             ),
@@ -145,7 +177,7 @@ class _MaterialsPageState extends State<MaterialsPage> {
                               AppColumn(
                                 width: 50,
                                 name: 'details',
-                                builder: (car) {
+                                builder: (material) {
                                   return InkWell(
                                     child: Card(
                                       margin: EdgeInsets.zero,
@@ -160,10 +192,13 @@ class _MaterialsPageState extends State<MaterialsPage> {
                                       ),
                                     ),
                                     onTap: () {
-                                      // Navigator.of(context).push(MaterialsPageRoute(
-                                      //     builder: (context) => CarDetailsPage(
-                                      //           carID: car.id ?? '',
-                                      //         )));
+                                      Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  MaterialsDetailsPage(
+                                                    controller: controller,
+                                                    checklistID: material.id!,
+                                                  )));
                                     },
                                   );
                                 },
@@ -207,70 +242,6 @@ class _MaterialsPageState extends State<MaterialsPage> {
                                       name: material.user.name,
                                       fullName: material.user.fullname,
                                       style: Constants.title);
-                                },
-                              ),
-                              AppColumn(
-                                width: 120,
-                                name: 'changes',
-                                label: 'Alterações',
-                                builder: (material) {
-                                  return Row(
-                                    spacing: 5,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Expanded(
-                                        child: Center(
-                                          child: Text(
-                                            material.changes?.length
-                                                    .toString()
-                                                    .padLeft(2, '0') ??
-                                                '0',
-                                            style: Constants.title,
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Center(
-                                          child: InkWell(
-                                            onTap:
-                                                (material.changes?.isNotEmpty ??
-                                                        false)
-                                                    ? () async {
-                                                        // showDialog(
-                                                        //     context: context,
-                                                        //     builder: (context) {
-                                                        //       return AlertDialog(
-                                                        //         contentPadding:
-                                                        //             const EdgeInsets
-                                                        //                 .all(10),
-                                                        //         content:
-                                                        //             ImageViewChangeWidget(
-                                                        //                 changes: material
-                                                        //                     .changes),
-                                                        //       );
-                                                        //     });
-                                                      }
-                                                    : null,
-                                            child: Card(
-                                              margin: EdgeInsets.zero,
-                                              shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadiusGeometry
-                                                          .circular(100)),
-                                              child: const Padding(
-                                                padding: EdgeInsets.all(5.0),
-                                                child: Icon(
-                                                  Icons.list_alt_rounded,
-                                                  size: 20,
-                                                  color: Constants.primary,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  );
                                 },
                               ),
                             ],

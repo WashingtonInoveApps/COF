@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/core.dart';
@@ -16,7 +14,6 @@ import 'package:mobx/mobx.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
-import '../../model/cia_model.dart';
 import '../../widgets/backgraund_page.dart';
 import '../../widgets/limit_table_widget.dart';
 import '../../widgets/pagination_widget.dart';

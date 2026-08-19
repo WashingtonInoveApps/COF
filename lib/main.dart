@@ -18,7 +18,7 @@ final config = ConfigModel(
   appID: 'VBJM7eAETNS2pYWpfKLY',
   endpoint: 'https://us-central1-bsucos-function.cloudfunctions.net/app',
   test: false,
-  maxWidth: 1000,
+  maxWidth: 400,
 );
 
 void main() async {

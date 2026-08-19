@@ -236,9 +236,10 @@ mixin _$CarController on _CarControllerBase, Store {
   Future<bool> save(
       {required CarModel car,
       required List<FileModel?> images,
-      required List<OtherChangeModel> others}) {
-    return _$saveAsyncAction
-        .run(() => super.save(car: car, images: images, others: others));
+      required List<OtherChangeModel> others,
+      required List<FileModel> deletedFiles}) {
+    return _$saveAsyncAction.run(() => super.save(
+        car: car, images: images, others: others, deletedFiles: deletedFiles));
   }
 
   late final _$deleteAsyncAction =
@@ -247,14 +248,6 @@ mixin _$CarController on _CarControllerBase, Store {
   @override
   Future<bool> delete({required CarModel car}) {
     return _$deleteAsyncAction.run(() => super.delete(car: car));
-  }
-
-  late final _$copyAsyncAction =
-      AsyncAction('_CarControllerBase.copy', context: context);
-
-  @override
-  Future<bool> copy({required CarModel car}) {
-    return _$copyAsyncAction.run(() => super.copy(car: car));
   }
 
   late final _$updateKMOilAsyncAction =
@@ -348,7 +341,7 @@ mixin _$CarController on _CarControllerBase, Store {
   }
 
   @override
-  dynamic setStatusGeral(List<CarStatusModel> list) {
+  void setStatusGeral(List<CarStatusModel> list) {
     final _$actionInfo = _$_CarControllerBaseActionController.startAction(
         name: '_CarControllerBase.setStatusGeral');
     try {
@@ -359,7 +352,7 @@ mixin _$CarController on _CarControllerBase, Store {
   }
 
   @override
-  dynamic onChangeFilter(String? value) {
+  void onChangeFilter(String? value) {
     final _$actionInfo = _$_CarControllerBaseActionController.startAction(
         name: '_CarControllerBase.onChangeFilter');
     try {
@@ -370,7 +363,7 @@ mixin _$CarController on _CarControllerBase, Store {
   }
 
   @override
-  dynamic setCars(List<CarModel> values) {
+  void setCars(List<CarModel> values) {
     final _$actionInfo = _$_CarControllerBaseActionController.startAction(
         name: '_CarControllerBase.setCars');
     try {
@@ -381,7 +374,7 @@ mixin _$CarController on _CarControllerBase, Store {
   }
 
   @override
-  dynamic setReferenceDateDashboard(DateTime? value) {
+  void setReferenceDateDashboard(DateTime? value) {
     final _$actionInfo = _$_CarControllerBaseActionController.startAction(
         name: '_CarControllerBase.setReferenceDateDashboard');
     try {
@@ -392,7 +385,7 @@ mixin _$CarController on _CarControllerBase, Store {
   }
 
   @override
-  dynamic setLimit(int? value) {
+  void setLimit(int? value) {
     final _$actionInfo = _$_CarControllerBaseActionController.startAction(
         name: '_CarControllerBase.setLimit');
     try {
@@ -403,7 +396,7 @@ mixin _$CarController on _CarControllerBase, Store {
   }
 
   @override
-  dynamic setPage(int value) {
+  void setPage(int value) {
     final _$actionInfo = _$_CarControllerBaseActionController.startAction(
         name: '_CarControllerBase.setPage');
     try {

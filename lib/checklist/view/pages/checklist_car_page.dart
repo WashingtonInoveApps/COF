@@ -243,6 +243,7 @@ class ChecklistCarPage extends StatelessWidget {
                                             date: DateTime.now(),
                                             description: description,
                                             image: image,
+                                            user: user,
                                           ),
                                         );
                                       },

@@ -108,6 +108,7 @@ class _ImageChangeWidgetState extends State<ImageChangeWidget> {
                                   id: const Uuid().v4(),
                                   name: '',
                                   url: '',
+                                  path: '',
                                   data: data!),
                               controller.text);
                         }

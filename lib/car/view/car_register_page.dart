@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/car/controller/car_register_controller.dart';
 import 'package:bsu_control/car/view/cars_page.dart';
@@ -19,8 +17,14 @@ import '../../widgets/backgraund_page.dart';
 import '../controller/car_controller.dart';
 
 class CarRegisterPage extends StatefulWidget {
+  final bool copied;
   final CarModel? car;
-  const CarRegisterPage({Key? key, this.car}) : super(key: key);
+
+  const CarRegisterPage({
+    Key? key,
+    this.car,
+    this.copied = false,
+  }) : super(key: key);
 
   @override
   State createState() => _CarRegisterPageState();
@@ -51,7 +55,7 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
 
   @override
   Widget build(BuildContext context) {
-    final update = (widget.car != null);
+    final update = (widget.car != null && !widget.copied);
 
     final pages = [
       CarRegisterInforPage(controller: register),
@@ -62,7 +66,7 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
     return Stack(
       children: [
         BackgraundPage(
-          menu: (widget.car == null),
+          menu: !update,
           onBack:
               (widget.car == null) ? null : () => Navigator.of(context).pop(),
           top: Column(
@@ -121,9 +125,10 @@ class _CarRegisterPageState extends State<CarRegisterPage> {
                                 car: register.car,
                                 images: register.images,
                                 others: register.others,
+                                deletedFiles: register.deletFiles,
                               )
                                   .then((_) {
-                                if (update) {
+                                if (update || widget.copied) {
                                   Navigator.of(context).pop();
                                 } else {
                                   app.setRouter(5);

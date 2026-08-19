@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bsu_control/enum/core_enum.dart';
 import 'package:bsu_control/materials/repository/material_interface.dart';
 import 'package:bsu_control/model/config_model.dart';
@@ -5,9 +7,11 @@ import 'package:bsu_control/model/item_model.dart';
 import 'package:mobx/mobx.dart';
 
 import '../../core/core.dart';
+import '../../model/file_model.dart';
 import '../../model/material_checklist_model.dart';
 import '../../model/outher_changes_model.dart';
 import '../repository/material_repository.dart';
+
 part 'materials_controller.g.dart';
 
 class MaterialsController = _MaterialsControllerBase with _$MaterialsController;
@@ -231,11 +235,36 @@ abstract class _MaterialsControllerBase with Store {
   Future<void> saveMaterialChecklist({
     required MaterialChecklistModel material,
     required List<OtherChangeModel> changes,
+    required List<FileModel> deletedFiles,
   }) async {
     try {
       loading = true;
+      log(material.toJson());
+
       await repository.saveMaterialChecklist(
-          material: material, changes: changes);
+        material: material,
+        changes: changes,
+        deletedFiles: deletedFiles,
+      );
+
+      loading = false;
+
+      return;
+    } catch (e) {
+      loading = false;
+      rethrow;
+    }
+  }
+
+  @action
+  Future<void> deleteMaterialChecklist({
+    required MaterialChecklistModel material,
+  }) async {
+    try {
+      loading = true;
+      await repository.deleteMaterialChecklist(
+        material: material,
+      );
       loading = false;
 
       return;

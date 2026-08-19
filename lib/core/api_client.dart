@@ -135,7 +135,12 @@ class APIClient {
       TaskSnapshot? uploadTask = await ref.putData(data, metadata);
       final downloadUrl = await uploadTask.ref.getDownloadURL();
 
-      return FileModel(id: const Uuid().v4(), name: name, url: downloadUrl);
+      return FileModel(
+        id: const Uuid().v4(),
+        name: name,
+        url: downloadUrl,
+        path: pathStorage,
+      );
     } catch (e) {
       log('Erro ao salvar arquivo: ${e.toString()}');
       return null;

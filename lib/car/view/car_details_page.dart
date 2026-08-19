@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/car/controller/car_controller.dart';
@@ -7,7 +6,6 @@ import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/core/validation.dart';
 import 'package:bsu_control/enum/car_enum.dart';
-import 'package:bsu_control/main.dart';
 import 'package:bsu_control/model/car_model.dart';
 import 'package:bsu_control/model/car_status_model.dart';
 import 'package:bsu_control/model/section_itens_model.dart';
@@ -21,7 +19,7 @@ import '../../widgets/backgraund_page.dart';
 import '../../widgets/car_changes_widget.dart';
 import '../../widgets/card_outhers_widget.dart';
 import '../../widgets/container_custom_widget.dart';
-import '../../widgets/tag_widget.dart';
+import '../../widgets/list_itens_view_widget.dart';
 import '../../widgets/textfield_widget.dart';
 import 'car_register_page.dart';
 import 'widgets/description_state_widget.dart';
@@ -343,7 +341,10 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                               ));
                     } else {
                       await controller.saveStatus(
-                          car: car.copyWith(enable: true, state: value),
+                          car: car.copyWith(
+                            enable: true,
+                            state: value,
+                          ),
                           status: CarStatusModel(
                               date: DateTime.now(),
                               user: app.user,
@@ -390,7 +391,11 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                 width: double.infinity,
                 child: Observer(builder: (context) {
                   {
-                    if (controller.statusGeral.isEmpty) {
+                    final status = controller.statusGeral
+                        .where((e) => e.carID == car.id)
+                        .toList();
+
+                    if (status.isEmpty) {
                       return Text(
                         'Nenhum registro encontrado.',
                         style: Constants.titleHint,
@@ -398,7 +403,7 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                     } else {
                       return statusRegisters(
                           context: context,
-                          status: controller.statusGeral,
+                          status: status,
                           onDelete: controller.enable
                               ? (value) async {
                                   await controller.deleteStatus(
@@ -450,8 +455,7 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                       'Nenhum registro de itens encontrado.',
                       style: Constants.title,
                     )
-                  : changesListWidget(
-                      context: context,
+                  : ListItensViewWidget(
                       categories: car.itens,
                     ),
               const SizedBox(
@@ -465,17 +469,8 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                   children: [
                     const Spacer(),
                     ElevatedButton(
-                        onPressed: () async {
-                          await Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => CarRegisterPage(
-                                    car: car,
-                                  )));
-                        },
-                        child: Text(
-                          "Editar",
-                          style: Constants.titleButton,
-                        )),
-                    ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.grey),
                         onPressed: () {
                           showDialog(
                               context: context,
@@ -526,23 +521,40 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                                         Navigator.of(context).pop(false),
                                   )).then((value) async {
                             if (value ?? false) {
-                              controller.copy(car: car).then((value) {
-                                Navigator.of(context).pop();
-                              }).catchError((err) {
-                                showDialog(
-                                    context: context,
-                                    builder: (context) => AlertMessage(
-                                          title: 'Atenção',
-                                          message: err.toString(),
-                                          onPressedOK: () =>
-                                              Navigator.of(context).pop(),
-                                        ));
-                              });
+                              await Navigator.of(context)
+                                  .pushReplacement(MaterialPageRoute(
+                                      builder: (context) => CarRegisterPage(
+                                            copied: true,
+                                            car: CarModel(
+                                              itens: car.itens,
+                                              changes: [],
+                                              status: [],
+                                              images: car.images,
+                                              obmID: car.obmID,
+                                              cia: car.cia,
+                                              ciaID: car.ciaID,
+                                              model: car.model,
+                                              modelPneu: car.modelPneu,
+                                              function: car.function,
+                                              type: car.type,
+                                            ),
+                                          )));
                             }
                           });
                         },
                         child: Text(
                           "Copiar",
+                          style: Constants.titleButton,
+                        )),
+                    ElevatedButton(
+                        onPressed: () async {
+                          await Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => CarRegisterPage(
+                                    car: car,
+                                  )));
+                        },
+                        child: Text(
+                          "Editar",
                           style: Constants.titleButton,
                         )),
                   ],
@@ -582,140 +594,78 @@ Widget statusRegisters(
       return Container(
         width: double.infinity,
         margin: const EdgeInsets.symmetric(vertical: 5),
-        child: Column(
-          spacing: 2,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: TagWidget(
-                      width: 120,
-                      label: state.state.label,
-                      color: state.state.color,
-                      icon: state.state.icon,
-                    ),
-                  ),
+        child: IntrinsicHeight(
+          child: Row(
+            spacing: 10,
+            children: [
+              Container(
+                height: double.infinity,
+                padding: const EdgeInsets.symmetric(horizontal: 2),
+                decoration: BoxDecoration(
+                    color: state.state.color,
+                    borderRadius: BorderRadius.circular(5)),
+                child: Icon(
+                  state.state.icon,
+                  color: Colors.white,
+                  size: 20,
                 ),
-                if ((index == 0 && !state.value && onDelete != null))
-                  IconButton(
-                      onPressed: () async {
-                        showDialog(
-                            context: context,
-                            builder: (context) => AlertMessage(
-                                  title: '',
-                                  message:
-                                      'Deseja deletar esse registro do estado de funcionamento ?',
-                                  cancel: true,
-                                  onPressedOK: () =>
-                                      Navigator.of(context).pop(true),
-                                  onPressedCancel: () =>
-                                      Navigator.of(context).pop(false),
-                                )).then((value) async {
-                          if (value ?? false) {
-                            onDelete?.call(state);
-                          }
-                        });
-                      },
-                      icon: const Icon(
-                        Icons.delete,
-                        size: 20,
-                        color: Colors.grey,
-                      )),
-              ],
-            ),
-            if (state.description.isNotEmpty)
-              Text(
-                state.description,
-                style: Constants.title,
               ),
-            Text(
-              "${state.user.graduation} ${state.user.name}",
-              style: Constants.titleHint,
-            ),
-            if (state.local.isNotEmpty)
-              Text(
-                state.local,
-                style: Constants.titleHint,
+              Expanded(
+                child: Column(
+                  spacing: 2,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (state.description.isNotEmpty)
+                      Text(
+                        state.description,
+                        style: Constants.title,
+                      ),
+                    Text(
+                      "${state.user.graduation} ${state.user.name}",
+                      style: Constants.titleHint,
+                    ),
+                    if (state.local.isNotEmpty)
+                      Text(
+                        state.local,
+                        style: Constants.titleHint,
+                      ),
+                    Text(
+                      Core.formatDate(state.date, largeDayHour: true),
+                      style: Constants.subtitleHint,
+                    ),
+                  ],
+                ),
               ),
-            Text(
-              Core.formatDate(state.date, largeDayHour: true),
-              style: Constants.subtitleHint,
-            ),
-          ],
+              if ((index == 0 && !state.value && onDelete != null))
+                IconButton(
+                    onPressed: () async {
+                      showDialog(
+                          context: context,
+                          builder: (context) => AlertMessage(
+                                title: '',
+                                message:
+                                    'Deseja deletar esse registro do estado de funcionamento ?',
+                                cancel: true,
+                                onPressedOK: () =>
+                                    Navigator.of(context).pop(true),
+                                onPressedCancel: () =>
+                                    Navigator.of(context).pop(false),
+                              )).then((value) async {
+                        if (value ?? false) {
+                          onDelete.call(state);
+                        }
+                      });
+                    },
+                    icon: const Icon(
+                      Icons.delete,
+                      size: 20,
+                      color: Colors.grey,
+                    )),
+            ],
+          ),
         ),
       );
     }).expand((widget) => [widget, const Divider()]).toList()
       ..removeLast(),
-  );
-}
-
-Widget changesListWidget(
-    {required BuildContext context,
-    required List<SectionItensModel> categories}) {
-  final list = List<SectionItensModel>.from(categories);
-
-  return StatefulBuilder(
-    builder: (context, setState) {
-      return ExpansionPanelList(
-        elevation: 2,
-        expandedHeaderPadding: EdgeInsets.zero,
-        expansionCallback: (panelIndex, expanded) {
-          setState(() {
-            list[panelIndex].value = expanded;
-          });
-        },
-        children: list.map((category) {
-          return ExpansionPanel(
-              isExpanded: category.value,
-              headerBuilder: (context, isExpanded) {
-                return ListTile(
-                  contentPadding: const EdgeInsets.only(left: 10),
-                  title: Text(
-                    category.description,
-                    style: Constants.title,
-                  ),
-                );
-              },
-              body: Padding(
-                padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: category.itens
-                      .map((item) {
-                        return Row(
-                          children: [
-                            Expanded(
-                                child: Text(
-                              item.description,
-                              style: Constants.title,
-                            )),
-                            Text.rich(
-                              TextSpan(
-                                  text: item.quantity.toString(),
-                                  children: [
-                                    TextSpan(
-                                      text: ' unids.',
-                                      style: Constants.subtitleHint,
-                                    )
-                                  ]),
-                              style: Constants.title,
-                            ),
-                          ],
-                        );
-                      })
-                      .expand((widget) => [
-                            widget,
-                            const Divider(),
-                          ])
-                      .toList()
-                    ..removeLast(),
-                ),
-              ));
-        }).toList(),
-      );
-    },
   );
 }

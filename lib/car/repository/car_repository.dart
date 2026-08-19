@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:bsu_control/car/repository/car_interface.dart';
 import 'package:bsu_control/core/api_client.dart';
 import 'package:bsu_control/core/constants.dart';
+import 'package:bsu_control/model/car_changes_model.dart';
 import 'package:bsu_control/model/checklist_model.dart';
 import 'package:bsu_control/model/file_model.dart';
 
@@ -42,6 +43,7 @@ class CarRepository extends APIClient implements ICarRepository {
     required CarModel car,
     required List<FileModel?> images,
     required List<OtherChangeModel> others,
+    required List<FileModel> deletedFiles,
   }) async {
     try {
       var doc = colCars.doc(car.id);
@@ -63,8 +65,11 @@ class CarRepository extends APIClient implements ICarRepository {
             throw Exception('Falha ao salvar imagem da alteração.');
           }
 
-          change.image =
-              change.image?.copyWith(name: image.name, url: image.url);
+          change.image = change.image?.copyWith(
+            name: image.name,
+            url: image.url,
+            path: image.path,
+          );
         }
       }
 
@@ -79,7 +84,11 @@ class CarRepository extends APIClient implements ICarRepository {
             throw Exception('Falha ao salvar imagem da alteração do material.');
           }
 
-          other.image = other.image.copyWith(name: image.name, url: image.url);
+          other.image = other.image.copyWith(
+            name: image.name,
+            url: image.url,
+            path: image.path,
+          );
         }
       }
 
@@ -94,10 +103,21 @@ class CarRepository extends APIClient implements ICarRepository {
             throw Exception('Falha ao salvar imagem da vista do carro.');
           }
 
-          imagesProcess[i] =
-              images[i]?.copyWith(name: image.name, url: image.url);
+          imagesProcess[i] = images[i]?.copyWith(
+            name: image.name,
+            url: image.url,
+            path: image.path,
+          );
         } else {
           imagesProcess[i] = images[i];
+        }
+      }
+
+      if (deletedFiles.isNotEmpty) {
+        for (final file in deletedFiles) {
+          if (file.path.isNotEmpty) {
+            await deleteFile(path: file.path, filename: file.name);
+          }
         }
       }
 
@@ -160,8 +180,10 @@ class CarRepository extends APIClient implements ICarRepository {
       }
 
       await firebase!.runTransaction((trans) async {
-        for (final id in statusIDs) {
-          trans.delete(colStatusCars.doc(id));
+        if (statusIDs.isNotEmpty) {
+          for (final id in statusIDs) {
+            trans.delete(colStatusCars.doc(id));
+          }
         }
 
         trans.delete(colCars.doc(car.id));
@@ -176,20 +198,22 @@ class CarRepository extends APIClient implements ICarRepository {
       //       path: Constants.pathCarImages, filename: image?.name ?? '');
       // }
 
-      for (final change in car.changes) {
+      for (final CarChangeModel change in car.changes) {
         if (change.image?.name.isEmpty ?? true) continue;
 
-        await deleteFile(
-            path: Constants.pathCarChangeImages,
-            filename: change.image?.name ?? '');
+        if (change.image?.path.isNotEmpty ?? false) {
+          await deleteFile(
+              path: change.image?.path ?? '',
+              filename: change.image?.name ?? '');
+        }
       }
 
-      for (final other in car.others ?? []) {
-        if (other.image?.name.isEmpty ?? true) continue;
+      for (final OtherChangeModel other in car.others ?? []) {
+        if (other.image.name.isEmpty) continue;
 
-        await deleteFile(
-            path: Constants.pathCarOtherImages,
-            filename: other.image?.name ?? '');
+        if (other.image.path.isNotEmpty) {
+          await deleteFile(path: other.image.path, filename: other.image.name);
+        }
       }
 
       return true;
@@ -257,18 +281,18 @@ class CarRepository extends APIClient implements ICarRepository {
     }
   }
 
-  @override
-  Future<bool> copy({required CarModel car}) async {
-    try {
-      var doc = colCars.doc();
-      car.id = doc.id;
+  // @override
+  // Future<bool> copy({required CarModel car}) async {
+  //   try {
+  //     var doc = colCars.doc();
+  //     car.id = doc.id;
 
-      await doc.set(car.toMap());
-      return true;
-    } catch (e) {
-      rethrow;
-    }
-  }
+  //     await doc.set(car.toMap());
+  //     return true;
+  //   } catch (e) {
+  //     rethrow;
+  //   }
+  // }
 
   @override
   Future<List<ChecklistModel>> getChecklistByMonth({

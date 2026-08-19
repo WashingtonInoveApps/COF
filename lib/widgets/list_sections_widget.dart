@@ -1,15 +1,13 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'dart:developer';
-
 import 'package:bsu_control/widgets/section_widget.dart';
 import 'package:flutter/material.dart';
 
-import 'itens_section_widget.dart';
 import '../core/constants.dart';
 import '../core/sections_controller.dart';
 import '../model/item_model.dart';
 import '../model/section_itens_model.dart';
 import 'alert_message.dart';
+import 'itens_section_widget.dart';
 
 class ListSectionsWidget extends StatefulWidget {
   final List<ItemModel>? itensMaterials;
@@ -46,7 +44,6 @@ class ListSectionsWidget extends StatefulWidget {
 class _ListSectionsWidgetState extends State<ListSectionsWidget> {
   @override
   Widget build(BuildContext context) {
-    log(widget.list.map((e) => e.toJson()).toList().toString());
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/model/car_changes_model.dart';
@@ -31,21 +29,23 @@ class CarChangesWidget extends StatefulWidget {
 
   final Function(List<CarChangeModel> change)? onChange;
   final Function(List<FileModel?> images)? onChangeImages;
+  final Function(FileModel?)? onDelet;
 
-  const CarChangesWidget(
-      {Key? key,
-      this.region = 15,
-      required this.car,
-      this.add = true,
-      this.remove = false,
-      this.register = false,
-      this.checklistID,
-      this.onChange,
-      required this.user,
-      this.update = false,
-      this.onChangeImages,
-      this.changes})
-      : super(key: key);
+  const CarChangesWidget({
+    Key? key,
+    this.region = 15,
+    required this.car,
+    this.add = true,
+    this.remove = false,
+    this.register = false,
+    this.checklistID,
+    this.onChange,
+    required this.user,
+    this.update = false,
+    this.onChangeImages,
+    this.changes,
+    this.onDelet,
+  }) : super(key: key);
 
   @override
   State createState() => _CarChangesWidgetState();
@@ -221,6 +221,9 @@ class _CarChangesWidgetState extends State<CarChangesWidget> {
                                                     List<CarChangeModel>.from(
                                                         widget.car.changes);
 
+                                                widget.onDelet?.call(
+                                                    carChanges[index].image);
+
                                                 carChanges.removeAt(index);
                                                 widget.onChange
                                                     ?.call(carChanges);
@@ -325,6 +328,7 @@ class _CarChangesWidgetState extends State<CarChangesWidget> {
                                 id: const Uuid().v4(),
                                 name: '',
                                 url: '',
+                                path: '',
                                 data: data,
                               );
 
@@ -409,6 +413,7 @@ class _CarChangesWidgetState extends State<CarChangesWidget> {
                                             id: const Uuid().v4(),
                                             name: '',
                                             url: '',
+                                            path: '',
                                             data: data,
                                           );
 
@@ -418,9 +423,17 @@ class _CarChangesWidgetState extends State<CarChangesWidget> {
                                               List<CarChangeModel>.from(
                                                   widget.car.changes);
 
-                                          carChanges.removeWhere((e) =>
-                                              e.indexImage == indexImage);
-                                          widget.onChange?.call(carChanges);
+                                          final index = carChanges.indexWhere(
+                                              (e) =>
+                                                  e.indexImage == indexImage);
+
+                                          if (index != -1) {
+                                            widget.onDelet
+                                                ?.call(carChanges[index].image);
+
+                                            carChanges.removeAt(index);
+                                            widget.onChange?.call(carChanges);
+                                          }
                                         });
                                       }
                                     });
@@ -457,9 +470,17 @@ class _CarChangesWidgetState extends State<CarChangesWidget> {
                                               List<CarChangeModel>.from(
                                                   widget.car.changes);
 
-                                          carChanges.removeWhere((e) =>
-                                              e.indexImage == indexImage);
-                                          widget.onChange?.call(carChanges);
+                                          final index = carChanges.indexWhere(
+                                              (e) =>
+                                                  e.indexImage == indexImage);
+
+                                          if (index != -1) {
+                                            widget.onDelet
+                                                ?.call(carChanges[index].image);
+
+                                            carChanges.removeAt(index);
+                                            widget.onChange?.call(carChanges);
+                                          }
                                         }
                                       });
                                     }
@@ -593,8 +614,6 @@ Widget paintChangesImage(
     required double widthImage}) {
   final changesImage = changes.where((e) => e.imageID == imageID).toList();
 
-  log('Changes Image: ${changesImage.length}');
-
   return Stack(
     key: key,
     children: [
@@ -605,8 +624,6 @@ Widget paintChangesImage(
       ),
       ...List.generate(changesImage.length, (index) {
         final change = changesImage[index];
-
-        log(change.toJson());
 
         final px = change.dx * widthImage;
         final py = change.dy * heightImage;

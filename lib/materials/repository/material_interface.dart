@@ -1,3 +1,4 @@
+import 'package:bsu_control/model/file_model.dart';
 import 'package:bsu_control/model/item_model.dart';
 import 'package:bsu_control/model/outher_changes_model.dart';
 
@@ -16,5 +17,10 @@ abstract class IMaterialRepository {
   Future<bool> saveMaterialChecklist({
     required MaterialChecklistModel material,
     required List<OtherChangeModel> changes,
+    required List<FileModel> deletedFiles,
+  });
+
+  Future<bool> deleteMaterialChecklist({
+    required MaterialChecklistModel material,
   });
 }

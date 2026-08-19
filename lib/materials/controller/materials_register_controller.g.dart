@@ -28,13 +28,13 @@ mixin _$MaterialsRegisterController on _MaterialsRegisterControllerBase, Store {
       Atom(name: '_MaterialsRegisterControllerBase.images', context: context);
 
   @override
-  ObservableList<dynamic> get images {
+  ObservableList<FileModel> get images {
     _$imagesAtom.reportRead();
     return super.images;
   }
 
   @override
-  set images(ObservableList<dynamic> value) {
+  set images(ObservableList<FileModel> value) {
     _$imagesAtom.reportWrite(value, super.images, () {
       super.images = value;
     });

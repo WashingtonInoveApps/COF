@@ -1,13 +1,11 @@
-import 'dart:developer';
-
 import 'package:bsu_control/app_controller.dart';
+import 'package:bsu_control/checklist/view/pages/checklist_car_page.dart';
+import 'package:bsu_control/checklist/view/pages/checklist_infor_page.dart';
+import 'package:bsu_control/checklist/view/pages/checklist_section_page.dart';
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/main.dart';
 import 'package:bsu_control/model/checklist_model.dart';
 import 'package:bsu_control/model/item_model.dart';
-import 'package:bsu_control/checklist/view/pages/checklist_car_page.dart';
-import 'package:bsu_control/checklist/view/pages/checklist_infor_page.dart';
-import 'package:bsu_control/checklist/view/pages/checklist_section_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
@@ -228,7 +226,6 @@ class _ChecklistRegisterPageState extends State<ChecklistRegisterPage> {
               ],
             ),
             childLeft: Observer(builder: (_) {
-              log('Step: ${controller.step}');
               return AnimatedSwitcher(
                 duration: const Duration(milliseconds: 300),
                 child: pages[controller.step],

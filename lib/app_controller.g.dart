@@ -227,6 +227,22 @@ mixin _$AppController on _AppControllerBase, Store {
     });
   }
 
+  late final _$notificationsAtom =
+      Atom(name: '_AppControllerBase.notifications', context: context);
+
+  @override
+  List<NotificationModel> get notifications {
+    _$notificationsAtom.reportRead();
+    return super.notifications;
+  }
+
+  @override
+  set notifications(List<NotificationModel> value) {
+    _$notificationsAtom.reportWrite(value, super.notifications, () {
+      super.notifications = value;
+    });
+  }
+
   late final _$usersAtom =
       Atom(name: '_AppControllerBase.users', context: context);
 
@@ -255,7 +271,7 @@ mixin _$AppController on _AppControllerBase, Store {
       ActionController(name: '_AppControllerBase', context: context);
 
   @override
-  dynamic setUser(UserModel value) {
+  void setUser(UserModel value) {
     final _$actionInfo = _$_AppControllerBaseActionController.startAction(
         name: '_AppControllerBase.setUser');
     try {
@@ -266,7 +282,7 @@ mixin _$AppController on _AppControllerBase, Store {
   }
 
   @override
-  dynamic changeMenuOpen() {
+  void changeMenuOpen() {
     final _$actionInfo = _$_AppControllerBaseActionController.startAction(
         name: '_AppControllerBase.changeMenuOpen');
     try {
@@ -277,7 +293,7 @@ mixin _$AppController on _AppControllerBase, Store {
   }
 
   @override
-  dynamic setRouter(int value) {
+  void setRouter(int value) {
     final _$actionInfo = _$_AppControllerBaseActionController.startAction(
         name: '_AppControllerBase.setRouter');
     try {
@@ -288,7 +304,7 @@ mixin _$AppController on _AppControllerBase, Store {
   }
 
   @override
-  dynamic setCheckListVeicular(bool value) {
+  void setCheckListVeicular(bool value) {
     final _$actionInfo = _$_AppControllerBaseActionController.startAction(
         name: '_AppControllerBase.setCheckListVeicular');
     try {
@@ -299,7 +315,7 @@ mixin _$AppController on _AppControllerBase, Store {
   }
 
   @override
-  dynamic setCars(List<CarModel> value) {
+  void setCars(List<CarModel> value) {
     final _$actionInfo = _$_AppControllerBaseActionController.startAction(
         name: '_AppControllerBase.setCars');
     try {
@@ -310,7 +326,7 @@ mixin _$AppController on _AppControllerBase, Store {
   }
 
   @override
-  dynamic setUsers(List<UserModel> value) {
+  void setUsers(List<UserModel> value) {
     final _$actionInfo = _$_AppControllerBaseActionController.startAction(
         name: '_AppControllerBase.setUsers');
     try {
@@ -321,7 +337,7 @@ mixin _$AppController on _AppControllerBase, Store {
   }
 
   @override
-  dynamic setChecklistsOperationDay(List<ChecklistModel> value) {
+  void setChecklistsOperationDay(List<ChecklistModel> value) {
     final _$actionInfo = _$_AppControllerBaseActionController.startAction(
         name: '_AppControllerBase.setChecklistsOperationDay');
     try {
@@ -357,6 +373,7 @@ checklistVeicular: ${checklistVeicular},
 modeMOBILE: ${modeMOBILE},
 cars: ${cars},
 checklistsOperationDay: ${checklistsOperationDay},
+notifications: ${notifications},
 users: ${users},
 carsTypes: ${carsTypes},
 newRegister: ${newRegister},

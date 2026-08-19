@@ -251,7 +251,11 @@ class _CarsPageState extends State<CarsPage> {
                 ],
               ),
             ),
-            app.modeMOBILE ? Container() : const Divider(),
+            app.modeMOBILE
+                ? const SizedBox(
+                    height: 10,
+                  )
+                : const Divider(),
             const SizedBox(
               height: 10,
             ),

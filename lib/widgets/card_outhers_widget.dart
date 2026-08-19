@@ -1,6 +1,7 @@
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/model/outher_changes_model.dart';
+import 'package:bsu_control/widgets/alert_message.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -131,16 +132,35 @@ class CardOutherChange extends StatelessWidget {
                 other.description,
                 style: Constants.title,
               ),
+              Core.boldFirstName(
+                  name: other.user.name,
+                  fullName: other.user.fullname,
+                  style: Constants.titleHint),
               Text(
                 Core.formatDate(other.date, largeDayHour: true),
                 style: Constants.subtitleHint,
-              )
+              ),
             ],
           ),
         ),
         (onDelete != null)
             ? IconButton(
-                onPressed: () => onDelete?.call(),
+                onPressed: () {
+                  showDialog(
+                      context: context,
+                      builder: (context) => AlertMessage(
+                            message: 'Deseja deletar esse registro ?',
+                            cancel: true,
+                            titleOK: 'Sim',
+                            onPressedOK: () => Navigator.of(context).pop(true),
+                            onPressedCancel: () =>
+                                Navigator.of(context).pop(false),
+                          )).then((result) {
+                    if (result ?? false) {
+                      onDelete?.call();
+                    }
+                  });
+                },
                 icon: const Icon(
                   Icons.delete,
                   size: 20,

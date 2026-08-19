@@ -5,6 +5,7 @@ class FileModel {
   String id;
   String name;
   String url;
+  String path;
 
   Uint8List? data;
 
@@ -12,6 +13,7 @@ class FileModel {
     required this.id,
     required this.name,
     required this.url,
+    required this.path,
     this.data,
   });
 
@@ -19,11 +21,13 @@ class FileModel {
     String? id,
     String? name,
     String? url,
+    String? path,
   }) {
     return FileModel(
       id: id ?? this.id,
       name: name ?? this.name,
       url: url ?? this.url,
+      path: path ?? this.path,
     );
   }
 
@@ -32,6 +36,7 @@ class FileModel {
       'id': id,
       'name': name,
       'url': url,
+      'path': path,
     };
   }
 
@@ -40,6 +45,7 @@ class FileModel {
       id: map['id'],
       name: map['name'] ?? '',
       url: map['url'] ?? '',
+      path: map['path'] ?? '',
     );
   }
 

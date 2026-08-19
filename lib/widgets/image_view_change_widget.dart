@@ -1,6 +1,7 @@
 //Adicionar imagem e descrição.
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/core.dart';
+import 'package:bsu_control/widgets/alert_message.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -44,37 +45,38 @@ class _ImageViewChangeWidgetState extends State<ImageViewChangeWidget> {
           children: [
             Stack(
               children: [
-                widget.change.image?.data != null
-                    ? Image.memory(
-                        widget.change.image!.data!,
-                        // height: heightImage,
-                        width: widthImage,
-                        fit: BoxFit.cover,
-                      )
-                    : kIsWeb
-                        ? Image.network(
-                            widget.change.image?.url ?? '',
-                            // height: heightImage,
-                            width: widthImage,
-                            fit: BoxFit.cover,
-                          )
-                        : CachedNetworkImage(
-                            imageUrl: widget.change.image?.url ?? '',
-                            // height: heightImage,
-                            width: widthImage,
-                            progressIndicatorBuilder:
-                                (context, url, downloadProgress) => Center(
-                              child: CircularProgressIndicator(
-                                  color: Constants.primary,
-                                  value: downloadProgress.progress),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(5),
+                  child: widget.change.image?.data != null
+                      ? Image.memory(
+                          widget.change.image!.data!,
+                          width: widthImage,
+                          fit: BoxFit.cover,
+                        )
+                      : kIsWeb
+                          ? Image.network(
+                              widget.change.image?.url ?? '',
+                              width: widthImage,
+                              fit: BoxFit.cover,
+                            )
+                          : CachedNetworkImage(
+                              imageUrl: widget.change.image?.url ?? '',
+                              width: widthImage,
+                              progressIndicatorBuilder:
+                                  (context, url, downloadProgress) => Center(
+                                child: LinearProgressIndicator(
+                                    color: Constants.primary,
+                                    value: downloadProgress.progress),
+                              ),
+                              errorWidget: (context, url, error) =>
+                                  const Center(
+                                      child: Icon(
+                                Icons.error,
+                                size: 60.0,
+                              )),
+                              fit: BoxFit.cover,
                             ),
-                            errorWidget: (context, url, error) => const Center(
-                                child: Icon(
-                              Icons.error,
-                              size: 60.0,
-                            )),
-                            fit: BoxFit.cover,
-                          ),
+                ),
                 Positioned(
                     top: 10.0,
                     right: 10.0,
@@ -84,8 +86,24 @@ class _ImageViewChangeWidgetState extends State<ImageViewChangeWidget> {
                         widget.enable
                             ? InkWell(
                                 onTap: () {
-                                  widget.onRemove();
-                                  Navigator.of(context).pop();
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) => AlertMessage(
+                                          title: '',
+                                          message:
+                                              'Deseja remover as alterações constada na imagem ?',
+                                          titleOK: 'Sim',
+                                          cancel: true,
+                                          onPressedCancel: () =>
+                                              Navigator.of(context).pop(false),
+                                          onPressedOK: () =>
+                                              Navigator.of(context)
+                                                  .pop(true))).then((result) {
+                                    if (result ?? false) {
+                                      widget.onRemove();
+                                      Navigator.of(context).pop();
+                                    }
+                                  });
                                 },
                                 child: CircleAvatar(
                                     radius: 20,
@@ -113,7 +131,7 @@ class _ImageViewChangeWidgetState extends State<ImageViewChangeWidget> {
               ],
             ),
             Padding(
-              padding: const EdgeInsets.all(5),
+              padding: const EdgeInsets.all(10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

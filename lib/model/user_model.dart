@@ -74,11 +74,8 @@ class UserModel {
       'name': name,
       'ciaID': ciaID,
       'registration': registration,
-      'contact': contact,
-      'email': email,
       'graduation': graduation,
       'obmID': obmID,
-      'cia': cia?.toMapResume(),
       'fullname': fullname
     };
   }
@@ -93,7 +90,7 @@ class UserModel {
       email: map['email'] ?? '',
       graduation: map['graduation'] ?? '',
       obmID: map['obmID'] ?? '',
-      cia: (map['cia'] != null) ? CiaModel.fromMap(map['cia']) : null,
+      cia: (map['cia'] != null) ? CiaModel.fromMapResume(map['cia']) : null,
       fullname: map['fullname'] ?? '',
       acessToken: map['acessToken'] ?? '',
       codeVerifyPassword: map['codeVerifyPassword'] ?? '',
@@ -111,12 +108,9 @@ class UserModel {
         id: map['id'],
         name: map['name'] ?? '',
         registration: map['registration'] ?? '',
-        contact: map['contact'] ?? '',
-        email: map['email'] ?? '',
         graduation: map['graduation'] ?? '',
         obmID: map['obmID'] ?? '',
         ciaID: map['ciaID'] ?? '',
-        cia: (map['cia'] != null) ? CiaModel.fromMap(map['cia']) : null,
         fullname: map['fullname'] ?? '');
   }
 

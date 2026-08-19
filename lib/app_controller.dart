@@ -13,6 +13,7 @@ import 'package:bsu_control/model/user_model.dart';
 import 'package:mobx/mobx.dart';
 
 import 'model/checklist_model.dart';
+import 'model/notification_model.dart';
 
 part 'app_controller.g.dart';
 
@@ -70,6 +71,9 @@ abstract class _AppControllerBase with Store {
   @observable
   List<ChecklistModel> checklistsOperationDay =
       <ChecklistModel>[].asObservable();
+
+  @observable
+  List<NotificationModel> notifications = <NotificationModel>[].asObservable();
 
   @observable
   List<UserModel> users = <UserModel>[].asObservable();
@@ -150,19 +154,19 @@ abstract class _AppControllerBase with Store {
   }
 
   @action
-  setUser(UserModel value) => user = value;
+  void setUser(UserModel value) => user = value;
 
   @action
-  changeMenuOpen() => menuOpen = !menuOpen;
+  void changeMenuOpen() => menuOpen = !menuOpen;
 
   @action
-  setRouter(int value) {
+  void setRouter(int value) {
     router = value;
     menuOpen = false;
   }
 
   @action
-  setCheckListVeicular(bool value) => checklistVeicular = value;
+  void setCheckListVeicular(bool value) => checklistVeicular = value;
 
   Stream<List<ChecklistModel>> listenChecklistOperationDay() {
     final dateReference = Core.getOperationalDay(DateTime.now());
@@ -173,14 +177,32 @@ abstract class _AppControllerBase with Store {
   }
 
   @action
-  setCars(List<CarModel> value) {
+  void setCars(List<CarModel> value) {
+    notifications.clear();
+
+    for (final car in value) {
+      if (car.km > car.oil && car.oil > 0) {
+        notifications.add(NotificationModel(
+          description:
+              'Verifique o oléo do veículo ${car.prefix}, já está na hora de realizar a troca.',
+        ));
+      }
+
+      if (car.oil <= 0) {
+        notifications.add(NotificationModel(
+          description:
+              'Adicione a KM da próxima troca de oléo do veículo: ${car.prefix}',
+        ));
+      }
+    }
+
     cars
       ..clear()
       ..addAll(value);
   }
 
   @action
-  setUsers(List<UserModel> value) {
+  void setUsers(List<UserModel> value) {
     users
       ..clear()
       ..addAll(value);
@@ -189,7 +211,7 @@ abstract class _AppControllerBase with Store {
   }
 
   @action
-  setChecklistsOperationDay(List<ChecklistModel> value) {
+  void setChecklistsOperationDay(List<ChecklistModel> value) {
     value.sort((a, b) => a.date.compareTo(b.date));
 
     checklistsOperationDay

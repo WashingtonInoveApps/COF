@@ -442,7 +442,10 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 10),
                 Text(
                   'Develop by SD BM Washington - version ${app.version}',
-                  style: Constants.subtitle.copyWith(color: Colors.grey),
+                  style: Constants.subtitle.copyWith(
+                    color: Colors.grey,
+                    fontSize: 10,
+                  ),
                   textAlign: TextAlign.center,
                 ),
               ],

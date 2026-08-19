@@ -9,6 +9,7 @@ import 'package:bsu_control/materials/view/materials_page.dart';
 import 'package:bsu_control/model/item_model.dart';
 import 'package:bsu_control/model/material_checklist_model.dart';
 import 'package:bsu_control/model/section_itens_model.dart';
+import 'package:bsu_control/widgets/container_custom_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
@@ -25,9 +26,16 @@ import '../../widgets/image_change_widget.dart';
 import '../../widgets/list_sections_widget.dart';
 
 class MaterialChecklistRegisterPage extends StatefulWidget {
+  final bool copied;
   final MaterialChecklistModel? material;
-  const MaterialChecklistRegisterPage({Key? key, this.material})
-      : super(key: key);
+  final MaterialsController controller;
+
+  const MaterialChecklistRegisterPage({
+    Key? key,
+    this.material,
+    required this.controller,
+    this.copied = false,
+  }) : super(key: key);
 
   @override
   State createState() => _MaterialChecklistRegisterPageState();
@@ -46,15 +54,13 @@ class _MaterialChecklistRegisterPageState
   void initState() {
     super.initState();
 
-    controller = MaterialsController(
-      config: config,
-      obmID: app.user.obmID,
-    );
+    controller = widget.controller;
 
     register = MaterialsRegisterController(
       obms: app.obms,
       init: widget.material,
       user: app.user,
+      checklists: controller.materialsChecklist,
     );
 
     controller.getMaterialsWarehouse().then((value) {
@@ -64,20 +70,18 @@ class _MaterialChecklistRegisterPageState
 
   @override
   Widget build(BuildContext context) {
-    final update = (widget.material != null);
+    final update = (widget.material != null && !widget.copied);
 
     return Stack(
       children: [
         BackgraundPage(
-          menu: (widget.material == null),
-          onBack: (widget.material == null)
-              ? null
-              : () => Navigator.of(context).pop(),
+          menu: false,
+          onBack: () => Navigator.of(context).pop(),
           top: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Registro de Checklist do Material',
+                '${update ? "Alteração" : "Registro"} de Checklist do Material',
                 style: Constants.title.copyWith(fontSize: 18),
               ),
               const Divider(),
@@ -93,17 +97,7 @@ class _MaterialChecklistRegisterPageState
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                      color: Constants.primary,
-                      borderRadius: BorderRadius.circular(5)),
-                  child: Text(
-                    "INFORMAÇÕES BÁSICAS",
-                    style: Constants.titleButton,
-                  ),
-                ),
+                const ContainerCustom(label: "INFORMAÇÕES BÁSICAS"),
                 Text(
                   "ORGANIZAÇÃO",
                   style: Constants.titleHint,
@@ -267,17 +261,7 @@ class _MaterialChecklistRegisterPageState
                         )
                       : Container();
                 }),
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                      color: Constants.primary,
-                      borderRadius: BorderRadius.circular(5)),
-                  child: Text(
-                    'OUTRAS ALTERAÇÕES',
-                    style: Constants.titleButton,
-                  ),
-                ),
+                const ContainerCustom(label: 'OUTRAS ALTERAÇÕES'),
                 Observer(builder: (context) {
                   return register.changes.isEmpty
                       ? Text(
@@ -287,12 +271,13 @@ class _MaterialChecklistRegisterPageState
                       : Column(
                           children:
                               List.generate(register.changes.length, (index) {
-                            final outher = register.changes[index];
+                            final other = register.changes[index];
 
                             return CardOutherChange(
-                              other: outher,
+                              other: other,
                               onDelete: () {
-                                // controller.deleteOuhtersChange(index);
+                                register.deletedFiles(other.image);
+                                register.deleteChange(index);
                               },
                             );
                           })
@@ -313,6 +298,7 @@ class _MaterialChecklistRegisterPageState
                                       date: DateTime.now(),
                                       description: description,
                                       image: image,
+                                      user: app.user,
                                     ));
                                   },
                                 ));
@@ -336,17 +322,7 @@ class _MaterialChecklistRegisterPageState
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                          color: Constants.primary,
-                          borderRadius: BorderRadius.circular(5)),
-                      child: Text(
-                        "ITENS OU ACESSÓRIOS",
-                        style: Constants.titleButton,
-                      ),
-                    ),
+                    const ContainerCustom(label: "ITENS OU ACESSÓRIOS"),
                     Observer(builder: (context) {
                       return ListSectionsWidget(
                           list: List<SectionItensModel>.from(
@@ -407,17 +383,7 @@ class _MaterialChecklistRegisterPageState
                             );
                           });
                     }),
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                          color: Constants.primary,
-                          borderRadius: BorderRadius.circular(5)),
-                      child: Text(
-                        "MATERIAIS",
-                        style: Constants.titleButton,
-                      ),
-                    ),
+                    const ContainerCustom(label: "MATERIAIS"),
                     Observer(builder: (context) {
                       return ListSectionsWidget(
                           itensMaterials: materials,
@@ -479,21 +445,25 @@ class _MaterialChecklistRegisterPageState
                             );
                           });
                     }),
+                    const SizedBox(
+                      height: 10,
+                    ),
                     Row(
                       spacing: 10,
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        if (widget.material != null)
-                          SizedBox(
-                            height: 45.0,
-                            width: 120,
-                            child: ElevatedButton(
-                                onPressed: () async {},
-                                child: Text(
-                                  "Excluir",
-                                  style: Constants.titleButton,
-                                )),
-                          ),
+                        SizedBox(
+                          height: 45.0,
+                          width: 120,
+                          child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.grey),
+                              onPressed: () => Navigator.of(context).pop(),
+                              child: Text(
+                                'Cancelar',
+                                style: Constants.titleButton,
+                              )),
+                        ),
                         SizedBox(
                           height: 45.0,
                           width: 120,
@@ -508,9 +478,10 @@ class _MaterialChecklistRegisterPageState
                                       .saveMaterialChecklist(
                                     material: register.material,
                                     changes: register.changes,
+                                    deletedFiles: register.deletFiles,
                                   )
                                       .then((_) {
-                                    if (update) {
+                                    if (update || widget.copied) {
                                       Navigator.of(context).pop();
                                     } else {
                                       app.setRouter(7);

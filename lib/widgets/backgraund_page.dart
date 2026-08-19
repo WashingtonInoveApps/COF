@@ -11,6 +11,7 @@ import 'package:bsu_control/login/view/login_page.dart';
 import 'package:bsu_control/materials/view/material_checklist_register_page.dart';
 import 'package:bsu_control/materials/view/material_warehouse_page.dart';
 import 'package:bsu_control/materials/view/materials_page.dart';
+import 'package:bsu_control/model/notification_model.dart';
 import 'package:bsu_control/model/obm_model.dart';
 import 'package:bsu_control/model/user_model.dart';
 import 'package:bsu_control/user/view/user_register_page.dart';
@@ -284,7 +285,7 @@ class _BackgraundPageState extends State<BackgraundPage> {
                         return ElevatedButton(
                           style: style(
                             router: this.controller.router,
-                            selects: [7, 8, 9],
+                            selects: [7, 8],
                           ),
                           onPressed: () {
                             controller.isOpen
@@ -298,51 +299,29 @@ class _BackgraundPageState extends State<BackgraundPage> {
                         );
                       },
                       menuChildren: [
-                        SubmenuButton(
-                            menuChildren: [
-                              MenuItemButton(
-                                child: Text(
-                                  'Registrados',
-                                  style: Constants.title,
-                                ),
-                                onPressed: () {
-                                  if (controller.router != 7) {
-                                    controller.setRouter(7);
-                                    Navigator.of(context).pushReplacement(
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                const MaterialsPage()));
-                                  }
-                                },
-                              ),
-                              MenuItemButton(
-                                child: Text(
-                                  'Novo registro',
-                                  style: Constants.title,
-                                ),
-                                onPressed: () {
-                                  if (controller.router != 8) {
-                                    controller.setRouter(8);
-                                    Navigator.of(context).pushReplacement(
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                const MaterialChecklistRegisterPage()));
-                                  }
-                                },
-                              )
-                            ],
-                            child: Text(
-                              'Checklist',
-                              style: Constants.title,
-                            )),
+                        MenuItemButton(
+                          child: Text(
+                            'Checklist',
+                            style: Constants.title,
+                          ),
+                          onPressed: () {
+                            if (controller.router != 7) {
+                              controller.setRouter(7);
+                              Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const MaterialsPage()));
+                            }
+                          },
+                        ),
                         MenuItemButton(
                           child: Text(
                             'Almoxarifado',
                             style: Constants.title,
                           ),
                           onPressed: () {
-                            if (controller.router != 9) {
-                              controller.setRouter(9);
+                            if (controller.router != 8) {
+                              controller.setRouter(8);
                               Navigator.of(context).pushReplacement(
                                   MaterialPageRoute(
                                       builder: (context) =>
@@ -363,7 +342,7 @@ class _BackgraundPageState extends State<BackgraundPage> {
                         return ElevatedButton(
                           style: style(
                             router: this.controller.router,
-                            selects: [10, 11],
+                            selects: [9, 10],
                           ),
                           onPressed: () {
                             controller.isOpen
@@ -383,8 +362,8 @@ class _BackgraundPageState extends State<BackgraundPage> {
                             style: Constants.title,
                           ),
                           onPressed: () {
-                            if (controller.router != 10) {
-                              controller.setRouter(10);
+                            if (controller.router != 9) {
+                              controller.setRouter(9);
                               Navigator.of(context).pushReplacement(
                                   MaterialPageRoute(
                                       builder: (context) => const UsersPage()));
@@ -397,8 +376,8 @@ class _BackgraundPageState extends State<BackgraundPage> {
                             style: Constants.title,
                           ),
                           onPressed: () {
-                            if (controller.router != 11) {
-                              controller.setRouter(11);
+                            if (controller.router != 10) {
+                              controller.setRouter(10);
                               Navigator.of(context).pushReplacement(
                                   MaterialPageRoute(
                                       builder: (context) =>
@@ -430,13 +409,11 @@ class _BackgraundPageState extends State<BackgraundPage> {
               width: double.infinity,
               constraints: BoxConstraints(maxWidth: controller.maxWidth),
               margin: const EdgeInsets.all(5),
-              padding: const EdgeInsets.all(10),
+              padding: const EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
                   color: Colors.white, borderRadius: BorderRadius.circular(5)),
               child: SingleChildScrollView(
                 physics: const ClampingScrollPhysics(),
-                // keyboardDismissBehavior:
-                //     ScrollViewKeyboardDismissBehavior.onDrag,
                 padding: EdgeInsets.only(
                   bottom: MediaQuery.of(context).viewInsets.bottom + 20,
                 ),
@@ -444,26 +421,9 @@ class _BackgraundPageState extends State<BackgraundPage> {
                   children: [
                     SizedBox(
                       width: double.infinity,
-                      child: Wrap(
-                        spacing: 10,
-                        alignment: WrapAlignment.spaceBetween,
-                        crossAxisAlignment: WrapCrossAlignment.center,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Container(
-                            width: controller.modeMOBILE ? 200 : 250,
-                            alignment: Alignment.centerLeft,
-                            margin: const EdgeInsets.all(10),
-                            child: InkWell(
-                              onTap: widget.onBack,
-                              child: AspectRatio(
-                                aspectRatio: (controller.modeMOBILE ? 3 : 4),
-                                child: Image.asset(
-                                  'assets/cbmce.png',
-                                  fit: BoxFit.fitWidth,
-                                ),
-                              ),
-                            ),
-                          ),
                           if (controller.modeMOBILE && widget.menu)
                             IconButton(
                                 style: IconButton.styleFrom(
@@ -475,77 +435,150 @@ class _BackgraundPageState extends State<BackgraundPage> {
                                   size: 20,
                                   color: Colors.white,
                                 )),
-                          Container(
-                            width: double.infinity,
-                            constraints: const BoxConstraints(maxWidth: 400),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                Text(
-                                  'Controle Operacional de Frota',
-                                  style: Constants.title.copyWith(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                Text(
-                                  obmUser?.name ?? '',
-                                  style: Constants.title,
-                                ),
-                                const SizedBox(
-                                  height: 2,
-                                ),
-                                PopupMenuButton(
-                                    onSelected: (value) {
-                                      switch (value) {
-                                        case 0:
-                                          Navigator.of(context)
-                                              .pushAndRemoveUntil(
-                                                  MaterialPageRoute(
-                                                      builder: (conext) =>
-                                                          const LoginPage(
-                                                            exit: true,
-                                                          )),
-                                                  (_) => false)
-                                              .then((_) {
-                                            controller.setRouter(0);
-                                            // controller.setDateStartConfig(
-                                            //     DateTime.now().subtract(const Duration(days: 1)));
-                                            // controller.setDateFinishConfig(DateTime.now());
-                                          });
-                                          break;
-                                        default:
-                                          break;
-                                      }
-                                    },
-                                    child: Row(
-                                      spacing: 5,
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        Text(
-                                          controller.user.fullname,
-                                          style: Constants.subtitleHint,
-                                        ),
-                                        const Icon(
-                                          Icons.account_circle_rounded,
-                                          size: 20,
-                                          color: Colors.grey,
-                                        ),
-                                      ],
+                          Expanded(
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Container(
+                                width: double.infinity,
+                                constraints: BoxConstraints(
+                                    maxWidth:
+                                        controller.modeMOBILE ? 200 : 250),
+                                margin: const EdgeInsets.all(10),
+                                child: InkWell(
+                                  onTap: widget.onBack,
+                                  child: AspectRatio(
+                                    aspectRatio:
+                                        (controller.modeMOBILE ? 3 : 4),
+                                    child: Image.asset(
+                                      'assets/cbmce.png',
+                                      fit: BoxFit.fitWidth,
                                     ),
-                                    itemBuilder: (context) {
-                                      return [
-                                        PopupMenuItem(
-                                            value: 0,
-                                            child: Text(
-                                              'Sair',
-                                              style: Constants.title,
-                                            ))
-                                      ];
-                                    }),
-                              ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          PopupMenuButton(
+                            menuPadding: const EdgeInsetsGeometry.all(10),
+                            itemBuilder: (context) {
+                              final notifications = controller.notifications;
+
+                              return [
+                                ...notifications.asMap().entries.expand(
+                                  (entry) {
+                                    final index = entry.key;
+                                    final notification = entry.value;
+
+                                    return <PopupMenuEntry>[
+                                      PopupMenuItem(
+                                        enabled: false,
+                                        padding: EdgeInsets.zero,
+                                        child: Row(
+                                          spacing: 10,
+                                          children: [
+                                            Icon(
+                                              notification.icon,
+                                              color: Colors.orange,
+                                            ),
+                                            Expanded(
+                                              child: Text(
+                                                notification.description,
+                                                style: Constants.title,
+                                                textAlign: TextAlign.justify,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      if (index < notifications.length - 1)
+                                        const PopupMenuDivider(
+                                          thickness: 1,
+                                        ),
+                                    ];
+                                  },
+                                ),
+                              ];
+                            },
+                            child: notificationBT(
+                              list: controller.notifications,
                             ),
                           ),
                         ],
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Container(
+                        width: double.infinity,
+                        constraints: const BoxConstraints(maxWidth: 400),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              'Controle Operacional de Frota',
+                              style: Constants.title.copyWith(
+                                  fontSize: 18, fontWeight: FontWeight.bold),
+                            ),
+                            Text(
+                              obmUser?.name ?? '',
+                              style: Constants.title,
+                            ),
+                            const SizedBox(
+                              height: 2,
+                            ),
+                            PopupMenuButton(
+                                onSelected: (value) {
+                                  switch (value) {
+                                    case 0:
+                                      Navigator.of(context)
+                                          .pushAndRemoveUntil(
+                                              MaterialPageRoute(
+                                                  builder: (conext) =>
+                                                      const LoginPage(
+                                                        exit: true,
+                                                      )),
+                                              (_) => false)
+                                          .then((_) {
+                                        controller.setRouter(0);
+                                        // controller.setDateStartConfig(
+                                        //     DateTime.now().subtract(const Duration(days: 1)));
+                                        // controller.setDateFinishConfig(DateTime.now());
+                                      });
+                                      break;
+                                    default:
+                                      break;
+                                  }
+                                },
+                                child: Row(
+                                  spacing: 5,
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    Text(
+                                      controller.user.fullname,
+                                      style: Constants.subtitleHint,
+                                    ),
+                                    const Icon(
+                                      Icons.account_circle_rounded,
+                                      size: 20,
+                                      color: Colors.grey,
+                                    ),
+                                  ],
+                                ),
+                                itemBuilder: (context) {
+                                  return [
+                                    PopupMenuItem(
+                                        value: 0,
+                                        child: Text(
+                                          'Sair',
+                                          style: Constants.title,
+                                        ))
+                                  ];
+                                }),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                     if (widget.menu)
@@ -607,4 +640,39 @@ class _BackgraundPageState extends State<BackgraundPage> {
       ),
     );
   }
+}
+
+Widget notificationBT({required List<NotificationModel> list}) {
+  return Stack(
+    children: [
+      const CircleAvatar(
+        radius: 24,
+        backgroundColor: Colors.transparent,
+      ),
+      Center(
+        child: CircleAvatar(
+          radius: 18,
+          backgroundColor:
+              list.isNotEmpty ? Constants.primary.withAlpha(50) : Colors.grey,
+          child: const Icon(
+            Icons.notifications_active,
+            size: 20,
+            color: Constants.primary,
+          ),
+        ),
+      ),
+      Positioned(
+          right: 5,
+          bottom: 5,
+          child: CircleAvatar(
+            radius: 10,
+            backgroundColor:
+                list.isNotEmpty ? Constants.primary : Colors.grey.shade300,
+            child: Text(
+              list.length.toString(),
+              style: Constants.subtitle.copyWith(color: Colors.white),
+            ),
+          ))
+    ],
+  );
 }
