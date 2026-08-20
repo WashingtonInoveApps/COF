@@ -3,12 +3,10 @@ import 'dart:convert';
 
 import 'package:bsu_control/model/car_changes_model.dart';
 import 'package:bsu_control/model/car_model.dart';
-import 'package:bsu_control/model/outher_changes_model.dart';
 
 class ChecklistCarModel {
   CarModel car;
   List<CarChangeModel>? changes;
-  List<OtherChangeModel>? others;
   double oil;
   double hidra;
   double fr;
@@ -18,7 +16,6 @@ class ChecklistCarModel {
 
   ChecklistCarModel({
     required this.car,
-    this.others,
     this.changes,
     this.oil = 0.0,
     this.hidra = 0.0,
@@ -32,7 +29,6 @@ class ChecklistCarModel {
     return {
       'car': car.toMapResume(),
       'changes': changes?.map((e) => e.toMap()).toList(),
-      'others': others?.map((e) => e.toMap()).toList(),
       'oil': oil,
       'hidra': hidra,
       'fr': fr,
@@ -49,10 +45,6 @@ class ChecklistCarModel {
           ? List<CarChangeModel>.from(
               map['changes']?.map((x) => CarChangeModel.fromMap(x)))
           : null,
-      others: (map['others'] != null)
-          ? List<OtherChangeModel>.from(
-              map['others']?.map((x) => OtherChangeModel.fromMap(x)))
-          : [],
       oil: map['oil']?.toDouble() ?? 0.0,
       hidra: map['hidra']?.toDouble() ?? 0.0,
       fr: map['fr']?.toDouble() ?? 0.0,
@@ -70,7 +62,6 @@ class ChecklistCarModel {
   ChecklistCarModel copyWith({
     CarModel? car,
     List<CarChangeModel>? changes,
-    List<OtherChangeModel>? others,
     double? oil,
     double? hidra,
     double? fr,
@@ -81,7 +72,6 @@ class ChecklistCarModel {
     return ChecklistCarModel(
       car: car ?? this.car,
       changes: changes ?? this.changes,
-      others: others ?? this.others,
       oil: oil ?? this.oil,
       hidra: hidra ?? this.hidra,
       fr: fr ?? this.fr,

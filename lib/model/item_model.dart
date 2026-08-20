@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
 import 'package:bsu_control/enum/core_enum.dart';
@@ -12,17 +13,21 @@ class ItemModel {
   DateTime? validity;
   ItemStatus status;
   ItemUnit unit;
+  String obmID;
+  String ciaID;
 
   ItemModel({
     required this.id,
     required this.description,
+    this.register = '',
     this.value = false,
     this.quantity = 0,
     this.quantityMarked = 0,
+    this.validity,
     this.status = ItemStatus.normal,
     this.unit = ItemUnit.un,
-    this.validity,
-    this.register = '',
+    this.obmID = '',
+    this.ciaID = '',
   });
 
   Map<String, dynamic> toMap() {
@@ -36,13 +41,37 @@ class ItemModel {
       'status': status.name,
       'unit': unit.name,
       'validity': validity?.millisecondsSinceEpoch,
+      'obmID': obmID,
+      'ciaID': ciaID,
     };
+  }
+
+  Map<String, dynamic> toMapResume() {
+    return {
+      'id': id,
+      'description': description,
+      'value': value,
+      'quantity': quantity,
+      'quantityMarked': quantityMarked,
+    };
+  }
+
+  factory ItemModel.fromMapResume(Map<String, dynamic> map) {
+    return ItemModel(
+      id: map['id'] ?? '',
+      description: map['description'] ?? '',
+      value: map['value'] ?? false,
+      quantity: map['quantity']?.toInt() ?? 0,
+      quantityMarked: map['quantityMarked']?.toInt() ?? 0,
+    );
   }
 
   factory ItemModel.fromMap(Map<String, dynamic> map) {
     return ItemModel(
       id: map['id'] ?? '',
       description: map['description'] ?? '',
+      obmID: map['obmID'] ?? '',
+      ciaID: map['ciaID'] ?? '',
       register: map['register'] ?? '',
       value: map['value'] ?? false,
       quantity: map['quantity']?.toInt() ?? 0,
@@ -72,6 +101,8 @@ class ItemModel {
     String? id,
     String? description,
     String? register,
+    String? obmID,
+    String? ciaID,
     bool? value,
     int? quantity,
     int? quantityMin,
@@ -84,6 +115,8 @@ class ItemModel {
         id: id ?? this.id,
         validity: validity ?? this.validity,
         unit: unit ?? this.unit,
+        obmID: obmID ?? this.obmID,
+        ciaID: ciaID ?? this.ciaID,
         description: description ?? this.description,
         register: register ?? this.register,
         value: value ?? this.value,

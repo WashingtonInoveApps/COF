@@ -14,6 +14,8 @@ class ItensSectionWidget extends StatefulWidget {
   final List<ItemModel>? itensMaterials;
   final ItemModel? item;
   final bool material;
+  final String obmID;
+  final String ciaID;
   final Function(ItemModel) onChange;
 
   const ItensSectionWidget({
@@ -22,6 +24,8 @@ class ItensSectionWidget extends StatefulWidget {
     required this.onChange,
     this.material = false,
     this.itensMaterials,
+    required this.obmID,
+    required this.ciaID,
   }) : super(key: key);
 
   @override
@@ -43,9 +47,20 @@ class _ItensSectionWidgetState extends State<ItensSectionWidget> {
 
     if (widget.itensMaterials != null) {
       item = widget.itensMaterials?.cast<ItemModel?>().first ??
-          ItemModel(id: uid.v4(), description: '');
+          ItemModel(
+            id: uid.v4(),
+            description: '',
+            obmID: widget.obmID,
+            ciaID: widget.ciaID,
+          );
     } else {
-      item = ItemModel(id: uid.v4(), description: '');
+      item = ItemModel(
+        id: uid.v4(),
+        description: '',
+        obmID: widget.obmID,
+        ciaID: widget.ciaID,
+      );
+
       if (widget.item != null) {
         item = ItemModel.fromMap(widget.item!.toMap());
       }

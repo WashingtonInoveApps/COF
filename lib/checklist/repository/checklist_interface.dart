@@ -1,16 +1,12 @@
 import 'dart:typed_data';
 
-import 'package:bsu_control/model/car_changes_model.dart';
 import 'package:bsu_control/model/car_model.dart';
 import 'package:bsu_control/model/checklist_model.dart';
-
-import '../../model/outher_changes_model.dart';
+import 'package:bsu_control/model/material_checklist_model.dart';
 
 abstract class ICheckListRepository {
   Future<bool> save({
     required ChecklistModel checklist,
-    required List<CarChangeModel> changes,
-    required List<OtherChangeModel> others,
   });
 
   Future<bool> delete({
@@ -32,5 +28,9 @@ abstract class ICheckListRepository {
   Stream<List<ChecklistModel>> streamChecklistPeriod({
     required DateTime referenceDateStart,
     required DateTime referenceDateFinish,
+  });
+
+  Future<MaterialChecklistModel?> getChecklistMaterial({
+    required String teamID,
   });
 }

@@ -56,9 +56,10 @@ abstract class _HomeControllerBase with Store {
       final filtered = checklistsPeriod
           .where((e) =>
               ((e.prefix.toLowerCase().contains(filter.toLowerCase())) ||
-                  e.obm.name.toLowerCase().contains(filter.toLowerCase()) ||
-                  ((e.cia?.name.toLowerCase() ?? '')
-                      .contains(filter.toLowerCase())) ||
+                  (e.obm?.name.toLowerCase() ?? '')
+                      .contains(filter.toLowerCase()) ||
+                  (e.cia?.name.toLowerCase().contains(filter.toLowerCase()) ??
+                      false) ||
                   ((e.team?.name.toLowerCase() ?? '')
                       .contains(filter.toLowerCase())) ||
                   (e.state.label.toLowerCase().contains(filter.toLowerCase()))))

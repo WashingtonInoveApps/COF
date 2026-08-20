@@ -6,6 +6,7 @@ import 'package:bsu_control/checklist/view/checklist_register_page.dart';
 import 'package:bsu_control/checklist/view/my_checklist_page.dart';
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/core.dart';
+import 'package:bsu_control/enum/checklist_enum.dart';
 import 'package:bsu_control/home/controller/home_controller.dart';
 import 'package:bsu_control/main.dart';
 import 'package:bsu_control/model/checklist_model.dart';
@@ -220,10 +221,12 @@ class _HomePageState extends State<HomePage> {
                                                                     2);
                                                                 Navigator.of(
                                                                         context)
-                                                                    .pushReplacement(MaterialPageRoute(
-                                                                        builder:
-                                                                            (context) =>
-                                                                                const ChecklistRegisterPage()));
+                                                                    .pushReplacement(
+                                                                        MaterialPageRoute(
+                                                                            builder: (context) =>
+                                                                                const ChecklistRegisterPage(
+                                                                                  type: ChecklistType.vehicular,
+                                                                                )));
                                                                 // }
                                                               })
                                                           : btCustom(

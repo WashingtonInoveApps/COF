@@ -3,11 +3,13 @@ import 'dart:typed_data';
 import 'package:bsu_control/checklist/repository/checklist_interface.dart';
 import 'package:bsu_control/core/api_client.dart';
 import 'package:bsu_control/enum/car_enum.dart';
-import 'package:bsu_control/model/car_changes_model.dart';
+import 'package:bsu_control/enum/checklist_enum.dart';
 import 'package:bsu_control/model/car_model.dart';
 import 'package:bsu_control/model/outher_changes_model.dart';
 
+import '../../core/constants.dart';
 import '../../model/checklist_model.dart';
+import '../../model/material_checklist_model.dart';
 
 class CheckListRepository extends APIClient implements ICheckListRepository {
   CheckListRepository(
@@ -17,69 +19,86 @@ class CheckListRepository extends APIClient implements ICheckListRepository {
   @override
   Future<bool> save({
     required ChecklistModel checklist,
-    required List<CarChangeModel> changes,
-    required List<OtherChangeModel> others,
   }) async {
     try {
       var doc = colChecklist.doc(checklist.id);
-      var docCar = colCars.doc(checklist.vehicular?.car.id);
-
       checklist.id = doc.id;
 
       await firebase!.runTransaction((trans) async {
-        final carData = await docCar.get();
-        final car = CarModel.fromMap(carData.data() as Map<String, dynamic>);
+        if (checklist.vehicular?.changes?.isNotEmpty ?? false) {
+          for (final change in checklist.vehicular!.changes!) {
+            if (change.image?.data != null) {
+              final image = await saveFile(
+                pathStorage:
+                    '${Constants.pathCarChangeImages}/${checklist.prefix}',
+                data: change.image!.data!,
+                filename: checklist.prefix,
+              );
 
-        // for (var change in changes) {
-        //   if (change.fileImage != null) {
-        //     change.image = await saveFile(
-        //         pathStorage: 'imagens/changes/${checklist.prefix}',
-        //         data: change.fileImage!,
-        //         filename:
-        //             '${checklist.prefix}_${DateTime.now().millisecondsSinceEpoch}.png');
+              if (image == null) {
+                throw Exception(
+                    'Falha ao salvar imagens das alterações do veículo.');
+              }
 
-        //     if (change.image == null) {
-        //       return Exception(
-        //           'Falha ao salvar imagem da alteração do veículo.');
-        //     }
+              change.checklistID = checklist.id;
+              change.image = change.image?.copyWith(
+                name: image.name,
+                url: image.url,
+                path: image.path,
+              );
+            }
+          }
+        }
 
-        //     change.checklistID = checklist.id;
-        //   }
-        // }
+        if (checklist.others?.isNotEmpty ?? false) {
+          for (OtherChangeModel other in checklist.others!) {
+            if (other.image.data != null) {
+              final image = await saveFile(
+                pathStorage: Constants.pathOthersImages,
+                data: other.image.data!,
+                filename: other.id,
+              );
 
-        // for (var outher in others) {
-        //   if (outher.fileImage != null) {
-        //     outher.image = await saveFile(
-        //         pathStorage: 'imagens/changes/${checklist.prefix}',
-        //         data: outher.fileImage!,
-        //         filename:
-        //             '${checklist.prefix}_outher_${DateTime.now().millisecondsSinceEpoch}.png');
+              if (image == null) {
+                throw Exception(
+                    'Falha ao salvar imagem das outras alterações.');
+              }
 
-        //     if (outher.image == null) {
-        //       return Exception(
-        //           'Falha ao salvar imagem de outras alterações do veículo.');
-        //     }
-        //   }
-        // }
+              other.checklistID = checklist.id ?? '';
+              other.image = other.image.copyWith(
+                name: image.name,
+                url: image.url,
+                path: image.path,
+              );
+            }
+          }
+        }
 
-        // trans.set(
-        //     doc,
-        //     checklist
-        //         .copyWith(
-        //             outhers: outhers,
-        //             vehicular: checklist.vehicular?.copyWith(
-        //                 changes: changes
-        //                     .where((e) => e.checklistID == checklist.id)
-        //                     .toList()))
-        //         .toMap());
+        if (checklist.type == ChecklistType.vehicular) {
+          trans.update(
+            colCars.doc(checklist.vehicular?.car.id),
+            {
+              'changes': checklist.vehicular?.changes
+                      ?.map((e) => e.toMap())
+                      .toList() ??
+                  [],
+              'km': checklist.startKM,
+              'state': StatusCar.operating.name,
+              // 'others': checklist.others?.map((e) => e.toMap()).toList() ?? [],
+            },
+          );
+        }
 
-        trans.update(
-            docCar,
-            car
+        trans.set(
+            doc,
+            checklist
                 .copyWith(
-                    changes: changes,
-                    km: checklist.startKM,
-                    state: StatusCar.operating)
+                    vehicular: checklist.vehicular?.copyWith(
+                  changes: checklist.vehicular?.changes
+                          ?.where((e) => e.checklistID == checklist.id)
+                          .toList() ??
+                      [],
+                ))
                 .toMap());
       });
 
@@ -201,6 +220,26 @@ class CheckListRepository extends APIClient implements ICheckListRepository {
       return true;
     } catch (e) {
       rethrow;
+    }
+  }
+
+  @override
+  Future<MaterialChecklistModel?> getChecklistMaterial({
+    required String teamID,
+  }) async {
+    try {
+      return await colMaterials
+          .where('teamID', isEqualTo: teamID)
+          .limit(1)
+          .get()
+          .then((query) {
+        final doc = query.docs.first;
+
+        return MaterialChecklistModel.fromMap(
+            doc.data() as Map<String, dynamic>);
+      });
+    } catch (e) {
+      return null;
     }
   }
 }

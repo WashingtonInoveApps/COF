@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
@@ -127,6 +128,8 @@ class _MaterialWarehousePageState extends State<MaterialWarehousePage> {
                                             alignment: Alignment.center,
                                             child: ItensSectionWidget(
                                               material: true,
+                                              ciaID: app.user.ciaID,
+                                              obmID: app.user.obmID,
                                               onChange: (value) {
                                                 controller
                                                     .saveMaterialWarehouse(
@@ -163,7 +166,11 @@ class _MaterialWarehousePageState extends State<MaterialWarehousePage> {
                   ],
                 ),
               ),
-              app.modeMOBILE ? Container() : const Divider(),
+              app.modeMOBILE
+                  ? const SizedBox(
+                      height: 10,
+                    )
+                  : const Divider(),
               const SizedBox(
                 height: 10,
               ),
@@ -313,10 +320,13 @@ class _MaterialWarehousePageState extends State<MaterialWarehousePage> {
                                                 builder: (context) => Center(
                                                       child: ItensSectionWidget(
                                                         material: true,
+                                                        obmID: app.user.obmID,
+                                                        ciaID: app.user.ciaID,
                                                         item: material,
                                                         onChange: (value) {
+                                                          log(value.toJson());
                                                           controller
-                                                              .saveMaterialWarehouse(
+                                                              .updateMaterialWarehouse(
                                                                   material:
                                                                       value)
                                                               .catchError(

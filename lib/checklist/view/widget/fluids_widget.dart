@@ -1,5 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';
 
 import 'package:bsu_control/core/constants.dart';
@@ -43,24 +44,46 @@ class _FluidsWidgetState extends State<FluidsWidget> {
           {required String title,
           required double value,
           required Color color,
+          required IconData icon,
           required Function(double) onChange}) =>
-      Card(
-        child: Container(
-          height: 200,
-          padding: const EdgeInsets.all(10),
-          margin: const EdgeInsets.symmetric(horizontal: 5),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              RotatedBox(
-                quarterTurns: 3,
-                child: Text(
-                  title.toUpperCase(),
-                  style: Constants.subtitle.copyWith(
-                      fontWeight: FontWeight.bold, color: Colors.grey),
+      Container(
+        height: 200,
+        margin: const EdgeInsets.all(5),
+        padding: const EdgeInsets.all(5),
+        decoration: BoxDecoration(
+          color: Colors.grey.shade200,
+          borderRadius: BorderRadius.circular(5),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            RotatedBox(
+              quarterTurns: 3,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 10.0, top: 2),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        title.toUpperCase(),
+                        style: Constants.subtitle.copyWith(color: Colors.grey),
+                      ),
+                    ),
+                    RotatedBox(
+                      quarterTurns: -3,
+                      child: Icon(
+                        icon,
+                        color: Colors.grey,
+                        size: 20,
+                      ),
+                    )
+                  ],
                 ),
               ),
-              SfSlider.vertical(
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 5.0),
+              child: SfSlider.vertical(
                 min: 0.0,
                 max: 3.0,
                 stepSize: 0.5,
@@ -74,49 +97,62 @@ class _FluidsWidgetState extends State<FluidsWidget> {
                   onChange(result as double);
                 },
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       );
 
   @override
   Widget build(BuildContext context) {
-    return Scrollbar(
-      thumbVisibility: true,
-      trackVisibility: true,
-      controller: scrollController,
-      child: Padding(
-        padding: const EdgeInsets.only(bottom: 10),
-        child: SingleChildScrollView(
-          controller: scrollController,
-          scrollDirection: Axis.horizontal,
-          physics: const BouncingScrollPhysics(),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                nivelContainer(
-                    title: 'Óleo do motor',
-                    color: Colors.brown,
-                    value: widget.oil,
-                    onChange: (value) => widget.onOil?.call(value)),
-                nivelContainer(
-                    title: 'Óleo hidraúlico',
-                    color: Colors.red.shade700,
-                    value: widget.hidra,
-                    onChange: (value) => widget.onHidra?.call(value)),
-                nivelContainer(
-                    title: 'Óleo de freio',
-                    color: Colors.green.shade700,
-                    value: widget.fr,
-                    onChange: (value) => widget.onFr?.call(value)),
-                nivelContainer(
-                    title: 'Água do radiador',
-                    color: Colors.blue.shade700,
-                    value: widget.arref,
-                    onChange: (value) => widget.onArref?.call(value)),
-              ],
+    return Card(
+      // width: double.infinity,
+      // decoration: BoxDecoration(
+      //     color: Colors.grey.shade200, borderRadius: BorderRadius.circular(5)),
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(5.0),
+          child: Scrollbar(
+            thumbVisibility: true,
+            trackVisibility: true,
+            controller: scrollController,
+            child: SingleChildScrollView(
+              controller: scrollController,
+              scrollDirection: Axis.horizontal,
+              physics: const BouncingScrollPhysics(),
+              child: IntrinsicHeight(
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      nivelContainer(
+                          title: 'Óleo do motor',
+                          color: Colors.brown,
+                          icon: Icons.oil_barrel,
+                          value: widget.oil,
+                          onChange: (value) => widget.onOil?.call(value)),
+                      nivelContainer(
+                          title: 'Óleo hidraúlico',
+                          color: Colors.red.shade700,
+                          icon: MdiIcons.steering,
+                          value: widget.hidra,
+                          onChange: (value) => widget.onHidra?.call(value)),
+                      nivelContainer(
+                          title: 'Óleo de freio',
+                          color: Colors.green.shade700,
+                          icon: MdiIcons.carBrakeFluidLevel,
+                          value: widget.fr,
+                          onChange: (value) => widget.onFr?.call(value)),
+                      nivelContainer(
+                          title: 'Água do radiador',
+                          color: Colors.blue.shade700,
+                          icon: MdiIcons.carCoolantLevel,
+                          value: widget.arref,
+                          onChange: (value) => widget.onArref?.call(value)),
+                    ]
+                    //   .expand((widget) => [widget, const VerticalDivider()])
+                    //   .toList()
+                    // ..removeLast(),
+                    ),
+              ),
             ),
           ),
         ),

@@ -2,12 +2,12 @@ import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/model/item_model.dart';
 import 'package:flutter/material.dart';
 
-class ChacklistItemWidget extends StatefulWidget {
+class ChecklistItemWidget extends StatefulWidget {
   // final ItemModel init;
   final ItemModel item;
   final Function(ItemModel)? onChange;
 
-  const ChacklistItemWidget({
+  const ChecklistItemWidget({
     Key? key,
     required this.item,
     this.onChange,
@@ -15,10 +15,10 @@ class ChacklistItemWidget extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<ChacklistItemWidget> createState() => _ChacklistItemWidgetState();
+  State<ChecklistItemWidget> createState() => _ChecklistItemWidgetState();
 }
 
-class _ChacklistItemWidgetState extends State<ChacklistItemWidget> {
+class _ChecklistItemWidgetState extends State<ChecklistItemWidget> {
   int quantity = 0;
   bool enable = false;
 

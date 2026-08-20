@@ -5,6 +5,7 @@ import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/model/section_itens_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../../core/validation.dart';
 import '../../../enum/car_enum.dart';
@@ -227,6 +228,7 @@ class _CarRegisterFunctionPageState extends State<CarRegisterFunctionPage> {
                                     onSelect: (image, description) {
                                       register.addOtherChange(
                                         OtherChangeModel(
+                                          id: const Uuid().v4(),
                                           date: DateTime.now(),
                                           description: description,
                                           image: image,
@@ -247,6 +249,8 @@ class _CarRegisterFunctionPageState extends State<CarRegisterFunctionPage> {
                 ),
                 Observer(builder: (context) {
                   return ListSectionsWidget(
+                      obmID: register.obm?.id ?? '',
+                      ciaID: register.cia?.id ?? '',
                       list:
                           List<SectionItensModel>.from(register.sectionsItens),
                       onAddSections: (value) {

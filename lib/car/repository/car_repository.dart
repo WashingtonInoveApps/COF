@@ -76,7 +76,7 @@ class CarRepository extends APIClient implements ICarRepository {
       for (OtherChangeModel other in others) {
         if (other.image.data != null) {
           final image = await saveFile(
-              pathStorage: '${Constants.pathCarOtherImages}/$prefix',
+              pathStorage: Constants.pathOthersImages,
               data: other.image.data!,
               filename: prefix);
 

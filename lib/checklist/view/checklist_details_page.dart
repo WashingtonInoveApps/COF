@@ -125,6 +125,7 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
                                           MaterialPageRoute(
                                               builder: (context) =>
                                                   ChecklistRegisterPage(
+                                                    type: checklist.type,
                                                     checklist: checklist,
                                                   )));
                                     },

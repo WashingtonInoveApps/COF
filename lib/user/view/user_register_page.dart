@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/validation.dart';

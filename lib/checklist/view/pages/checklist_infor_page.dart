@@ -4,23 +4,26 @@ import 'package:bsu_control/model/cia_model.dart';
 import 'package:bsu_control/model/obm_model.dart';
 import 'package:bsu_control/model/team_model.dart';
 import 'package:bsu_control/model/user_model.dart';
-import 'package:bsu_control/checklist/controller/checklist_controller.dart';
+import 'package:bsu_control/widgets/container_custom_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 import '../../../widgets/textfield_widget.dart';
+import '../../controller/checklist_register_controller.dart';
 
 class CheckListInforPage extends StatefulWidget {
   final UserModel user;
   final List<OBMModel> obms;
-  final CheckListController controller;
+  final ChecklistRegisterController controller;
+  final Function(TeamModel?) changeTeam;
 
   const CheckListInforPage({
     Key? key,
     required this.controller,
     required this.obms,
     required this.user,
+    required this.changeTeam,
   }) : super(key: key);
 
   @override
@@ -28,7 +31,7 @@ class CheckListInforPage extends StatefulWidget {
 }
 
 class _CheckListInforPageState extends State<CheckListInforPage> {
-  late CheckListController controller;
+  late ChecklistRegisterController controller;
 
   final maskContact = MaskTextInputFormatter(
       mask: '(##) #####-####',
@@ -41,7 +44,6 @@ class _CheckListInforPageState extends State<CheckListInforPage> {
   void initState() {
     super.initState();
     controller = widget.controller;
-    controller.setOBM(widget.obms.firstWhere((e) => e.id == widget.user.obmID));
   }
 
   @override
@@ -55,17 +57,7 @@ class _CheckListInforPageState extends State<CheckListInforPage> {
           const SizedBox(
             height: 10,
           ),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-                color: Constants.primary,
-                borderRadius: BorderRadius.circular(5)),
-            child: Text(
-              'INFORMAÇÕES BÁSICAS',
-              style: Constants.titleButton,
-            ),
-          ),
+          const ContainerCustom(label: 'INFORMAÇÕES BÁSICAS'),
           const SizedBox(
             height: 10,
           ),
@@ -142,137 +134,187 @@ class _CheckListInforPageState extends State<CheckListInforPage> {
                   value: controller.obm,
                   underline: Container(),
                   onChanged: controller.setOBM,
-                  items: widget.obms
-                      .map((e) => DropdownMenuItem(
-                            value: e,
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 5),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    e.prefix,
-                                    style: Constants.title,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  Text(
-                                    e.name,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: Constants.subtitle
-                                        .copyWith(color: Colors.grey),
-                                  ),
-                                ],
+                  items: [
+                    DropdownMenuItem(
+                        value: null,
+                        child: Text(
+                          'Selecione',
+                          style: Constants.title,
+                        )),
+                    ...widget.obms
+                        .map((e) => DropdownMenuItem(
+                              value: e,
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 5),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      e.prefix,
+                                      style: Constants.title,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    Text(
+                                      e.name,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: Constants.subtitle
+                                          .copyWith(color: Colors.grey),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                          ))
-                      .toList());
+                            ))
+                        .toList()
+                  ]);
             }),
           ),
           Observer(builder: (context) {
-            return Visibility(
-                visible: (controller.cia != null),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Text.rich(
-                      TextSpan(text: "COMPANHIA ", children: [
-                        TextSpan(
-                            text: '*',
-                            style: Constants.title.copyWith(color: Colors.red))
-                      ]),
-                      style: Constants.subtitleHint,
-                    ),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    Container(
-                      height: 50.0,
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(horizontal: 5),
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey),
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(5.0)),
-                      child: DropdownButton<CiaModel?>(
-                          isExpanded: true,
-                          value: controller.cia,
-                          underline: Container(),
-                          onChanged: controller.setCia,
-                          items: controller.obm.cias
-                              .map((e) => DropdownMenuItem(
-                                    value: e,
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 5),
-                                      child:
-                                          Text(e.name, style: Constants.title),
-                                    ),
-                                  ))
-                              .toList()),
-                    ),
-                  ],
-                ));
+            return (controller.obm?.cias.isNotEmpty ?? false)
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Text.rich(
+                        TextSpan(text: "COMPANHIA ", children: [
+                          TextSpan(
+                              text: '*',
+                              style:
+                                  Constants.title.copyWith(color: Colors.red))
+                        ]),
+                        style: Constants.subtitleHint,
+                      ),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      Container(
+                        height: 50.0,
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(horizontal: 5),
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey),
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(5.0)),
+                        child: DropdownButton<CiaModel?>(
+                            isExpanded: true,
+                            value: controller.cia,
+                            underline: Container(),
+                            onChanged: controller.setCia,
+                            items: [
+                              DropdownMenuItem(
+                                  value: null,
+                                  child: Text(
+                                    'Selecione',
+                                    style: Constants.title,
+                                  )),
+                              ...controller.obm?.cias
+                                      .map((e) => DropdownMenuItem(
+                                            value: e,
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 5),
+                                              child: Text(e.name,
+                                                  style: Constants.title),
+                                            ),
+                                          ))
+                                      .toList() ??
+                                  []
+                            ]),
+                      ),
+                    ],
+                  )
+                : Container();
           }),
           Observer(builder: (context) {
-            return Visibility(
-                visible: (controller.teams.isNotEmpty),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Text.rich(
-                      TextSpan(text: "GUARNIÇÃO ", children: [
-                        TextSpan(
-                            text: '*',
-                            style: Constants.title.copyWith(color: Colors.red))
-                      ]),
-                      style: Constants.subtitleHint,
-                    ),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    Container(
-                      height: 50.0,
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(horizontal: 5),
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey),
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(5.0)),
-                      child: DropdownButton<TeamModel?>(
-                          isExpanded: true,
-                          value: controller.team,
-                          underline: Container(),
-                          onChanged: controller.setTeam,
-                          items: controller.teams
-                              .map((e) => DropdownMenuItem(
-                                    value: e,
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 5),
-                                      child: Text(
-                                        e.name,
-                                        style: Constants.title,
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                  ))
-                              .toList()),
-                    ),
-                  ],
-                ));
+            return (controller.teams.isNotEmpty)
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Text.rich(
+                        TextSpan(text: "GUARNIÇÃO ", children: [
+                          TextSpan(
+                              text: '*',
+                              style:
+                                  Constants.title.copyWith(color: Colors.red))
+                        ]),
+                        style: Constants.subtitleHint,
+                      ),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      Container(
+                        height: 50.0,
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(horizontal: 5),
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey),
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(5.0)),
+                        child: DropdownButton<TeamModel?>(
+                            isExpanded: true,
+                            value: controller.team,
+                            underline: Container(),
+                            onChanged: (value) {
+                              widget.changeTeam.call(value);
+                              controller.setTeam(value);
+                            },
+                            items: [
+                              DropdownMenuItem(
+                                  value: null,
+                                  child: Text(
+                                    'Selecione',
+                                    style: Constants.title,
+                                  )),
+                              ...controller.teams
+                                  .map((e) => DropdownMenuItem(
+                                        value: e,
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 5),
+                                          child: Text(
+                                            e.name,
+                                            style: Constants.title,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                      ))
+                                  .toList(),
+                            ]),
+                      ),
+                    ],
+                  )
+                : Container();
           }),
+          const SizedBox(
+            height: 10,
+          ),
+          Text.rich(
+            TextSpan(text: "PONTO BASE ", children: [
+              TextSpan(
+                  text: '*', style: Constants.title.copyWith(color: Colors.red))
+            ]),
+            style: Constants.subtitleHint,
+          ),
+          const SizedBox(
+            height: 5,
+          ),
+          FieldText(
+            initValue: controller.pb,
+            hint: "CISP",
+            onChange: controller.setPB,
+            textCase: FieldTextCase.upper,
+          ),
           const SizedBox(
             height: 10,
           ),

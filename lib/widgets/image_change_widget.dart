@@ -28,7 +28,6 @@ class _ImageChangeWidgetState extends State<ImageChangeWidget> {
   Uint8List? data;
   final controller = TextEditingController();
 
-  double heightImage = 300;
   double widthImage = 400;
 
   @override
@@ -64,7 +63,6 @@ class _ImageChangeWidgetState extends State<ImageChangeWidget> {
                         ? Image.memory(
                             data!,
                             width: widthImage,
-                            height: heightImage,
                             fit: BoxFit.cover,
                             filterQuality: FilterQuality.high,
                           )

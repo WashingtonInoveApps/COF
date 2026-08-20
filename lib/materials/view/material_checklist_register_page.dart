@@ -2,7 +2,6 @@ import 'dart:developer';
 
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/constants.dart';
-import 'package:bsu_control/main.dart';
 import 'package:bsu_control/materials/controller/materials_controller.dart';
 import 'package:bsu_control/materials/controller/materials_register_controller.dart';
 import 'package:bsu_control/materials/view/materials_page.dart';
@@ -13,6 +12,7 @@ import 'package:bsu_control/widgets/container_custom_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../model/cia_model.dart';
 import '../../model/obm_model.dart';
@@ -294,12 +294,15 @@ class _MaterialChecklistRegisterPageState
                             builder: (context) => ImageChangeWidget(
                                   aspectRatio: null,
                                   onSelect: (image, description) {
-                                    register.addChange(OtherChangeModel(
-                                      date: DateTime.now(),
-                                      description: description,
-                                      image: image,
-                                      user: app.user,
-                                    ));
+                                    register.addChange(
+                                      OtherChangeModel(
+                                        id: const Uuid().v4(),
+                                        date: DateTime.now(),
+                                        description: description,
+                                        image: image,
+                                        user: app.user,
+                                      ),
+                                    );
                                   },
                                 ));
                       },
@@ -325,6 +328,8 @@ class _MaterialChecklistRegisterPageState
                     const ContainerCustom(label: "ITENS OU ACESSÓRIOS"),
                     Observer(builder: (context) {
                       return ListSectionsWidget(
+                          obmID: app.user.obmID,
+                          ciaID: app.user.ciaID,
                           list: List<SectionItensModel>.from(
                               register.sectionsItens),
                           onAddSections: (value) {
@@ -386,6 +391,8 @@ class _MaterialChecklistRegisterPageState
                     const ContainerCustom(label: "MATERIAIS"),
                     Observer(builder: (context) {
                       return ListSectionsWidget(
+                          obmID: app.user.obmID,
+                          ciaID: app.user.ciaID,
                           itensMaterials: materials,
                           list: List<SectionItensModel>.from(
                               register.sectionsMaterials),

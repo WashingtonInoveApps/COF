@@ -1,9 +1,8 @@
+import 'package:bsu_control/checklist/controller/checklist_controller.dart';
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/core/validation.dart';
 import 'package:bsu_control/model/checklist_model.dart';
-import 'package:bsu_control/checklist/controller/checklist_controller.dart';
-import 'package:bsu_control/checklist/view/widget/insert_material_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:signature/signature.dart';

@@ -32,6 +32,8 @@ class APIClient {
   late CollectionReference colOBMs;
   late CollectionReference colStatusCars;
   late CollectionReference colServices;
+  late CollectionReference colMaterials;
+  late CollectionReference colItens;
 
   APIClient(
       {required this.endpoint,
@@ -55,6 +57,8 @@ class APIClient {
     colOBMs = docApp.collection("obms");
     colStatusCars = docApp.collection("statusCars");
     colServices = docApp.collection("services");
+    colItens = docApp.collection("itens");
+    colMaterials = docApp.collection("materials");
   }
 
   void updateAcessToken({required String token}) {

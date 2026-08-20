@@ -9,6 +9,7 @@ import 'package:bsu_control/model/cia_model.dart';
 import 'package:bsu_control/model/file_model.dart';
 import 'package:bsu_control/model/checklist_material_model.dart';
 import 'package:bsu_control/model/obm_model.dart';
+import 'package:bsu_control/model/outher_changes_model.dart';
 import 'package:bsu_control/model/supply_model.dart';
 import 'package:bsu_control/model/team_model.dart';
 import 'package:bsu_control/model/user_model.dart';
@@ -22,7 +23,7 @@ class ChecklistModel {
   int endKM;
   String userID;
   String obs;
-  OBMModel obm;
+  OBMModel? obm;
   String obmID;
   UserModel user;
   DateTime date;
@@ -34,6 +35,7 @@ class ChecklistModel {
   ChecklistCarModel? vehicular;
   ChecklistMaterialModel? material;
   List<SupplyModel>? supply;
+  List<OtherChangeModel>? others;
   List<StatesChecklist> states;
 
   ChecklistType type;
@@ -62,6 +64,7 @@ class ChecklistModel {
     this.startKM = 0,
     this.endKM = 0,
     this.enable = true,
+    this.others,
     this.obs = "",
   });
 
@@ -73,12 +76,12 @@ class ChecklistModel {
       'pb': pb,
       'signature': signature?.toMap(),
       'team': team?.toMap(),
-      'cia': cia?.toMap(),
+      'cia': cia?.toMapResume(),
       'obmID': obmID,
       'prefix': prefix,
       'startKM': startKM,
       'endKM': endKM,
-      'obm': obm.toMapResume(),
+      'obm': obm?.toMapResume(),
       'id': id,
       'type': type.name,
       'userID': userID,
@@ -90,6 +93,8 @@ class ChecklistModel {
       'date': date.millisecondsSinceEpoch,
       'dateFinish': dateFinish?.millisecondsSinceEpoch,
       'vehicular': vehicular?.toMap(),
+      'material': material?.toMap(),
+      'others': others?.map((e) => e.toMap()).toList(),
       'supply': supply?.map((x) => x.toMap()).toList(),
       'referenceDate': Core.formatDate(reference),
       'referenceYear': reference.year.toString(),
@@ -103,11 +108,18 @@ class ChecklistModel {
       pb: map['pb'] ?? '',
       team: map['team'] != null ? TeamModel.fromMap(map['team']) : null,
       userID: map['userID'] ?? '',
-      cia: map['cia'] != null ? CiaModel.fromMap(map['cia']) : null,
-      obm: OBMModel.fromMapResume(map['obm']),
+      cia: map['cia'] != null ? CiaModel.fromMapResume(map['cia']) : null,
+      obm: map['obm'] != null ? OBMModel.fromMapResume(map['obm']) : null,
       signature: (map['signature'] == null)
           ? null
           : FileModel.fromMap(map['signature']),
+      others: map['others'] != null
+          ? List<OtherChangeModel>.from(
+              (map['others'] as List).map<OtherChangeModel?>(
+                (x) => OtherChangeModel.fromMap(x as Map<String, dynamic>),
+              ),
+            )
+          : null,
       obmID: map['obmID'] ?? '',
       prefix: map['prefix'] ?? '',
       startKM: map['startKM']?.toInt() ?? 0,
@@ -129,6 +141,9 @@ class ChecklistModel {
           : null,
       vehicular: map['vehicular'] != null
           ? ChecklistCarModel.fromMap(map['vehicular'])
+          : null,
+      material: map['material'] != null
+          ? ChecklistMaterialModel.fromMap(map['material'])
           : null,
       supply: List<SupplyModel>.from(
           map['supply']?.map((x) => SupplyModel.fromMap(x))),
@@ -162,6 +177,7 @@ class ChecklistModel {
     DateTime? date,
     DateTime? dateFinish,
     ChecklistCarModel? vehicular,
+    ChecklistMaterialModel? material,
     List<SupplyModel>? supply,
     ChecklistType? type,
     StateProgress? state,
@@ -189,6 +205,7 @@ class ChecklistModel {
       date: date ?? this.date,
       dateFinish: dateFinish ?? this.dateFinish,
       vehicular: vehicular ?? this.vehicular,
+      material: material ?? this.material,
       supply: supply ?? this.supply,
     );
   }

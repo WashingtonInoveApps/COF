@@ -19,22 +19,30 @@ class MaterialRepository extends APIClient implements IMaterialRepository {
 
   @override
   Stream<List<ItemModel>> listenMaterialsWarehouse() {
-    return colOBMs.doc(obmID).collection('itens').snapshots().map(
-        (e) => e.docs.map((doc) => ItemModel.fromMap(doc.data())).toList());
+    return colItens.where('obmID', isEqualTo: obmID).snapshots().map(
+          (e) => e.docs
+              .map((doc) =>
+                  ItemModel.fromMap(doc.data() as Map<String, dynamic>))
+              .toList(),
+        );
   }
 
   @override
   Stream<List<MaterialChecklistModel>> listenMaterialChecklist() {
-    return colOBMs.doc(obmID).collection('materials').snapshots().map((e) => e
-        .docs
-        .map((doc) => MaterialChecklistModel.fromMap(doc.data()))
-        .toList());
+    return colMaterials.where('obmID', isEqualTo: obmID).snapshots().map(
+          (e) => e.docs
+              .map(
+                (doc) => MaterialChecklistModel.fromMap(
+                    doc.data() as Map<String, dynamic>),
+              )
+              .toList(),
+        );
   }
 
   @override
   Future<void> saveMaterialWarehouse({required ItemModel material}) async {
     try {
-      final doc = colOBMs.doc(obmID).collection('itens').doc();
+      final doc = colItens.doc();
       material.id = doc.id;
 
       await doc.set(material.toMap());
@@ -47,8 +55,7 @@ class MaterialRepository extends APIClient implements IMaterialRepository {
   @override
   Future<void> updateMaterialWarehouse({required ItemModel material}) async {
     try {
-      final doc = colOBMs.doc(obmID).collection('itens').doc(material.id);
-      await doc.update(material.toMap());
+      await colItens.doc(material.id).update(material.toMap());
       return;
     } catch (e) {
       rethrow;
@@ -58,7 +65,7 @@ class MaterialRepository extends APIClient implements IMaterialRepository {
   @override
   Future<void> deleteMaterialWarehouse({required ItemModel material}) async {
     try {
-      await colOBMs.doc(obmID).collection('itens').doc(material.id).delete();
+      await colItens.doc(material.id).delete();
       return;
     } catch (e) {
       rethrow;
@@ -68,8 +75,12 @@ class MaterialRepository extends APIClient implements IMaterialRepository {
   @override
   Future<List<ItemModel>> getMaterialsWarehouse() async {
     try {
-      return await colOBMs.doc(obmID).collection('itens').get().then((query) =>
-          query.docs.map((doc) => ItemModel.fromMap(doc.data())).toList());
+      return await colItens.where('obmID', isEqualTo: obmID).get().then(
+            (query) => query.docs
+                .map((doc) =>
+                    ItemModel.fromMap(doc.data() as Map<String, dynamic>))
+                .toList(),
+          );
     } catch (e) {
       rethrow;
     }
@@ -82,8 +93,7 @@ class MaterialRepository extends APIClient implements IMaterialRepository {
     required List<FileModel> deletedFiles,
   }) async {
     try {
-      final docMaterials =
-          colOBMs.doc(obmID).collection('materials').doc(material.id);
+      final docMaterials = colMaterials.doc(material.id);
       material.id = docMaterials.id;
 
       for (OtherChangeModel change in changes) {
@@ -92,7 +102,7 @@ class MaterialRepository extends APIClient implements IMaterialRepository {
               DateTime.now().microsecondsSinceEpoch.toString();
 
           final image = await saveFile(
-            pathStorage: '${Constants.pathMaterialChangeImages}/$path',
+            pathStorage: Constants.pathOthersImages,
             data: change.image.data!,
             filename: path,
           );
@@ -128,11 +138,7 @@ class MaterialRepository extends APIClient implements IMaterialRepository {
   Future<bool> deleteMaterialChecklist(
       {required MaterialChecklistModel material}) async {
     try {
-      await colOBMs
-          .doc(obmID)
-          .collection('materials')
-          .doc(material.id)
-          .delete();
+      await colMaterials.doc(material.id).delete();
 
       for (final OtherChangeModel change in (material.changes ?? [])) {
         await deleteFile(path: change.image.path, filename: change.image.name);

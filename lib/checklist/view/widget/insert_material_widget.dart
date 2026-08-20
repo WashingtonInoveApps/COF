@@ -41,17 +41,22 @@ class _InsertMaterialWidgetState extends State<InsertMaterialWidget> {
     List<ItemModel> list = [];
 
     for (final item in itens) {
-      final index = compare.indexWhere(
-          (e) => e.description.toLowerCase() == item.description.toLowerCase());
+      final index = compare.indexWhere((e) => e.id == item.id);
 
       if (index == -1) {
         list.add(item);
       } else {
         final material = compare[index];
-        list.add(ItemModel(
+
+        list.add(
+          ItemModel(
             id: item.id,
             description: item.description,
-            quantity: (item.quantity + material.quantity)));
+            quantity: (item.quantity + material.quantity),
+            obmID: item.obmID,
+            ciaID: item.ciaID,
+          ),
+        );
       }
     }
 

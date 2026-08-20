@@ -20,7 +20,7 @@ class SectionItensModel {
     return {
       'id': id,
       'description': description,
-      'itens': itens.map((x) => x.toMap()).toList(),
+      'itens': itens.map((x) => x.toMapResume()).toList(),
       'obs': obs,
       'value': value,
     };
@@ -30,8 +30,8 @@ class SectionItensModel {
     return SectionItensModel(
       id: map['id'] ?? '',
       description: map['description'] ?? '',
-      itens:
-          List<ItemModel>.from(map['itens']?.map((x) => ItemModel.fromMap(x))),
+      itens: List<ItemModel>.from(
+          map['itens']?.map((x) => ItemModel.fromMapResume(x))),
       obs: map['obs'] ?? '',
       value: map['value'] ?? false,
     );

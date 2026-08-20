@@ -219,7 +219,7 @@ class _CarChangesWidgetState extends State<CarChangesWidget> {
                                                 List<CarChangeModel>
                                                     carChanges =
                                                     List<CarChangeModel>.from(
-                                                        widget.car.changes);
+                                                        changes);
 
                                                 widget.onDelet?.call(
                                                     carChanges[index].image);
@@ -256,7 +256,7 @@ class _CarChangesWidgetState extends State<CarChangesWidget> {
                                                   List<CarChangeModel>
                                                       carChanges =
                                                       List<CarChangeModel>.from(
-                                                          widget.car.changes);
+                                                          changes);
                                                   carChanges.add(change);
 
                                                   widget.onChange
@@ -421,7 +421,7 @@ class _CarChangesWidgetState extends State<CarChangesWidget> {
 
                                           List<CarChangeModel> carChanges =
                                               List<CarChangeModel>.from(
-                                                  widget.car.changes);
+                                                  changes);
 
                                           final index = carChanges.indexWhere(
                                               (e) =>
@@ -468,7 +468,7 @@ class _CarChangesWidgetState extends State<CarChangesWidget> {
                                         if (value ?? false) {
                                           List<CarChangeModel> carChanges =
                                               List<CarChangeModel>.from(
-                                                  widget.car.changes);
+                                                  changes);
 
                                           final index = carChanges.indexWhere(
                                               (e) =>

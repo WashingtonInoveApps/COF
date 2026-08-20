@@ -10,6 +10,9 @@ import 'alert_message.dart';
 import 'itens_section_widget.dart';
 
 class ListSectionsWidget extends StatefulWidget {
+  final String obmID;
+  final String ciaID;
+
   final List<ItemModel>? itensMaterials;
   final List<SectionItensModel> list;
 
@@ -25,6 +28,8 @@ class ListSectionsWidget extends StatefulWidget {
 
   const ListSectionsWidget({
     Key? key,
+    required this.obmID,
+    required this.ciaID,
     required this.list,
     required this.onAddSections,
     required this.onRemoveSection,
@@ -155,6 +160,8 @@ class _ListSectionsWidgetState extends State<ListSectionsWidget> {
                                           context: context,
                                           builder: (context) => Center(
                                                 child: ItensSectionWidget(
+                                                  ciaID: widget.ciaID,
+                                                  obmID: widget.obmID,
                                                   itensMaterials:
                                                       widget.itensMaterials,
                                                   onChange: (value) {
@@ -170,6 +177,8 @@ class _ListSectionsWidgetState extends State<ListSectionsWidget> {
                                           builder: (context) => Center(
                                                 child: ItensSectionWidget(
                                                   item: item,
+                                                  ciaID: widget.ciaID,
+                                                  obmID: widget.obmID,
                                                   onChange: (value) {
                                                     widget.onEditItens.call(
                                                         value,

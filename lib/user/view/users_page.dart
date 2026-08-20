@@ -98,7 +98,11 @@ class _UsersPageState extends State<UsersPage> {
                   ],
                 ),
               ),
-              app.modeMOBILE ? Container() : const Divider(),
+              app.modeMOBILE
+                  ? const SizedBox(
+                      height: 10,
+                    )
+                  : const Divider(),
               const SizedBox(
                 height: 10,
               ),

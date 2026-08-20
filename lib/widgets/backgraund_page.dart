@@ -6,9 +6,9 @@ import 'package:bsu_control/checklist/view/checklist_page.dart';
 import 'package:bsu_control/checklist/view/checklist_register_page.dart';
 import 'package:bsu_control/checklist/view/my_checklist_page.dart';
 import 'package:bsu_control/core/constants.dart';
+import 'package:bsu_control/enum/checklist_enum.dart';
 import 'package:bsu_control/home/home_page.dart';
 import 'package:bsu_control/login/view/login_page.dart';
-import 'package:bsu_control/materials/view/material_checklist_register_page.dart';
 import 'package:bsu_control/materials/view/material_warehouse_page.dart';
 import 'package:bsu_control/materials/view/materials_page.dart';
 import 'package:bsu_control/model/notification_model.dart';
@@ -192,7 +192,9 @@ class _BackgraundPageState extends State<BackgraundPage> {
                                     Navigator.of(context).pushReplacement(
                                         MaterialPageRoute(
                                             builder: (context) =>
-                                                const ChecklistRegisterPage()));
+                                                const ChecklistRegisterPage(
+                                                  type: ChecklistType.vehicular,
+                                                )));
                                     // }
                                   } else {
                                     Navigator.of(context).push(
@@ -210,7 +212,17 @@ class _BackgraundPageState extends State<BackgraundPage> {
                                 'Material',
                                 style: Constants.title,
                               ),
-                              onPressed: () {},
+                              onPressed: () {
+                                if (controller.router != 4) {
+                                  controller.setRouter(4);
+                                  Navigator.of(context).pushReplacement(
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const ChecklistRegisterPage(
+                                                type: ChecklistType.materials,
+                                              )));
+                                }
+                              },
                             )
                           ],
                           child: Text(
@@ -605,7 +617,10 @@ class _BackgraundPageState extends State<BackgraundPage> {
                     const SizedBox(
                       height: 20,
                     ),
-                    (widget.top == null) ? Container() : widget.top!,
+                    SizedBox(
+                        width: double.infinity,
+                        child:
+                            (widget.top == null) ? Container() : widget.top!),
                     SizedBox(
                       width: double.infinity,
                       child: Wrap(

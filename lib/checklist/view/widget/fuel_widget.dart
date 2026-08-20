@@ -22,49 +22,50 @@ class FuelWidget extends StatefulWidget {
 class _FuelWidgetState extends State<FuelWidget> {
   @override
   Widget build(BuildContext context) {
-    return Padding(
-        padding: const EdgeInsets.only(bottom: 10),
-        child: Card(
-          child: Container(
-            padding: const EdgeInsets.all(10),
-            margin: const EdgeInsets.symmetric(horizontal: 5),
-            child: Stack(
+    return Card(
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        margin: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: Colors.grey.shade200,
+          borderRadius: BorderRadius.circular(5),
+        ),
+        child: Stack(
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'COMBUSTÍVEL',
-                      style: Constants.subtitle.copyWith(
-                          fontWeight: FontWeight.bold, color: Colors.grey),
-                    ),
-                    SfSlider(
-                      min: 0.0,
-                      max: 4.0,
-                      stepSize: 0.5,
-                      value: widget.fuel,
-                      interval: 1,
-                      activeColor: Colors.deepOrange,
-                      inactiveColor: Colors.deepOrange.withValues(alpha: 0.4),
-                      showTicks: true,
-                      minorTicksPerInterval: 1,
-                      onChanged: (result) {
-                        widget.onChange?.call(result as double);
-                      },
-                    ),
-                  ],
+                Text(
+                  'COMBUSTÍVEL',
+                  style: Constants.subtitle.copyWith(color: Colors.grey),
                 ),
-                Positioned(
-                    left: 0,
-                    right: 0,
-                    child: Icon(
-                      MdiIcons.gasStation,
-                      color: Colors.grey,
-                      size: 20,
-                    ))
+                SfSlider(
+                  min: 0.0,
+                  max: 4.0,
+                  stepSize: 0.5,
+                  value: widget.fuel,
+                  interval: 1,
+                  activeColor: Colors.deepOrange,
+                  inactiveColor: Colors.deepOrange.withValues(alpha: 0.4),
+                  showTicks: true,
+                  minorTicksPerInterval: 1,
+                  onChanged: (result) {
+                    widget.onChange?.call(result as double);
+                  },
+                ),
               ],
             ),
-          ),
-        ));
+            Positioned(
+                left: 0,
+                right: 0,
+                child: Icon(
+                  MdiIcons.gasStation,
+                  color: Colors.grey,
+                  size: 20,
+                ))
+          ],
+        ),
+      ),
+    );
   }
 }
