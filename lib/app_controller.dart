@@ -4,7 +4,7 @@ import 'package:bsu_control/app_interface.dart';
 import 'package:bsu_control/app_repository.dart';
 import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/core/db.dart';
-import 'package:bsu_control/enum/car_enum.dart';
+import 'package:bsu_control/enum/checklist_enum.dart';
 import 'package:bsu_control/model/app_model.dart';
 import 'package:bsu_control/model/car_model.dart';
 import 'package:bsu_control/model/config_model.dart';
@@ -99,44 +99,55 @@ abstract class _AppControllerBase with Store {
   }
 
   @computed
-  bool get newRegister {
-    if (checklistUser == null) return true;
+  bool get newRegisterVehicular {
+    if (checklistUserVehicular == null) return true;
 
-    if (!(checklistUser?.enable ?? false)) return true;
+    if (!(checklistUserVehicular?.enable ?? false)) return true;
 
     return false;
   }
 
   @computed
-  ChecklistModel? get checklistUser {
+  bool get newRegisterMaterial {
+    if (checklistUserMaterial == null) return true;
+
+    if (!(checklistUserMaterial?.enable ?? false)) return true;
+
+    return false;
+  }
+
+  @computed
+  ChecklistModel? get checklistUserVehicular {
     if (checklistsOperationDay.isEmpty) return null;
 
-    final list =
-        checklistsOperationDay.where((e) => e.userID == user.id).toList();
-
-    if (list.isEmpty) return null;
-
-    list.sort((a, b) => a.date.compareTo(b.date));
-
-    return list.last;
+    return checklistsOperationDay.cast<ChecklistModel?>().firstWhere(
+        (e) => (e?.userID == user.id) && (e?.type == ChecklistType.vehicular));
   }
 
   @computed
-  int get checklistTodayPendent {
-    final carsOperating =
-        cars.where((e) => e.state == StatusCar.operating).length;
+  ChecklistModel? get checklistUserMaterial {
+    if (checklistsOperationDay.isEmpty) return null;
 
-    return (carsOperating - checklistsOperationDay.length);
+    return checklistsOperationDay.cast<ChecklistModel?>().firstWhere(
+        (e) => (e?.userID == user.id) && (e?.type == ChecklistType.materials));
   }
 
-  @computed
-  List<CarModel> get carsADM => cars.where((e) => e.adm).toList();
+  // @computed
+  // int get checklistTodayPendent {
+  //   final carsOperating =
+  //       cars.where((e) => e.state == StatusCar.operating).length;
 
-  @computed
-  List<CarModel> get carsOPR => cars.where((e) => !e.adm).toList();
+  //   return (carsOperating - checklistsOperationDay.length);
+  // }
 
-  @computed
-  List<String> get prefixs => cars.map((e) => e.prefix).toList();
+  // @computed
+  // List<CarModel> get carsADM => cars.where((e) => e.adm).toList();
+
+  // @computed
+  // List<CarModel> get carsOPR => cars.where((e) => !e.adm).toList();
+
+  // @computed
+  // List<String> get prefixs => cars.map((e) => e.prefix).toList();
 
   @computed
   List<CarModel> get carsUsers {

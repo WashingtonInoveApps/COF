@@ -159,15 +159,15 @@ class _MaterialsDetailsPageState extends State<MaterialsDetailsPage> {
               const SizedBox(
                 height: 10.0,
               ),
-              (checklist.changes?.isEmpty ?? true)
+              (checklist.others?.isEmpty ?? true)
                   ? Text(
                       'Nenhuma outra alteração encontrada',
                       style: Constants.title,
                     )
                   : Column(
                       children:
-                          List.generate(checklist.changes!.length, (index) {
-                        final outher = checklist.changes![index];
+                          List.generate(checklist.others!.length, (index) {
+                        final outher = checklist.others![index];
 
                         return CardOutherChange(
                           other: outher,

@@ -484,7 +484,7 @@ class _MaterialChecklistRegisterPageState
                                   controller
                                       .saveMaterialChecklist(
                                     material: register.material,
-                                    changes: register.changes,
+                                    others: register.changes,
                                     deletedFiles: register.deletFiles,
                                   )
                                       .then((_) {

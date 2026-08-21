@@ -83,7 +83,7 @@ abstract class _MaterialsRegisterControllerBase with Store {
       obmID: obm?.id ?? '',
       itens: sectionsItens,
       materials: sectionsMaterials,
-      changes: [],
+      others: [],
       obm: (obm ?? OBMModel(team: [], cias: [])),
       team: team,
       teamID: team?.id ?? '',
@@ -116,7 +116,7 @@ abstract class _MaterialsRegisterControllerBase with Store {
             list: sectionsMaterials, value: itens.copyWith(value: false));
       }
 
-      changes.addAll(init?.changes ?? []);
+      changes.addAll(init?.others ?? []);
     }
 
     return;

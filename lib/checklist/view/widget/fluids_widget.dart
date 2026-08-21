@@ -105,9 +105,6 @@ class _FluidsWidgetState extends State<FluidsWidget> {
   @override
   Widget build(BuildContext context) {
     return Card(
-      // width: double.infinity,
-      // decoration: BoxDecoration(
-      //     color: Colors.grey.shade200, borderRadius: BorderRadius.circular(5)),
       child: Center(
         child: Padding(
           padding: const EdgeInsets.all(5.0),
@@ -119,39 +116,42 @@ class _FluidsWidgetState extends State<FluidsWidget> {
               controller: scrollController,
               scrollDirection: Axis.horizontal,
               physics: const BouncingScrollPhysics(),
-              child: IntrinsicHeight(
-                child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      nivelContainer(
-                          title: 'Óleo do motor',
-                          color: Colors.brown,
-                          icon: Icons.oil_barrel,
-                          value: widget.oil,
-                          onChange: (value) => widget.onOil?.call(value)),
-                      nivelContainer(
-                          title: 'Óleo hidraúlico',
-                          color: Colors.red.shade700,
-                          icon: MdiIcons.steering,
-                          value: widget.hidra,
-                          onChange: (value) => widget.onHidra?.call(value)),
-                      nivelContainer(
-                          title: 'Óleo de freio',
-                          color: Colors.green.shade700,
-                          icon: MdiIcons.carBrakeFluidLevel,
-                          value: widget.fr,
-                          onChange: (value) => widget.onFr?.call(value)),
-                      nivelContainer(
-                          title: 'Água do radiador',
-                          color: Colors.blue.shade700,
-                          icon: MdiIcons.carCoolantLevel,
-                          value: widget.arref,
-                          onChange: (value) => widget.onArref?.call(value)),
-                    ]
-                    //   .expand((widget) => [widget, const VerticalDivider()])
-                    //   .toList()
-                    // ..removeLast(),
-                    ),
+              child: Container(
+                margin: const EdgeInsets.only(bottom: 10),
+                child: IntrinsicHeight(
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        nivelContainer(
+                            title: 'Óleo do motor',
+                            color: Colors.brown,
+                            icon: Icons.oil_barrel,
+                            value: widget.oil,
+                            onChange: (value) => widget.onOil?.call(value)),
+                        nivelContainer(
+                            title: 'Óleo hidraúlico',
+                            color: Colors.red.shade700,
+                            icon: MdiIcons.steering,
+                            value: widget.hidra,
+                            onChange: (value) => widget.onHidra?.call(value)),
+                        nivelContainer(
+                            title: 'Óleo de freio',
+                            color: Colors.green.shade700,
+                            icon: MdiIcons.carBrakeFluidLevel,
+                            value: widget.fr,
+                            onChange: (value) => widget.onFr?.call(value)),
+                        nivelContainer(
+                            title: 'Água do radiador',
+                            color: Colors.blue.shade700,
+                            icon: MdiIcons.carCoolantLevel,
+                            value: widget.arref,
+                            onChange: (value) => widget.onArref?.call(value)),
+                      ]
+                      //   .expand((widget) => [widget, const VerticalDivider()])
+                      //   .toList()
+                      // ..removeLast(),
+                      ),
+                ),
               ),
             ),
           ),

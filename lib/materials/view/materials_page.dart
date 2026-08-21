@@ -238,10 +238,22 @@ class _MaterialsPageState extends State<MaterialsPage> {
                                 name: 'responsable',
                                 label: 'Responsável',
                                 builder: (material) {
-                                  return Core.boldFirstName(
-                                      name: material.user.name,
-                                      fullName: material.user.fullname,
-                                      style: Constants.title);
+                                  return Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Core.boldFirstName(
+                                        name: material.user.name,
+                                        fullName: material.user.fullname,
+                                        style: Constants.title,
+                                      ),
+                                      Text(
+                                        material.user.graduation,
+                                        style: Constants.subtitleHint,
+                                      )
+                                    ],
+                                  );
                                 },
                               ),
                             ],

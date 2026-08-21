@@ -16,47 +16,35 @@ mixin _$AppController on _AppControllerBase, Store {
       (_$carsTypesComputed ??= Computed<List<String>>(() => super.carsTypes,
               name: '_AppControllerBase.carsTypes'))
           .value;
-  Computed<bool>? _$newRegisterComputed;
+  Computed<bool>? _$newRegisterVehicularComputed;
 
   @override
-  bool get newRegister =>
-      (_$newRegisterComputed ??= Computed<bool>(() => super.newRegister,
-              name: '_AppControllerBase.newRegister'))
-          .value;
-  Computed<ChecklistModel?>? _$checklistUserComputed;
-
-  @override
-  ChecklistModel? get checklistUser => (_$checklistUserComputed ??=
-          Computed<ChecklistModel?>(() => super.checklistUser,
-              name: '_AppControllerBase.checklistUser'))
+  bool get newRegisterVehicular => (_$newRegisterVehicularComputed ??=
+          Computed<bool>(() => super.newRegisterVehicular,
+              name: '_AppControllerBase.newRegisterVehicular'))
       .value;
-  Computed<int>? _$checklistTodayPendentComputed;
+  Computed<bool>? _$newRegisterMaterialComputed;
 
   @override
-  int get checklistTodayPendent => (_$checklistTodayPendentComputed ??=
-          Computed<int>(() => super.checklistTodayPendent,
-              name: '_AppControllerBase.checklistTodayPendent'))
+  bool get newRegisterMaterial => (_$newRegisterMaterialComputed ??=
+          Computed<bool>(() => super.newRegisterMaterial,
+              name: '_AppControllerBase.newRegisterMaterial'))
       .value;
-  Computed<List<CarModel>>? _$carsADMComputed;
+  Computed<ChecklistModel?>? _$checklistUserVehicularComputed;
 
   @override
-  List<CarModel> get carsADM =>
-      (_$carsADMComputed ??= Computed<List<CarModel>>(() => super.carsADM,
-              name: '_AppControllerBase.carsADM'))
+  ChecklistModel? get checklistUserVehicular =>
+      (_$checklistUserVehicularComputed ??= Computed<ChecklistModel?>(
+              () => super.checklistUserVehicular,
+              name: '_AppControllerBase.checklistUserVehicular'))
           .value;
-  Computed<List<CarModel>>? _$carsOPRComputed;
+  Computed<ChecklistModel?>? _$checklistUserMaterialComputed;
 
   @override
-  List<CarModel> get carsOPR =>
-      (_$carsOPRComputed ??= Computed<List<CarModel>>(() => super.carsOPR,
-              name: '_AppControllerBase.carsOPR'))
-          .value;
-  Computed<List<String>>? _$prefixsComputed;
-
-  @override
-  List<String> get prefixs =>
-      (_$prefixsComputed ??= Computed<List<String>>(() => super.prefixs,
-              name: '_AppControllerBase.prefixs'))
+  ChecklistModel? get checklistUserMaterial =>
+      (_$checklistUserMaterialComputed ??= Computed<ChecklistModel?>(
+              () => super.checklistUserMaterial,
+              name: '_AppControllerBase.checklistUserMaterial'))
           .value;
   Computed<List<CarModel>>? _$carsUsersComputed;
 
@@ -376,12 +364,10 @@ checklistsOperationDay: ${checklistsOperationDay},
 notifications: ${notifications},
 users: ${users},
 carsTypes: ${carsTypes},
-newRegister: ${newRegister},
-checklistUser: ${checklistUser},
-checklistTodayPendent: ${checklistTodayPendent},
-carsADM: ${carsADM},
-carsOPR: ${carsOPR},
-prefixs: ${prefixs},
+newRegisterVehicular: ${newRegisterVehicular},
+newRegisterMaterial: ${newRegisterMaterial},
+checklistUserVehicular: ${checklistUserVehicular},
+checklistUserMaterial: ${checklistUserMaterial},
 carsUsers: ${carsUsers}
     ''';
   }

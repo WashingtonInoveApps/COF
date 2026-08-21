@@ -7,10 +7,13 @@ import 'package:bsu_control/checklist/view/widget/fluids_widget.dart';
 import 'package:bsu_control/checklist/view/widget/fuel_widget.dart';
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/core.dart';
+import 'package:bsu_control/enum/checklist_enum.dart';
 import 'package:bsu_control/enum/state_enum.dart';
 import 'package:bsu_control/main.dart';
+import 'package:bsu_control/model/car_model.dart';
 import 'package:bsu_control/model/checklist_model.dart';
 import 'package:bsu_control/model/section_itens_model.dart';
+import 'package:bsu_control/widgets/container_custom_widget.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -20,6 +23,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import '../../widgets/alert_message.dart';
 import '../../widgets/backgraund_page.dart';
 import '../../widgets/car_changes_widget.dart';
+import '../../widgets/card_outhers_widget.dart';
 import '../controller/checklist_controller.dart';
 
 class ChecklistDetailsPage extends StatefulWidget {
@@ -36,19 +40,15 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
 
   late StreamSubscription subscription;
   late CheckListController controller;
-
   late ChecklistModel checklist;
 
   @override
   void initState() {
     super.initState();
-    checklist = ChecklistModel.copy(checklist: widget.checklist);
+    checklist = ChecklistModel.fromMap(widget.checklist.toMap());
 
     controller = CheckListController(
-      init: null,
       config: config,
-      update: false,
-      cars: app.cars,
       checklistTodays: app.checklistsOperationDay,
     );
 
@@ -67,17 +67,80 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
     subscription.cancel();
   }
 
+  Widget stateWidget(List<StatesChecklist> list) {
+    return SizedBox(
+      height: 50,
+      width: double.infinity,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        children: list
+            .map((value) {
+              return Container(
+                width: 250,
+                padding: const EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                  border: Border.all(color: value.state.color),
+                  color: value.state.color.withAlpha(50),
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                child: Row(
+                  spacing: 5,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Icon(value.state.icon, color: value.state.color),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            value.state.label,
+                            style: Constants.subtitle,
+                          ),
+                          Text(
+                            Core.formatDate(value.date, shortHour: true),
+                            style: Constants.subtitle.copyWith(fontSize: 10),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            })
+            .expand((widget) => [widget, const VerticalDivider()])
+            .toList()
+          ..removeLast(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final obm = app.obms.firstWhere((e) => e.id == checklist.obmID);
-    final car = app.cars.firstWhere((e) => e.id == checklist.vehicular?.car.id);
+
+    final car = app.cars.cast<CarModel?>().firstWhere(
+        (e) => e?.id == checklist.vehicular?.car.id,
+        orElse: () => null);
 
     final listStates = List<StatesChecklist>.from(checklist.states);
     listStates.sort((a, b) => a.date.compareTo(b.date));
 
-    final enable = ((listStates.first.state == StateProgress.inprogress) &&
-        checklist.enable &&
-        (checklist.userID == app.user.id));
+    final vehicular = checklist.type == ChecklistType.vehicular;
+
+    final itens = (vehicular
+            ? checklist.vehicular?.car.itens
+            : checklist.material?.material.itens) ??
+        [];
+
+    final List<SectionItensModel> materials =
+        (!vehicular ? checklist.material?.material.materials : []) ?? [];
+
+    final enable = true;
+    // final enable = ((listStates.first.state == StateProgress.inprogress) &&
+    //     checklist.enable &&
+    //     (checklist.userID == app.user.id));
 
     return Stack(
       children: [
@@ -97,120 +160,33 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text.rich(
-                          TextSpan(text: obm.prefix, children: [
-                            TextSpan(
-                                text: '  CHECKLIST VEICULAR',
-                                style: Constants.subtitleHint)
-                          ]),
-                          style: Constants.title.copyWith(fontSize: 18),
+                        Row(
+                          children: [
+                            Text(
+                              vehicular
+                                  ? 'CHECKLIST VEICULAR'
+                                  : 'CHECKLIST MATERIAL',
+                              style: Constants.title.copyWith(fontSize: 18),
+                            ),
+                          ],
                         ),
                         Text(
-                          checklist.cia?.name ?? '',
-                          style: Constants.title,
+                          Core.formatDate(checklist.date, largeDayHour: true),
+                          style: Constants.titleHint,
                         ),
-                      ],
-                    ),
-                    Wrap(
-                      spacing: 5,
-                      runSpacing: 5,
-                      crossAxisAlignment: WrapCrossAlignment.end,
-                      children: [
-                        enable
-                            ? SizedBox(
-                                width: 120,
-                                child: ElevatedButton(
-                                    onPressed: () {
-                                      Navigator.of(context).push(
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  ChecklistRegisterPage(
-                                                    type: checklist.type,
-                                                    checklist: checklist,
-                                                  )));
-                                    },
-                                    child: Text(
-                                      'Editar',
-                                      style: Constants.titleButton,
-                                    )),
-                              )
-                            : Container(
-                                width: 1,
-                              ),
-                        enable
-                            ? SizedBox(
-                                width: 120,
-                                child: ElevatedButton(
-                                    onPressed: () async {
-                                      Navigator.of(context).push(
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  ChecklistFinishPage(
-                                                    controller: controller,
-                                                    checklist: checklist,
-                                                  )));
-                                    },
-                                    child: Text(
-                                      'Finalizar',
-                                      style: Constants.titleButton,
-                                    )),
-                              )
-                            : Container(),
-                        (app.user.admin || app.user.managerFleet)
-                            ? SizedBox(
-                                width: 120,
-                                child: ElevatedButton(
-                                    onPressed: () async {
-                                      await showDialog(
-                                          context: context,
-                                          builder: (context) => AlertMessage(
-                                              title: 'Atenção',
-                                              message:
-                                                  'Você perderar todas as alterações constadas nesse registro. Deseja realmente excluir esse registro ?',
-                                              titleOK: 'Sim',
-                                              cancel: true,
-                                              onPressedCancel: () =>
-                                                  Navigator.of(context)
-                                                      .pop(false),
-                                              onPressedOK: () =>
-                                                  Navigator.of(context).pop(
-                                                      true))).then((value) {
-                                        if (value ?? false) {
-                                          controller
-                                              .delete(checklist: checklist)
-                                              .then((_) {
-                                            Navigator.of(context).pop();
-                                          }).catchError((err) {
-                                            showDialog(
-                                                context: context,
-                                                builder: (context) =>
-                                                    AlertMessage(
-                                                        title: 'Atenção',
-                                                        message: err.toString(),
-                                                        onPressedOK: () =>
-                                                            Navigator.of(
-                                                                    context)
-                                                                .pop()));
-                                          });
-                                        }
-                                      });
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.grey),
-                                    child: Text(
-                                      'Excluir',
-                                      style: Constants.titleButton,
-                                    )),
-                              )
-                            : Container(
-                                width: 1,
-                              ),
+                        const SizedBox(
+                          height: 5,
+                        ),
+                        stateWidget(listStates),
                       ],
                     ),
                   ],
                 ),
               ),
-              const Divider()
+              const SizedBox(
+                height: 5,
+              ),
+              const Divider(),
             ],
           ),
           childLeft: Column(
@@ -219,230 +195,187 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
               const SizedBox(
                 height: 10,
               ),
-              Container(
-                height: 50,
-                width: double.infinity,
-                padding: const EdgeInsets.all(5),
-                decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey),
-                    color: Colors.grey.shade200,
-                    borderRadius: BorderRadius.circular(5)),
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: listStates
-                      .map((e) {
-                        final state =
-                            StateProgressEnumCore.stateProgressFromString(
-                                e.state.name);
-                        return SizedBox(
-                          width: 165,
-                          child: Row(
-                            spacing: 5,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Icon(state.icon, color: state.color),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      state.label,
-                                      style: Constants.subtitle,
-                                    ),
-                                    Text(
-                                      Core.formatDate(e.date, shortHour: true),
-                                      style: Constants.subtitle
-                                          .copyWith(color: Colors.grey),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      })
-                      .expand((widget) => [widget, const VerticalDivider()])
-                      .toList()
-                    ..removeLast(),
-                ),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                    color: Constants.primary,
-                    borderRadius: BorderRadius.circular(5)),
-                child: Text(
-                  "INFORMAÇÕES BÁSICAS",
-                  style: Constants.titleButton,
-                ),
-              ),
+              const ContainerCustom(label: 'INFORMAÇÕES BÁSICAS'),
               const SizedBox(
                 height: 10,
               ),
               Text(
-                '${checklist.prefix} - ${checklist.team}',
+                'OBM',
+                style: Constants.titleHint,
+              ),
+              Text(
+                (checklist.obm != null)
+                    ? '${checklist.obm?.prefix} - ${checklist.obm?.name ?? ''}'
+                    : '-',
                 style: Constants.title,
-              ),
-              Text(
-                Core.formatDate(checklist.date, largeDayHour: true),
-                style: Constants.titleHint,
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Text(
-                "Responsável",
-                style: Constants.titleHint,
-              ),
-              Core.boldFirstName(
-                  graduation: checklist.user.graduation,
-                  name: checklist.user.name,
-                  fullName: checklist.user.fullname),
-              Text(
-                checklist.user.registration,
-                style: Constants.titleHint,
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "KM Inicial",
-                          style: Constants.titleHint,
-                        ),
-                        Text(
-                          checklist.startKM.toString(),
-                          style: Constants.title,
-                        ),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "KM Final",
-                          style: Constants.titleHint,
-                        ),
-                        Text(
-                          (checklist.endKM <= 0
-                              ? ' - '
-                              : checklist.endKM.toString()),
-                          style: Constants.title,
-                        ),
-                      ],
-                    ),
-                  )
-                ],
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                    color: Constants.primary,
-                    borderRadius: BorderRadius.circular(5)),
-                child: Text(
-                  "NÍVEIS DE FLUIDOS",
-                  style: Constants.titleButton,
-                ),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Container(
-                width: double.infinity,
-                alignment: Alignment.center,
-                child: FluidsWidget(
-                  oil: checklist.vehicular?.oil ?? 0,
-                  hidra: checklist.vehicular?.hidra ?? 0,
-                  fr: checklist.vehicular?.fr ?? 0,
-                  arref: checklist.vehicular?.arref ?? 0,
-                ),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              SizedBox(
-                  width: double.infinity,
-                  child: FuelWidget(fuel: checklist.vehicular?.fuel ?? 0.0)),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                    color: Constants.primary,
-                    borderRadius: BorderRadius.circular(5)),
-                child: Text(
-                  "ALTERAÇÕES",
-                  style: Constants.titleButton,
-                ),
               ),
               const SizedBox(
                 height: 5,
               ),
               Text(
-                '${checklist.vehicular?.changes?.length ?? 0} alteração registrada',
+                'Companhia',
+                style: Constants.titleHint,
+              ),
+              Text(
+                (checklist.cia != null) ? checklist.cia?.name ?? '' : '-',
+                style: Constants.title,
+              ),
+              const SizedBox(
+                height: 5,
+              ),
+              Text(
+                'Prefixo',
+                style: Constants.titleHint,
+              ),
+              Text(
+                checklist.prefix.isEmpty ? '-' : checklist.prefix,
+                style: Constants.title,
+              ),
+              const SizedBox(
+                height: 5,
+              ),
+              Text(
+                'Guarnição',
+                style: Constants.titleHint,
+              ),
+              Text(
+                (checklist.team != null) ? checklist.team?.name ?? '' : '-',
+                style: Constants.title,
+              ),
+              const SizedBox(
+                height: 5,
+              ),
+              Text(
+                'Responsável',
+                style: Constants.titleHint,
+              ),
+              Core.boldFirstName(
+                name: checklist.user.name,
+                fullName: checklist.user.fullname,
+                style: Constants.title,
+              ),
+              Text(
+                checklist.user.graduation,
                 style: Constants.subtitleHint,
               ),
               const SizedBox(
-                height: 10,
+                height: 5,
               ),
-              CarChangesWidget(
-                add: false,
-                car: car,
-                user: checklist.user,
-                checklistID: checklist.id,
+              Text(
+                'Matrícula',
+                style: Constants.titleHint,
+              ),
+              Text(
+                checklist.user.registration,
+                style: Constants.title,
               ),
               const SizedBox(
                 height: 10,
               ),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                    color: Constants.primary,
-                    borderRadius: BorderRadius.circular(5)),
-                child: Text(
-                  'OUTRAS ALTERAÇÕES',
-                  style: Constants.titleButton,
+              if (vehicular)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 10.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "KM Inicial",
+                              style: Constants.titleHint,
+                            ),
+                            Text(
+                              checklist.startKM.toString(),
+                              style: Constants.title,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "KM Final",
+                              style: Constants.titleHint,
+                            ),
+                            Text(
+                              (checklist.endKM <= 0
+                                  ? ' - '
+                                  : checklist.endKM.toString()),
+                              style: Constants.title,
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              // (checklist.outhers?.isEmpty ?? true)
-              //     ? Text(
-              //         'Nenhuma outra alteração encontrada',
-              //         style: Constants.titleHint,
-              //       )
-              //     : Column(
-              //         children:
-              //             List.generate(checklist.outhers!.length, (index) {
-              //           final outher = checklist.outhers![index];
-
-              //           return CardOutherChange(
-              //             outher: outher,
-              //           );
-              //         }).expand((widget) => [widget, const Divider()]).toList()
-              //               ..removeLast(),
-              //       ),
-              const SizedBox(
-                height: 10,
-              ),
+              if (checklist.type == ChecklistType.vehicular)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const ContainerCustom(label: "NÍVEIS DE FLUIDOS"),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Text(
+                      'Combustível',
+                      style: Constants.titleHint,
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    SizedBox(
+                        width: double.infinity,
+                        child:
+                            FuelWidget(fuel: checklist.vehicular?.fuel ?? 0.0)),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Text(
+                      'Níveis de Fluídos',
+                      style: Constants.titleHint,
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    Container(
+                      width: double.infinity,
+                      alignment: Alignment.center,
+                      child: FluidsWidget(
+                        oil: checklist.vehicular?.oil ?? 0,
+                        hidra: checklist.vehicular?.hidra ?? 0,
+                        fr: checklist.vehicular?.fr ?? 0,
+                        arref: checklist.vehicular?.arref ?? 0,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    const ContainerCustom(label: "ALTERAÇÕES"),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Text(
+                      '${checklist.vehicular?.changes?.length ?? 0} alterações registradas.',
+                      style: Constants.subtitleHint,
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    CarChangesWidget(
+                      add: false,
+                      car: car!,
+                      user: checklist.user,
+                      checklistID: checklist.id,
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                  ],
+                ),
             ],
           ),
           childRight: Column(
@@ -451,170 +384,260 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
               const SizedBox(
                 height: 10,
               ),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                    color: Constants.primary,
-                    borderRadius: BorderRadius.circular(5)),
-                child: Text(
-                  "ITENS OU ACESSÓRIOS",
-                  style: Constants.titleButton,
-                ),
+              const ContainerCustom(
+                label: 'OUTRAS ALTERAÇÕES',
               ),
               const SizedBox(
                 height: 10,
               ),
-              (checklist.vehicular?.car.itens.isEmpty ?? true)
+              (checklist.others?.isEmpty ?? true)
                   ? Text(
-                      'Nenhum registro de itens encontrado.',
-                      style: Constants.title,
+                      'Nenhuma outra alteração encontrada',
+                      style: Constants.titleHint,
                     )
-                  : changesListWidget(
-                      context: context,
-                      categories: checklist.vehicular?.car.itens ?? [],
+                  : Column(
+                      children:
+                          List.generate(checklist.others!.length, (index) {
+                        final other = checklist.others![index];
+                        return CardOutherChange(other: other);
+                      }).expand((widget) => [widget, const Divider()]).toList()
+                            ..removeLast(),
                     ),
               const SizedBox(
-                height: 10,
+                height: 15,
               ),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                    color: Constants.primary,
-                    borderRadius: BorderRadius.circular(5)),
-                child: Text(
-                  "MATERIAIS PERMANENTES",
-                  style: Constants.titleButton,
-                ),
-              ),
+              const ContainerCustom(label: "ITENS OU ACESSÓRIOS"),
               const SizedBox(
                 height: 10,
               ),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                    color: Constants.primary,
-                    borderRadius: BorderRadius.circular(5)),
-                child: Text(
-                  "MATERIAIS DE CONSUMO",
-                  style: Constants.titleButton,
-                ),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Visibility(
-                  visible: !checklist.enable,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                            color: Constants.primary,
-                            borderRadius: BorderRadius.circular(5)),
-                        child: Text(
-                          "MATERIAIS UTILIZADOS",
-                          style: Constants.titleButton,
-                        ),
-                      ),
-                      // const SizedBox(
-                      //   height: 10,
-                      // ),
-                      // (checklist.materials?.isEmpty ?? false)
-                      //     ? Text(
-                      //         'Nenhum material utilizado',
-                      //         style: Constants.titleHint,
-                      //       )
-                      //     : Column(
-                      //         crossAxisAlignment: CrossAxisAlignment.start,
-                      //         children: List.generate(
-                      //                 checklist.materials!.length, (index) {
-                      //           final material = checklist.materials![index];
-                      //           return Column(
-                      //             crossAxisAlignment: CrossAxisAlignment.start,
-                      //             children: [
-                      //               Text(
-                      //                 material.description,
-                      //                 style: Constants.title,
-                      //               ),
-                      //               Text(
-                      //                 '${material.quantity.toString().padLeft(2, '0')} unidade(s)',
-                      //                 style: Constants.subtitleHint,
-                      //               ),
-                      //             ],
-                      //           );
-                      //         })
-                      //             .expand((widget) => [widget, const Divider()])
-                      //             .toList()
-                      //           ..removeLast(),
-                      //       ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                            color: Constants.primary,
-                            borderRadius: BorderRadius.circular(5)),
-                        child: Text(
-                          "OBSERVAÇÕES GERAL",
-                          style: Constants.titleButton,
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      checklist.obs.isEmpty
-                          ? Text(
-                              'Nenhuma observação geral registrada.',
-                              style: Constants.titleHint,
-                            )
-                          : Text(
-                              checklist.obs,
-                              style: Constants.title,
-                            ),
-                    ],
-                  )),
-              (checklist.signature != null)
-                  ? Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(10),
-                      margin: const EdgeInsets.only(top: 50, bottom: 20),
-                      child: Column(
-                        children: [
-                          Center(
-                            child: CachedNetworkImage(
-                              imageUrl: checklist.signature!.url,
-                              height: 60,
-                              progressIndicatorBuilder:
-                                  (context, url, downloadProgress) => Center(
-                                child: CircularProgressIndicator(
-                                    color: Constants.primary,
-                                    value: downloadProgress.progress),
-                              ),
-                              fit: BoxFit.contain,
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          Core.boldFirstName(
-                              graduation: checklist.user.graduation,
-                              name: checklist.user.name,
-                              fullName: checklist.user.fullname),
-                          Text(
-                            'Serviço finalizado em ${Core.formatDate(checklist.dateFinish!, largeDayHour: true)}',
-                            style: Constants.subtitleHint,
-                          )
-                        ],
-                      ),
+              (itens.isEmpty)
+                  ? Text(
+                      'Nenhum registro de itens encontrado.',
+                      style: Constants.titleHint,
                     )
-                  : Container()
+                  : changesListWidget(context: context, categories: itens),
+              const SizedBox(
+                height: 20,
+              ),
+              if (!vehicular)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const ContainerCustom(label: 'MATERIAIS'),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    (materials.isEmpty)
+                        ? Text(
+                            'Nenhum registro de materiais encontrado.',
+                            style: Constants.titleHint,
+                          )
+                        : changesListWidget(
+                            context: context, categories: materials),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                  ],
+                ),
+              if (!vehicular)
+                Visibility(
+                    visible: !checklist.enable,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                              color: Constants.primary,
+                              borderRadius: BorderRadius.circular(5)),
+                          child: Text(
+                            "MATERIAIS UTILIZADOS",
+                            style: Constants.titleButton,
+                          ),
+                        ),
+                        // const SizedBox(
+                        //   height: 10,
+                        // ),
+                        // (checklist.materials?.isEmpty ?? false)
+                        //     ? Text(
+                        //         'Nenhum material utilizado',
+                        //         style: Constants.titleHint,
+                        //       )
+                        //     : Column(
+                        //         crossAxisAlignment: CrossAxisAlignment.start,
+                        //         children: List.generate(
+                        //                 checklist.materials!.length, (index) {
+                        //           final material = checklist.materials![index];
+                        //           return Column(
+                        //             crossAxisAlignment: CrossAxisAlignment.start,
+                        //             children: [
+                        //               Text(
+                        //                 material.description,
+                        //                 style: Constants.title,
+                        //               ),
+                        //               Text(
+                        //                 '${material.quantity.toString().padLeft(2, '0')} unidade(s)',
+                        //                 style: Constants.subtitleHint,
+                        //               ),
+                        //             ],
+                        //           );
+                        //         })
+                        //             .expand((widget) => [widget, const Divider()])
+                        //             .toList()
+                        //           ..removeLast(),
+                        //       ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                              color: Constants.primary,
+                              borderRadius: BorderRadius.circular(5)),
+                          child: Text(
+                            "OBSERVAÇÕES GERAL",
+                            style: Constants.titleButton,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        checklist.obs.isEmpty
+                            ? Text(
+                                'Nenhuma observação geral registrada.',
+                                style: Constants.titleHint,
+                              )
+                            : Text(
+                                checklist.obs,
+                                style: Constants.title,
+                              ),
+                      ],
+                    )),
+              if (checklist.signature != null)
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(10),
+                  margin: const EdgeInsets.only(top: 50, bottom: 20),
+                  child: Column(
+                    children: [
+                      Center(
+                        child: CachedNetworkImage(
+                          imageUrl: checklist.signature!.url,
+                          height: 60,
+                          progressIndicatorBuilder:
+                              (context, url, downloadProgress) => Center(
+                            child: CircularProgressIndicator(
+                                color: Constants.primary,
+                                value: downloadProgress.progress),
+                          ),
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Core.boldFirstName(
+                        graduation: checklist.user.graduation,
+                        name: checklist.user.name,
+                        fullName: checklist.user.fullname,
+                        style: Constants.title,
+                      ),
+                      Text(
+                        'Serviço finalizado em ${Core.formatDate(checklist.dateFinish!, largeDayHour: true)}',
+                        style: Constants.subtitleHint,
+                      )
+                    ],
+                  ),
+                ),
+              const SizedBox(
+                height: 10,
+              ),
+              SizedBox(
+                width: double.infinity,
+                child: Wrap(
+                  spacing: 5,
+                  runSpacing: 5,
+                  crossAxisAlignment: WrapCrossAlignment.end,
+                  alignment: WrapAlignment.end,
+                  children: [
+                    if (app.user.admin || app.user.managerFleet)
+                      SizedBox(
+                        width: 120,
+                        child: ElevatedButton(
+                            onPressed: () async {
+                              await showDialog(
+                                  context: context,
+                                  builder: (context) => AlertMessage(
+                                      title: 'Atenção',
+                                      message:
+                                          'Você perderar todas as alterações constadas nesse registro. Deseja realmente excluir esse registro ?',
+                                      titleOK: 'Sim',
+                                      cancel: true,
+                                      onPressedCancel: () =>
+                                          Navigator.of(context).pop(false),
+                                      onPressedOK: () => Navigator.of(context)
+                                          .pop(true))).then((value) {
+                                if (value ?? false) {
+                                  controller
+                                      .delete(checklist: checklist)
+                                      .then((_) {
+                                    Navigator.of(context).pop();
+                                  }).catchError((err) {
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) => AlertMessage(
+                                            title: 'Atenção',
+                                            message: err.toString(),
+                                            onPressedOK: () =>
+                                                Navigator.of(context).pop()));
+                                  });
+                                }
+                              });
+                            },
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.grey),
+                            child: Text(
+                              'Excluir',
+                              style: Constants.titleButton,
+                            )),
+                      ),
+                    if (enable)
+                      SizedBox(
+                        width: 120,
+                        child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => ChecklistRegisterPage(
+                                        type: checklist.type,
+                                        checklist: checklist,
+                                      )));
+                            },
+                            child: Text(
+                              'Editar',
+                              style: Constants.titleButton,
+                            )),
+                      ),
+                    if (enable)
+                      SizedBox(
+                        width: 120,
+                        child: ElevatedButton(
+                            onPressed: () async {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => ChecklistFinishPage(
+                                        controller: controller,
+                                        checklist: checklist,
+                                      )));
+                            },
+                            child: Text(
+                              'Finalizar',
+                              style: Constants.titleButton,
+                            )),
+                      ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),

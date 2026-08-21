@@ -1,18 +1,13 @@
 import 'package:bsu_control/app_controller.dart';
+import 'package:bsu_control/checklist/controller/checklist_controller.dart';
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/main.dart';
 import 'package:bsu_control/model/checklist_model.dart';
-import 'package:bsu_control/checklist/controller/checklist_controller.dart';
-import 'package:bsu_control/checklist/view/checklist_details_page.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
-import 'package:url_launcher/url_launcher_string.dart';
 
 import '../../widgets/backgraund_page.dart';
-import '../../widgets/checklist_table_view.dart';
-import '../../widgets/images_changes_view_widget.dart';
 import '../../widgets/limit_table_widget.dart';
 import '../../widgets/pagination_widget.dart';
 import '../../widgets/textfield_widget.dart';
@@ -33,11 +28,9 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
   @override
   void initState() {
     super.initState();
+
     controller = CheckListController(
-      init: null,
       config: config,
-      update: false,
-      cars: app.cars,
       checklistTodays: app.checklistsOperationDay,
     );
   }
@@ -108,8 +101,8 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
 
                           if (cheklists.isEmpty) {
                             return Text(
-                              'Ops ! Nenhum registro encontrado.',
-                              style: Constants.subtitleHint,
+                              'Nenhum registro encontrado.',
+                              style: Constants.titleHint,
                             );
                           } else {
                             return Observer(builder: (_) {
@@ -126,40 +119,41 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
                                       style: Constants.subtitleHint,
                                     ),
                                     Expanded(
-                                      child: ChecklistTableView(
-                                        values: controller.myChecklistUserSort,
-                                        obms: app.obms,
-                                        onContact: (contact) async {
-                                          final path = kIsWeb
-                                              ? "https://wa.me/+55$contact/?text=${Uri.encodeFull('Olá, tudo bem ?')}"
-                                              : "whatsapp://send?phone=+55$contact&text=${Uri.encodeFull('Olá, tudo bem ?')}";
+                                      child: Container(),
+                                      // child: ChecklistTableView(
+                                      //   values: controller.myChecklistUserSort,
+                                      //   obms: app.obms,
+                                      //   onContact: (contact) async {
+                                      //     final path = kIsWeb
+                                      //         ? "https://wa.me/+55$contact/?text=${Uri.encodeFull('Olá, tudo bem ?')}"
+                                      //         : "whatsapp://send?phone=+55$contact&text=${Uri.encodeFull('Olá, tudo bem ?')}";
 
-                                          await launchUrlString(path,
-                                              mode: LaunchMode
-                                                  .externalApplication);
-                                        },
-                                        onDetails: (checklist) async {
-                                          await Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      ChecklistDetailsPage(
-                                                          checklist:
-                                                              checklist)));
-                                        },
-                                        onChanges: (changes) {
-                                          showDialog(
-                                              context: context,
-                                              builder: (context) {
-                                                return AlertDialog(
-                                                  contentPadding:
-                                                      const EdgeInsets.all(10),
-                                                  content:
-                                                      ImagesChangesViewWidget(
-                                                          changes: changes),
-                                                );
-                                              });
-                                        },
-                                      ),
+                                      //     await launchUrlString(path,
+                                      //         mode: LaunchMode
+                                      //             .externalApplication);
+                                      //   },
+                                      //   onDetails: (checklist) async {
+                                      //     await Navigator.of(context).push(
+                                      //         MaterialPageRoute(
+                                      //             builder: (context) =>
+                                      //                 ChecklistDetailsPage(
+                                      //                     checklist:
+                                      //                         checklist)));
+                                      //   },
+                                      //   onChanges: (changes) {
+                                      //     showDialog(
+                                      //         context: context,
+                                      //         builder: (context) {
+                                      //           return AlertDialog(
+                                      //             contentPadding:
+                                      //                 const EdgeInsets.all(10),
+                                      //             content:
+                                      //                 ImagesChangesViewWidget(
+                                      //                     changes: changes),
+                                      //           );
+                                      //         });
+                                      //   },
+                                      // ),
                                     ),
                                     Row(
                                       children: [

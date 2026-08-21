@@ -16,7 +16,7 @@ abstract class IMaterialRepository {
 
   Future<bool> saveMaterialChecklist({
     required MaterialChecklistModel material,
-    required List<OtherChangeModel> changes,
+    required List<OtherChangeModel> others,
     required List<FileModel> deletedFiles,
   });
 

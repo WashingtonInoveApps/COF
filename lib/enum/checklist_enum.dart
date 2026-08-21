@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 enum ChecklistType { vehicular, materials }
 
@@ -20,6 +21,17 @@ extension ChecklistTypeColor on ChecklistType {
         return Colors.red.shade700;
       case ChecklistType.materials:
         return Colors.orange;
+    }
+  }
+}
+
+extension ChecklistTypeIcon on ChecklistType {
+  IconData get icon {
+    switch (this) {
+      case ChecklistType.vehicular:
+        return MdiIcons.car;
+      case ChecklistType.materials:
+        return MdiIcons.dolly;
     }
   }
 }

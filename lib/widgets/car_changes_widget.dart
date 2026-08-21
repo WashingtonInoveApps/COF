@@ -257,7 +257,6 @@ class _CarChangesWidgetState extends State<CarChangesWidget> {
                                                       carChanges =
                                                       List<CarChangeModel>.from(
                                                           changes);
-                                                  carChanges.add(change);
 
                                                   widget.onChange
                                                       ?.call(carChanges);

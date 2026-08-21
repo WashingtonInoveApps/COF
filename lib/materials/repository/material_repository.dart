@@ -89,21 +89,21 @@ class MaterialRepository extends APIClient implements IMaterialRepository {
   @override
   Future<bool> saveMaterialChecklist({
     required MaterialChecklistModel material,
-    required List<OtherChangeModel> changes,
+    required List<OtherChangeModel> others,
     required List<FileModel> deletedFiles,
   }) async {
     try {
       final docMaterials = colMaterials.doc(material.id);
       material.id = docMaterials.id;
 
-      for (OtherChangeModel change in changes) {
-        if (change.image.data != null) {
+      for (OtherChangeModel other in others) {
+        if (other.image.data != null) {
           final path = material.team?.id ??
               DateTime.now().microsecondsSinceEpoch.toString();
 
           final image = await saveFile(
             pathStorage: Constants.pathOthersImages,
-            data: change.image.data!,
+            data: other.image.data!,
             filename: path,
           );
 
@@ -111,7 +111,7 @@ class MaterialRepository extends APIClient implements IMaterialRepository {
             throw Exception('Falha ao salvar imagem da alteração do material.');
           }
 
-          change.image = change.image.copyWith(
+          other.image = other.image.copyWith(
             name: image.name,
             url: image.url,
             path: image.path,
@@ -127,7 +127,7 @@ class MaterialRepository extends APIClient implements IMaterialRepository {
         }
       }
 
-      await docMaterials.set(material.copyWith(changes: changes).toMap());
+      await docMaterials.set(material.copyWith(others: others).toMap());
       return true;
     } catch (e) {
       rethrow;
@@ -140,8 +140,8 @@ class MaterialRepository extends APIClient implements IMaterialRepository {
     try {
       await colMaterials.doc(material.id).delete();
 
-      for (final OtherChangeModel change in (material.changes ?? [])) {
-        await deleteFile(path: change.image.path, filename: change.image.name);
+      for (final OtherChangeModel other in (material.others ?? [])) {
+        await deleteFile(path: other.image.path, filename: other.image.name);
       }
 
       return true;

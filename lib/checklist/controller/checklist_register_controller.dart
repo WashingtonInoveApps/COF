@@ -141,7 +141,8 @@ abstract class _ChecklistRegisterControllerBase with Store {
     if (car == null) return null;
 
     return ChecklistCarModel(
-      car: car!,
+      car: car!
+          .copyWith(itens: itens.map((e) => e.copyWith(value: false)).toList()),
       oil: oil,
       arref: arref,
       fr: fr,
@@ -157,7 +158,10 @@ abstract class _ChecklistRegisterControllerBase with Store {
     if (material == null) return null;
 
     return ChecklistMaterialModel(
-      material: material!,
+      material: material!.copyWith(
+        itens: itens.map((e) => e.copyWith(value: false)).toList(),
+        materials: materials.map((e) => e.copyWith(value: false)).toList(),
+      ),
       obs: obs,
     );
   }
@@ -245,8 +249,6 @@ abstract class _ChecklistRegisterControllerBase with Store {
         ];
     supplies = init?.supply ?? [];
 
-    others.addAll(init?.others ?? []);
-
     fillItensChecklist(
       check: init,
       car: car,
@@ -262,10 +264,10 @@ abstract class _ChecklistRegisterControllerBase with Store {
   }) {
     log('Preenchendo itens.');
 
-    changes.clear();
     itens.clear();
-    others.clear();
     materials.clear();
+    others.clear();
+    changes.clear();
 
     if (check != null) {
       if (check.type == ChecklistType.vehicular) {
@@ -275,6 +277,10 @@ abstract class _ChecklistRegisterControllerBase with Store {
             savedSections: SectionsController.deepCopySections(
               value: check.vehicular?.car.itens ?? [],
             )));
+
+        others.addAll(
+          car?.others ?? [],
+        );
 
         changes
           ..clear()
@@ -293,6 +299,10 @@ abstract class _ChecklistRegisterControllerBase with Store {
             savedSections: SectionsController.deepCopySections(
               value: check.material?.material.materials ?? [],
             )));
+
+        others.addAll(
+          material?.others ?? [],
+        );
       }
     } else {
       if (type == ChecklistType.vehicular) {
@@ -424,6 +434,10 @@ abstract class _ChecklistRegisterControllerBase with Store {
 
     list.removeAt(indexSection);
     list.insert(indexSection, section.copyWith(itens: itens));
+
+    for (final i in list) {
+      log(i.toJson());
+    }
 
     return list;
   }

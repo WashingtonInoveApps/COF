@@ -4,8 +4,6 @@ import 'package:bsu_control/checklist/repository/checklist_interface.dart';
 import 'package:bsu_control/checklist/repository/checklist_repository.dart';
 import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/enum/state_enum.dart';
-import 'package:bsu_control/model/car_changes_model.dart';
-import 'package:bsu_control/model/car_model.dart';
 import 'package:bsu_control/model/checklist_model.dart';
 import 'package:bsu_control/model/config_model.dart';
 import 'package:bsu_control/model/item_model.dart';
@@ -21,12 +19,7 @@ class CheckListController = _CheckListControllerBase with _$CheckListController;
 
 abstract class _CheckListControllerBase with Store {
   final ConfigModel config;
-  final ChecklistModel? init;
-  final List<CarModel> cars;
   final List<ChecklistModel> checklistTodays;
-
-  final bool update;
-
   late ICheckListRepository repository;
 
   List<String> messagesErros = [];
@@ -34,101 +27,32 @@ abstract class _CheckListControllerBase with Store {
   @observable
   bool loading = false;
 
-  _CheckListControllerBase(
-      {required this.init,
-      required this.config,
-      required this.update,
-      required this.cars,
-      required this.checklistTodays}) {
+  _CheckListControllerBase({
+    required this.config,
+    required this.checklistTodays,
+  }) {
     repository = CheckListRepository(
       endpoint: config.endpoint,
       appID: config.appID,
       test: config.test,
     );
-
-    // initController(init);
   }
 
   Stream<ChecklistModel> streamChecklistByID({required String checklistID}) {
     return repository.streamChecklistByID(checklistID: checklistID);
   }
 
-  // @action
-  // initController(ChecklistModel? init) {
-  //   itens.clear();
-  //   materials.clear();
-  //   materialsConsumable.clear();
-
-  //   id = init?.id;
-  //   prefix = init?.prefix ?? 'SELECIONE';
-  //   oil = init?.vehicular?.oil ?? 0.0;
-  //   hidra = init?.vehicular?.hidra ?? 0.0;
-  //   fr = init?.vehicular?.fr ?? 0.0;
-  //   arref = init?.vehicular?.arref ?? 0.0;
-  //   fuel = init?.vehicular?.fuel ?? 0.0;
-  //   team = init?.team ?? team;
-  //   startKM = init?.startKM ?? 0;
-  //   endKM = init?.endKM ?? 0;
-  //   date = init?.date ?? date;
-  //   obs = init?.obs ?? '';
-  //   enable = init?.enable ?? true;
-  //   states = init?.states ??
-  //       [StatesChecklist(state: StateProgress.inprogress, date: date)];
-  //   supplies = init?.supply ?? [];
-
-  //   if (init != null) {
-  //     car = cars.firstWhere((e) => e.id == init.vehicular?.car.id);
-
-  //     itens.addAll(mergeSections(
-  //         currentSections: deepCopySections(value: car?.itens ?? []),
-  //         savedSections: deepCopySections(
-  //           value: init.vehicular?.car.itens ?? [],
-  //         )));
-
-  //     // others
-  //     //   ..clear()
-  //     //   ..addAll(init.others ?? []);
-  //   } else {
-  //     itens.addAll(deepCopySections(value: car?.itens ?? []));
-  //   }
-
-  //   carChanges
-  //     ..clear()
-  //     ..addAll(car?.changes ?? []);
-  // }
-
-  // @observable
-  // ObservableList<CarChangeModel> carChanges = <CarChangeModel>[].asObservable();
-
-  // @observable
-  // ObservableList<SectionItensModel> itens =
-  //     <SectionItensModel>[].asObservable();
-
   @observable
   ObservableList<ChecklistModel> myChecklistUser =
       <ChecklistModel>[].asObservable();
 
   @observable
-  // ObservableList<SectionItensModel> materials =
-  //     <SectionItensModel>[].asObservable();
-
-  @observable
   ObservableList<SectionItensModel> materialsConsumable =
       <SectionItensModel>[].asObservable();
-
-  // @observable
-  // ObservableList<OtherChangeModel> others = <OtherChangeModel>[].asObservable();
-
-  // @observable
-  // ObservableList<TeamModel> teams = <TeamModel>[].asObservable();
 
   @observable
   ObservableList<ItemModel> materialsConsumedUsed =
       <ItemModel>[].asObservable();
-
-  // List<StatesChecklist> states = [];
-
-  // List<SupplyModel> supplies = [];
 
   @observable
   DateTime date = DateTime.now();
@@ -325,33 +249,35 @@ abstract class _CheckListControllerBase with Store {
 
   @action
   Future<bool> delete({required ChecklistModel checklist}) async {
-    try {
-      loading = true;
+    // try {
+    //   loading = true;
 
-      final car = cars.cast<CarModel?>().firstWhere(
-          (e) => e?.id == checklist.vehicular?.car.id,
-          orElse: () => null);
+    //   final car = cars.cast<CarModel?>().firstWhere(
+    //       (e) => e?.id == checklist.vehicular?.car.id,
+    //       orElse: () => null);
 
-      if (car == null) {
-        throw Exception('Veículo não encontrado.');
-      }
+    //   if (car == null) {
+    //     throw Exception('Veículo não encontrado.');
+    //   }
 
-      final changes = List<CarChangeModel>.from(car.changes);
+    //   final changes = List<CarChangeModel>.from(car.changes);
 
-      for (final change in (checklist.vehicular?.changes ?? [])) {
-        changes.removeWhere(
-            (e) => (e.checklistID != null) && (e.checklistID == checklist.id));
-      }
+    //   for (final change in (checklist.vehicular?.changes ?? [])) {
+    //     changes.removeWhere(
+    //         (e) => (e.checklistID != null) && (e.checklistID == checklist.id));
+    //   }
 
-      final result = await repository.delete(
-          checklist: checklist, car: car.copyWith(changes: changes));
+    //   final result = await repository.delete(
+    //       checklist: checklist, car: car.copyWith(changes: changes));
 
-      loading = false;
-      return result;
-    } catch (e) {
-      loading = false;
-      rethrow;
-    }
+    //   loading = false;
+    //   return result;
+    // } catch (e) {
+    //   loading = false;
+    //   rethrow;
+    // }
+
+    return false;
   }
 
   @action

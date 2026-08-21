@@ -234,7 +234,7 @@ abstract class _MaterialsControllerBase with Store {
   @action
   Future<void> saveMaterialChecklist({
     required MaterialChecklistModel material,
-    required List<OtherChangeModel> changes,
+    required List<OtherChangeModel> others,
     required List<FileModel> deletedFiles,
   }) async {
     try {
@@ -243,7 +243,7 @@ abstract class _MaterialsControllerBase with Store {
 
       await repository.saveMaterialChecklist(
         material: material,
-        changes: changes,
+        others: others,
         deletedFiles: deletedFiles,
       );
 

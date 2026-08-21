@@ -177,32 +177,20 @@ class _BackgraundPageState extends State<BackgraundPage> {
                               ),
                               onPressed: () {
                                 if (controller.router != 3) {
-                                  if (controller.newRegister) {
-                                    // if (expires) {
-                                    //   showDialog(
-                                    //       context: context,
-                                    //       builder: (context) => AlertMessage(
-                                    //           title: 'Atenção',
-                                    //           message:
-                                    //               'Ops ! Horário para realizar um novo registro expirado, espere um novo período.',
-                                    //           onPressedOK: () =>
-                                    //               Navigator.of(context).pop()));
-                                    // } else {
-                                    controller.setRouter(3);
+                                  controller.setRouter(3);
+                                  if (controller.newRegisterVehicular) {
                                     Navigator.of(context).pushReplacement(
                                         MaterialPageRoute(
                                             builder: (context) =>
                                                 const ChecklistRegisterPage(
                                                   type: ChecklistType.vehicular,
                                                 )));
-                                    // }
                                   } else {
-                                    Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                ChecklistDetailsPage(
-                                                    checklist: controller
-                                                        .checklistUser!)));
+                                    Navigator.of(context).push(MaterialPageRoute(
+                                        builder: (context) =>
+                                            ChecklistDetailsPage(
+                                                checklist: controller
+                                                    .checklistUserVehicular!)));
                                   }
                                 }
                               },
@@ -215,12 +203,20 @@ class _BackgraundPageState extends State<BackgraundPage> {
                               onPressed: () {
                                 if (controller.router != 4) {
                                   controller.setRouter(4);
-                                  Navigator.of(context).pushReplacement(
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              const ChecklistRegisterPage(
-                                                type: ChecklistType.materials,
-                                              )));
+                                  if (controller.newRegisterVehicular) {
+                                    Navigator.of(context).pushReplacement(
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                const ChecklistRegisterPage(
+                                                  type: ChecklistType.materials,
+                                                )));
+                                  } else {
+                                    Navigator.of(context).push(MaterialPageRoute(
+                                        builder: (context) =>
+                                            ChecklistDetailsPage(
+                                                checklist: controller
+                                                    .checklistUserMaterial!)));
+                                  }
                                 }
                               },
                             )

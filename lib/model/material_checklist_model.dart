@@ -21,7 +21,7 @@ class MaterialChecklistModel {
   UserModel user;
   List<SectionItensModel>? itens;
   List<SectionItensModel>? materials;
-  List<OtherChangeModel>? changes;
+  List<OtherChangeModel>? others;
   List<MaterialsConsumed>? lastMaterialsConsumed;
 
   MaterialChecklistModel(
@@ -35,7 +35,7 @@ class MaterialChecklistModel {
       this.obmID = '',
       this.teamID = '',
       this.cia,
-      this.changes,
+      this.others,
       this.lastMaterialsConsumed});
 
   Map<String, dynamic> toMap() {
@@ -50,7 +50,7 @@ class MaterialChecklistModel {
       'teamID': teamID,
       'itens': itens?.map((x) => x.toMap()).toList(),
       'materials': materials?.map((x) => x.toMap()).toList(),
-      'changes': changes?.map((x) => x.toMap()).toList(),
+      'others': others?.map((x) => x.toMap()).toList(),
       'lastMaterialsConsumed':
           lastMaterialsConsumed?.map((e) => e.toMap()).toList(),
     };
@@ -84,9 +84,9 @@ class MaterialChecklistModel {
               ),
             )
           : null,
-      changes: map['changes'] != null
+      others: map['others'] != null
           ? List<OtherChangeModel>.from(
-              (map['changes'] as List).map<OtherChangeModel?>(
+              (map['others'] as List).map<OtherChangeModel?>(
                 (x) => OtherChangeModel.fromMap(x as Map<String, dynamic>),
               ),
             )
@@ -118,7 +118,7 @@ class MaterialChecklistModel {
     String? teamID,
     List<SectionItensModel>? itens,
     List<SectionItensModel>? materials,
-    List<OtherChangeModel>? changes,
+    List<OtherChangeModel>? others,
     List<MaterialsConsumed>? lastMaterialsConsumed,
   }) {
     return MaterialChecklistModel(
@@ -132,7 +132,7 @@ class MaterialChecklistModel {
       teamID: teamID ?? this.teamID,
       itens: itens ?? this.itens,
       materials: materials ?? this.materials,
-      changes: changes ?? this.changes,
+      others: others ?? this.others,
       lastMaterialsConsumed:
           lastMaterialsConsumed ?? this.lastMaterialsConsumed,
     );

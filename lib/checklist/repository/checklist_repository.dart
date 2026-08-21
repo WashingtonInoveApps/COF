@@ -24,15 +24,17 @@ class CheckListRepository extends APIClient implements ICheckListRepository {
       var doc = colChecklist.doc(checklist.id);
       checklist.id = doc.id;
 
+      final others = List<OtherChangeModel>.from(checklist.others ?? []);
+
       await firebase!.runTransaction((trans) async {
         if (checklist.vehicular?.changes?.isNotEmpty ?? false) {
+          final prefix = checklist.prefix.replaceAll(' ', '');
           for (final change in checklist.vehicular!.changes!) {
             if (change.image?.data != null) {
               final image = await saveFile(
-                pathStorage:
-                    '${Constants.pathCarChangeImages}/${checklist.prefix}',
+                pathStorage: '${Constants.pathCarChangeImages}/$prefix',
                 data: change.image!.data!,
-                filename: checklist.prefix,
+                filename: prefix,
               );
 
               if (image == null) {
@@ -50,8 +52,8 @@ class CheckListRepository extends APIClient implements ICheckListRepository {
           }
         }
 
-        if (checklist.others?.isNotEmpty ?? false) {
-          for (OtherChangeModel other in checklist.others!) {
+        if (others.isNotEmpty) {
+          for (OtherChangeModel other in others) {
             if (other.image.data != null) {
               final image = await saveFile(
                 pathStorage: Constants.pathOthersImages,
@@ -84,7 +86,14 @@ class CheckListRepository extends APIClient implements ICheckListRepository {
                   [],
               'km': checklist.startKM,
               'state': StatusCar.operating.name,
-              // 'others': checklist.others?.map((e) => e.toMap()).toList() ?? [],
+              'others': others.map((e) => e.toMap()).toList(),
+            },
+          );
+        } else {
+          trans.update(
+            colMaterials.doc(checklist.material?.material.id),
+            {
+              'others': checklist.others?.map((e) => e.toMap()).toList() ?? [],
             },
           );
         }
@@ -93,12 +102,16 @@ class CheckListRepository extends APIClient implements ICheckListRepository {
             doc,
             checklist
                 .copyWith(
-                    vehicular: checklist.vehicular?.copyWith(
-                  changes: checklist.vehicular?.changes
-                          ?.where((e) => e.checklistID == checklist.id)
-                          .toList() ??
-                      [],
-                ))
+                  vehicular: checklist.vehicular?.copyWith(
+                    changes: checklist.vehicular?.changes
+                            ?.where((e) => e.checklistID == checklist.id)
+                            .toList() ??
+                        [],
+                  ),
+                  others: others
+                      .where((e) => e.checklistID == checklist.id)
+                      .toList(),
+                )
                 .toMap());
       });
 

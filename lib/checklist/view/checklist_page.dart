@@ -1,24 +1,19 @@
 import 'dart:async';
 
 import 'package:bsu_control/app_controller.dart';
+import 'package:bsu_control/checklist/controller/checklist_controller.dart';
+import 'package:bsu_control/checklist/view/widget/chart_user_state_widget.dart';
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/main.dart';
 import 'package:bsu_control/model/checklist_model.dart';
-import 'package:bsu_control/checklist/controller/checklist_controller.dart';
-import 'package:bsu_control/checklist/view/checklist_details_page.dart';
-import 'package:bsu_control/checklist/view/widget/chart_user_state_widget.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
-import 'package:url_launcher/url_launcher_string.dart';
 
 import '../../widgets/backgraund_page.dart';
-import '../../widgets/checklist_table_view.dart';
 import '../../widgets/config_view_widget.dart';
-import '../../widgets/images_changes_view_widget.dart';
 import '../../widgets/limit_table_widget.dart';
 import '../../widgets/pagination_widget.dart';
 import '../../widgets/textfield_widget.dart';
@@ -44,10 +39,7 @@ class _ChecklistPageState extends State<ChecklistPage> {
     super.initState();
 
     controller = CheckListController(
-      init: null,
       config: config,
-      update: false,
-      cars: app.cars,
       checklistTodays: app.checklistsOperationDay,
     );
 
@@ -207,8 +199,8 @@ class _ChecklistPageState extends State<ChecklistPage> {
                       return const Center(child: LinearProgressIndicator());
                     } else if (controller.myChecklistUserSort.isEmpty) {
                       return Text(
-                        'Ops ! Nenhum registro encontrado.',
-                        style: Constants.subtitleHint,
+                        'Nenhum registro encontrado.',
+                        style: Constants.titleHint,
                       );
                     } else {
                       return Padding(
@@ -224,37 +216,38 @@ class _ChecklistPageState extends State<ChecklistPage> {
                               style: Constants.subtitleHint,
                             ),
                             Expanded(
-                              child: ChecklistTableView(
-                                values: controller.myChecklistUserSort,
-                                obms: app.obms,
-                                onContact: (contact) async {
-                                  final path = kIsWeb
-                                      ? "https://wa.me/+55$contact/?text=${Uri.encodeFull('Olá, tudo bem ?')}"
-                                      : "whatsapp://send?phone=+55$contact&text=${Uri.encodeFull('Olá, tudo bem ?')}";
+                              child: Container(),
+                              // child: ChecklistTableView(
+                              //   values: controller.myChecklistUserSort,
+                              //   obms: app.obms,
+                              //   onContact: (contact) async {
+                              //     final path = kIsWeb
+                              //         ? "https://wa.me/+55$contact/?text=${Uri.encodeFull('Olá, tudo bem ?')}"
+                              //         : "whatsapp://send?phone=+55$contact&text=${Uri.encodeFull('Olá, tudo bem ?')}";
 
-                                  await launchUrlString(path,
-                                      mode: LaunchMode.externalApplication);
-                                },
-                                onDetails: (id) async {
-                                  await Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              ChecklistDetailsPage(
-                                                  checklist: id)));
-                                },
-                                onChanges: (changes) {
-                                  showDialog(
-                                      context: context,
-                                      builder: (context) {
-                                        return AlertDialog(
-                                          contentPadding:
-                                              const EdgeInsets.all(10),
-                                          content: ImagesChangesViewWidget(
-                                              changes: changes),
-                                        );
-                                      });
-                                },
-                              ),
+                              //     await launchUrlString(path,
+                              //         mode: LaunchMode.externalApplication);
+                              //   },
+                              //   onDetails: (id) async {
+                              //     await Navigator.of(context).push(
+                              //         MaterialPageRoute(
+                              //             builder: (context) =>
+                              //                 ChecklistDetailsPage(
+                              //                     checklist: id)));
+                              //   },
+                              //   onChanges: (changes) {
+                              //     showDialog(
+                              //         context: context,
+                              //         builder: (context) {
+                              //           return AlertDialog(
+                              //             contentPadding:
+                              //                 const EdgeInsets.all(10),
+                              //             content: ImagesChangesViewWidget(
+                              //                 changes: changes),
+                              //           );
+                              //         });
+                              //   },
+                              // ),
                             ),
                             Row(
                               children: [

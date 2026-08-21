@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/checklist/view/checklist_details_page.dart';
@@ -10,21 +11,19 @@ import 'package:bsu_control/enum/checklist_enum.dart';
 import 'package:bsu_control/home/controller/home_controller.dart';
 import 'package:bsu_control/main.dart';
 import 'package:bsu_control/model/checklist_model.dart';
+import 'package:bsu_control/widgets/checklist_table_view.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:mobx/mobx.dart';
-import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:universal_html/html.dart' as html;
 
 import '../widgets/backgraund_page.dart';
 import '../widgets/limit_table_widget.dart';
 import '../widgets/pagination_widget.dart';
-import '../widgets/table_widget.dart';
 import '../widgets/textfield_widget.dart';
-import 'view/widgets/period_chart_widget.dart';
 
 const versionCodeSystem = 10;
 
@@ -196,64 +195,54 @@ class _HomePageState extends State<HomePage> {
                                                   Expanded(
                                                     child: Observer(
                                                         builder: (context) {
-                                                      return app.newRegister
-                                                          ? btCustom(
-                                                              label:
-                                                                  'Novo Registro',
-                                                              icon:
-                                                                  MdiIcons.car,
-                                                              color: Colors.blue
-                                                                  .shade800,
-                                                              onTap: () {
-                                                                // if (expires) {
-                                                                //   showDialog(
-                                                                //       context:
-                                                                //           context,
-                                                                //       builder: (context) => AlertMessage(
-                                                                //           title:
-                                                                //               'Atenção',
-                                                                //           message:
-                                                                //               'Ops ! Horário para realizar um novo registro expirado, espere um novo período.',
-                                                                //           onPressedOK: () =>
-                                                                //               Navigator.of(context).pop()));
-                                                                // } else {
-                                                                app.setRouter(
-                                                                    2);
-                                                                Navigator.of(
-                                                                        context)
-                                                                    .pushReplacement(
-                                                                        MaterialPageRoute(
-                                                                            builder: (context) =>
-                                                                                const ChecklistRegisterPage(
-                                                                                  type: ChecklistType.vehicular,
-                                                                                )));
-                                                                // }
-                                                              })
-                                                          : btCustom(
-                                                              label:
-                                                                  'Ver registro',
-                                                              icon:
-                                                                  Icons.search,
-                                                              color: Colors
-                                                                  .deepPurple
-                                                                  .shade800,
-                                                              onTap: () async {
-                                                                await Navigator.of(
-                                                                        context)
-                                                                    .push(MaterialPageRoute(
-                                                                        builder:
-                                                                            (context) =>
-                                                                                ChecklistDetailsPage(checklist: app.checklistUser!)));
-                                                              });
+                                                      final register = app
+                                                          .newRegisterVehicular;
+                                                      return btCustom(
+                                                          label: register
+                                                              ? 'Novo Registro'
+                                                              : 'Ver Registro',
+                                                          icon: MdiIcons.car,
+                                                          color: Colors
+                                                              .blue.shade900,
+                                                          onTap: () async {
+                                                            if (register) {
+                                                              app.setRouter(3);
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .pushReplacement(
+                                                                      MaterialPageRoute(
+                                                                          builder: (context) =>
+                                                                              const ChecklistRegisterPage(
+                                                                                type: ChecklistType.vehicular,
+                                                                              )));
+                                                            } else {
+                                                              await Navigator.of(
+                                                                      context)
+                                                                  .push(MaterialPageRoute(
+                                                                      builder: (context) =>
+                                                                          ChecklistDetailsPage(
+                                                                              checklist: app.checklistUserVehicular!)));
+                                                            }
+                                                          });
                                                     }),
                                                   ),
                                                   Expanded(
-                                                    child: btCustom(
-                                                        label: 'Novo Registro',
-                                                        icon: MdiIcons.dolly,
-                                                        color: Colors
-                                                            .orange.shade700,
-                                                        onTap: () {}),
+                                                    child: Observer(
+                                                        builder: (context) {
+                                                      final register = app
+                                                          .newRegisterMaterial;
+                                                      return btCustom(
+                                                          label: register
+                                                              ? 'Novo Registro'
+                                                              : 'Ver Registro',
+                                                          icon: MdiIcons.dolly,
+                                                          color: Colors
+                                                              .orange.shade700,
+                                                          onTap: () {
+                                                            if (register) {
+                                                            } else {}
+                                                          });
+                                                    }),
                                                   ),
                                                   Expanded(
                                                     child: btCustom(
@@ -380,200 +369,16 @@ class _HomePageState extends State<HomePage> {
                                       style: Constants.subtitleHint,
                                     ),
                                     Expanded(
-                                      child: AppDataTable<ChecklistModel>(
-                                        limit: controller.limit,
-                                        data: List<ChecklistModel>.from(
+                                      child: ChecklistTableWidget(
+                                        list: List<ChecklistModel>.from(
                                             controller.checklistPeriodSort),
-                                        columnMode: ColumnWidthMode.auto,
-                                        columns: [
-                                          AppColumn(
-                                            width: 50,
-                                            name: 'details',
-                                            builder: (checklist) {
-                                              return InkWell(
-                                                child: Card(
-                                                  margin: EdgeInsets.zero,
-                                                  shape: RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadiusGeometry
-                                                              .circular(100)),
-                                                  child: const Padding(
-                                                    padding:
-                                                        EdgeInsets.all(5.0),
-                                                    child: Icon(Icons.search,
-                                                        size: 20,
-                                                        color: Colors.green),
-                                                  ),
-                                                ),
-                                                onTap: () {
-                                                  //     await Navigator.of(context).push(
-                                                  //         MaterialPageRoute(
-                                                  //             builder: (context) =>
-                                                  //                 ChecklistDetailsPage(
-                                                  //                     checklist:
-                                                  //                         checklist)));
-                                                },
-                                              );
-                                            },
-                                          ),
-                                          // AppColumn(
-                                          //   width: 120,
-                                          //   name: 'date',
-                                          //   label: 'Data',
-                                          //   sortValue: (service) =>
-                                          //       service.date,
-                                          //   builder: (service) => Text(
-                                          //     Core.formatDate(service.date),
-                                          //     style: Constants.title,
-                                          //   ),
-                                          // ),
-                                          // AppColumn(
-                                          //   width: 100,
-                                          //   name: 'obm',
-                                          //   label: 'OBM',
-                                          //   sortable: true,
-                                          //   alignment: Alignment.center,
-                                          //   sortValue: (service) =>
-                                          //       service.obm.prefix,
-                                          //   builder: (service) => Text(
-                                          //       service.obm.prefix,
-                                          //       style: Constants.title),
-                                          // ),
-                                          // AppColumn(
-                                          //   name: 'team',
-                                          //   label: 'Guarnição',
-                                          //   sortable: true,
-                                          //   alignment: Alignment.centerLeft,
-                                          //   sortValue: (service) =>
-                                          //       service.team?.name ?? '-',
-                                          //   builder: (service) => Text(
-                                          //     service.team?.name ?? '-',
-                                          //     style: Constants.title,
-                                          //     maxLines: 2,
-                                          //     overflow: TextOverflow.ellipsis,
-                                          //   ),
-                                          // ),
-                                          // AppColumn(
-                                          //   name: 'responsable',
-                                          //   label: 'Responsável',
-                                          //   sortable: true,
-                                          //   alignment: Alignment.center,
-                                          //   sortValue: (service) =>
-                                          //       '${service.responsable.graduation} ${service.responsable.name}',
-                                          //   builder: (service) => Text(
-                                          //     '${service.responsable.graduation} ${service.responsable.name}',
-                                          //     style: Constants.title,
-                                          //     maxLines: 2,
-                                          //     overflow: TextOverflow.ellipsis,
-                                          //   ),
-                                          // ),
-                                          // AppColumn(
-                                          //   width: 120,
-                                          //   name: 'changesCar',
-                                          //   label: 'Alt. Viaturas',
-                                          //   headColor: Colors.red,
-                                          //   sortable: true,
-                                          //   alignment: Alignment.center,
-                                          //   sortValue: (service) =>
-                                          //       service.changesCar.toString(),
-                                          //   builder: (service) => Text(
-                                          //       service.changesCar
-                                          //           .toString()
-                                          //           .padLeft(2, '0'),
-                                          //       style: Constants.title),
-                                          // ),
-                                          // AppColumn(
-                                          //   width: 120,
-                                          //   headColor: Colors.orange,
-                                          //   name: 'changesMaterials',
-                                          //   label: 'Alt. Materiais',
-                                          //   sortable: true,
-                                          //   alignment: Alignment.center,
-                                          //   sortValue: (service) => service
-                                          //       .changesMaterials
-                                          //       .toString(),
-                                          //   builder: (service) => Text(
-                                          //       service.changesMaterials
-                                          //           .toString()
-                                          //           .padLeft(2, '0'),
-                                          //       style: Constants.title),
-                                          // ),
-                                          // AppColumn(
-                                          //   name: 'state',
-                                          //   label: 'Status',
-                                          //   sortable: true,
-                                          //   alignment: Alignment.center,
-                                          //   sortValue: (service) =>
-                                          //       service.state.label,
-                                          //   builder: (service) {
-                                          //     final state = service.state;
-
-                                          //     return TagWidget(
-                                          //       icon: state.icon,
-                                          //       label: state.label,
-                                          //       color: state.color,
-                                          //     );
-                                          //   },
-                                          // ),
-                                          // AppColumn(
-                                          //   name: 'contact',
-                                          //   label: 'Contato',
-                                          //   sortValue: (service) =>
-                                          //       service.contact,
-                                          //   builder: (service) {
-                                          //     return InkWell(
-                                          //       child: Card(
-                                          //         margin: EdgeInsets.zero,
-                                          //         child: Padding(
-                                          //           padding:
-                                          //               const EdgeInsets.all(
-                                          //                   5.0),
-                                          //           child: Row(
-                                          //             spacing: 5,
-                                          //             mainAxisAlignment:
-                                          //                 MainAxisAlignment
-                                          //                     .center,
-                                          //             children: [
-                                          //               Icon(MdiIcons.whatsapp,
-                                          //                   color:
-                                          //                       Colors.green),
-                                          //               Expanded(
-                                          //                 child: Text(
-                                          //                   service.contact,
-                                          //                   style: Constants
-                                          //                       .subtitle,
-                                          //                   maxLines: 2,
-                                          //                   overflow:
-                                          //                       TextOverflow
-                                          //                           .ellipsis,
-                                          //                 ),
-                                          //               ),
-                                          //             ],
-                                          //           ),
-                                          //         ),
-                                          //       ),
-                                          //       onTap: () async {
-                                          //         final contact = service
-                                          //             .contact
-                                          //             .replaceAll(' ', '')
-                                          //             .replaceAll('(', '')
-                                          //             .replaceAll(')', '')
-                                          //             .replaceAll('-', '');
-
-                                          //         final path = kIsWeb
-                                          //             ? "https://wa.me/+55$contact/?text=${Uri.encodeFull('Olá, tudo bem ?')}"
-                                          //             : "whatsapp://send?phone=+55$contact&text=${Uri.encodeFull('Olá, tudo bem ?')}";
-
-                                          //         await launchUrlString(path,
-                                          //             mode: LaunchMode
-                                          //                 .externalApplication);
-                                          //       },
-                                          //     );
-                                          //   },
-                                          // ),
-                                        ],
-                                        rowId: (service) {
-                                          return service.id ?? 'err';
+                                        limit: controller.limit,
+                                        onDetails: (value) {
+                                          Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      ChecklistDetailsPage(
+                                                          checklist: value)));
                                         },
                                       ),
                                     ),

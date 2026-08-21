@@ -214,11 +214,11 @@ mixin _$MaterialsController on _MaterialsControllerBase, Store {
   @override
   Future<void> saveMaterialChecklist(
       {required MaterialChecklistModel material,
-      required List<OtherChangeModel> changes,
+      required List<OtherChangeModel> others,
       required List<FileModel> deletedFiles}) {
     return _$saveMaterialChecklistAsyncAction.run(() => super
         .saveMaterialChecklist(
-            material: material, changes: changes, deletedFiles: deletedFiles));
+            material: material, others: others, deletedFiles: deletedFiles));
   }
 
   late final _$deleteMaterialChecklistAsyncAction = AsyncAction(

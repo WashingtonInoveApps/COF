@@ -312,6 +312,26 @@ class _CarsPageState extends State<CarsPage> {
                                 },
                               ),
                               AppColumn(
+                                name: 'obm',
+                                label: 'OBM',
+                                width: 100,
+                                sortable: true,
+                                sortValue: (car) {
+                                  final obm = app.obms
+                                      .firstWhere((e) => e.id == car.obmID);
+
+                                  return obm.prefix;
+                                },
+                                builder: (car) {
+                                  final obm = app.obms
+                                      .firstWhere((e) => e.id == car.obmID);
+                                  return Text(
+                                    obm.prefix,
+                                    style: Constants.title,
+                                  );
+                                },
+                              ),
+                              AppColumn(
                                 name: 'prefix',
                                 label: 'Prefixo',
                                 sortValue: (car) => car.prefix,
@@ -320,6 +340,18 @@ class _CarsPageState extends State<CarsPage> {
                                   car.prefix,
                                   style: Constants.title,
                                 ),
+                              ),
+                              AppColumn(
+                                width: 220,
+                                name: 'cia',
+                                label: 'Companhia',
+                                sortValue: (car) => car.cia?.name ?? '',
+                                builder: (car) {
+                                  return Text(
+                                    car.cia?.name.toUpperCase() ?? '',
+                                    style: Constants.title,
+                                  );
+                                },
                               ),
                               AppColumn(
                                 name: 'state',
@@ -351,38 +383,6 @@ class _CarsPageState extends State<CarsPage> {
                                         ],
                                       ),
                                     ),
-                                  );
-                                },
-                              ),
-                              AppColumn(
-                                name: 'obm',
-                                label: 'OBM',
-                                width: 100,
-                                sortable: true,
-                                sortValue: (car) {
-                                  final obm = app.obms
-                                      .firstWhere((e) => e.id == car.obmID);
-
-                                  return obm.prefix;
-                                },
-                                builder: (car) {
-                                  final obm = app.obms
-                                      .firstWhere((e) => e.id == car.obmID);
-                                  return Text(
-                                    obm.prefix,
-                                    style: Constants.title,
-                                  );
-                                },
-                              ),
-                              AppColumn(
-                                width: 220,
-                                name: 'cia',
-                                label: 'Companhia',
-                                sortValue: (car) => car.cia?.name ?? '',
-                                builder: (car) {
-                                  return Text(
-                                    car.cia?.name.toUpperCase() ?? '',
-                                    style: Constants.title,
                                   );
                                 },
                               ),

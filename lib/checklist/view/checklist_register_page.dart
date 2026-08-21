@@ -46,10 +46,7 @@ class _ChecklistRegisterPageState extends State<ChecklistRegisterPage> {
     super.initState();
 
     controller = CheckListController(
-      init: widget.checklist,
       config: config,
-      update: (widget.checklist != null),
-      cars: app.cars,
       checklistTodays: app.checklistsOperationDay,
     );
 
