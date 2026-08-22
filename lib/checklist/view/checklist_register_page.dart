@@ -70,8 +70,6 @@ class _ChecklistRegisterPageState extends State<ChecklistRegisterPage> {
   Widget build(BuildContext context) {
     final update = (widget.checklist != null);
 
-    log('Type: ${widget.type.label}');
-
     return Scaffold(
       body: Stack(
         children: [
@@ -200,14 +198,16 @@ class _ChecklistRegisterPageState extends State<ChecklistRegisterPage> {
                   obms: app.obms,
                   user: app.user,
                   controller: register,
-                  changeTeam: (team) {
+                  changeTeam: (team) async {
                     log('Team: ${team?.toJson() ?? 'null'}');
 
                     if (widget.type == ChecklistType.materials) {
-                      controller
-                          .getChecklistMaterial(teamID: team?.id)
-                          .then(register.setChecklistMaterial);
+                      final value = await controller.getChecklistMaterial(
+                          teamID: team?.id);
+                      register.setChecklistMaterial(value);
                     }
+
+                    register.setTeam(team);
                   },
                 ),
                 if (widget.type == ChecklistType.vehicular)

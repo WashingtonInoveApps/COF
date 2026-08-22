@@ -8,7 +8,6 @@ import 'package:bsu_control/core/validation.dart';
 import 'package:bsu_control/enum/car_enum.dart';
 import 'package:bsu_control/model/car_model.dart';
 import 'package:bsu_control/model/car_status_model.dart';
-import 'package:bsu_control/model/section_itens_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';

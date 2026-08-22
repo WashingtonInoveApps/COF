@@ -50,9 +50,10 @@ class _LoginPageState extends State<LoginPage> {
       }
 
       if (user != null) {
-        app.setUser(user);
-        Navigator.of(context).pushReplacement(
-            CupertinoPageRoute(builder: (context) => const HomePage()));
+        app.setUser(user).then((_) {
+          Navigator.of(context).pushReplacement(
+              CupertinoPageRoute(builder: (context) => const HomePage()));
+        });
       }
     });
   }
@@ -343,14 +344,16 @@ class _LoginPageState extends State<LoginPage> {
                                                                     .text)
                                                         .then((value) async {
                                                       if (value != null) {
-                                                        app.setUser(value);
-                                                        await Navigator.of(
-                                                                context)
-                                                            .pushReplacement(
-                                                                CupertinoPageRoute(
-                                                                    builder:
-                                                                        (context) =>
-                                                                            const HomePage()));
+                                                        app
+                                                            .setUser(value)
+                                                            .then((_) {
+                                                          Navigator.of(context)
+                                                              .pushReplacement(
+                                                                  CupertinoPageRoute(
+                                                                      builder:
+                                                                          (context) =>
+                                                                              const HomePage()));
+                                                        });
                                                       }
                                                     }).catchError((err) async {
                                                       showDialog(

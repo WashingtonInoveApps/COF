@@ -95,6 +95,8 @@ abstract class _LoginControllerBase with Store {
       }
 
       if (!result.enable) {
+        loading = false;
+        state = LoginState.done;
         throw Exception('Usuário sem permissão de acesso,contate o suporte.');
       }
 

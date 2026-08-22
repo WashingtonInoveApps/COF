@@ -9,14 +9,32 @@ part of 'checklist_controller.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$CheckListController on _CheckListControllerBase, Store {
-  Computed<List<ChecklistModel>>? _$myChecklistUserSortComputed;
+  Computed<int>? _$startComputed;
 
   @override
-  List<ChecklistModel> get myChecklistUserSort =>
-      (_$myChecklistUserSortComputed ??= Computed<List<ChecklistModel>>(
-              () => super.myChecklistUserSort,
-              name: '_CheckListControllerBase.myChecklistUserSort'))
+  int get start => (_$startComputed ??= Computed<int>(() => super.start,
+          name: '_CheckListControllerBase.start'))
+      .value;
+  Computed<int>? _$endComputed;
+
+  @override
+  int get end => (_$endComputed ??=
+          Computed<int>(() => super.end, name: '_CheckListControllerBase.end'))
+      .value;
+  Computed<int>? _$lengthSortingsComputed;
+
+  @override
+  int get lengthSortings =>
+      (_$lengthSortingsComputed ??= Computed<int>(() => super.lengthSortings,
+              name: '_CheckListControllerBase.lengthSortings'))
           .value;
+  Computed<List<ChecklistModel>>? _$checklistsSortComputed;
+
+  @override
+  List<ChecklistModel> get checklistsSort => (_$checklistsSortComputed ??=
+          Computed<List<ChecklistModel>>(() => super.checklistsSort,
+              name: '_CheckListControllerBase.checklistsSort'))
+      .value;
 
   late final _$loadingAtom =
       Atom(name: '_CheckListControllerBase.loading', context: context);
@@ -34,19 +52,19 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
     });
   }
 
-  late final _$myChecklistUserAtom =
-      Atom(name: '_CheckListControllerBase.myChecklistUser', context: context);
+  late final _$checklistsAtom =
+      Atom(name: '_CheckListControllerBase.checklists', context: context);
 
   @override
-  ObservableList<ChecklistModel> get myChecklistUser {
-    _$myChecklistUserAtom.reportRead();
-    return super.myChecklistUser;
+  ObservableList<ChecklistModel> get checklists {
+    _$checklistsAtom.reportRead();
+    return super.checklists;
   }
 
   @override
-  set myChecklistUser(ObservableList<ChecklistModel> value) {
-    _$myChecklistUserAtom.reportWrite(value, super.myChecklistUser, () {
-      super.myChecklistUser = value;
+  set checklists(ObservableList<ChecklistModel> value) {
+    _$checklistsAtom.reportWrite(value, super.checklists, () {
+      super.checklists = value;
     });
   }
 
@@ -283,7 +301,7 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
       ActionController(name: '_CheckListControllerBase', context: context);
 
   @override
-  dynamic changeDate(DateTime? value) {
+  void changeDate(DateTime? value) {
     final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
         name: '_CheckListControllerBase.changeDate');
     try {
@@ -294,7 +312,7 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
   }
 
   @override
-  dynamic setDateMyChecklist(DateTime? value) {
+  void setDateMyChecklist(DateTime? value) {
     final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
         name: '_CheckListControllerBase.setDateMyChecklist');
     try {
@@ -305,7 +323,7 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
   }
 
   @override
-  dynamic setDateRangeChecklist(
+  void setDateRangeChecklist(
       {required DateTime dateStart, required DateTime dateFinish}) {
     final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
         name: '_CheckListControllerBase.setDateRangeChecklist');
@@ -329,7 +347,7 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
   }
 
   @override
-  dynamic setDateStartConfig(DateTime? value) {
+  void setDateStartConfig(DateTime? value) {
     final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
         name: '_CheckListControllerBase.setDateStartConfig');
     try {
@@ -340,7 +358,7 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
   }
 
   @override
-  dynamic setDateFinishConfig(DateTime? value) {
+  void setDateFinishConfig(DateTime? value) {
     final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
         name: '_CheckListControllerBase.setDateFinishConfig');
     try {
@@ -351,18 +369,18 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
   }
 
   @override
-  dynamic setMyChecklistUser(List<ChecklistModel> value) {
+  void setChecklists(List<ChecklistModel> value) {
     final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
-        name: '_CheckListControllerBase.setMyChecklistUser');
+        name: '_CheckListControllerBase.setChecklists');
     try {
-      return super.setMyChecklistUser(value);
+      return super.setChecklists(value);
     } finally {
       _$_CheckListControllerBaseActionController.endAction(_$actionInfo);
     }
   }
 
   @override
-  dynamic onChangeFilter(String? value) {
+  void onChangeFilter(String? value) {
     final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
         name: '_CheckListControllerBase.onChangeFilter');
     try {
@@ -373,7 +391,7 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
   }
 
   @override
-  dynamic setLimit(int? value) {
+  void setLimit(int? value) {
     final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
         name: '_CheckListControllerBase.setLimit');
     try {
@@ -384,7 +402,7 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
   }
 
   @override
-  dynamic setPage(int value) {
+  void setPage(int value) {
     final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
         name: '_CheckListControllerBase.setPage');
     try {
@@ -395,7 +413,7 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
   }
 
   @override
-  dynamic addMaterialsConsumedUsed(List<ItemModel> values) {
+  void addMaterialsConsumedUsed(List<ItemModel> values) {
     final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
         name: '_CheckListControllerBase.addMaterialsConsumedUsed');
     try {
@@ -406,7 +424,7 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
   }
 
   @override
-  dynamic deleteMaterialsConsumedUsed(int index) {
+  void deleteMaterialsConsumedUsed(int index) {
     final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
         name: '_CheckListControllerBase.deleteMaterialsConsumedUsed');
     try {
@@ -428,7 +446,7 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
   }
 
   @override
-  dynamic setLoading(bool value) {
+  void setLoading(bool value) {
     final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
         name: '_CheckListControllerBase.setLoading');
     try {
@@ -442,7 +460,7 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
   String toString() {
     return '''
 loading: ${loading},
-myChecklistUser: ${myChecklistUser},
+checklists: ${checklists},
 materialsConsumable: ${materialsConsumable},
 materialsConsumedUsed: ${materialsConsumedUsed},
 date: ${date},
@@ -455,7 +473,10 @@ step: ${step},
 filter: ${filter},
 limit: ${limit},
 page: ${page},
-myChecklistUserSort: ${myChecklistUserSort}
+start: ${start},
+end: ${end},
+lengthSortings: ${lengthSortings},
+checklistsSort: ${checklistsSort}
     ''';
   }
 }

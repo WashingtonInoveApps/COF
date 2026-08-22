@@ -25,6 +25,8 @@ class ChecklistModel {
   String obs;
   OBMModel? obm;
   String obmID;
+  String teamID;
+  String contact;
   UserModel user;
   DateTime date;
   DateTime? dateFinish;
@@ -56,6 +58,8 @@ class ChecklistModel {
     this.pb = "",
     this.obmID = '',
     this.carID = '',
+    this.teamID = '',
+    this.contact = '',
     this.dateFinish,
     this.type = ChecklistType.vehicular,
     this.state = StateProgress.inprogress,
@@ -81,6 +85,8 @@ class ChecklistModel {
       'prefix': prefix,
       'startKM': startKM,
       'endKM': endKM,
+      'teamID': teamID,
+      'contact': contact,
       'obm': obm?.toMapResume(),
       'id': id,
       'type': type.name,
@@ -108,6 +114,8 @@ class ChecklistModel {
       pb: map['pb'] ?? '',
       team: map['team'] != null ? TeamModel.fromMap(map['team']) : null,
       userID: map['userID'] ?? '',
+      teamID: map['teamID'] ?? '',
+      contact: map['contact'] ?? '',
       cia: map['cia'] != null ? CiaModel.fromMapResume(map['cia']) : null,
       obm: map['obm'] != null ? OBMModel.fromMapResume(map['obm']) : null,
       signature: (map['signature'] == null)
@@ -168,7 +176,9 @@ class ChecklistModel {
     int? endKM,
     String? userID,
     String? id,
+    String? contact,
     String? obs,
+    String? teamID,
     OBMModel? obm,
     FileModel? signature,
     CiaModel? cia,
@@ -190,10 +200,12 @@ class ChecklistModel {
       team: team ?? this.team,
       carID: carID ?? this.carID,
       prefix: prefix ?? this.prefix,
+      contact: contact ?? this.contact,
       startKM: startKM ?? this.startKM,
       others: others ?? this.others,
       endKM: endKM ?? this.endKM,
       userID: userID ?? this.userID,
+      teamID: teamID ?? this.teamID,
       id: id ?? this.id,
       obm: obm ?? this.obm,
       state: state ?? this.state,

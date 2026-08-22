@@ -165,12 +165,20 @@ class CheckListRepository extends APIClient implements ICheckListRepository {
   }
 
   @override
-  Stream<List<ChecklistModel>> streamChecklistPeriod(
-      {required DateTime referenceDateStart,
-      required DateTime referenceDateFinish}) {
+  Stream<List<ChecklistModel>> streamChecklistPeriod({
+    required DateTime referenceDateStart,
+    required DateTime referenceDateFinish,
+  }) {
     final start = referenceDateStart
-        .copyWith(hour: 0, second: 0, minute: 0, millisecond: 0, microsecond: 0)
+        .copyWith(
+          hour: 0,
+          second: 0,
+          minute: 0,
+          millisecond: 0,
+          microsecond: 0,
+        )
         .millisecondsSinceEpoch;
+
     final finish = referenceDateFinish
         .copyWith(
           hour: 23,

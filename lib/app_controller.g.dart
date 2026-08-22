@@ -30,22 +30,6 @@ mixin _$AppController on _AppControllerBase, Store {
           Computed<bool>(() => super.newRegisterMaterial,
               name: '_AppControllerBase.newRegisterMaterial'))
       .value;
-  Computed<ChecklistModel?>? _$checklistUserVehicularComputed;
-
-  @override
-  ChecklistModel? get checklistUserVehicular =>
-      (_$checklistUserVehicularComputed ??= Computed<ChecklistModel?>(
-              () => super.checklistUserVehicular,
-              name: '_AppControllerBase.checklistUserVehicular'))
-          .value;
-  Computed<ChecklistModel?>? _$checklistUserMaterialComputed;
-
-  @override
-  ChecklistModel? get checklistUserMaterial =>
-      (_$checklistUserMaterialComputed ??= Computed<ChecklistModel?>(
-              () => super.checklistUserMaterial,
-              name: '_AppControllerBase.checklistUserMaterial'))
-          .value;
   Computed<List<CarModel>>? _$carsUsersComputed;
 
   @override
@@ -182,6 +166,40 @@ mixin _$AppController on _AppControllerBase, Store {
     });
   }
 
+  late final _$checklistUserVehicularAtom =
+      Atom(name: '_AppControllerBase.checklistUserVehicular', context: context);
+
+  @override
+  ChecklistModel? get checklistUserVehicular {
+    _$checklistUserVehicularAtom.reportRead();
+    return super.checklistUserVehicular;
+  }
+
+  @override
+  set checklistUserVehicular(ChecklistModel? value) {
+    _$checklistUserVehicularAtom
+        .reportWrite(value, super.checklistUserVehicular, () {
+      super.checklistUserVehicular = value;
+    });
+  }
+
+  late final _$checklistUserMaterialAtom =
+      Atom(name: '_AppControllerBase.checklistUserMaterial', context: context);
+
+  @override
+  ChecklistModel? get checklistUserMaterial {
+    _$checklistUserMaterialAtom.reportRead();
+    return super.checklistUserMaterial;
+  }
+
+  @override
+  set checklistUserMaterial(ChecklistModel? value) {
+    _$checklistUserMaterialAtom.reportWrite(value, super.checklistUserMaterial,
+        () {
+      super.checklistUserMaterial = value;
+    });
+  }
+
   late final _$carsAtom =
       Atom(name: '_AppControllerBase.cars', context: context);
 
@@ -247,6 +265,14 @@ mixin _$AppController on _AppControllerBase, Store {
     });
   }
 
+  late final _$setUserAsyncAction =
+      AsyncAction('_AppControllerBase.setUser', context: context);
+
+  @override
+  Future<void> setUser(UserModel value) {
+    return _$setUserAsyncAction.run(() => super.setUser(value));
+  }
+
   late final _$initApplicationAsyncAction =
       AsyncAction('_AppControllerBase.initApplication', context: context);
 
@@ -257,17 +283,6 @@ mixin _$AppController on _AppControllerBase, Store {
 
   late final _$_AppControllerBaseActionController =
       ActionController(name: '_AppControllerBase', context: context);
-
-  @override
-  void setUser(UserModel value) {
-    final _$actionInfo = _$_AppControllerBaseActionController.startAction(
-        name: '_AppControllerBase.setUser');
-    try {
-      return super.setUser(value);
-    } finally {
-      _$_AppControllerBaseActionController.endAction(_$actionInfo);
-    }
-  }
 
   @override
   void changeMenuOpen() {
@@ -359,6 +374,8 @@ menuOpen: ${menuOpen},
 loading: ${loading},
 checklistVeicular: ${checklistVeicular},
 modeMOBILE: ${modeMOBILE},
+checklistUserVehicular: ${checklistUserVehicular},
+checklistUserMaterial: ${checklistUserMaterial},
 cars: ${cars},
 checklistsOperationDay: ${checklistsOperationDay},
 notifications: ${notifications},
@@ -366,8 +383,6 @@ users: ${users},
 carsTypes: ${carsTypes},
 newRegisterVehicular: ${newRegisterVehicular},
 newRegisterMaterial: ${newRegisterMaterial},
-checklistUserVehicular: ${checklistUserVehicular},
-checklistUserMaterial: ${checklistUserMaterial},
 carsUsers: ${carsUsers}
     ''';
   }

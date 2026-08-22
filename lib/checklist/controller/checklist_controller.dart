@@ -22,8 +22,6 @@ abstract class _CheckListControllerBase with Store {
   final List<ChecklistModel> checklistTodays;
   late ICheckListRepository repository;
 
-  List<String> messagesErros = [];
-
   @observable
   bool loading = false;
 
@@ -43,8 +41,7 @@ abstract class _CheckListControllerBase with Store {
   }
 
   @observable
-  ObservableList<ChecklistModel> myChecklistUser =
-      <ChecklistModel>[].asObservable();
+  ObservableList<ChecklistModel> checklists = <ChecklistModel>[].asObservable();
 
   @observable
   ObservableList<SectionItensModel> materialsConsumable =
@@ -86,10 +83,10 @@ abstract class _CheckListControllerBase with Store {
   @observable
   int page = 1;
 
-  Stream<List<ChecklistModel>> streamChecklistPeriod(
-      {required String userID,
-      required DateTime referenceDateStart,
-      required DateTime referenceDateFinish}) {
+  Stream<List<ChecklistModel>> streamChecklistPeriod({
+    required DateTime referenceDateStart,
+    required DateTime referenceDateFinish,
+  }) {
     return repository.streamChecklistPeriod(
         referenceDateStart: referenceDateStart,
         referenceDateFinish: referenceDateFinish);
@@ -100,9 +97,22 @@ abstract class _CheckListControllerBase with Store {
   }
 
   @computed
-  List<ChecklistModel> get myChecklistUserSort {
+  int get start => checklistsSort.isEmpty ? 0 : ((page - 1) * limit) + 1;
+
+  @computed
+  int get end => checklistsSort.isEmpty ? 0 : start + checklistsSort.length - 1;
+
+  @computed
+  int get lengthSortings {
+    if (filter.isEmpty) return checklists.length;
+
+    return checklistsSort.length;
+  }
+
+  @computed
+  List<ChecklistModel> get checklistsSort {
     if (filter.isNotEmpty) {
-      final filtered = myChecklistUser
+      final filtered = checklists
           .where((e) =>
               (e.prefix.toLowerCase().contains(filter.toLowerCase()) ||
                   (e.obm?.name.toLowerCase().contains(filter.toLowerCase()) ??
@@ -117,22 +127,23 @@ abstract class _CheckListControllerBase with Store {
       final list = Core.paginate(list: filtered, page: page, limit: limit);
       return List<ChecklistModel>.from(list);
     } else {
-      final list =
-          Core.paginate(list: myChecklistUser, page: page, limit: limit);
+      final list = Core.paginate(list: checklists, page: page, limit: limit);
       return List<ChecklistModel>.from(list);
     }
   }
 
   @action
-  changeDate(DateTime? value) => date = value ?? date;
+  void changeDate(DateTime? value) => date = value ?? date;
 
   @action
-  setDateMyChecklist(DateTime? value) =>
+  void setDateMyChecklist(DateTime? value) =>
       dateMyChecklist = value ?? dateMyChecklist;
 
   @action
-  setDateRangeChecklist(
-      {required DateTime dateStart, required DateTime dateFinish}) {
+  void setDateRangeChecklist({
+    required DateTime dateStart,
+    required DateTime dateFinish,
+  }) {
     dateReferenceStart = dateStart;
     dateReferenceFinish = dateFinish;
   }
@@ -144,50 +155,50 @@ abstract class _CheckListControllerBase with Store {
   }
 
   @action
-  setDateStartConfig(DateTime? value) {
+  void setDateStartConfig(DateTime? value) {
     dateStartConfig = value ?? dateStartConfig;
   }
 
   @action
-  setDateFinishConfig(DateTime? value) {
+  void setDateFinishConfig(DateTime? value) {
     dateFinishConfig = value ?? dateFinishConfig;
   }
 
   @action
-  setMyChecklistUser(List<ChecklistModel> value) {
+  void setChecklists(List<ChecklistModel> value) {
     value.sort((a, b) => b.date.compareTo(a.date));
 
-    myChecklistUser
+    checklists
       ..clear()
       ..addAll(value);
   }
 
   @action
-  onChangeFilter(String? value) {
+  void onChangeFilter(String? value) {
     filter = value ?? '';
     page = 1;
   }
 
   @action
-  setLimit(int? value) {
+  void setLimit(int? value) {
     limit = value ?? limit;
     page = 1;
   }
 
   @action
-  setPage(int value) {
+  void setPage(int value) {
     page = value;
   }
 
   @action
-  addMaterialsConsumedUsed(List<ItemModel> values) {
+  void addMaterialsConsumedUsed(List<ItemModel> values) {
     materialsConsumedUsed
       ..clear()
       ..addAll(values);
   }
 
   @action
-  deleteMaterialsConsumedUsed(int index) {
+  void deleteMaterialsConsumedUsed(int index) {
     materialsConsumedUsed.removeAt(index);
   }
 
@@ -201,7 +212,7 @@ abstract class _CheckListControllerBase with Store {
   }
 
   @action
-  setLoading(bool value) => loading = value;
+  void setLoading(bool value) => loading = value;
 
   @action
   Future<bool> save({required ChecklistModel checklist}) async {
@@ -213,7 +224,7 @@ abstract class _CheckListControllerBase with Store {
       );
 
       loading = false;
-      return false;
+      return result;
     } catch (e) {
       loading = false;
       rethrow;

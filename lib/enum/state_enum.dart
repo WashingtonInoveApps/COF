@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
-enum StateProgress { inprogress, completed, expired }
+enum StateProgress { inprogress, completed, expired, reactivated }
 
 extension StateProgressLabel on StateProgress {
   String get label {
@@ -12,6 +12,8 @@ extension StateProgressLabel on StateProgress {
         return "Finalizado";
       case StateProgress.expired:
         return "Vencido";
+      case StateProgress.reactivated:
+        return "Reativado";
     }
   }
 }
@@ -20,11 +22,13 @@ extension StateProgressColor on StateProgress {
   Color get color {
     switch (this) {
       case StateProgress.inprogress:
-        return Colors.blue.shade700;
+        return Colors.grey.shade600;
       case StateProgress.completed:
-        return Colors.green;
+        return Colors.blue.shade700;
       case StateProgress.expired:
-        return Colors.orange;
+        return Colors.orange.shade700;
+      case StateProgress.reactivated:
+        return Colors.green.shade700;
     }
   }
 }
@@ -38,6 +42,8 @@ extension StateProgressIcon on StateProgress {
         return MdiIcons.checkAll;
       case StateProgress.expired:
         return Icons.info_rounded;
+      case StateProgress.reactivated:
+        return MdiIcons.progressCheck;
     }
   }
 }

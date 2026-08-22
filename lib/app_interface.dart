@@ -7,11 +7,14 @@ import 'package:bsu_control/model/user_model.dart';
 import 'model/supply_model.dart';
 
 abstract class IAppRepository {
-  Future<bool> saveSupplies(
-      {required SupplyModel supply, required ChecklistModel checklist});
+  Future<bool> saveSupplies({
+    required SupplyModel supply,
+    required ChecklistModel checklist,
+  });
 
-  Stream<List<ChecklistModel>> listenChecklistOperationDay(
-      {required DateTime referenceDate});
+  Stream<List<ChecklistModel>> listenChecklistOperationDay({
+    required DateTime referenceDate,
+  });
 
   Stream<List<CarModel>> listenCar();
 
@@ -19,9 +22,16 @@ abstract class IAppRepository {
 
   Future<List<OBMModel>> getOBMs();
 
-  Future<bool> deleteSupply(
-      {required SupplyModel supply, required ChecklistModel checklist});
+  Future<bool> deleteSupply({
+    required SupplyModel supply,
+    required ChecklistModel checklist,
+  });
 
   Future<AppModel> getAppModel();
+
   Future<bool> updateAppModel({required AppModel appData});
+
+  Future<List<ChecklistModel>> getChecklistUser({
+    required String userID,
+  });
 }

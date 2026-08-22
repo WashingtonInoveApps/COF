@@ -7,10 +7,18 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class CardOutherChange extends StatelessWidget {
+  final bool admin;
+  final String? checklistID;
   final OtherChangeModel other;
   final Function()? onDelete;
-  const CardOutherChange({Key? key, required this.other, this.onDelete})
-      : super(key: key);
+
+  const CardOutherChange({
+    Key? key,
+    required this.other,
+    this.onDelete,
+    this.checklistID,
+    this.admin = false,
+  }) : super(key: key);
 
   Widget image(
       {required OtherChangeModel value,
@@ -143,30 +151,31 @@ class CardOutherChange extends StatelessWidget {
             ],
           ),
         ),
-        (onDelete != null)
-            ? IconButton(
-                onPressed: () {
-                  showDialog(
-                      context: context,
-                      builder: (context) => AlertMessage(
-                            message: 'Deseja deletar esse registro ?',
-                            cancel: true,
-                            titleOK: 'Sim',
-                            onPressedOK: () => Navigator.of(context).pop(true),
-                            onPressedCancel: () =>
-                                Navigator.of(context).pop(false),
-                          )).then((result) {
-                    if (result ?? false) {
-                      onDelete?.call();
-                    }
-                  });
-                },
-                icon: const Icon(
-                  Icons.delete,
-                  size: 20,
-                  color: Colors.grey,
-                ))
-            : Container()
+        if ((onDelete != null && other.checklistID == checklistID ||
+                (other.image.data?.isNotEmpty ?? false)) ||
+            (onDelete != null && admin))
+          IconButton(
+              onPressed: () {
+                showDialog(
+                    context: context,
+                    builder: (context) => AlertMessage(
+                          message: 'Deseja deletar esse registro ?',
+                          cancel: true,
+                          titleOK: 'Sim',
+                          onPressedOK: () => Navigator.of(context).pop(true),
+                          onPressedCancel: () =>
+                              Navigator.of(context).pop(false),
+                        )).then((result) {
+                  if (result ?? false) {
+                    onDelete?.call();
+                  }
+                });
+              },
+              icon: const Icon(
+                Icons.delete,
+                size: 20,
+                color: Colors.grey,
+              )),
       ],
     );
   }

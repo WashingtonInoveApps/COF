@@ -119,13 +119,13 @@ class MaterialRepository extends APIClient implements IMaterialRepository {
         }
       }
 
-      if (deletedFiles.isNotEmpty) {
-        for (final file in deletedFiles) {
-          if (file.path.isNotEmpty) {
-            await deleteFile(path: file.path, filename: file.name);
-          }
-        }
-      }
+      // if (deletedFiles.isNotEmpty) {
+      //   for (final file in deletedFiles) {
+      //     if (file.path.isNotEmpty) {
+      //       await deleteFile(path: file.path, filename: file.name);
+      //     }
+      //   }
+      // }
 
       await docMaterials.set(material.copyWith(others: others).toMap());
       return true;
@@ -140,9 +140,9 @@ class MaterialRepository extends APIClient implements IMaterialRepository {
     try {
       await colMaterials.doc(material.id).delete();
 
-      for (final OtherChangeModel other in (material.others ?? [])) {
-        await deleteFile(path: other.image.path, filename: other.image.name);
-      }
+      // for (final OtherChangeModel other in (material.others ?? [])) {
+      //   await deleteFile(path: other.image.path, filename: other.image.name);
+      // }
 
       return true;
     } catch (e) {

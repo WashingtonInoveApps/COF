@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/model/cia_model.dart';
@@ -232,6 +234,7 @@ class _CheckListInforPageState extends State<CheckListInforPage> {
                 : Container();
           }),
           Observer(builder: (context) {
+            log(controller.team?.toJson() ?? '');
             return (controller.teams.isNotEmpty)
                 ? Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -266,7 +269,7 @@ class _CheckListInforPageState extends State<CheckListInforPage> {
                             underline: Container(),
                             onChanged: (value) {
                               widget.changeTeam.call(value);
-                              controller.setTeam(value);
+                              // controller.setTeam(value);
                             },
                             items: [
                               DropdownMenuItem(

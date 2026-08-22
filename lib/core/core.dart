@@ -101,6 +101,7 @@ class Core {
     String? graduation,
     TextStyle? style,
     TextStyle? boldStyle,
+    TextOverflow? over,
   }) {
     final normalStyle = style ?? const TextStyle(color: Colors.black);
 
@@ -119,6 +120,7 @@ class Core {
 
     return RichText(
       textAlign: TextAlign.start,
+      overflow: over ?? TextOverflow.clip,
       text: TextSpan(
         children: fullWords.map((word) {
           final cleanWord = word.toLowerCase();

@@ -274,9 +274,10 @@ class _MaterialChecklistRegisterPageState
                             final other = register.changes[index];
 
                             return CardOutherChange(
+                              admin: true,
                               other: other,
                               onDelete: () {
-                                register.deletedFiles(other.image);
+                                // register.deletedFiles(other.image);
                                 register.deleteChange(index);
                               },
                             );

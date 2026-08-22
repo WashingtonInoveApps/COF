@@ -177,6 +177,8 @@ class _HomePageState extends State<HomePage> {
                                                           largeDayHour: true),
                                                       style:
                                                           Constants.titleHint,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
                                                     );
                                                   }),
                                                 ),
@@ -240,7 +242,14 @@ class _HomePageState extends State<HomePage> {
                                                               .orange.shade700,
                                                           onTap: () {
                                                             if (register) {
-                                                            } else {}
+                                                            } else {
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .push(MaterialPageRoute(
+                                                                      builder: (context) =>
+                                                                          ChecklistDetailsPage(
+                                                                              checklist: app.checklistUserMaterial!)));
+                                                            }
                                                           });
                                                     }),
                                                   ),

@@ -61,6 +61,7 @@ class _CheckListOthersPageState extends State<CheckListOthersPage> {
                       final other = controller.others[index];
 
                       return CardOutherChange(
+                        checklistID: controller.init?.id,
                         other: other,
                         onDelete: () {
                           controller.deleteOuhtersChange(index);

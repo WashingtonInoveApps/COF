@@ -122,6 +122,7 @@ class ChecklistTableWidget extends StatelessWidget {
           ),
         ),
         AppColumn(
+          width: 200,
           name: 'responsable',
           label: 'Responsável',
           sortValue: (checklist) => checklist.user.name,
@@ -133,6 +134,7 @@ class ChecklistTableWidget extends StatelessWidget {
                 name: checklist.user.name,
                 fullName: checklist.user.fullname,
                 style: Constants.title,
+                over: TextOverflow.ellipsis,
               ),
               Text(
                 checklist.user.graduation,

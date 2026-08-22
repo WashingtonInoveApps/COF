@@ -13,10 +13,12 @@ import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 
 import '../../widgets/backgraund_page.dart';
+import '../../widgets/checklist_table_view.dart';
 import '../../widgets/config_view_widget.dart';
 import '../../widgets/limit_table_widget.dart';
 import '../../widgets/pagination_widget.dart';
 import '../../widgets/textfield_widget.dart';
+import 'checklist_details_page.dart';
 
 class ChecklistPage extends StatefulWidget {
   const ChecklistPage({Key? key}) : super(key: key);
@@ -29,7 +31,7 @@ class _ChecklistPageState extends State<ChecklistPage> {
   late CheckListController controller;
 
   late ReactionDisposer rec;
-  late StreamSubscription subscription;
+  StreamSubscription? subscription;
 
   final app = GetIt.I.get<AppController>();
   final searchController = TextEditingController();
@@ -48,27 +50,39 @@ class _ChecklistPageState extends State<ChecklistPage> {
         dateFinish: controller.dateFinishConfig);
 
     rec = autorun((_) {
-      controller.setLoading(true);
-
-      subscription = controller
-          .streamChecklistPeriod(
-              userID: app.user.id!,
-              referenceDateStart: controller.dateReferenceStart,
-              referenceDateFinish: controller.dateReferenceFinish)
-          .listen((result) {
-        controller.setMyChecklistUser(
-            result.where((e) => e.userID == app.user.id).toList());
-
-        controller.setLoading(false);
-      });
+      streamCheklist(
+        start: controller.dateReferenceStart,
+        end: controller.dateReferenceFinish,
+      );
     });
+  }
+
+  Future<void> streamCheklist({
+    required DateTime start,
+    required DateTime end,
+  }) async {
+    controller.setLoading(true);
+    await subscription?.cancel();
+
+    subscription = controller
+        .streamChecklistPeriod(
+      referenceDateStart: start,
+      referenceDateFinish: end,
+    )
+        .listen(
+      (result) {
+        controller.setChecklists(
+            result.where((e) => e.userID == app.user.id).toList());
+        controller.setLoading(false);
+      },
+    );
   }
 
   @override
   void dispose() {
     super.dispose();
     searchController.dispose();
-    subscription.cancel();
+    subscription?.cancel();
     rec();
   }
 
@@ -135,7 +149,9 @@ class _ChecklistPageState extends State<ChecklistPage> {
                                 padding: const EdgeInsets.all(10),
                                 child: Observer(builder: (_) {
                                   final checklists = List<ChecklistModel>.from(
-                                      controller.myChecklistUser);
+                                    controller.checklists,
+                                  );
+
                                   return UserStateChart(checklists: checklists);
                                 }),
                               ),
@@ -169,7 +185,7 @@ class _ChecklistPageState extends State<ChecklistPage> {
                       }),
                       Observer(builder: (_) {
                         return IgnorePointer(
-                          ignoring: controller.myChecklistUser.isEmpty,
+                          ignoring: controller.checklists.isEmpty,
                           child: Container(
                             margin: const EdgeInsets.only(top: 10),
                             width: app.modeMOBILE ? double.infinity : 350,
@@ -190,14 +206,18 @@ class _ChecklistPageState extends State<ChecklistPage> {
                     ],
                   ),
                 ),
-                app.modeMOBILE ? Container() : const Divider(),
+                app.modeMOBILE
+                    ? const SizedBox(
+                        height: 10,
+                      )
+                    : const Divider(),
                 SizedBox(
                   width: double.infinity,
                   height: 450,
                   child: Observer(builder: (context) {
                     if (controller.loading) {
                       return const Center(child: LinearProgressIndicator());
-                    } else if (controller.myChecklistUserSort.isEmpty) {
+                    } else if (controller.checklistsSort.isEmpty) {
                       return Text(
                         'Nenhum registro encontrado.',
                         style: Constants.titleHint,
@@ -212,42 +232,21 @@ class _ChecklistPageState extends State<ChecklistPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Exibindo 1 a ${controller.myChecklistUserSort.length} de ${controller.myChecklistUser.length} entradas',
+                              'Exibindo ${controller.start} a ${controller.end} de ${controller.checklists.length} entradas',
                               style: Constants.subtitleHint,
                             ),
                             Expanded(
-                              child: Container(),
-                              // child: ChecklistTableView(
-                              //   values: controller.myChecklistUserSort,
-                              //   obms: app.obms,
-                              //   onContact: (contact) async {
-                              //     final path = kIsWeb
-                              //         ? "https://wa.me/+55$contact/?text=${Uri.encodeFull('Olá, tudo bem ?')}"
-                              //         : "whatsapp://send?phone=+55$contact&text=${Uri.encodeFull('Olá, tudo bem ?')}";
-
-                              //     await launchUrlString(path,
-                              //         mode: LaunchMode.externalApplication);
-                              //   },
-                              //   onDetails: (id) async {
-                              //     await Navigator.of(context).push(
-                              //         MaterialPageRoute(
-                              //             builder: (context) =>
-                              //                 ChecklistDetailsPage(
-                              //                     checklist: id)));
-                              //   },
-                              //   onChanges: (changes) {
-                              //     showDialog(
-                              //         context: context,
-                              //         builder: (context) {
-                              //           return AlertDialog(
-                              //             contentPadding:
-                              //                 const EdgeInsets.all(10),
-                              //             content: ImagesChangesViewWidget(
-                              //                 changes: changes),
-                              //           );
-                              //         });
-                              //   },
-                              // ),
+                              child: ChecklistTableWidget(
+                                list: List<ChecklistModel>.from(
+                                    controller.checklistsSort),
+                                limit: controller.limit,
+                                onDetails: (value) {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) =>
+                                          ChecklistDetailsPage(
+                                              checklist: value)));
+                                },
+                              ),
                             ),
                             Row(
                               children: [
@@ -260,7 +259,7 @@ class _ChecklistPageState extends State<ChecklistPage> {
                                   return PaginationWidget(
                                     limit: controller.limit,
                                     page: controller.page,
-                                    length: controller.myChecklistUser.length,
+                                    length: controller.lengthSortings,
                                     onChange: controller.setPage,
                                   );
                                 }),

@@ -182,6 +182,8 @@ abstract class _ChecklistRegisterControllerBase with Store {
       obs: obsGeral,
       pb: pb,
       team: team,
+      teamID: team?.id ?? '',
+      contact: contact,
       type: type,
       userID: user.id ?? '',
       prefix: car?.prefix ?? '',
@@ -203,7 +205,7 @@ abstract class _ChecklistRegisterControllerBase with Store {
     }
 
     return obm?.team
-            .where((e) => !ids.contains(e.id) || (init?.team?.id == e.id))
+            .where((e) => !ids.contains(e.id) || (init?.teamID == e.id))
             .toList() ??
         [];
   }
@@ -213,20 +215,24 @@ abstract class _ChecklistRegisterControllerBase with Store {
     log('Iniciando Register Controller.');
 
     obm = obms.cast<OBMModel?>().firstWhere(
-        (e) => (e?.id == init?.id) && init != null,
-        orElse: () => null);
+          (e) => (e?.id == init?.obmID),
+          orElse: () => null,
+        );
 
     cia = obm?.cias.cast<CiaModel?>().firstWhere(
-        (e) => (e?.id == init?.id) && init != null,
-        orElse: () => null);
+          (e) => (e?.id == init?.cia?.id),
+          orElse: () => null,
+        );
 
     team = obm?.team.cast<TeamModel?>().firstWhere(
-        (e) => (e?.id == init?.id) && init != null,
-        orElse: () => null);
+          (e) => (e?.id == init?.teamID),
+          orElse: () => null,
+        );
 
-    car = cars
-        .cast<CarModel?>()
-        .firstWhere((e) => e?.id == init?.carID, orElse: () => null);
+    car = cars.cast<CarModel?>().firstWhere(
+          (e) => e?.id == init?.carID,
+          orElse: () => null,
+        );
 
     id = init?.id;
     oil = init?.vehicular?.oil ?? 0.0;
@@ -234,11 +240,12 @@ abstract class _ChecklistRegisterControllerBase with Store {
     fr = init?.vehicular?.fr ?? 0.0;
     arref = init?.vehicular?.arref ?? 0.0;
     fuel = init?.vehicular?.fuel ?? 0.0;
-    team = init?.team ?? team;
     startKM = init?.startKM ?? 0;
     endKM = init?.endKM ?? 0;
     date = init?.date ?? date;
     obs = init?.obs ?? '';
+    pb = init?.pb ?? '';
+    contact = init?.contact ?? '';
     enable = init?.enable ?? true;
     states = init?.states ??
         [
@@ -303,12 +310,23 @@ abstract class _ChecklistRegisterControllerBase with Store {
         others.addAll(
           material?.others ?? [],
         );
+
+        log(material?.toJson() ?? '');
+        log('Others: ${others.length}');
       }
     } else {
       if (type == ChecklistType.vehicular) {
         itens.addAll(
           SectionsController.deepCopySections(value: car?.itens ?? []),
         );
+
+        others.addAll(
+          car?.others ?? [],
+        );
+
+        changes
+          ..clear()
+          ..addAll(car?.changes ?? []);
 
         log('Itens: ${itens.length}');
       } else {
@@ -320,8 +338,9 @@ abstract class _ChecklistRegisterControllerBase with Store {
           SectionsController.deepCopySections(value: material?.materials ?? []),
         );
 
-        log('Itens: ${itens.length}');
-        log('Materials: ${materials.length}');
+        others.addAll(
+          material?.others ?? [],
+        );
       }
     }
   }
@@ -329,12 +348,6 @@ abstract class _ChecklistRegisterControllerBase with Store {
   @action
   void setCar(CarModel? value) {
     car = value;
-
-    fillItensChecklist(
-      check: init,
-      car: car,
-      material: material,
-    );
   }
 
   @action
@@ -366,6 +379,12 @@ abstract class _ChecklistRegisterControllerBase with Store {
   @action
   void setTeam(TeamModel? value) {
     team = value;
+
+    fillItensChecklist(
+      check: init,
+      car: car,
+      material: material,
+    );
   }
 
   @action

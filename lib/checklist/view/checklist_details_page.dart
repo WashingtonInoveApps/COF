@@ -148,40 +148,15 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
           menu: false,
           onBack: () => Navigator.of(context).pop(),
           top: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
-                width: double.infinity,
-                child: Wrap(
-                  spacing: 10,
-                  runSpacing: 5,
-                  direction: Axis.horizontal,
-                  alignment: WrapAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Text(
-                              vehicular
-                                  ? 'CHECKLIST VEICULAR'
-                                  : 'CHECKLIST MATERIAL',
-                              style: Constants.title.copyWith(fontSize: 18),
-                            ),
-                          ],
-                        ),
-                        Text(
-                          Core.formatDate(checklist.date, largeDayHour: true),
-                          style: Constants.titleHint,
-                        ),
-                        const SizedBox(
-                          height: 5,
-                        ),
-                        stateWidget(listStates),
-                      ],
-                    ),
-                  ],
-                ),
+              Text(
+                vehicular ? 'CHECKLIST VEICULAR' : 'CHECKLIST MATERIAL',
+                style: Constants.title.copyWith(fontSize: 18),
+              ),
+              Text(
+                Core.formatDate(checklist.date, largeDayHour: true),
+                style: Constants.titleHint,
               ),
               const SizedBox(
                 height: 5,
@@ -192,6 +167,10 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
           childLeft: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const SizedBox(
+                height: 5,
+              ),
+              stateWidget(listStates),
               const SizedBox(
                 height: 10,
               ),
@@ -416,6 +395,23 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
                       style: Constants.titleHint,
                     )
                   : changesListWidget(context: context, categories: itens),
+              if (checklist.vehicular?.obs.isNotEmpty ?? false)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    Text(
+                      'Observações',
+                      style: Constants.subtitleHint,
+                    ),
+                    Text(
+                      checklist.vehicular?.obs ?? '',
+                      style: Constants.title,
+                    ),
+                  ],
+                ),
               const SizedBox(
                 height: 20,
               ),
@@ -434,6 +430,23 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
                           )
                         : changesListWidget(
                             context: context, categories: materials),
+                    if (checklist.material?.obs.isNotEmpty ?? false)
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(
+                            height: 15,
+                          ),
+                          Text(
+                            'Observações',
+                            style: Constants.subtitleHint,
+                          ),
+                          Text(
+                            checklist.material?.obs ?? '',
+                            style: Constants.title,
+                          ),
+                        ],
+                      ),
                     const SizedBox(
                       height: 20,
                     ),
@@ -515,6 +528,24 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
                               ),
                       ],
                     )),
+              const SizedBox(
+                height: 15,
+              ),
+              const ContainerCustom(label: "OBSERVAÇÕES GERAIS"),
+              const SizedBox(
+                height: 10,
+              ),
+              Text(
+                checklist.obs.isEmpty
+                    ? 'Nenhum registro encontrado.'
+                    : checklist.obs,
+                style: checklist.obs.isEmpty
+                    ? Constants.titleHint
+                    : Constants.title,
+              ),
+              const SizedBox(
+                height: 10,
+              ),
               if (checklist.signature != null)
                 Container(
                   width: double.infinity,
@@ -558,7 +589,6 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
                 width: double.infinity,
                 child: Wrap(
                   spacing: 5,
-                  runSpacing: 5,
                   crossAxisAlignment: WrapCrossAlignment.end,
                   alignment: WrapAlignment.end,
                   children: [

@@ -5,6 +5,7 @@ import 'package:bsu_control/app_repository.dart';
 import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/core/db.dart';
 import 'package:bsu_control/enum/checklist_enum.dart';
+import 'package:bsu_control/enum/state_enum.dart';
 import 'package:bsu_control/model/app_model.dart';
 import 'package:bsu_control/model/car_model.dart';
 import 'package:bsu_control/model/config_model.dart';
@@ -66,6 +67,12 @@ abstract class _AppControllerBase with Store {
   bool modeMOBILE = false;
 
   @observable
+  ChecklistModel? checklistUserVehicular;
+
+  @observable
+  ChecklistModel? checklistUserMaterial;
+
+  @observable
   List<CarModel> cars = <CarModel>[].asObservable();
 
   @observable
@@ -116,22 +123,6 @@ abstract class _AppControllerBase with Store {
     return false;
   }
 
-  @computed
-  ChecklistModel? get checklistUserVehicular {
-    if (checklistsOperationDay.isEmpty) return null;
-
-    return checklistsOperationDay.cast<ChecklistModel?>().firstWhere(
-        (e) => (e?.userID == user.id) && (e?.type == ChecklistType.vehicular));
-  }
-
-  @computed
-  ChecklistModel? get checklistUserMaterial {
-    if (checklistsOperationDay.isEmpty) return null;
-
-    return checklistsOperationDay.cast<ChecklistModel?>().firstWhere(
-        (e) => (e?.userID == user.id) && (e?.type == ChecklistType.materials));
-  }
-
   // @computed
   // int get checklistTodayPendent {
   //   final carsOperating =
@@ -165,7 +156,55 @@ abstract class _AppControllerBase with Store {
   }
 
   @action
-  void setUser(UserModel value) => user = value;
+  Future<void> setUser(UserModel value) async {
+    user = value;
+    await processChecklist(userID: value.id!);
+  }
+
+  Future<void> processChecklist({required String userID}) async {
+    log('UserID: $userID');
+
+    checklistUserMaterial = null;
+    checklistUserVehicular = null;
+
+    final result = await repository.getChecklistUser(userID: userID);
+
+    if (result.isEmpty) return;
+
+    final material = result.cast<ChecklistModel?>().firstWhere(
+          (e) => e?.type == ChecklistType.materials,
+          orElse: () => null,
+        );
+
+    final vehicular = result.cast<ChecklistModel?>().firstWhere(
+          (e) => e?.type == ChecklistType.vehicular,
+          orElse: () => null,
+        );
+
+    if (material != null) {
+      if (!material.enable) return;
+
+      if (_isExpired(material)) {}
+    }
+
+    if (vehicular != null) {
+      if (!vehicular.enable) return;
+
+      if (_isExpired(vehicular)) {}
+    }
+  }
+
+  bool _isExpired(ChecklistModel value) {
+    if (value.enable) {
+      if (DateTime.now().isAfter(value.date.add(const Duration(days: 2)))) {
+        if (value.state != StateProgress.reactivated) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
 
   @action
   void changeMenuOpen() => menuOpen = !menuOpen;

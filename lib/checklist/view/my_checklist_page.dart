@@ -64,7 +64,7 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
                       ),
                       Observer(builder: (_) {
                         return IgnorePointer(
-                          ignoring: controller.myChecklistUser.isEmpty,
+                          ignoring: controller.checklists.isEmpty,
                           child: Container(
                             margin: const EdgeInsets.only(top: 10),
                             width: app.modeMOBILE ? double.infinity : 350,
@@ -97,7 +97,7 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
                           return const Center(child: LinearProgressIndicator());
                         } else {
                           final cheklists = snapshot.data ?? [];
-                          controller.setMyChecklistUser(cheklists);
+                          controller.setChecklists(cheklists);
 
                           if (cheklists.isEmpty) {
                             return Text(
@@ -115,7 +115,7 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'Exibindo 1 a ${controller.myChecklistUserSort.length} de ${controller.myChecklistUser.length} entradas',
+                                      'Exibindo 1 a ${controller.checklistsSort.length} de ${controller.checklistsSort.length} entradas',
                                       style: Constants.subtitleHint,
                                     ),
                                     Expanded(
@@ -167,7 +167,7 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
                                             limit: controller.limit,
                                             page: controller.page,
                                             length: controller
-                                                .myChecklistUser.length,
+                                                .checklistsSort.length,
                                             onChange: controller.setPage,
                                           );
                                         }),

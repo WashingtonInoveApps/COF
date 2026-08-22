@@ -126,4 +126,24 @@ class AppRepository extends APIClient implements IAppRepository {
       rethrow;
     }
   }
+
+  @override
+  Future<List<ChecklistModel>> getChecklistUser({
+    required String userID,
+  }) async {
+    try {
+      return await colChecklist
+          .where('userID', isEqualTo: userID)
+          .orderBy('date', descending: true)
+          .limit(10)
+          .get()
+          .then((query) => query.docs
+              .map((doc) =>
+                  ChecklistModel.fromMap(doc.data() as Map<String, dynamic>))
+              .toList());
+    } catch (e) {
+      log('Erro: ${e.toString()}');
+      return [];
+    }
+  }
 }
