@@ -20,7 +20,7 @@ extension ChecklistTypeColor on ChecklistType {
       case ChecklistType.vehicular:
         return Colors.red.shade700;
       case ChecklistType.materials:
-        return Colors.orange;
+        return Colors.orange.shade700;
     }
   }
 }

@@ -41,6 +41,22 @@ mixin _$LoginController on _LoginControllerBase, Store {
     });
   }
 
+  late final _$codeAtom =
+      Atom(name: '_LoginControllerBase.code', context: context);
+
+  @override
+  String get code {
+    _$codeAtom.reportRead();
+    return super.code;
+  }
+
+  @override
+  set code(String value) {
+    _$codeAtom.reportWrite(value, super.code, () {
+      super.code = value;
+    });
+  }
+
   late final _$loginInitControllerAsyncAction =
       AsyncAction('_LoginControllerBase.loginInitController', context: context);
 
@@ -99,6 +115,17 @@ mixin _$LoginController on _LoginControllerBase, Store {
       ActionController(name: '_LoginControllerBase', context: context);
 
   @override
+  void changeCode() {
+    final _$actionInfo = _$_LoginControllerBaseActionController.startAction(
+        name: '_LoginControllerBase.changeCode');
+    try {
+      return super.changeCode();
+    } finally {
+      _$_LoginControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   dynamic setLoading(bool value) {
     final _$actionInfo = _$_LoginControllerBaseActionController.startAction(
         name: '_LoginControllerBase.setLoading');
@@ -124,7 +151,8 @@ mixin _$LoginController on _LoginControllerBase, Store {
   String toString() {
     return '''
 loading: ${loading},
-state: ${state}
+state: ${state},
+code: ${code}
     ''';
   }
 }

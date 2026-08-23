@@ -536,9 +536,6 @@ class _BackgraundPageState extends State<BackgraundPage> {
                                               (_) => false)
                                           .then((_) {
                                         controller.setRouter(0);
-                                        // controller.setDateStartConfig(
-                                        //     DateTime.now().subtract(const Duration(days: 1)));
-                                        // controller.setDateFinishConfig(DateTime.now());
                                       });
                                       break;
                                     default:

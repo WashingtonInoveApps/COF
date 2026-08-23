@@ -231,9 +231,16 @@ abstract class _AppControllerBase with Store {
 
   @action
   void setCars(List<CarModel> value) {
+    cars
+      ..clear()
+      ..addAll(value);
+  }
+
+  @action
+  void processNotifications() {
     notifications.clear();
 
-    for (final car in value) {
+    for (final car in carsUsers) {
       if (car.km > car.oil && car.oil > 0) {
         notifications.add(NotificationModel(
           description:
@@ -248,10 +255,6 @@ abstract class _AppControllerBase with Store {
         ));
       }
     }
-
-    cars
-      ..clear()
-      ..addAll(value);
   }
 
   @action

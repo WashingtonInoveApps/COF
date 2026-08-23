@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:bsu_control/enum/car_enum.dart';
 import 'package:bsu_control/enum/checklist_enum.dart';
 import 'package:bsu_control/model/checklist_car_model.dart';
 import 'package:bsu_control/model/checklist_material_model.dart';
@@ -54,7 +55,9 @@ abstract class _ChecklistRegisterControllerBase with Store {
     final carsOBM = cars.where((e) => e.obmID == obm?.id).toList();
 
     return carsOBM
-        .where((e) => !ids.contains(e.id) || (init?.carID == e.id))
+        .where((e) =>
+            (!ids.contains(e.id) || (init?.carID == e.id)) &&
+            e.state == StatusCar.operating)
         .toList();
   }
 

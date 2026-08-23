@@ -6,6 +6,7 @@ import 'package:bsu_control/model/car_changes_model.dart';
 import 'package:bsu_control/model/car_mapa_model.dart';
 import 'package:bsu_control/model/car_status_model.dart';
 import 'package:bsu_control/model/file_model.dart';
+import 'package:bsu_control/model/obm_model.dart';
 import 'package:bsu_control/model/outher_changes_model.dart';
 import 'package:bsu_control/model/section_itens_model.dart';
 
@@ -20,6 +21,7 @@ class CarModel {
   String ticket;
   String obmID;
   CiaModel? cia;
+  OBMModel? obm;
   String? ciaID;
   String type;
   FunctionCar function;
@@ -48,6 +50,7 @@ class CarModel {
     this.modelPneu = "",
     this.ticket = "",
     this.obmID = "",
+    this.obm,
     this.function = FunctionCar.operational,
     this.cia,
     this.ciaID,
@@ -76,6 +79,7 @@ class CarModel {
         "images": [],
         "obmID": obmID,
         "cia": cia?.toMapResume(),
+        "obm": obm?.toMapResume(),
         'ciaID': ciaID,
       };
 
@@ -91,6 +95,7 @@ class CarModel {
       'function': function.name,
       'obmID': obmID,
       "cia": cia?.toMapResume(),
+      "obm": obm?.toMapResume(),
       'ciaID': ciaID,
       'state': state.name,
       'itens': itens.map((x) => x.toMap()).toList(),
@@ -118,6 +123,7 @@ class CarModel {
         images: [],
         status: [],
         cia: (map['cia'] != null) ? CiaModel.fromMap(map['cia']) : null,
+        obm: (map['obm'] != null) ? OBMModel.fromMap(map['obm']) : null,
         ciaID: map['ciaID'] ?? '',
         obmID: map['obmID']);
   }
@@ -133,6 +139,7 @@ class CarModel {
       ticket: map['ticket'] ?? '',
       obmID: map['obmID'] ?? '',
       cia: (map['cia'] != null) ? CiaModel.fromMap(map['cia']) : null,
+      obm: (map['obm'] != null) ? OBMModel.fromMap(map['obm']) : null,
       ciaID: map['ciaID'] ?? '',
       function: CarEnumCore.functionCarFromString(map['function'] as String),
       state: CarEnumCore.statusCarFromString(map['state'] as String),
@@ -178,6 +185,7 @@ class CarModel {
     String? ticket,
     String? obmID,
     CiaModel? cia,
+    OBMModel? obm,
     String? ciaID,
     FunctionCar? function,
     List<SectionItensModel>? itens,
@@ -206,6 +214,7 @@ class CarModel {
       obmID: obmID ?? this.obmID,
       cia: cia ?? this.cia,
       ciaID: ciaID ?? this.ciaID,
+      obm: obm ?? this.obm,
       images: images ?? this.images,
       itens: itens ?? this.itens,
       changes: changes ?? this.changes,

@@ -9,6 +9,7 @@ import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/enum/checklist_enum.dart';
 import 'package:bsu_control/home/controller/home_controller.dart';
 import 'package:bsu_control/main.dart';
+import 'package:bsu_control/model/car_model.dart';
 import 'package:bsu_control/model/checklist_model.dart';
 import 'package:bsu_control/widgets/checklist_table_view.dart';
 import 'package:flutter/foundation.dart';
@@ -23,6 +24,7 @@ import '../widgets/backgraund_page.dart';
 import '../widgets/limit_table_widget.dart';
 import '../widgets/pagination_widget.dart';
 import '../widgets/textfield_widget.dart';
+import 'view/widgets/cars_available_today.dart';
 
 const versionCodeSystem = 10;
 
@@ -283,21 +285,13 @@ class _HomePageState extends State<HomePage> {
                                 width: double.infinity,
                                 constraints:
                                     const BoxConstraints(maxWidth: 450),
-                                child: Column(
-                                  spacing: 5,
-                                  children: [
-                                    // Observer(builder: (context) {
-                                    //   return SizedBox(
-                                    //     height: 300,
-                                    //     child: ChartChangesPeriodWidget(
-                                    //       date: controller.operationDate,
-                                    //       checklists:
-                                    //           controller.checklistsPeriod,
-                                    //     ),
-                                    //   );
-                                    // })
-                                  ],
-                                ),
+                                child: Observer(builder: (_) {
+                                  return CarsAvailabilityChart(
+                                    cars: List<CarModel>.from(app.cars),
+                                    checklists: List<ChecklistModel>.from(
+                                        app.checklistsOperationDay),
+                                  );
+                                }),
                               ),
                             ],
                           ),

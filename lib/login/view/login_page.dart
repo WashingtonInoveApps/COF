@@ -1,7 +1,6 @@
-import 'dart:developer';
-
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/core/validation.dart';
+import 'package:bsu_control/login/view/widget/captcha_widget.dart';
 import 'package:bsu_control/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +11,7 @@ import 'package:get_it/get_it.dart';
 import '../../core/constants.dart';
 import '../../home/home_page.dart';
 import '../../widgets/alert_message.dart';
+import '../../widgets/alert_mult_message.dart';
 import '../../widgets/textfield_widget.dart';
 import '../controller/login_controller.dart';
 
@@ -35,14 +35,24 @@ class _LoginPageState extends State<LoginPage> {
   final controllerEmail = TextEditingController();
   final controllerPassword = TextEditingController();
 
+  List<String> messagesError = [];
+
   @override
   void initState() {
     super.initState();
     controller = LoginController(config: config);
+    controller.changeCode();
+
+    initialization(exit: widget.exit);
+  }
+
+  Future<void> initialization({required bool exit}) async {
+    if (exit) {
+      await controller.clearUser();
+    }
 
     controller.loginInitController((email) {
       controllerEmail.text = email;
-      log('Email: $email');
     }).then((user) {
       if (widget.exit) {
         controller.setLoading(false);
@@ -213,8 +223,18 @@ class _LoginPageState extends State<LoginPage> {
                                           obscure: true,
                                           controller: controllerPassword,
                                           hint: 'Nova senha',
-                                          validation:
-                                              Validation.validatorPassoword,
+                                          validation: (text) {
+                                            final message =
+                                                Validation.validatorPassoword(
+                                              text,
+                                            );
+
+                                            if (message != null) {
+                                              messagesError.add(message);
+                                            }
+
+                                            return;
+                                          },
                                           textCase: FieldTextCase.lower,
                                         ),
                                         const SizedBox(
@@ -231,7 +251,9 @@ class _LoginPageState extends State<LoginPage> {
                                               return null;
                                             }
 
-                                            return 'Senhas não conferem';
+                                            messagesError
+                                                .add('Senhas não conferem');
+                                            return;
                                           },
                                           textCase: FieldTextCase.lower,
                                         ),
@@ -247,33 +269,42 @@ class _LoginPageState extends State<LoginPage> {
                                               style: Constants.titleButton,
                                             ),
                                             onPressed: () async {
-                                              if (formKEYReset.currentState
-                                                      ?.validate() ??
-                                                  false) {
-                                                controller
-                                                    .resetPassword(
-                                                        password:
-                                                            controllerPassword
-                                                                .text)
-                                                    .catchError((err) {
-                                                  if (mounted) {
-                                                    showDialog(
-                                                        context: context,
-                                                        builder: (context) =>
-                                                            AlertMessage(
-                                                                title:
-                                                                    'Atenção',
-                                                                message: err
-                                                                    .toString(),
-                                                                onPressedOK: () =>
-                                                                    Navigator.of(
-                                                                            context)
-                                                                        .pop()));
-                                                  }
-                                                });
+                                              messagesError.clear();
+                                              formKEYReset.currentState
+                                                  ?.validate();
 
-                                                controllerPassword.clear();
+                                              if (messagesError.isNotEmpty) {
+                                                showDialog(
+                                                    context: context,
+                                                    builder: (context) =>
+                                                        AlertMultMessage(
+                                                            messages:
+                                                                messagesError));
+                                                return;
                                               }
+
+                                              controller
+                                                  .resetPassword(
+                                                      password:
+                                                          controllerPassword
+                                                              .text)
+                                                  .catchError((err) {
+                                                if (mounted) {
+                                                  showDialog(
+                                                      context: context,
+                                                      builder: (context) =>
+                                                          AlertMessage(
+                                                              title: 'Atenção',
+                                                              message: err
+                                                                  .toString(),
+                                                              onPressedOK: () =>
+                                                                  Navigator.of(
+                                                                          context)
+                                                                      .pop()));
+                                                }
+                                              });
+
+                                              controllerPassword.clear();
                                             },
                                           ),
                                         ),
@@ -306,8 +337,16 @@ class _LoginPageState extends State<LoginPage> {
                                             textCase: FieldTextCase.lower,
                                             inputType:
                                                 TextInputType.emailAddress,
-                                            validation:
-                                                Validation.validatorEmail,
+                                            validation: (text) {
+                                              if (Validation.validatorEmail(
+                                                      text) !=
+                                                  null) {
+                                                messagesError.add(
+                                                    'Insira um e-mail válido.');
+                                              }
+
+                                              return;
+                                            },
                                           ),
                                           const SizedBox(
                                             height: 10.0,
@@ -318,12 +357,71 @@ class _LoginPageState extends State<LoginPage> {
                                                 TextInputType.visiblePassword,
                                             hint: "Senha",
                                             obscure: true,
-                                            validation:
-                                                Validation.validatorPassoword,
+                                            validation: (text) {
+                                              final message =
+                                                  Validation.validatorPassoword(
+                                                text,
+                                              );
+
+                                              if (message != null) {
+                                                messagesError.add(message);
+                                              }
+
+                                              return;
+                                            },
                                             textCase: FieldTextCase.lower,
                                           ),
                                           const SizedBox(
                                             height: 10.0,
+                                          ),
+                                          Row(
+                                            spacing: 10,
+                                            children: [
+                                              Observer(builder: (_) {
+                                                return CaptchaWidget(
+                                                  code: controller.code,
+                                                );
+                                              }),
+                                              Expanded(
+                                                child: FieldText(
+                                                  hint: 'Digite os 6 dígitos',
+                                                  validation: (text) {
+                                                    if (text !=
+                                                        controller.code) {
+                                                      messagesError.add(
+                                                          'Código de acesso inválido.');
+                                                    }
+
+                                                    return;
+                                                  },
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                          const SizedBox(
+                                            height: 5.0,
+                                          ),
+                                          InkWell(
+                                            onTap: controller.changeCode,
+                                            child: Row(
+                                              spacing: 5,
+                                              children: [
+                                                const Icon(
+                                                  Icons.refresh,
+                                                  size: 15,
+                                                  color: Colors.grey,
+                                                ),
+                                                Expanded(
+                                                    child: Text(
+                                                  'Gerar novo código',
+                                                  style: Constants.subtitleHint
+                                                      .copyWith(fontSize: 11),
+                                                ))
+                                              ],
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            height: 15.0,
                                           ),
                                           Align(
                                             alignment: Alignment.centerRight,
@@ -332,42 +430,54 @@ class _LoginPageState extends State<LoginPage> {
                                               width: double.infinity,
                                               child: ElevatedButton(
                                                 onPressed: () async {
-                                                  if (formKey.currentState!
-                                                      .validate()) {
-                                                    controller
-                                                        .login(
-                                                            email:
-                                                                controllerEmail
-                                                                    .text,
-                                                            senha:
-                                                                controllerPassword
-                                                                    .text)
-                                                        .then((value) async {
-                                                      if (value != null) {
-                                                        app
-                                                            .setUser(value)
-                                                            .then((_) {
-                                                          Navigator.of(context)
-                                                              .pushReplacement(
-                                                                  CupertinoPageRoute(
-                                                                      builder:
-                                                                          (context) =>
-                                                                              const HomePage()));
-                                                        });
-                                                      }
-                                                    }).catchError((err) async {
-                                                      showDialog(
-                                                          context: context,
-                                                          builder: (context) => AlertMessage(
-                                                              title: "Atenção",
-                                                              message: err
-                                                                  .toString(),
-                                                              onPressedOK: () =>
-                                                                  Navigator.of(
-                                                                          context)
-                                                                      .pop()));
-                                                    });
+                                                  messagesError.clear();
+                                                  formKey.currentState!
+                                                      .validate();
+
+                                                  if (messagesError
+                                                      .isNotEmpty) {
+                                                    showDialog(
+                                                        context: context,
+                                                        builder: (context) =>
+                                                            AlertMultMessage(
+                                                                messages:
+                                                                    messagesError));
+                                                    return;
                                                   }
+                                                  controller
+                                                      .login(
+                                                          email: controllerEmail
+                                                              .text,
+                                                          senha:
+                                                              controllerPassword
+                                                                  .text)
+                                                      .then((value) async {
+                                                    if (value != null) {
+                                                      app
+                                                          .setUser(value)
+                                                          .then((_) {
+                                                        Navigator.of(context)
+                                                            .pushReplacement(
+                                                                CupertinoPageRoute(
+                                                                    builder:
+                                                                        (context) =>
+                                                                            const HomePage()));
+                                                      });
+                                                    }
+                                                  }).catchError((err) async {
+                                                    showDialog(
+                                                        context: context,
+                                                        builder: (context) =>
+                                                            AlertMessage(
+                                                                title:
+                                                                    "Atenção",
+                                                                message: err
+                                                                    .toString(),
+                                                                onPressedOK: () =>
+                                                                    Navigator.of(
+                                                                            context)
+                                                                        .pop()));
+                                                  });
                                                 },
                                                 child: Text(
                                                   "Login",

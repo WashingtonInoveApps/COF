@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:math' as math;
 
 import 'package:bsu_control/core/db.dart';
 import 'package:bsu_control/model/config_model.dart';
@@ -31,6 +32,15 @@ abstract class _LoginControllerBase with Store {
   LoginState state = LoginState.done;
 
   String userID = '';
+
+  @observable
+  String code = '';
+
+  @action
+  void changeCode() {
+    final random = math.Random.secure();
+    code = (100000 + random.nextInt(900000)).toString();
+  }
 
   @action
   Future<UserModel?> loginInitController(Function(String) onEmail) async {
@@ -108,6 +118,10 @@ abstract class _LoginControllerBase with Store {
       state = LoginState.done;
       rethrow;
     }
+  }
+
+  Future<void> clearUser() async {
+    DBController.delete(tag: 'user');
   }
 
   @action

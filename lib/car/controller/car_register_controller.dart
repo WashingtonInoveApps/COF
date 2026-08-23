@@ -111,6 +111,7 @@ abstract class _CarRegisterControllerBase with Store {
       ciaID: cia?.id,
       modelPneu: modelPneu,
       obmID: obm?.id ?? '',
+      obm: obm,
       prefix: prefix,
       km: int.parse(km),
       adm: adm,

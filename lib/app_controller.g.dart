@@ -325,6 +325,17 @@ mixin _$AppController on _AppControllerBase, Store {
   }
 
   @override
+  void processNotifications() {
+    final _$actionInfo = _$_AppControllerBaseActionController.startAction(
+        name: '_AppControllerBase.processNotifications');
+    try {
+      return super.processNotifications();
+    } finally {
+      _$_AppControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void setUsers(List<UserModel> value) {
     final _$actionInfo = _$_AppControllerBaseActionController.startAction(
         name: '_AppControllerBase.setUsers');
