@@ -8,6 +8,7 @@ import 'package:bsu_control/model/car_model.dart';
 import 'package:bsu_control/model/outher_changes_model.dart';
 
 import '../../core/constants.dart';
+import '../../model/car_changes_model.dart';
 import '../../model/checklist_model.dart';
 import '../../model/material_checklist_model.dart';
 
@@ -122,11 +123,10 @@ class CheckListRepository extends APIClient implements ICheckListRepository {
   }
 
   @override
-  Future<bool> finish(
+  Future<ChecklistModel> finish(
       {required ChecklistModel checklist, Uint8List? image}) async {
     try {
       var docChecklist = colChecklist.doc(checklist.id);
-      var docCar = colCars.doc(checklist.vehicular?.car.id);
 
       if (image == null) {
         throw Exception(
@@ -134,23 +134,30 @@ class CheckListRepository extends APIClient implements ICheckListRepository {
       }
 
       final result = await saveFile(
-          pathStorage: 'imagens/checklist/signatures',
-          data: image,
-          filename: '${checklist.id}.png');
+        pathStorage: Constants.pathSignatureImages,
+        data: image,
+        filename: '${checklist.id}.png',
+      );
 
       if (result == null) {
         throw Exception(
             'Ops ! Falha ao salvar assinatura, tente novamente ou contate o suporte.');
       }
 
-      await firebase!.runTransaction((trans) async {
-        trans.update(docCar, {"km": checklist.endKM});
+      return await firebase!.runTransaction<ChecklistModel>((trans) async {
+        if (checklist.type == ChecklistType.vehicular) {
+          trans.update(
+            colCars.doc(checklist.vehicular?.car.id),
+            {
+              "km": checklist.endKM,
+            },
+          );
+        }
+        final data = checklist.copyWith(signature: result);
 
-        trans.update(
-            docChecklist, checklist.copyWith(signature: result).toMap());
+        trans.update(docChecklist, data.toMap());
+        return data;
       });
-
-      return true;
     } catch (e) {
       rethrow;
     }
@@ -211,32 +218,83 @@ class CheckListRepository extends APIClient implements ICheckListRepository {
   }
 
   @override
-  Future<bool> delete(
-      {required ChecklistModel checklist, required CarModel car}) async {
+  Future<bool> delete({
+    required ChecklistModel checklist,
+  }) async {
     try {
       var docChecklist = colChecklist.doc(checklist.id);
-      var docCar = colCars.doc(car.id);
 
       await firebase!.runTransaction((trans) async {
-        trans.update(docCar, car.toMap());
+        if (checklist.type == ChecklistType.vehicular) {
+          final docCar = colCars.doc(checklist.carID);
+
+          final carData = await trans.get(docCar);
+          final car = CarModel.fromMap(carData.data() as Map<String, dynamic>);
+
+          final changes = List<CarChangeModel>.from(car.changes);
+          final others = List<OtherChangeModel>.from(car.others ?? []);
+
+          if (changes.isNotEmpty) {
+            for (final change in (checklist.vehicular?.changes ?? [])) {
+              changes.removeWhere(
+                (e) => e.checklistID == checklist.id,
+              );
+            }
+          }
+
+          if (others.isNotEmpty) {
+            for (final other in (checklist.others ?? [])) {
+              others.removeWhere(
+                (e) => e.checklistID == checklist.id,
+              );
+            }
+          }
+
+          trans.update(docCar, {
+            'changes': changes.map((e) => e.toMap()).toList(),
+            'others': others.map((e) => e.toMap()).toList(),
+          });
+        } else {
+          final docMaterial = colMaterials.doc(checklist.material?.material.id);
+
+          final materialData = await trans.get(docMaterial);
+          final material = MaterialChecklistModel.fromMap(
+              materialData.data() as Map<String, dynamic>);
+
+          final others = List<OtherChangeModel>.from(material.others ?? []);
+
+          if (others.isNotEmpty) {
+            for (final other in (checklist.others ?? [])) {
+              others.removeWhere(
+                (e) => e.checklistID == checklist.id,
+              );
+            }
+          }
+
+          trans.update(docMaterial, {
+            'others': others.map((e) => e.toMap()).toList(),
+          });
+        }
+
         trans.delete(docChecklist);
       });
 
-      for (final change in (checklist.vehicular?.changes ?? [])) {
+      for (final CarChangeModel change
+          in (checklist.vehicular?.changes ?? [])) {
         if (change.image != null) {
           await deleteFile(
-              path: 'imagens/changes/${car.prefix}',
-              filename: change.image!.name);
+            path: change.image!.path,
+            filename: change.image!.name,
+          );
         }
       }
 
-      // for (final outher in (checklist.outhers ?? [])) {
-      //   if (outher.image != null) {
-      //     await deleteFile(
-      //         path: 'imagens/changes/${car.prefix}',
-      //         filename: outher.image!.name);
-      //   }
-      // }
+      for (final OtherChangeModel other in (checklist.others ?? [])) {
+        await deleteFile(
+          path: other.image.path,
+          filename: other.image.name,
+        );
+      }
 
       return true;
     } catch (e) {
@@ -245,7 +303,7 @@ class CheckListRepository extends APIClient implements ICheckListRepository {
   }
 
   @override
-  Future<MaterialChecklistModel?> getChecklistMaterial({
+  Future<MaterialChecklistModel?> getMaterialChecklist({
     required String teamID,
   }) async {
     try {

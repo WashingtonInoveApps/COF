@@ -72,32 +72,15 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
       name: '_CheckListControllerBase.materialsConsumable', context: context);
 
   @override
-  ObservableList<SectionItensModel> get materialsConsumable {
+  ObservableList<ItemModel> get materialsConsumable {
     _$materialsConsumableAtom.reportRead();
     return super.materialsConsumable;
   }
 
   @override
-  set materialsConsumable(ObservableList<SectionItensModel> value) {
+  set materialsConsumable(ObservableList<ItemModel> value) {
     _$materialsConsumableAtom.reportWrite(value, super.materialsConsumable, () {
       super.materialsConsumable = value;
-    });
-  }
-
-  late final _$materialsConsumedUsedAtom = Atom(
-      name: '_CheckListControllerBase.materialsConsumedUsed', context: context);
-
-  @override
-  ObservableList<ItemModel> get materialsConsumedUsed {
-    _$materialsConsumedUsedAtom.reportRead();
-    return super.materialsConsumedUsed;
-  }
-
-  @override
-  set materialsConsumedUsed(ObservableList<ItemModel> value) {
-    _$materialsConsumedUsedAtom.reportWrite(value, super.materialsConsumedUsed,
-        () {
-      super.materialsConsumedUsed = value;
     });
   }
 
@@ -273,7 +256,8 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
       AsyncAction('_CheckListControllerBase.finish', context: context);
 
   @override
-  Future<bool> finish({required ChecklistModel checklist, Uint8List? image}) {
+  Future<ChecklistModel> finish(
+      {required ChecklistModel checklist, Uint8List? image}) {
     return _$finishAsyncAction
         .run(() => super.finish(checklist: checklist, image: image));
   }
@@ -286,15 +270,15 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
     return _$deleteAsyncAction.run(() => super.delete(checklist: checklist));
   }
 
-  late final _$getChecklistMaterialAsyncAction = AsyncAction(
-      '_CheckListControllerBase.getChecklistMaterial',
+  late final _$getMaterialChecklistAsyncAction = AsyncAction(
+      '_CheckListControllerBase.getMaterialChecklist',
       context: context);
 
   @override
-  Future<MaterialChecklistModel?> getChecklistMaterial(
+  Future<MaterialChecklistModel?> getMaterialChecklist(
       {required String? teamID}) {
-    return _$getChecklistMaterialAsyncAction
-        .run(() => super.getChecklistMaterial(teamID: teamID));
+    return _$getMaterialChecklistAsyncAction
+        .run(() => super.getMaterialChecklist(teamID: teamID));
   }
 
   late final _$_CheckListControllerBaseActionController =
@@ -413,22 +397,33 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
   }
 
   @override
-  void addMaterialsConsumedUsed(List<ItemModel> values) {
+  void addMaterialConsumed(ItemModel value) {
     final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
-        name: '_CheckListControllerBase.addMaterialsConsumedUsed');
+        name: '_CheckListControllerBase.addMaterialConsumed');
     try {
-      return super.addMaterialsConsumedUsed(values);
+      return super.addMaterialConsumed(value);
     } finally {
       _$_CheckListControllerBaseActionController.endAction(_$actionInfo);
     }
   }
 
   @override
-  void deleteMaterialsConsumedUsed(int index) {
+  void clearMaterialsConsumed() {
     final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
-        name: '_CheckListControllerBase.deleteMaterialsConsumedUsed');
+        name: '_CheckListControllerBase.clearMaterialsConsumed');
     try {
-      return super.deleteMaterialsConsumedUsed(index);
+      return super.clearMaterialsConsumed();
+    } finally {
+      _$_CheckListControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void deleteMaterialConsumed(int index) {
+    final _$actionInfo = _$_CheckListControllerBaseActionController.startAction(
+        name: '_CheckListControllerBase.deleteMaterialConsumed');
+    try {
+      return super.deleteMaterialConsumed(index);
     } finally {
       _$_CheckListControllerBaseActionController.endAction(_$actionInfo);
     }
@@ -462,7 +457,6 @@ mixin _$CheckListController on _CheckListControllerBase, Store {
 loading: ${loading},
 checklists: ${checklists},
 materialsConsumable: ${materialsConsumable},
-materialsConsumedUsed: ${materialsConsumedUsed},
 date: ${date},
 dateReferenceStart: ${dateReferenceStart},
 dateReferenceFinish: ${dateReferenceFinish},

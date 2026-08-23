@@ -134,22 +134,6 @@ mixin _$AppController on _AppControllerBase, Store {
     });
   }
 
-  late final _$checklistVeicularAtom =
-      Atom(name: '_AppControllerBase.checklistVeicular', context: context);
-
-  @override
-  bool get checklistVeicular {
-    _$checklistVeicularAtom.reportRead();
-    return super.checklistVeicular;
-  }
-
-  @override
-  set checklistVeicular(bool value) {
-    _$checklistVeicularAtom.reportWrite(value, super.checklistVeicular, () {
-      super.checklistVeicular = value;
-    });
-  }
-
   late final _$modeMOBILEAtom =
       Atom(name: '_AppControllerBase.modeMOBILE', context: context);
 
@@ -285,6 +269,18 @@ mixin _$AppController on _AppControllerBase, Store {
       ActionController(name: '_AppControllerBase', context: context);
 
   @override
+  void processChecklist(
+      {required List<ChecklistModel> list, required String userID}) {
+    final _$actionInfo = _$_AppControllerBaseActionController.startAction(
+        name: '_AppControllerBase.processChecklist');
+    try {
+      return super.processChecklist(list: list, userID: userID);
+    } finally {
+      _$_AppControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void changeMenuOpen() {
     final _$actionInfo = _$_AppControllerBaseActionController.startAction(
         name: '_AppControllerBase.changeMenuOpen');
@@ -296,22 +292,22 @@ mixin _$AppController on _AppControllerBase, Store {
   }
 
   @override
-  void setRouter(int value) {
+  void clearChecklistUser(ChecklistModel value) {
     final _$actionInfo = _$_AppControllerBaseActionController.startAction(
-        name: '_AppControllerBase.setRouter');
+        name: '_AppControllerBase.clearChecklistUser');
     try {
-      return super.setRouter(value);
+      return super.clearChecklistUser(value);
     } finally {
       _$_AppControllerBaseActionController.endAction(_$actionInfo);
     }
   }
 
   @override
-  void setCheckListVeicular(bool value) {
+  void setRouter(int value) {
     final _$actionInfo = _$_AppControllerBaseActionController.startAction(
-        name: '_AppControllerBase.setCheckListVeicular');
+        name: '_AppControllerBase.setRouter');
     try {
-      return super.setCheckListVeicular(value);
+      return super.setRouter(value);
     } finally {
       _$_AppControllerBaseActionController.endAction(_$actionInfo);
     }
@@ -372,7 +368,6 @@ router: ${router},
 user: ${user},
 menuOpen: ${menuOpen},
 loading: ${loading},
-checklistVeicular: ${checklistVeicular},
 modeMOBILE: ${modeMOBILE},
 checklistUserVehicular: ${checklistUserVehicular},
 checklistUserMaterial: ${checklistUserMaterial},

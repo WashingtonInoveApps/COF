@@ -61,7 +61,7 @@ class _ChecklistRegisterPageState extends State<ChecklistRegisterPage> {
 
     if (widget.checklist?.type == ChecklistType.materials) {
       controller
-          .getChecklistMaterial(teamID: widget.checklist!.team!.id)
+          .getMaterialChecklist(teamID: widget.checklist!.team!.id)
           .then(register.setChecklistMaterial);
     }
   }
@@ -202,7 +202,7 @@ class _ChecklistRegisterPageState extends State<ChecklistRegisterPage> {
                     log('Team: ${team?.toJson() ?? 'null'}');
 
                     if (widget.type == ChecklistType.materials) {
-                      final value = await controller.getChecklistMaterial(
+                      final value = await controller.getMaterialChecklist(
                           teamID: team?.id);
                       register.setChecklistMaterial(value);
                     }

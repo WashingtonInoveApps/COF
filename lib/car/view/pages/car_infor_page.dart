@@ -11,6 +11,7 @@ import '../../../widgets/textfield_widget.dart';
 
 class CarRegisterInforPage extends StatefulWidget {
   final CarRegisterController controller;
+
   const CarRegisterInforPage({
     Key? key,
     required this.controller,
@@ -56,7 +57,7 @@ class _CarRegisterInforPageState extends State<CarRegisterInforPage> {
                 borderRadius: BorderRadius.circular(5.0)),
             child: Observer(builder: (_) {
               return IgnorePointer(
-                ignoring: true,
+                ignoring: false,
                 child: DropdownButton<OBMModel>(
                     isExpanded: true,
                     value: register.obm,

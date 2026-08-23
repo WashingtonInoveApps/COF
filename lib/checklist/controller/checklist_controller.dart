@@ -7,7 +7,6 @@ import 'package:bsu_control/enum/state_enum.dart';
 import 'package:bsu_control/model/checklist_model.dart';
 import 'package:bsu_control/model/config_model.dart';
 import 'package:bsu_control/model/item_model.dart';
-import 'package:bsu_control/model/section_itens_model.dart';
 import 'package:mobx/mobx.dart';
 
 import '../../model/material_checklist_model.dart';
@@ -44,12 +43,7 @@ abstract class _CheckListControllerBase with Store {
   ObservableList<ChecklistModel> checklists = <ChecklistModel>[].asObservable();
 
   @observable
-  ObservableList<SectionItensModel> materialsConsumable =
-      <SectionItensModel>[].asObservable();
-
-  @observable
-  ObservableList<ItemModel> materialsConsumedUsed =
-      <ItemModel>[].asObservable();
+  ObservableList<ItemModel> materialsConsumable = <ItemModel>[].asObservable();
 
   @observable
   DateTime date = DateTime.now();
@@ -191,15 +185,33 @@ abstract class _CheckListControllerBase with Store {
   }
 
   @action
-  void addMaterialsConsumedUsed(List<ItemModel> values) {
-    materialsConsumedUsed
-      ..clear()
-      ..addAll(values);
+  void addMaterialConsumed(ItemModel value) {
+    final index = materialsConsumable.indexWhere(
+      (e) => e.id == value.id,
+    );
+
+    if (index == -1) {
+      materialsConsumable.add(value);
+      return;
+    }
+
+    value.quantity += materialsConsumable[index].quantity;
+
+    materialsConsumable.removeAt(index);
+    materialsConsumable.insert(
+      index,
+      value,
+    );
   }
 
   @action
-  void deleteMaterialsConsumedUsed(int index) {
-    materialsConsumedUsed.removeAt(index);
+  void clearMaterialsConsumed() {
+    materialsConsumable.clear();
+  }
+
+  @action
+  void deleteMaterialConsumed(int index) {
+    materialsConsumable.removeAt(index);
   }
 
   @action
@@ -232,8 +244,10 @@ abstract class _CheckListControllerBase with Store {
   }
 
   @action
-  Future<bool> finish(
-      {required ChecklistModel checklist, Uint8List? image}) async {
+  Future<ChecklistModel> finish({
+    required ChecklistModel checklist,
+    Uint8List? image,
+  }) async {
     try {
       final now = DateTime.now();
       final states = List<StatesChecklist>.from(checklist.states);
@@ -242,13 +256,14 @@ abstract class _CheckListControllerBase with Store {
       states.add(state);
 
       final result = await repository.finish(
-          checklist: checklist.copyWith(
-              state: state.state,
-              // materials: materialsConsumedUsed,
-              states: states,
-              dateFinish: now,
-              enable: false),
-          image: image);
+        checklist: checklist.copyWith(
+          state: state.state,
+          states: states,
+          dateFinish: now,
+          enable: false,
+        ),
+        image: image,
+      );
 
       loading = false;
       return result;
@@ -259,46 +274,32 @@ abstract class _CheckListControllerBase with Store {
   }
 
   @action
-  Future<bool> delete({required ChecklistModel checklist}) async {
-    // try {
-    //   loading = true;
+  Future<bool> delete({
+    required ChecklistModel checklist,
+  }) async {
+    try {
+      loading = true;
 
-    //   final car = cars.cast<CarModel?>().firstWhere(
-    //       (e) => e?.id == checklist.vehicular?.car.id,
-    //       orElse: () => null);
+      final result = await repository.delete(
+        checklist: checklist,
+      );
 
-    //   if (car == null) {
-    //     throw Exception('Veículo não encontrado.');
-    //   }
-
-    //   final changes = List<CarChangeModel>.from(car.changes);
-
-    //   for (final change in (checklist.vehicular?.changes ?? [])) {
-    //     changes.removeWhere(
-    //         (e) => (e.checklistID != null) && (e.checklistID == checklist.id));
-    //   }
-
-    //   final result = await repository.delete(
-    //       checklist: checklist, car: car.copyWith(changes: changes));
-
-    //   loading = false;
-    //   return result;
-    // } catch (e) {
-    //   loading = false;
-    //   rethrow;
-    // }
-
-    return false;
+      loading = false;
+      return result;
+    } catch (e) {
+      loading = false;
+      rethrow;
+    }
   }
 
   @action
-  Future<MaterialChecklistModel?> getChecklistMaterial({
+  Future<MaterialChecklistModel?> getMaterialChecklist({
     required String? teamID,
   }) async {
     if (teamID == null) return null;
 
     loading = true;
-    final result = await repository.getChecklistMaterial(teamID: teamID);
+    final result = await repository.getMaterialChecklist(teamID: teamID);
     loading = false;
 
     return result;

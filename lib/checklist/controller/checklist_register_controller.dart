@@ -357,6 +357,9 @@ abstract class _ChecklistRegisterControllerBase with Store {
   void setOBM(OBMModel? value) {
     obm = value;
     cia = null;
+    team = null;
+    car = null;
+    material = null;
   }
 
   @action

@@ -23,6 +23,7 @@ class UserModel {
   bool company;
   bool managerOperational;
   bool managerFleet;
+  bool managerMaterials;
 
   UserModel({
     this.id,
@@ -43,6 +44,7 @@ class UserModel {
     this.company = false,
     this.managerOperational = false,
     this.managerFleet = false,
+    this.managerMaterials = false,
   });
 
   Map<String, dynamic> toMap() {
@@ -65,6 +67,7 @@ class UserModel {
       'company': company,
       'managerOperational': managerOperational,
       'managerFleet': managerFleet,
+      'managerMaterials': managerMaterials,
     };
   }
 
@@ -100,6 +103,7 @@ class UserModel {
       company: map['company'] ?? false,
       managerOperational: map['managerOperational'] ?? false,
       managerFleet: map['managerFleet'] ?? false,
+      managerMaterials: map['managerMaterials'] ?? false,
     );
   }
 
@@ -138,6 +142,7 @@ class UserModel {
     bool? company,
     bool? managerOperational,
     bool? managerFleet,
+    bool? managerMaterials,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -158,6 +163,7 @@ class UserModel {
       company: company ?? this.company,
       managerOperational: managerOperational ?? this.managerOperational,
       managerFleet: managerFleet ?? this.managerFleet,
+      managerMaterials: managerMaterials ?? this.managerMaterials,
     );
   }
 }

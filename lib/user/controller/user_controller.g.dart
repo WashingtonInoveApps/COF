@@ -86,13 +86,13 @@ mixin _$UserController on _UserControllerBase, Store {
       Atom(name: '_UserControllerBase.graduation', context: context);
 
   @override
-  String get graduation {
+  String? get graduation {
     _$graduationAtom.reportRead();
     return super.graduation;
   }
 
   @override
-  set graduation(String value) {
+  set graduation(String? value) {
     _$graduationAtom.reportWrite(value, super.graduation, () {
       super.graduation = value;
     });
@@ -274,6 +274,22 @@ mixin _$UserController on _UserControllerBase, Store {
     });
   }
 
+  late final _$managerMaterialsAtom =
+      Atom(name: '_UserControllerBase.managerMaterials', context: context);
+
+  @override
+  bool get managerMaterials {
+    _$managerMaterialsAtom.reportRead();
+    return super.managerMaterials;
+  }
+
+  @override
+  set managerMaterials(bool value) {
+    _$managerMaterialsAtom.reportWrite(value, super.managerMaterials, () {
+      super.managerMaterials = value;
+    });
+  }
+
   late final _$saveAsyncAction =
       AsyncAction('_UserControllerBase.save', context: context);
 
@@ -412,6 +428,17 @@ mixin _$UserController on _UserControllerBase, Store {
   }
 
   @override
+  void setManagerMaterials(bool? value) {
+    final _$actionInfo = _$_UserControllerBaseActionController.startAction(
+        name: '_UserControllerBase.setManagerMaterials');
+    try {
+      return super.setManagerMaterials(value);
+    } finally {
+      _$_UserControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void setManagerOperational(bool? value) {
     final _$actionInfo = _$_UserControllerBaseActionController.startAction(
         name: '_UserControllerBase.setManagerOperational');
@@ -461,6 +488,7 @@ battalion: ${battalion},
 company: ${company},
 managerOperational: ${managerOperational},
 managerFleet: ${managerFleet},
+managerMaterials: ${managerMaterials},
 userInit: ${userInit},
 usersOBM: ${usersOBM},
 usersSorts: ${usersSorts},

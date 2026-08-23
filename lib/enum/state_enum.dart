@@ -24,7 +24,7 @@ extension StateProgressColor on StateProgress {
       case StateProgress.inprogress:
         return Colors.grey.shade600;
       case StateProgress.completed:
-        return Colors.blue.shade700;
+        return Colors.blue.shade800;
       case StateProgress.expired:
         return Colors.orange.shade700;
       case StateProgress.reactivated:

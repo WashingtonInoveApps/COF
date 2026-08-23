@@ -122,17 +122,18 @@ class Core {
       textAlign: TextAlign.start,
       overflow: over ?? TextOverflow.clip,
       text: TextSpan(
-        children: fullWords.map((word) {
-          final cleanWord = word.toLowerCase();
+          text: graduation != null ? '${graduation.toUpperCase()} ' : null,
+          children: fullWords.map((word) {
+            final cleanWord = word.toLowerCase();
 
-          final isHighlighted = highlightWords.contains(cleanWord);
+            final isHighlighted = highlightWords.contains(cleanWord);
 
-          return TextSpan(
-            text: '$word ',
-            style: isHighlighted ? highlightStyle : normalStyle,
-          );
-        }).toList(),
-      ),
+            return TextSpan(
+              text: '$word ',
+              style: isHighlighted ? highlightStyle : normalStyle,
+            );
+          }).toList(),
+          style: style?.copyWith(color: Colors.grey)),
     );
   }
 

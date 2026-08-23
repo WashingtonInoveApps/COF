@@ -1,6 +1,8 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 
+import '../core/constants.dart';
+
 class ListWidget<T> extends StatefulWidget {
   final T? value;
   final List<T> list;
@@ -45,10 +47,11 @@ class _ListWidgetState<T> extends State<ListWidget<T>> {
                     TextField(
                       controller: controller,
                       autofocus: true,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         hintText: 'Pesquisar...',
-                        prefixIcon: Icon(Icons.search),
-                        border: OutlineInputBorder(),
+                        prefixIcon: const Icon(Icons.search),
+                        border: const OutlineInputBorder(),
+                        hintStyle: Constants.titleHint,
                       ),
                       onChanged: (text) {
                         setDialogState(() {
@@ -122,9 +125,7 @@ class _ListWidgetState<T> extends State<ListWidget<T>> {
                     child: value == null
                         ? Text(
                             widget.hint,
-                            style: const TextStyle(
-                              color: Colors.grey,
-                            ),
+                            style: Constants.titleHint,
                           )
                         : widget.child(value as T),
                   ),

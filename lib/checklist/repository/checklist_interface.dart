@@ -1,6 +1,5 @@
 import 'dart:typed_data';
 
-import 'package:bsu_control/model/car_model.dart';
 import 'package:bsu_control/model/checklist_model.dart';
 import 'package:bsu_control/model/material_checklist_model.dart';
 
@@ -11,10 +10,9 @@ abstract class ICheckListRepository {
 
   Future<bool> delete({
     required ChecklistModel checklist,
-    required CarModel car,
   });
 
-  Future<bool> finish({
+  Future<ChecklistModel> finish({
     required ChecklistModel checklist,
     Uint8List? image,
   });
@@ -30,7 +28,7 @@ abstract class ICheckListRepository {
     required DateTime referenceDateFinish,
   });
 
-  Future<MaterialChecklistModel?> getChecklistMaterial({
+  Future<MaterialChecklistModel?> getMaterialChecklist({
     required String teamID,
   });
 }

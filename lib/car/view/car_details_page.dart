@@ -55,7 +55,7 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
 
     rec = autorun((_) {
       setState(() {
-        car = app.cars.firstWhere((e) => e.id == widget.carID);
+        car = app.carsUsers.firstWhere((e) => e.id == widget.carID);
       });
     });
   }
@@ -460,9 +460,8 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
               const SizedBox(
                 height: 10,
               ),
-              Visibility(
-                visible: controller.enable,
-                child: Row(
+              if (controller.enable)
+                Row(
                   spacing: 10,
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
@@ -558,7 +557,6 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                         )),
                   ],
                 ),
-              ),
               const SizedBox(
                 height: 50.0,
               ),

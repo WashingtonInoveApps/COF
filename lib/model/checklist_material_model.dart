@@ -47,4 +47,18 @@ class ChecklistMaterialModel {
   factory ChecklistMaterialModel.fromJson(String source) =>
       ChecklistMaterialModel.fromMap(
           json.decode(source) as Map<String, dynamic>);
+
+  ChecklistMaterialModel copyWith({
+    String? id,
+    MaterialChecklistModel? material,
+    List<ItemModel>? materialsConsumed,
+    String? obs,
+  }) {
+    return ChecklistMaterialModel(
+      id: id ?? this.id,
+      material: material ?? this.material,
+      materialsConsumed: materialsConsumed ?? this.materialsConsumed,
+      obs: obs ?? this.obs,
+    );
+  }
 }

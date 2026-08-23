@@ -1,10 +1,8 @@
-import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/model/config_model.dart';
 import 'package:bsu_control/model/obm_model.dart';
 import 'package:bsu_control/user/repository/user_interface.dart';
 import 'package:bsu_control/user/repository/user_repository.dart';
-import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
 
 import '../../model/cia_model.dart';
@@ -23,9 +21,6 @@ abstract class _UserControllerBase with Store {
 
   late IUserRepository repository;
 
-  final controllerPassword = TextEditingController();
-  final controllerPasswordConfirme = TextEditingController();
-
   _UserControllerBase(
       {required this.config,
       required this.init,
@@ -39,7 +34,7 @@ abstract class _UserControllerBase with Store {
 
   @action
   userControllerInit(UserModel? value) {
-    graduation = value?.graduation ?? Constants.graduations.first;
+    graduation = value?.graduation;
 
     admin = value?.admin ?? false;
     enable = value?.enable ?? false;
@@ -67,7 +62,7 @@ abstract class _UserControllerBase with Store {
   ObservableList<UserModel> users = <UserModel>[].asObservable();
 
   @observable
-  String graduation = '';
+  String? graduation;
 
   @observable
   CiaModel? cia;
@@ -102,6 +97,9 @@ abstract class _UserControllerBase with Store {
   @observable
   bool managerFleet = false;
 
+  @observable
+  bool managerMaterials = false;
+
   @computed
   UserModel get userInit {
     return UserModel(
@@ -112,9 +110,10 @@ abstract class _UserControllerBase with Store {
         ciaID: cia?.id ?? '',
         company: company,
         enable: enable,
-        graduation: graduation,
+        graduation: graduation ?? '',
         managerFleet: managerFleet,
         managerOperational: managerOperational,
+        managerMaterials: managerMaterials,
         email: init?.email ?? '',
         obmID: obm?.id ?? '');
   }
@@ -209,6 +208,10 @@ abstract class _UserControllerBase with Store {
 
   @action
   void setManagerFleet(bool? value) => managerFleet = value ?? managerFleet;
+
+  @action
+  void setManagerMaterials(bool? value) =>
+      managerMaterials = value ?? managerMaterials;
 
   @action
   void setManagerOperational(bool? value) =>

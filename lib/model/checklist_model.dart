@@ -39,7 +39,7 @@ class ChecklistModel {
   List<SupplyModel>? supply;
   List<OtherChangeModel>? others;
   List<StatesChecklist> states;
-
+  UserModel? userSubstitute;
   ChecklistType type;
   StateProgress state;
 
@@ -70,6 +70,7 @@ class ChecklistModel {
     this.enable = true,
     this.others,
     this.obs = "",
+    this.userSubstitute,
   });
 
   Map<String, dynamic> toMap() {
@@ -81,6 +82,7 @@ class ChecklistModel {
       'signature': signature?.toMap(),
       'team': team?.toMap(),
       'cia': cia?.toMapResume(),
+      'userSubstitute': userSubstitute?.toMapResume(),
       'obmID': obmID,
       'prefix': prefix,
       'startKM': startKM,
@@ -139,6 +141,9 @@ class ChecklistModel {
       state: StateProgressEnumCore.stateProgressFromString(map['state']),
       enable: map['enable'] ?? false,
       user: UserModel.fromMapResume(map['user'] as Map<String, dynamic>),
+      userSubstitute: map['userSubstitute'] != null
+          ? UserModel.fromMapResume(map['user'] as Map<String, dynamic>)
+          : null,
       states: (map['states'] != null)
           ? List<StatesChecklist>.from(
               map['states']?.map((x) => StatesChecklist.fromMap(x)))
@@ -181,6 +186,7 @@ class ChecklistModel {
     String? teamID,
     OBMModel? obm,
     FileModel? signature,
+    UserModel? userSubstitute,
     CiaModel? cia,
     String? obmID,
     bool? enable,
@@ -208,6 +214,7 @@ class ChecklistModel {
       teamID: teamID ?? this.teamID,
       id: id ?? this.id,
       obm: obm ?? this.obm,
+      userSubstitute: userSubstitute ?? this.userSubstitute,
       state: state ?? this.state,
       signature: signature ?? this.signature,
       states: states ?? this.states,

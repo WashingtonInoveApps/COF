@@ -212,104 +212,106 @@ class _MaterialsDetailsPageState extends State<MaterialsDetailsPage> {
               const SizedBox(
                 height: 10,
               ),
-              Row(
-                spacing: 10,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  const Spacer(),
-                  ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.grey),
-                      onPressed: () {
-                        showDialog(
-                            context: context,
-                            builder: (context) => AlertMessage(
-                                  title: 'Atenção',
-                                  message:
-                                      'Deseja deletar o registro desse checklist ?',
-                                  cancel: true,
-                                  titleOK: 'Sim',
-                                  onPressedOK: () =>
-                                      Navigator.of(context).pop(true),
-                                  onPressedCancel: () =>
-                                      Navigator.of(context).pop(false),
-                                )).then((value) {
-                          if (value ?? false) {
-                            controller
-                                .deleteMaterialChecklist(material: checklist)
-                                .then((value) {
-                              Navigator.of(context).pop();
-                            }).catchError((err) {
-                              showDialog(
-                                  context: context,
-                                  builder: (context) => AlertMessage(
-                                        title: 'Atenção',
-                                        message: err.toString(),
-                                        onPressedOK: () =>
-                                            Navigator.of(context).pop(),
-                                      ));
-                            });
-                          }
-                        });
-                      },
-                      child: Text(
-                        "Excluir",
-                        style: Constants.titleButton,
-                      )),
-                  ElevatedButton(
-                      onPressed: () {
-                        showDialog(
-                            context: context,
-                            builder: (context) => AlertMessage(
-                                  title: '',
-                                  message:
-                                      'Deseja criar uma copia atual desse checklist ?',
-                                  cancel: true,
-                                  titleOK: 'Sim',
-                                  onPressedOK: () =>
-                                      Navigator.of(context).pop(true),
-                                  onPressedCancel: () =>
-                                      Navigator.of(context).pop(false),
-                                )).then((value) async {
-                          if (value ?? false) {
-                            await Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        MaterialChecklistRegisterPage(
-                                          copied: true,
-                                          controller: controller,
-                                          material: MaterialChecklistModel(
-                                            user: app.user,
-                                            obm: checklist.obm,
-                                            obmID: checklist.obmID,
-                                            team: null,
-                                            cia: checklist.cia,
-                                            ciaID: checklist.ciaID,
-                                            itens: checklist.itens,
-                                            materials: checklist.materials,
-                                          ),
-                                        )));
-                          }
-                        });
-                      },
-                      child: Text(
-                        "Copiar",
-                        style: Constants.titleButton,
-                      )),
-                  ElevatedButton(
-                      onPressed: () async {
-                        await Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => MaterialChecklistRegisterPage(
-                                  controller: controller,
-                                  material: checklist,
-                                )));
-                      },
-                      child: Text(
-                        "Editar",
-                        style: Constants.titleButton,
-                      )),
-                ],
-              ),
+              if (app.user.admin || app.user.managerMaterials)
+                Row(
+                  spacing: 10,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    const Spacer(),
+                    ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.grey),
+                        onPressed: () {
+                          showDialog(
+                              context: context,
+                              builder: (context) => AlertMessage(
+                                    title: 'Atenção',
+                                    message:
+                                        'Deseja deletar o registro desse checklist ?',
+                                    cancel: true,
+                                    titleOK: 'Sim',
+                                    onPressedOK: () =>
+                                        Navigator.of(context).pop(true),
+                                    onPressedCancel: () =>
+                                        Navigator.of(context).pop(false),
+                                  )).then((value) {
+                            if (value ?? false) {
+                              controller
+                                  .deleteMaterialChecklist(material: checklist)
+                                  .then((value) {
+                                Navigator.of(context).pop();
+                              }).catchError((err) {
+                                showDialog(
+                                    context: context,
+                                    builder: (context) => AlertMessage(
+                                          title: 'Atenção',
+                                          message: err.toString(),
+                                          onPressedOK: () =>
+                                              Navigator.of(context).pop(),
+                                        ));
+                              });
+                            }
+                          });
+                        },
+                        child: Text(
+                          "Excluir",
+                          style: Constants.titleButton,
+                        )),
+                    ElevatedButton(
+                        onPressed: () {
+                          showDialog(
+                              context: context,
+                              builder: (context) => AlertMessage(
+                                    title: '',
+                                    message:
+                                        'Deseja criar uma copia atual desse checklist ?',
+                                    cancel: true,
+                                    titleOK: 'Sim',
+                                    onPressedOK: () =>
+                                        Navigator.of(context).pop(true),
+                                    onPressedCancel: () =>
+                                        Navigator.of(context).pop(false),
+                                  )).then((value) async {
+                            if (value ?? false) {
+                              await Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          MaterialChecklistRegisterPage(
+                                            copied: true,
+                                            controller: controller,
+                                            material: MaterialChecklistModel(
+                                              user: app.user,
+                                              obm: checklist.obm,
+                                              obmID: checklist.obmID,
+                                              team: null,
+                                              cia: checklist.cia,
+                                              ciaID: checklist.ciaID,
+                                              itens: checklist.itens,
+                                              materials: checklist.materials,
+                                            ),
+                                          )));
+                            }
+                          });
+                        },
+                        child: Text(
+                          "Copiar",
+                          style: Constants.titleButton,
+                        )),
+                    ElevatedButton(
+                        onPressed: () async {
+                          await Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) =>
+                                  MaterialChecklistRegisterPage(
+                                    controller: controller,
+                                    material: checklist,
+                                  )));
+                        },
+                        child: Text(
+                          "Editar",
+                          style: Constants.titleButton,
+                        )),
+                  ],
+                ),
               const SizedBox(
                 height: 50.0,
               ),

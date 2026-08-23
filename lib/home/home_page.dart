@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/checklist/view/checklist_details_page.dart';
@@ -146,10 +145,10 @@ class _HomePageState extends State<HomePage> {
                             direction: Axis.horizontal,
                             alignment: WrapAlignment.spaceEvenly,
                             children: [
-                              SizedBox(
-                                width: (app.modeMOBILE
-                                    ? double.infinity
-                                    : app.maxWidth * 0.45),
+                              Container(
+                                width: double.infinity,
+                                constraints:
+                                    const BoxConstraints(maxWidth: 450),
                                 child: Column(
                                   spacing: 5,
                                   children: [
@@ -259,14 +258,15 @@ class _HomePageState extends State<HomePage> {
                                                         icon: MdiIcons.viewList,
                                                         color: Colors
                                                             .green.shade700,
-                                                        onTap: () {
-                                                          app.setRouter(1);
-                                                          Navigator.of(context)
+                                                        onTap: () async {
+                                                          await Navigator.of(
+                                                                  context)
                                                               .pushReplacement(
                                                                   MaterialPageRoute(
                                                                       builder:
                                                                           (context) =>
                                                                               const MyChecklistPage()));
+                                                          app.setRouter(1);
                                                         }),
                                                   ),
                                                 ],
@@ -279,10 +279,10 @@ class _HomePageState extends State<HomePage> {
                                   ],
                                 ),
                               ),
-                              SizedBox(
-                                width: (app.modeMOBILE
-                                    ? double.infinity
-                                    : app.maxWidth * 0.46),
+                              Container(
+                                width: double.infinity,
+                                constraints:
+                                    const BoxConstraints(maxWidth: 450),
                                 child: Column(
                                   spacing: 5,
                                   children: [

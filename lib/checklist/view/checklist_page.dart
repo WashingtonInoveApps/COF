@@ -71,8 +71,7 @@ class _ChecklistPageState extends State<ChecklistPage> {
     )
         .listen(
       (result) {
-        controller.setChecklists(
-            result.where((e) => e.userID == app.user.id).toList());
+        controller.setChecklists(result);
         controller.setLoading(false);
       },
     );
@@ -101,10 +100,9 @@ class _ChecklistPageState extends State<ChecklistPage> {
                   child: Wrap(
                     alignment: WrapAlignment.spaceEvenly,
                     children: [
-                      SizedBox(
-                        width: (app.modeMOBILE
-                            ? double.infinity
-                            : app.maxWidth * 0.46),
+                      Container(
+                        width: double.infinity,
+                        constraints: const BoxConstraints(maxWidth: 450),
                         child: Column(
                           spacing: 5,
                           children: [
@@ -136,10 +134,9 @@ class _ChecklistPageState extends State<ChecklistPage> {
                           ],
                         ),
                       ),
-                      SizedBox(
-                        width: (app.modeMOBILE
-                            ? double.infinity
-                            : app.maxWidth * 0.46),
+                      Container(
+                        width: double.infinity,
+                        constraints: const BoxConstraints(maxWidth: 450),
                         child: Column(
                           spacing: 5,
                           children: [

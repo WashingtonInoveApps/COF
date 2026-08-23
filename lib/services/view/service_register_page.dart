@@ -39,7 +39,7 @@ class _ServiceRegisterPageState extends State<ServiceRegisterPage> {
       config: config,
       user: app.user,
       update: (widget.service != null),
-      cars: app.cars,
+      cars: app.carsUsers,
       servicesToday: [],
     );
   }

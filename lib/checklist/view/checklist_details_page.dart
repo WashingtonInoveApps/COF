@@ -24,6 +24,7 @@ import '../../widgets/alert_message.dart';
 import '../../widgets/backgraund_page.dart';
 import '../../widgets/car_changes_widget.dart';
 import '../../widgets/card_outhers_widget.dart';
+import '../../widgets/tag_widget.dart';
 import '../controller/checklist_controller.dart';
 
 class ChecklistDetailsPage extends StatefulWidget {
@@ -69,41 +70,28 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
 
   Widget stateWidget(List<StatesChecklist> list) {
     return SizedBox(
-      height: 50,
+      height: 60,
       width: double.infinity,
       child: ListView(
         scrollDirection: Axis.horizontal,
         children: list
             .map((value) {
-              return Container(
+              return SizedBox(
                 width: 250,
-                padding: const EdgeInsets.all(5),
-                decoration: BoxDecoration(
-                  border: Border.all(color: value.state.color),
-                  color: value.state.color.withAlpha(50),
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                child: Row(
+                child: Column(
                   spacing: 5,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(value.state.icon, color: value.state.color),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            value.state.label,
-                            style: Constants.subtitle,
-                          ),
-                          Text(
-                            Core.formatDate(value.date, shortHour: true),
-                            style: Constants.subtitle.copyWith(fontSize: 10),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
-                      ),
+                    TagWidget(
+                      label: value.state.label,
+                      color: value.state.color,
+                      icon: value.state.icon,
+                    ),
+                    Text(
+                      Core.formatDate(value.date, largeDayHour: true),
+                      style: Constants.subtitleHint.copyWith(fontSize: 10),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),
@@ -137,10 +125,7 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
     final List<SectionItensModel> materials =
         (!vehicular ? checklist.material?.material.materials : []) ?? [];
 
-    final enable = true;
-    // final enable = ((listStates.first.state == StateProgress.inprogress) &&
-    //     checklist.enable &&
-    //     (checklist.userID == app.user.id));
+    final enable = checklist.enable && (checklist.userID == app.user.id);
 
     return Stack(
       children: [
@@ -447,87 +432,53 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
                           ),
                         ],
                       ),
-                    const SizedBox(
-                      height: 20,
-                    ),
                   ],
                 ),
               if (!vehicular)
-                Visibility(
-                    visible: !checklist.enable,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                              color: Constants.primary,
-                              borderRadius: BorderRadius.circular(5)),
-                          child: Text(
-                            "MATERIAIS UTILIZADOS",
-                            style: Constants.titleButton,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    const ContainerCustom(
+                      label: "MATERIAIS UTILIZADOS",
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    (checklist.material?.materialsConsumed?.isEmpty ?? true)
+                        ? Text(
+                            'Nenhum material utilizado registrado.',
+                            style: Constants.titleHint,
+                          )
+                        : Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: List.generate(
+                                    checklist.material!.materialsConsumed!
+                                        .length, (index) {
+                              final material =
+                                  checklist.material!.materialsConsumed![index];
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    material.description,
+                                    style: Constants.title,
+                                  ),
+                                  Text(
+                                    '${material.quantity.toString().padLeft(2, '0')} unidade(s)',
+                                    style: Constants.subtitleHint,
+                                  ),
+                                ],
+                              );
+                            })
+                                .expand((widget) => [widget, const Divider()])
+                                .toList()
+                              ..removeLast(),
                           ),
-                        ),
-                        // const SizedBox(
-                        //   height: 10,
-                        // ),
-                        // (checklist.materials?.isEmpty ?? false)
-                        //     ? Text(
-                        //         'Nenhum material utilizado',
-                        //         style: Constants.titleHint,
-                        //       )
-                        //     : Column(
-                        //         crossAxisAlignment: CrossAxisAlignment.start,
-                        //         children: List.generate(
-                        //                 checklist.materials!.length, (index) {
-                        //           final material = checklist.materials![index];
-                        //           return Column(
-                        //             crossAxisAlignment: CrossAxisAlignment.start,
-                        //             children: [
-                        //               Text(
-                        //                 material.description,
-                        //                 style: Constants.title,
-                        //               ),
-                        //               Text(
-                        //                 '${material.quantity.toString().padLeft(2, '0')} unidade(s)',
-                        //                 style: Constants.subtitleHint,
-                        //               ),
-                        //             ],
-                        //           );
-                        //         })
-                        //             .expand((widget) => [widget, const Divider()])
-                        //             .toList()
-                        //           ..removeLast(),
-                        //       ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                              color: Constants.primary,
-                              borderRadius: BorderRadius.circular(5)),
-                          child: Text(
-                            "OBSERVAÇÕES GERAL",
-                            style: Constants.titleButton,
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        checklist.obs.isEmpty
-                            ? Text(
-                                'Nenhuma observação geral registrada.',
-                                style: Constants.titleHint,
-                              )
-                            : Text(
-                                checklist.obs,
-                                style: Constants.title,
-                              ),
-                      ],
-                    )),
+                  ],
+                ),
               const SizedBox(
                 height: 15,
               ),
@@ -602,7 +553,7 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
                                   builder: (context) => AlertMessage(
                                       title: 'Atenção',
                                       message:
-                                          'Você perderar todas as alterações constadas nesse registro. Deseja realmente excluir esse registro ?',
+                                          'Você perderá todas as alterações realizadas neste registro. Deseja realmente excluí-lo?',
                                       titleOK: 'Sim',
                                       cancel: true,
                                       onPressedCancel: () =>
@@ -654,11 +605,25 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
                         width: 120,
                         child: ElevatedButton(
                             onPressed: () async {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => ChecklistFinishPage(
-                                        controller: controller,
-                                        checklist: checklist,
-                                      )));
+                              await showDialog(
+                                  context: context,
+                                  builder: (context) => AlertMessage(
+                                      message:
+                                          'Deseja realmente finalizar este checklist?',
+                                      titleOK: 'Sim',
+                                      cancel: true,
+                                      onPressedCancel: () =>
+                                          Navigator.of(context).pop(false),
+                                      onPressedOK: () => Navigator.of(context)
+                                          .pop(true))).then((result) {
+                                if (result ?? false) {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) => ChecklistFinishPage(
+                                            controller: controller,
+                                            checklist: checklist,
+                                          )));
+                                }
+                              });
                             },
                             child: Text(
                               'Finalizar',

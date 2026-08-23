@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:bsu_control/model/car_model.dart';
 import 'package:bsu_control/model/user_model.dart';
 
 class SupplyModel {
@@ -6,6 +7,7 @@ class SupplyModel {
   String? checklistID;
   String? carID;
   UserModel user;
+  CarModel car;
   String km;
   double litros;
   double value;
@@ -13,6 +15,7 @@ class SupplyModel {
 
   SupplyModel({
     this.id,
+    required this.car,
     required this.date,
     required this.user,
     this.checklistID,
@@ -25,6 +28,7 @@ class SupplyModel {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
+      'car': car.toMapResume(),
       'checklistID': checklistID,
       'carID': carID,
       'user': user.toMapResume(),
@@ -42,6 +46,7 @@ class SupplyModel {
       checklistID: map['checklistID'],
       carID: map['carID'],
       user: UserModel.fromMapResume(map['user']),
+      car: CarModel.fromMapResume(map['car']),
       km: map['km'] ?? '',
       litros: map['litros']?.toDouble() ?? 0.0,
       value: map['value']?.toDouble() ?? 0.0,

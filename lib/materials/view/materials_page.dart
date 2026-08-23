@@ -86,7 +86,7 @@ class _MaterialsPageState extends State<MaterialsPage> {
                 children: [
                   Text(
                     'Registros',
-                    style: Constants.title,
+                    style: Constants.title.copyWith(fontSize: 18),
                   ),
                   Observer(builder: (_) {
                     return Container(
@@ -111,28 +111,29 @@ class _MaterialsPageState extends State<MaterialsPage> {
                               ),
                             ),
                           ),
-                          InkWell(
-                              onTap: () {
-                                if (app.router != 8) {
-                                  app.setRouter(8);
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            MaterialChecklistRegisterPage(
-                                              controller: controller,
-                                            )),
-                                  );
-                                }
-                              },
-                              child: const CircleAvatar(
-                                radius: 25,
-                                backgroundColor: Constants.primary,
-                                child: Icon(
-                                  Icons.add,
-                                  size: 20,
-                                  color: Colors.white,
-                                ),
-                              ))
+                          if (app.user.admin || app.user.managerMaterials)
+                            InkWell(
+                                onTap: () {
+                                  if (app.router != 8) {
+                                    app.setRouter(8);
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              MaterialChecklistRegisterPage(
+                                                controller: controller,
+                                              )),
+                                    );
+                                  }
+                                },
+                                child: const CircleAvatar(
+                                  radius: 25,
+                                  backgroundColor: Constants.primary,
+                                  child: Icon(
+                                    Icons.add,
+                                    size: 20,
+                                    color: Colors.white,
+                                  ),
+                                ))
                         ],
                       ),
                     );

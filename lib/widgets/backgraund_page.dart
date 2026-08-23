@@ -1,7 +1,6 @@
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/car/view/car_register_page.dart';
 import 'package:bsu_control/car/view/cars_page.dart';
-import 'package:bsu_control/checklist/view/checklist_details_page.dart';
 import 'package:bsu_control/checklist/view/checklist_page.dart';
 import 'package:bsu_control/checklist/view/checklist_register_page.dart';
 import 'package:bsu_control/checklist/view/my_checklist_page.dart';
@@ -73,8 +72,7 @@ class _BackgraundPageState extends State<BackgraundPage> {
   @override
   Widget build(BuildContext context) {
     Widget menu({required BuildContext context, required UserModel user}) {
-      final usersEnable =
-          (user.admin || user.managerFleet || user.battalion || user.company);
+      final usersEnable = (user.admin || user.battalion || user.company);
 
       final vtrsEnable = (user.admin ||
           user.managerFleet ||
@@ -85,7 +83,8 @@ class _BackgraundPageState extends State<BackgraundPage> {
       final materialEnable = (user.admin ||
           user.battalion ||
           user.company ||
-          user.managerOperational);
+          user.managerOperational ||
+          user.managerMaterials);
 
       // final expires = Core.verifyExpiresChecklist();
       return Visibility(
@@ -171,54 +170,48 @@ class _BackgraundPageState extends State<BackgraundPage> {
                       SubmenuButton(
                           menuChildren: [
                             MenuItemButton(
+                              onPressed: controller.newRegisterVehicular
+                                  ? () {
+                                      if (controller.router != 3) {
+                                        controller.setRouter(3);
+                                        Navigator.of(context).pushReplacement(
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const ChecklistRegisterPage(
+                                                      type: ChecklistType
+                                                          .vehicular,
+                                                    )));
+                                      }
+                                    }
+                                  : null,
                               child: Text(
                                 'Veicular',
-                                style: Constants.title,
+                                style: controller.newRegisterVehicular
+                                    ? Constants.title
+                                    : Constants.titleHint,
                               ),
-                              onPressed: () {
-                                if (controller.router != 3) {
-                                  controller.setRouter(3);
-                                  if (controller.newRegisterVehicular) {
-                                    Navigator.of(context).pushReplacement(
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                const ChecklistRegisterPage(
-                                                  type: ChecklistType.vehicular,
-                                                )));
-                                  } else {
-                                    Navigator.of(context).push(MaterialPageRoute(
-                                        builder: (context) =>
-                                            ChecklistDetailsPage(
-                                                checklist: controller
-                                                    .checklistUserVehicular!)));
-                                  }
-                                }
-                              },
                             ),
                             MenuItemButton(
+                              onPressed: controller.newRegisterMaterial
+                                  ? () {
+                                      if (controller.router != 4) {
+                                        controller.setRouter(4);
+                                        Navigator.of(context).pushReplacement(
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const ChecklistRegisterPage(
+                                                      type: ChecklistType
+                                                          .materials,
+                                                    )));
+                                      }
+                                    }
+                                  : null,
                               child: Text(
                                 'Material',
-                                style: Constants.title,
+                                style: controller.newRegisterMaterial
+                                    ? Constants.title
+                                    : Constants.titleHint,
                               ),
-                              onPressed: () {
-                                if (controller.router != 4) {
-                                  controller.setRouter(4);
-                                  if (controller.newRegisterVehicular) {
-                                    Navigator.of(context).pushReplacement(
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                const ChecklistRegisterPage(
-                                                  type: ChecklistType.materials,
-                                                )));
-                                  } else {
-                                    Navigator.of(context).push(MaterialPageRoute(
-                                        builder: (context) =>
-                                            ChecklistDetailsPage(
-                                                checklist: controller
-                                                    .checklistUserMaterial!)));
-                                  }
-                                }
-                              },
                             )
                           ],
                           child: Text(
@@ -227,9 +220,8 @@ class _BackgraundPageState extends State<BackgraundPage> {
                           ))
                     ]),
               ),
-              Visibility(
-                visible: vtrsEnable,
-                child: SizedBox(
+              if (vtrsEnable)
+                SizedBox(
                   height: 40,
                   width: 140,
                   child: MenuAnchor(
@@ -265,27 +257,26 @@ class _BackgraundPageState extends State<BackgraundPage> {
                             }
                           },
                         ),
-                        MenuItemButton(
-                          child: Text(
-                            'Novo registro',
-                            style: Constants.title,
+                        if (user.admin || user.managerFleet)
+                          MenuItemButton(
+                            child: Text(
+                              'Novo registro',
+                              style: Constants.title,
+                            ),
+                            onPressed: () {
+                              if (controller.router != 6) {
+                                controller.setRouter(6);
+                                Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const CarRegisterPage()));
+                              }
+                            },
                           ),
-                          onPressed: () {
-                            if (controller.router != 6) {
-                              controller.setRouter(6);
-                              Navigator.of(context).pushReplacement(
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          const CarRegisterPage()));
-                            }
-                          },
-                        ),
                       ]),
                 ),
-              ),
-              Visibility(
-                visible: materialEnable,
-                child: SizedBox(
+              if (materialEnable)
+                SizedBox(
                   height: 40,
                   width: 140,
                   child: MenuAnchor(
@@ -339,10 +330,8 @@ class _BackgraundPageState extends State<BackgraundPage> {
                         ),
                       ]),
                 ),
-              ),
-              Visibility(
-                visible: usersEnable,
-                child: SizedBox(
+              if (usersEnable)
+                SizedBox(
                   height: 40,
                   width: 140,
                   child: MenuAnchor(
@@ -395,7 +384,6 @@ class _BackgraundPageState extends State<BackgraundPage> {
                         ),
                       ]),
                 ),
-              ),
             ],
           );
         }),

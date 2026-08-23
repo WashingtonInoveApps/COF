@@ -61,9 +61,6 @@ abstract class _AppControllerBase with Store {
   bool loading = false;
 
   @observable
-  bool checklistVeicular = false;
-
-  @observable
   bool modeMOBILE = false;
 
   @observable
@@ -123,53 +120,41 @@ abstract class _AppControllerBase with Store {
     return false;
   }
 
-  // @computed
-  // int get checklistTodayPendent {
-  //   final carsOperating =
-  //       cars.where((e) => e.state == StatusCar.operating).length;
-
-  //   return (carsOperating - checklistsOperationDay.length);
-  // }
-
-  // @computed
-  // List<CarModel> get carsADM => cars.where((e) => e.adm).toList();
-
-  // @computed
-  // List<CarModel> get carsOPR => cars.where((e) => !e.adm).toList();
-
-  // @computed
-  // List<String> get prefixs => cars.map((e) => e.prefix).toList();
-
   @computed
   List<CarModel> get carsUsers {
     if (user.managerOperational || user.admin) {
       return List<CarModel>.from(cars);
-    } else if (user.battalion) {
+    } else {
       return List<CarModel>.from(
           cars.where((e) => e.obmID == user.obmID).toList());
-    } else {
-      return List<CarModel>.from(cars
-          .where(
-              (e) => e.cia?.name.toLowerCase() == user.cia?.name.toLowerCase())
-          .toList());
     }
   }
 
   @action
   Future<void> setUser(UserModel value) async {
     user = value;
-    await processChecklist(userID: value.id!);
-  }
-
-  Future<void> processChecklist({required String userID}) async {
-    log('UserID: $userID');
 
     checklistUserMaterial = null;
     checklistUserVehicular = null;
 
-    final result = await repository.getChecklistUser(userID: userID);
+    final result = await repository.getChecklistUser(userID: value.id!);
 
-    if (result.isEmpty) return;
+    processChecklist(
+      list: result,
+      userID: value.id!,
+    );
+  }
+
+  @action
+  void processChecklist({
+    required List<ChecklistModel> list,
+    required String userID,
+  }) {
+    final result = list
+        .where(
+          (e) => e.userID == userID,
+        )
+        .toList();
 
     final material = result.cast<ChecklistModel?>().firstWhere(
           (e) => e?.type == ChecklistType.materials,
@@ -182,24 +167,30 @@ abstract class _AppControllerBase with Store {
         );
 
     if (material != null) {
-      if (!material.enable) return;
+      if (_isNotActive(material)) return;
 
-      if (_isExpired(material)) {}
+      checklistUserMaterial = material;
     }
 
     if (vehicular != null) {
-      if (!vehicular.enable) return;
+      if (_isNotActive(vehicular)) return;
 
-      if (_isExpired(vehicular)) {}
+      checklistUserVehicular = vehicular;
     }
   }
 
-  bool _isExpired(ChecklistModel value) {
-    if (value.enable) {
-      if (DateTime.now().isAfter(value.date.add(const Duration(days: 2)))) {
-        if (value.state != StateProgress.reactivated) {
-          return true;
-        }
+  bool _isNotActive(ChecklistModel value) {
+    if (!value.enable) return true;
+
+    if (DateTime.now().isAfter(
+      DateTime(
+        value.date.year,
+        value.date.month,
+        value.date.day,
+      ).add(const Duration(days: 2)),
+    )) {
+      if (value.state != StateProgress.reactivated) {
+        return true;
       }
     }
 
@@ -210,13 +201,25 @@ abstract class _AppControllerBase with Store {
   void changeMenuOpen() => menuOpen = !menuOpen;
 
   @action
+  void clearChecklistUser(ChecklistModel value) {
+    if (checklistUserVehicular?.id == value.id) {
+      checklistUserVehicular = null;
+      return;
+    }
+
+    if (checklistUserMaterial?.id == value.id) {
+      checklistUserMaterial = null;
+      return;
+    }
+
+    return;
+  }
+
+  @action
   void setRouter(int value) {
     router = value;
     menuOpen = false;
   }
-
-  @action
-  void setCheckListVeicular(bool value) => checklistVeicular = value;
 
   Stream<List<ChecklistModel>> listenChecklistOperationDay() {
     final dateReference = Core.getOperationalDay(DateTime.now());
@@ -267,6 +270,10 @@ abstract class _AppControllerBase with Store {
     checklistsOperationDay
       ..clear()
       ..addAll(value);
+
+    if (user.id != null) {
+      processChecklist(list: checklistsOperationDay, userID: user.id!);
+    }
   }
 
   Future<void> getOBMs() async {

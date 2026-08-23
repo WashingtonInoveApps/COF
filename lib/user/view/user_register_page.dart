@@ -5,16 +5,18 @@ import 'package:bsu_control/main.dart';
 import 'package:bsu_control/model/cia_model.dart';
 import 'package:bsu_control/model/obm_model.dart';
 import 'package:bsu_control/model/user_model.dart';
-import 'package:bsu_control/user/view/users_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 import '../../widgets/alert_message.dart';
+import '../../widgets/alert_mult_message.dart';
 import '../../widgets/backgraund_page.dart';
+import '../../widgets/container_custom_widget.dart';
 import '../../widgets/textfield_widget.dart';
 import '../controller/user_controller.dart';
+import 'users_page.dart';
 
 class UserPageRegister extends StatefulWidget {
   final UserModel? user;
@@ -39,6 +41,8 @@ class _UserPageRegisterState extends State<UserPageRegister> {
       mask: '(##) #####-####', filter: {"#": RegExp(r'[0-9]')});
 
   late UserController controller;
+
+  List<String> messagesError = [];
   UserModel user = UserModel();
 
   @override
@@ -54,16 +58,27 @@ class _UserPageRegisterState extends State<UserPageRegister> {
     user = widget.user ?? controller.userInit;
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-    controller.controllerPassword.dispose();
-    controller.controllerPasswordConfirme.dispose();
-  }
-
   void closePage(BuildContext context) {
     app.setRouter(7);
     Navigator.of(context).pop();
+  }
+
+  void validationForm() {
+    messagesError.clear();
+
+    if (controller.obm == null) {
+      messagesError.add('Selecione a OBM antes de continuar');
+    }
+
+    if ((controller.obm?.cias.isNotEmpty ?? false) && controller.cia == null) {
+      messagesError.add('Selecione a companhia antes de continuar.');
+    }
+
+    if (controller.graduation == null) {
+      messagesError.add('Selecione a graduação antes de continuar.');
+    }
+
+    _key.currentState!.validate();
   }
 
   @override
@@ -101,19 +116,8 @@ class _UserPageRegisterState extends State<UserPageRegister> {
                 childLeft: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(
-                      height: 10.0,
-                    ),
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                          color: Constants.primary,
-                          borderRadius: BorderRadius.circular(5)),
-                      child: Text(
-                        'INFORMAÇÕES BÁSICAS',
-                        style: Constants.titleButton,
-                      ),
+                    const ContainerCustom(
+                      label: 'INFORMAÇÕES BÁSICAS',
                     ),
                     const SizedBox(
                       height: 10,
@@ -265,17 +269,25 @@ class _UserPageRegisterState extends State<UserPageRegister> {
                             value: controller.graduation,
                             underline: Container(),
                             onChanged: controller.setGraduation,
-                            items: Constants.graduations
-                                .map((e) => DropdownMenuItem(
-                                      value: e,
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 5),
-                                        child: Text(e.toUpperCase(),
-                                            style: Constants.title),
-                                      ),
-                                    ))
-                                .toList());
+                            items: [
+                              DropdownMenuItem(
+                                  value: null,
+                                  child: Text(
+                                    'Selecione',
+                                    style: Constants.title,
+                                  )),
+                              ...Constants.graduations
+                                  .map((e) => DropdownMenuItem(
+                                        value: e,
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 5),
+                                          child: Text(e.toUpperCase(),
+                                              style: Constants.title),
+                                        ),
+                                      ))
+                                  .toList()
+                            ]);
                       }),
                     ),
                     const SizedBox(
@@ -285,7 +297,13 @@ class _UserPageRegisterState extends State<UserPageRegister> {
                       initValue: user.name,
                       hint: "EX.: Fulano",
                       label: 'QRA',
-                      validation: Validation.validatorPreenchimento,
+                      validation: (text) {
+                        if (Validation.validatorPreenchimento(text) != null) {
+                          messagesError.add('Insira o QRA antes de continuar.');
+                        }
+
+                        return;
+                      },
                       onSaved: (text) {
                         user.name = text!;
                       },
@@ -297,7 +315,14 @@ class _UserPageRegisterState extends State<UserPageRegister> {
                       initValue: user.fullname,
                       hint: "EX.: Fulano da Silva Lima",
                       label: 'Nome completo',
-                      validation: Validation.validatorPreenchimento,
+                      validation: (text) {
+                        if (Validation.validatorPreenchimento(text) != null) {
+                          messagesError.add(
+                              'Insira o nome completo antes de continuar.');
+                        }
+
+                        return;
+                      },
                       onSaved: (text) {
                         user.fullname = text!;
                       },
@@ -310,7 +335,14 @@ class _UserPageRegisterState extends State<UserPageRegister> {
                       hint: "Ex.: 300.000-0-0",
                       label: 'Matrícula',
                       mask: [maskRegistration],
-                      validation: Validation.validatorPreenchimento,
+                      validation: (text) {
+                        if (Validation.validatorPreenchimento(text) != null) {
+                          messagesError
+                              .add('Insira a matrícula antes de continuar.');
+                        }
+
+                        return;
+                      },
                       onSaved: (text) {
                         user.registration = text!;
                       },
@@ -323,7 +355,14 @@ class _UserPageRegisterState extends State<UserPageRegister> {
                       inputType: TextInputType.phone,
                       hint: "EX.: (85) 90000-0000",
                       label: 'Contato',
-                      validation: Validation.validatorPhone,
+                      validation: (text) {
+                        if (Validation.validatorPhone(text) != null) {
+                          messagesError.add(
+                              'Insira o número de telefone válido antes de continuar.');
+                        }
+
+                        return;
+                      },
                       mask: [maskFormatter],
                       onSaved: (text) {
                         user.contact = text!;
@@ -339,17 +378,7 @@ class _UserPageRegisterState extends State<UserPageRegister> {
                     const SizedBox(
                       height: 10.0,
                     ),
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                          color: Constants.primary,
-                          borderRadius: BorderRadius.circular(5)),
-                      child: Text(
-                        'INFORMAÇÕES DE ACESSO',
-                        style: Constants.titleButton,
-                      ),
-                    ),
+                    const ContainerCustom(label: 'INFORMAÇÕES DE ACESSO'),
                     const SizedBox(
                       height: 10,
                     ),
@@ -360,7 +389,14 @@ class _UserPageRegisterState extends State<UserPageRegister> {
                         inputType: TextInputType.emailAddress,
                         hint: "Ex.: fulano@cb.ce.gov.br",
                         label: "E-mail",
-                        validation: Validation.validatorEmail,
+                        validation: (text) {
+                          if (Validation.validatorEmail(text) != null) {
+                            messagesError.add(
+                                'Insira um e-mail válido antes de continuar.');
+                          }
+
+                          return;
+                        },
                         textCase: FieldTextCase.lower,
                         onSaved: (text) {
                           user.email = text!;
@@ -462,6 +498,22 @@ class _UserPageRegisterState extends State<UserPageRegister> {
                               }),
                             ],
                           ),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  'Gestor de materiais',
+                                  style: Constants.title,
+                                ),
+                              ),
+                              Observer(builder: (_) {
+                                return Switch(
+                                    value: controller.managerMaterials,
+                                    activeThumbColor: Constants.primary,
+                                    onChanged: controller.setManagerMaterials);
+                              }),
+                            ],
+                          ),
                         ],
                       ),
                     ),
@@ -527,44 +579,53 @@ class _UserPageRegisterState extends State<UserPageRegister> {
                           height: 40,
                           child: ElevatedButton(
                             onPressed: () async {
-                              if (_key.currentState!.validate()) {
-                                _key.currentState!.save();
+                              validationForm();
 
-                                final data = controller.userInit.copyWith(
-                                    fullname: user.fullname,
-                                    name: user.name,
-                                    contact: user.contact,
-                                    email: user.email,
-                                    registration: user.registration);
+                              if (messagesError.isNotEmpty) {
+                                showDialog(
+                                    context: context,
+                                    builder: (context) => AlertMultMessage(
+                                        messages: messagesError));
 
-                                controller.save(user: data).then((value) async {
-                                  showDialog(
-                                      context: context,
-                                      builder: (context) => AlertMessage(
-                                          title: "Atenção",
-                                          message:
-                                              "Registro de usuário realizado com sucesso.",
-                                          onPressedOK: () =>
-                                              Navigator.of(context)
-                                                  .pop())).then((_) {
-                                    if (value) {
-                                      app.setRouter(5);
-                                      Navigator.of(context).pushReplacement(
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  const UsersPage()));
-                                    }
-                                  });
-                                }).catchError((err) {
-                                  showDialog(
-                                      context: context,
-                                      builder: (context) => AlertMessage(
-                                          title: "Atenção",
-                                          message: err.toString(),
-                                          onPressedOK: () =>
-                                              Navigator.of(context).pop()));
-                                });
+                                return;
                               }
+
+                              _key.currentState!.save();
+
+                              final data = controller.userInit.copyWith(
+                                fullname: user.fullname,
+                                name: user.name,
+                                contact: user.contact,
+                                email: user.email,
+                                registration: user.registration,
+                              );
+
+                              controller.save(user: data).then((value) async {
+                                showDialog(
+                                    context: context,
+                                    builder: (context) => AlertMessage(
+                                        title: "Atenção",
+                                        message:
+                                            "Registro de usuário realizado com sucesso.",
+                                        onPressedOK: () => Navigator.of(context)
+                                            .pop())).then((_) {
+                                  if (value) {
+                                    app.setRouter(5);
+                                    Navigator.of(context).pushReplacement(
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                const UsersPage()));
+                                  }
+                                });
+                              }).catchError((err) {
+                                showDialog(
+                                    context: context,
+                                    builder: (context) => AlertMessage(
+                                        title: "Atenção",
+                                        message: err.toString(),
+                                        onPressedOK: () =>
+                                            Navigator.of(context).pop()));
+                              });
                             },
                             child: Text(
                               register ? "Cadastrar" : "Alterar",

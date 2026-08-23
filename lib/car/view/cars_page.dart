@@ -49,7 +49,7 @@ class _CarsPageState extends State<CarsPage> {
     controller.setDateKmByMonth(DateTime.now());
 
     rec = autorun((_) {
-      controller.setCars(List<CarModel>.from(app.cars));
+      controller.setCars(List<CarModel>.from(app.carsUsers));
     });
 
     recDate = autorun(
@@ -142,10 +142,9 @@ class _CarsPageState extends State<CarsPage> {
               child: Wrap(
                 alignment: WrapAlignment.spaceEvenly,
                 children: [
-                  SizedBox(
-                    width: (app.modeMOBILE
-                        ? double.infinity
-                        : app.maxWidth * 0.45),
+                  Container(
+                    width: double.infinity,
+                    constraints: const BoxConstraints(maxWidth: 450),
                     child: Column(
                       spacing: 5,
                       children: [
@@ -179,10 +178,9 @@ class _CarsPageState extends State<CarsPage> {
                       ],
                     ),
                   ),
-                  SizedBox(
-                    width: (app.modeMOBILE
-                        ? double.infinity
-                        : app.maxWidth * 0.45),
+                  Container(
+                    width: double.infinity,
+                    constraints: const BoxConstraints(maxWidth: 450),
                     child: Observer(builder: (_) {
                       return Column(
                         spacing: 5,
@@ -206,7 +204,7 @@ class _CarsPageState extends State<CarsPage> {
                               child: CarChartProblems(
                                 reference: controller.referenceDateDashboard,
                                 status: controller.statusGeral,
-                                cars: app.carsUsers,
+                                cars: controller.cars,
                               ),
                             ),
                           ),
@@ -229,7 +227,7 @@ class _CarsPageState extends State<CarsPage> {
                 children: [
                   Text(
                     'Registrados',
-                    style: Constants.title,
+                    style: Constants.title.copyWith(fontSize: 18),
                   ),
                   Observer(builder: (_) {
                     return Container(

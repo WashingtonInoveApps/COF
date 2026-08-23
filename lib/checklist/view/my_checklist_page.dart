@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/checklist/controller/checklist_controller.dart';
 import 'package:bsu_control/core/constants.dart';
@@ -6,11 +8,14 @@ import 'package:bsu_control/model/checklist_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
+import 'package:mobx/mobx.dart';
 
 import '../../widgets/backgraund_page.dart';
+import '../../widgets/checklist_table_view.dart';
 import '../../widgets/limit_table_widget.dart';
 import '../../widgets/pagination_widget.dart';
 import '../../widgets/textfield_widget.dart';
+import 'checklist_details_page.dart';
 
 class MyChecklistPage extends StatefulWidget {
   const MyChecklistPage({Key? key}) : super(key: key);
@@ -25,6 +30,9 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
   final app = GetIt.I.get<AppController>();
   final searchController = TextEditingController();
 
+  late ReactionDisposer rec;
+  StreamSubscription? subscription;
+
   @override
   void initState() {
     super.initState();
@@ -32,6 +40,30 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
     controller = CheckListController(
       config: config,
       checklistTodays: app.checklistsOperationDay,
+    );
+
+    rec = autorun((_) {
+      streamCheklist(
+        userID: app.user.id!,
+      );
+    });
+  }
+
+  Future<void> streamCheklist({
+    required String userID,
+  }) async {
+    controller.setLoading(true);
+    await subscription?.cancel();
+
+    subscription = controller
+        .streamChecklistUser(
+      userID: userID,
+    )
+        .listen(
+      (result) {
+        controller.setChecklists(result);
+        controller.setLoading(false);
+      },
     );
   }
 
@@ -85,101 +117,70 @@ class _MyChecklistPageState extends State<MyChecklistPage> {
                     ],
                   ),
                 ),
-                app.modeMOBILE ? Container() : const Divider(),
+                app.modeMOBILE
+                    ? const SizedBox(
+                        height: 10,
+                      )
+                    : const Divider(),
                 SizedBox(
                   width: double.infinity,
                   height: 450,
-                  child: StreamBuilder<List<ChecklistModel>>(
-                      stream:
-                          controller.streamChecklistUser(userID: app.user.id!),
-                      builder: (context, snapshot) {
-                        if (!snapshot.hasData) {
-                          return const Center(child: LinearProgressIndicator());
-                        } else {
-                          final cheklists = snapshot.data ?? [];
-                          controller.setChecklists(cheklists);
-
-                          if (cheklists.isEmpty) {
-                            return Text(
-                              'Nenhum registro encontrado.',
-                              style: Constants.titleHint,
-                            );
-                          } else {
-                            return Observer(builder: (_) {
-                              return Padding(
-                                padding: const EdgeInsets.only(
-                                  top: 5,
+                  child: Observer(builder: (context) {
+                    if (controller.loading) {
+                      return const Center(child: LinearProgressIndicator());
+                    } else if (controller.checklistsSort.isEmpty) {
+                      return Text(
+                        'Nenhum registro encontrado.',
+                        style: Constants.titleHint,
+                      );
+                    } else {
+                      return Padding(
+                        padding: const EdgeInsets.only(
+                          top: 5,
+                        ),
+                        child: Column(
+                          spacing: 5,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Exibindo ${controller.start} a ${controller.end} de ${controller.checklists.length} entradas',
+                              style: Constants.subtitleHint,
+                            ),
+                            Expanded(
+                              child: ChecklistTableWidget(
+                                list: List<ChecklistModel>.from(
+                                    controller.checklistsSort),
+                                limit: controller.limit,
+                                onDetails: (value) {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) =>
+                                          ChecklistDetailsPage(
+                                              checklist: value)));
+                                },
+                              ),
+                            ),
+                            Row(
+                              children: [
+                                LimitTableWidget(
+                                  limit: controller.limit,
+                                  onChange: controller.setLimit,
                                 ),
-                                child: Column(
-                                  spacing: 5,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Exibindo 1 a ${controller.checklistsSort.length} de ${controller.checklistsSort.length} entradas',
-                                      style: Constants.subtitleHint,
-                                    ),
-                                    Expanded(
-                                      child: Container(),
-                                      // child: ChecklistTableView(
-                                      //   values: controller.myChecklistUserSort,
-                                      //   obms: app.obms,
-                                      //   onContact: (contact) async {
-                                      //     final path = kIsWeb
-                                      //         ? "https://wa.me/+55$contact/?text=${Uri.encodeFull('Olá, tudo bem ?')}"
-                                      //         : "whatsapp://send?phone=+55$contact&text=${Uri.encodeFull('Olá, tudo bem ?')}";
-
-                                      //     await launchUrlString(path,
-                                      //         mode: LaunchMode
-                                      //             .externalApplication);
-                                      //   },
-                                      //   onDetails: (checklist) async {
-                                      //     await Navigator.of(context).push(
-                                      //         MaterialPageRoute(
-                                      //             builder: (context) =>
-                                      //                 ChecklistDetailsPage(
-                                      //                     checklist:
-                                      //                         checklist)));
-                                      //   },
-                                      //   onChanges: (changes) {
-                                      //     showDialog(
-                                      //         context: context,
-                                      //         builder: (context) {
-                                      //           return AlertDialog(
-                                      //             contentPadding:
-                                      //                 const EdgeInsets.all(10),
-                                      //             content:
-                                      //                 ImagesChangesViewWidget(
-                                      //                     changes: changes),
-                                      //           );
-                                      //         });
-                                      //   },
-                                      // ),
-                                    ),
-                                    Row(
-                                      children: [
-                                        LimitTableWidget(
-                                          limit: controller.limit,
-                                          onChange: controller.setLimit,
-                                        ),
-                                        const Spacer(),
-                                        Observer(builder: (context) {
-                                          return PaginationWidget(
-                                            limit: controller.limit,
-                                            page: controller.page,
-                                            length: controller
-                                                .checklistsSort.length,
-                                            onChange: controller.setPage,
-                                          );
-                                        }),
-                                      ],
-                                    )
-                                  ],
-                                ),
-                              );
-                            });
-                          }
-                        }
-                      }),
+                                const Spacer(),
+                                Observer(builder: (context) {
+                                  return PaginationWidget(
+                                    limit: controller.limit,
+                                    page: controller.page,
+                                    length: controller.lengthSortings,
+                                    onChange: controller.setPage,
+                                  );
+                                }),
+                              ],
+                            )
+                          ],
+                        ),
+                      );
+                    }
+                  }),
                 ),
               ],
             ),

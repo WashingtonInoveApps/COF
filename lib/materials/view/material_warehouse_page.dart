@@ -93,7 +93,7 @@ class _MaterialWarehousePageState extends State<MaterialWarehousePage> {
                   children: [
                     Text(
                       'Registros',
-                      style: Constants.title,
+                      style: Constants.title.copyWith(fontSize: 18),
                     ),
                     Observer(builder: (_) {
                       return Container(
@@ -119,46 +119,47 @@ class _MaterialWarehousePageState extends State<MaterialWarehousePage> {
                                 ),
                               ),
                             ),
-                            InkWell(
-                                onTap: () {
-                                  showDialog(
-                                      context: context,
-                                      builder: (context) => Container(
-                                            margin: const EdgeInsets.all(20),
-                                            alignment: Alignment.center,
-                                            child: ItensSectionWidget(
-                                              material: true,
-                                              ciaID: app.user.ciaID,
-                                              obmID: app.user.obmID,
-                                              onChange: (value) {
-                                                controller
-                                                    .saveMaterialWarehouse(
-                                                        material: value)
-                                                    .catchError((err) {
-                                                  showDialog(
-                                                      context: context,
-                                                      builder: (context) =>
-                                                          AlertMessage(
-                                                              message: err
-                                                                  .toString(),
-                                                              onPressedOK: () =>
-                                                                  Navigator.of(
-                                                                          context)
-                                                                      .pop()));
-                                                });
-                                              },
-                                            ),
-                                          ));
-                                },
-                                child: const CircleAvatar(
-                                  radius: 25,
-                                  backgroundColor: Constants.primary,
-                                  child: Icon(
-                                    Icons.add,
-                                    size: 20,
-                                    color: Colors.white,
-                                  ),
-                                ))
+                            if (app.user.admin || app.user.managerMaterials)
+                              InkWell(
+                                  onTap: () {
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) => Container(
+                                              margin: const EdgeInsets.all(20),
+                                              alignment: Alignment.center,
+                                              child: ItensSectionWidget(
+                                                material: true,
+                                                ciaID: app.user.ciaID,
+                                                obmID: app.user.obmID,
+                                                onChange: (value) {
+                                                  controller
+                                                      .saveMaterialWarehouse(
+                                                          material: value)
+                                                      .catchError((err) {
+                                                    showDialog(
+                                                        context: context,
+                                                        builder: (context) =>
+                                                            AlertMessage(
+                                                                message: err
+                                                                    .toString(),
+                                                                onPressedOK: () =>
+                                                                    Navigator.of(
+                                                                            context)
+                                                                        .pop()));
+                                                  });
+                                                },
+                                              ),
+                                            ));
+                                  },
+                                  child: const CircleAvatar(
+                                    radius: 25,
+                                    backgroundColor: Constants.primary,
+                                    child: Icon(
+                                      Icons.add,
+                                      size: 20,
+                                      color: Colors.white,
+                                    ),
+                                  ))
                           ],
                         ),
                       );
@@ -291,115 +292,119 @@ class _MaterialWarehousePageState extends State<MaterialWarehousePage> {
                                     );
                                   },
                                 ),
-                                AppColumn(
-                                  width: 120,
-                                  name: 'action',
-                                  builder: (material) {
-                                    return Row(
-                                      spacing: 10,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        InkWell(
-                                          child: Card(
-                                            margin: EdgeInsets.zero,
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadiusGeometry
-                                                        .circular(100)),
-                                            child: const Padding(
-                                              padding: EdgeInsets.all(5.0),
-                                              child: Icon(Icons.edit,
-                                                  size: 20,
-                                                  color: Colors.green),
+                                if (app.user.admin || app.user.managerMaterials)
+                                  AppColumn(
+                                    width: 120,
+                                    name: 'action',
+                                    builder: (material) {
+                                      return Row(
+                                        spacing: 10,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          InkWell(
+                                            child: Card(
+                                              margin: EdgeInsets.zero,
+                                              shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadiusGeometry
+                                                          .circular(100)),
+                                              child: const Padding(
+                                                padding: EdgeInsets.all(5.0),
+                                                child: Icon(Icons.edit,
+                                                    size: 20,
+                                                    color: Colors.green),
+                                              ),
                                             ),
+                                            onTap: () {
+                                              showDialog(
+                                                  context: context,
+                                                  builder: (context) => Center(
+                                                        child:
+                                                            ItensSectionWidget(
+                                                          material: true,
+                                                          obmID: app.user.obmID,
+                                                          ciaID: app.user.ciaID,
+                                                          item: material,
+                                                          onChange: (value) {
+                                                            log(value.toJson());
+                                                            controller
+                                                                .updateMaterialWarehouse(
+                                                                    material:
+                                                                        value)
+                                                                .catchError(
+                                                                    (err) {
+                                                              showDialog(
+                                                                  context:
+                                                                      context,
+                                                                  builder: (context) => AlertMessage(
+                                                                      message: err
+                                                                          .toString(),
+                                                                      onPressedOK:
+                                                                          () =>
+                                                                              Navigator.of(context).pop()));
+                                                            });
+                                                          },
+                                                        ),
+                                                      ));
+                                            },
                                           ),
-                                          onTap: () {
-                                            showDialog(
-                                                context: context,
-                                                builder: (context) => Center(
-                                                      child: ItensSectionWidget(
-                                                        material: true,
-                                                        obmID: app.user.obmID,
-                                                        ciaID: app.user.ciaID,
-                                                        item: material,
-                                                        onChange: (value) {
-                                                          log(value.toJson());
-                                                          controller
-                                                              .updateMaterialWarehouse(
-                                                                  material:
-                                                                      value)
-                                                              .catchError(
-                                                                  (err) {
-                                                            showDialog(
-                                                                context:
-                                                                    context,
-                                                                builder: (context) => AlertMessage(
-                                                                    message: err
-                                                                        .toString(),
-                                                                    onPressedOK: () =>
-                                                                        Navigator.of(context)
-                                                                            .pop()));
-                                                          });
-                                                        },
-                                                      ),
-                                                    ));
-                                          },
-                                        ),
-                                        InkWell(
-                                          child: Card(
-                                            margin: EdgeInsets.zero,
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadiusGeometry
-                                                        .circular(100)),
-                                            child: const Padding(
-                                              padding: EdgeInsets.all(5.0),
-                                              child: Icon(Icons.delete,
-                                                  size: 20,
-                                                  color: Colors.green),
+                                          InkWell(
+                                            child: Card(
+                                              margin: EdgeInsets.zero,
+                                              shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadiusGeometry
+                                                          .circular(100)),
+                                              child: const Padding(
+                                                padding: EdgeInsets.all(5.0),
+                                                child: Icon(Icons.delete,
+                                                    size: 20,
+                                                    color: Colors.green),
+                                              ),
                                             ),
+                                            onTap: () {
+                                              showDialog(
+                                                  context: context,
+                                                  builder: (context) =>
+                                                      AlertMessage(
+                                                        title: '',
+                                                        message:
+                                                            'Deseja deletar esse registro de material ?',
+                                                        cancel: true,
+                                                        onPressedOK: () =>
+                                                            Navigator.of(
+                                                                    context)
+                                                                .pop(true),
+                                                        onPressedCancel: () =>
+                                                            Navigator.of(
+                                                                    context)
+                                                                .pop(false),
+                                                      )).then((value) async {
+                                                if (value ?? false) {
+                                                  controller
+                                                      .deleteMaterialWarehouse(
+                                                          material: material)
+                                                      .catchError((err) {
+                                                    showDialog(
+                                                        context: context,
+                                                        builder: (context) =>
+                                                            AlertMessage(
+                                                                message: err
+                                                                    .toString(),
+                                                                onPressedOK: () =>
+                                                                    Navigator.of(
+                                                                            context)
+                                                                        .pop()));
+                                                  });
+                                                }
+                                              });
+                                            },
                                           ),
-                                          onTap: () {
-                                            showDialog(
-                                                context: context,
-                                                builder: (context) =>
-                                                    AlertMessage(
-                                                      title: '',
-                                                      message:
-                                                          'Deseja deletar esse registro de material ?',
-                                                      cancel: true,
-                                                      onPressedOK: () =>
-                                                          Navigator.of(context)
-                                                              .pop(true),
-                                                      onPressedCancel: () =>
-                                                          Navigator.of(context)
-                                                              .pop(false),
-                                                    )).then((value) async {
-                                              if (value ?? false) {
-                                                controller
-                                                    .deleteMaterialWarehouse(
-                                                        material: material)
-                                                    .catchError((err) {
-                                                  showDialog(
-                                                      context: context,
-                                                      builder: (context) =>
-                                                          AlertMessage(
-                                                              message: err
-                                                                  .toString(),
-                                                              onPressedOK: () =>
-                                                                  Navigator.of(
-                                                                          context)
-                                                                      .pop()));
-                                                });
-                                              }
-                                            });
-                                          },
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                ),
+                                        ],
+                                      );
+                                    },
+                                  ),
                               ],
                               rowId: (material) {
                                 return material.id;
