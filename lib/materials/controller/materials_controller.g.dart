@@ -207,6 +207,16 @@ mixin _$MaterialsController on _MaterialsControllerBase, Store {
         .run(() => super.getMaterialsWarehouse());
   }
 
+  late final _$getMaterialChecklistAsyncAction = AsyncAction(
+      '_MaterialsControllerBase.getMaterialChecklist',
+      context: context);
+
+  @override
+  Future<List<MaterialChecklistModel>> getMaterialChecklist() {
+    return _$getMaterialChecklistAsyncAction
+        .run(() => super.getMaterialChecklist());
+  }
+
   late final _$saveMaterialChecklistAsyncAction = AsyncAction(
       '_MaterialsControllerBase.saveMaterialChecklist',
       context: context);

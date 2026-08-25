@@ -1,3 +1,4 @@
+import 'package:bsu_control/model/car_service_model.dart';
 import 'package:bsu_control/model/checklist_model.dart';
 import 'package:bsu_control/model/outher_changes_model.dart';
 
@@ -15,8 +16,6 @@ abstract class ICarRepository {
   });
 
   Future<bool> delete({required CarModel car});
-
-  // Future<bool> copy({required CarModel car});
 
   Future<bool> saveStatusCar({
     required CarModel car,
@@ -39,6 +38,10 @@ abstract class ICarRepository {
 
   Stream<List<CarMapaModel>> listenMapas({required String carId});
 
+  Stream<List<CarServiceModel>> listenCarServices({required String obmID});
+
+  Stream<CarServiceModel> listenCarServicesByID({required String serviceID});
+
   Future<bool> deleteCarMapa({required String id});
 
   Future<bool> insertMapaCar({required CarMapaModel mapa});
@@ -46,4 +49,7 @@ abstract class ICarRepository {
   Future<List<ChecklistModel>> getChecklistByMonth({
     required DateTime reference,
   });
+
+  Future<void> saveService({required CarServiceModel service});
+  Future<void> deleteService({required CarServiceModel service});
 }

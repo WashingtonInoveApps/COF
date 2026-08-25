@@ -20,13 +20,13 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:mobx/mobx.dart';
 import 'package:universal_html/html.dart' as html;
 
-import '../widgets/backgraund_page.dart';
-import '../widgets/limit_table_widget.dart';
-import '../widgets/pagination_widget.dart';
-import '../widgets/textfield_widget.dart';
-import 'view/widgets/cars_available_today.dart';
+import '../../widgets/backgraund_page.dart';
+import '../../widgets/limit_table_widget.dart';
+import '../../widgets/pagination_widget.dart';
+import '../../widgets/textfield_widget.dart';
+import '../../widgets/cars_available_today.dart';
 
-const versionCodeSystem = 10;
+const versionCodeSystem = 44;
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -56,7 +56,8 @@ class _HomePageState extends State<HomePage> {
     });
 
     rec = autorun((_) {
-      controller.setChecklistPeriod(app.checklistsOperationDay);
+      controller.setChecklistPeriod(
+          List<ChecklistModel>.from(app.checklistsOperationDay));
     });
   }
 

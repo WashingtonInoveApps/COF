@@ -351,6 +351,12 @@ abstract class _ChecklistRegisterControllerBase with Store {
   @action
   void setCar(CarModel? value) {
     car = value;
+
+    fillItensChecklist(
+      check: init,
+      car: car,
+      material: material,
+    );
   }
 
   @action
@@ -385,12 +391,6 @@ abstract class _ChecklistRegisterControllerBase with Store {
   @action
   void setTeam(TeamModel? value) {
     team = value;
-
-    fillItensChecklist(
-      check: init,
-      car: car,
-      material: material,
-    );
   }
 
   @action

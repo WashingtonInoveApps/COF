@@ -1,11 +1,14 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:bsu_control/app_controller.dart';
+import 'package:bsu_control/car/controller/car_controller.dart';
+import 'package:bsu_control/car/view/car_service_details_page.dart';
 import 'package:bsu_control/core/constants.dart';
+import 'package:bsu_control/enum/car_enum.dart';
 import 'package:bsu_control/main.dart';
-import 'package:bsu_control/materials/controller/materials_controller.dart';
-import 'package:bsu_control/materials/view/materials_details_page.dart';
-import 'package:bsu_control/model/material_checklist_model.dart';
+import 'package:bsu_control/model/car_service_model.dart';
+import 'package:bsu_control/widgets/tag_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
@@ -18,15 +21,15 @@ import '../../widgets/pagination_widget.dart';
 import '../../widgets/table_widget.dart';
 import '../../widgets/textfield_widget.dart';
 
-class MaterialsPage extends StatefulWidget {
-  const MaterialsPage({Key? key}) : super(key: key);
+class CarServicesPage extends StatefulWidget {
+  const CarServicesPage({Key? key}) : super(key: key);
 
   @override
-  State<MaterialsPage> createState() => _MaterialsPageState();
+  State<CarServicesPage> createState() => _CarServicesPageState();
 }
 
-class _MaterialsPageState extends State<MaterialsPage> {
-  late MaterialsController controller;
+class _CarServicesPageState extends State<CarServicesPage> {
+  late CarController controller;
   final app = GetIt.I.get<AppController>();
   final searchController = TextEditingController();
 
@@ -36,14 +39,15 @@ class _MaterialsPageState extends State<MaterialsPage> {
   void initState() {
     super.initState();
 
-    controller = MaterialsController(
+    controller = CarController(
       config: config,
-      obmID: app.user.obmID,
+      user: app.user,
     );
 
     controller.setLoading(true);
-    subscription = controller.listenMaterialChecklist().listen((value) {
-      controller.setMaterialsChecklist(value);
+    subscription =
+        controller.listenCarServices(obmID: app.user.obmID).listen((value) {
+      controller.setCarServices(value);
       controller.setLoading(false);
     });
   }
@@ -64,7 +68,7 @@ class _MaterialsPageState extends State<MaterialsPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Checklist de materiais',
+              'Serviços',
               style: Constants.title.copyWith(fontSize: 18),
             ),
             const Divider(),
@@ -93,7 +97,7 @@ class _MaterialsPageState extends State<MaterialsPage> {
                       width: app.modeMOBILE ? double.infinity : 400,
                       alignment: Alignment.centerRight,
                       child: IgnorePointer(
-                        ignoring: controller.materialsChecklist.isEmpty,
+                        ignoring: controller.services.isEmpty,
                         child: FieldText(
                           search: true,
                           controller: searchController,
@@ -119,9 +123,9 @@ class _MaterialsPageState extends State<MaterialsPage> {
               height: 5,
             ),
             Observer(builder: (_) {
-              final materials = List<MaterialChecklistModel>.from(
-                  controller.materialChecklistSort);
-              return materials.isEmpty
+              final services =
+                  List<CarServiceModel>.from(controller.servicesSorts);
+              return services.isEmpty
                   ? Text(
                       'Nenhum registro encontrado.',
                       style: Constants.titleHint,
@@ -130,7 +134,7 @@ class _MaterialsPageState extends State<MaterialsPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Exibindo ${controller.startMaterialsChecklist} a ${controller.endMaterialsChecklist} de ${controller.materialsChecklist.length} entradas',
+                          'Exibindo ${controller.startServices} a ${controller.endServices} de ${controller.servicesSorts.length} entradas',
                           style: Constants.subtitleHint,
                         ),
                         const SizedBox(
@@ -138,15 +142,15 @@ class _MaterialsPageState extends State<MaterialsPage> {
                         ),
                         SizedBox(
                           width: double.infinity,
-                          child: AppDataTable<MaterialChecklistModel>(
+                          child: AppDataTable<CarServiceModel>(
                             limit: controller.limit,
-                            data: materials,
+                            data: services,
                             columnMode: ColumnWidthMode.auto,
                             columns: [
                               AppColumn(
                                 width: 50,
                                 name: 'details',
-                                builder: (material) {
+                                builder: (service) {
                                   return InkWell(
                                     child: Card(
                                       margin: EdgeInsets.zero,
@@ -164,11 +168,21 @@ class _MaterialsPageState extends State<MaterialsPage> {
                                       Navigator.of(context).push(
                                           MaterialPageRoute(
                                               builder: (context) =>
-                                                  MaterialsDetailsPage(
+                                                  CarServiceDetailsPage(
                                                     controller: controller,
-                                                    checklistID: material.id!,
+                                                    serviceID: service.id!,
                                                   )));
                                     },
+                                  );
+                                },
+                              ),
+                              AppColumn(
+                                name: 'date',
+                                label: 'Data',
+                                builder: (service) {
+                                  return Text(
+                                    Core.formatDate(service.date),
+                                    style: Constants.title,
                                   );
                                 },
                               ),
@@ -176,9 +190,9 @@ class _MaterialsPageState extends State<MaterialsPage> {
                                 name: 'obm',
                                 label: 'OBM',
                                 width: 120,
-                                builder: (material) {
+                                builder: (service) {
                                   return Text(
-                                    material.obm.prefix,
+                                    service.car?.obm?.prefix ?? '-',
                                     style: Constants.title,
                                   );
                                 },
@@ -186,19 +200,53 @@ class _MaterialsPageState extends State<MaterialsPage> {
                               AppColumn(
                                 name: 'cia',
                                 label: 'Companhia',
-                                builder: (material) {
+                                builder: (service) {
                                   return Text(
-                                    material.cia?.name ?? '-',
+                                    service.car?.cia?.name ?? '-',
                                     style: Constants.title,
                                   );
                                 },
                               ),
                               AppColumn(
-                                name: 'team',
-                                label: 'Guarnição',
-                                builder: (material) {
+                                name: 'prefix',
+                                label: 'Prefixo',
+                                builder: (service) {
                                   return Text(
-                                    material.team?.name ?? '-',
+                                    service.car?.prefix ?? '-',
+                                    style: Constants.title,
+                                  );
+                                },
+                              ),
+                              AppColumn(
+                                name: 'problem',
+                                label: 'Problema',
+                                sortValue: (service) => service.problem.label,
+                                builder: (service) => TagWidget(
+                                  label: service.problem.label,
+                                  color: service.problem.color,
+                                  icon: service.problem.icon,
+                                ),
+                              ),
+                              AppColumn(
+                                name: 'local',
+                                label: 'Local',
+                                builder: (service) {
+                                  return Text(
+                                    service.local,
+                                    style: Constants.title,
+                                  );
+                                },
+                              ),
+                              AppColumn(
+                                name: 'expired',
+                                label: 'Garantia',
+                                builder: (service) {
+                                  return Text(
+                                    (service.expired == null)
+                                        ? 'Sem garantia'
+                                        : Core.formatDate(
+                                            service.expired!,
+                                          ),
                                     style: Constants.title,
                                   );
                                 },
@@ -206,12 +254,12 @@ class _MaterialsPageState extends State<MaterialsPage> {
                               AppColumn(
                                 name: 'responsable',
                                 label: 'Responsável',
-                                builder: (material) {
+                                builder: (service) {
                                   return Core.boldFirstName(
-                                      name: material.user.name,
-                                      fullName: material.user.fullname,
+                                      name: service.user.name,
+                                      fullName: service.user.fullname,
                                       style: Constants.title,
-                                      graduation: material.user.graduation,
+                                      graduation: service.user.graduation,
                                       over: TextOverflow.ellipsis);
                                 },
                               ),
@@ -243,8 +291,7 @@ class _MaterialsPageState extends State<MaterialsPage> {
                                 child: PaginationWidget(
                                   limit: controller.limit,
                                   page: controller.page,
-                                  length: controller
-                                      .lengthMaterialChecklistSortings,
+                                  length: controller.lengthServicesSortings,
                                   onChange: controller.setPage,
                                 ),
                               ),

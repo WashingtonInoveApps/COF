@@ -82,7 +82,7 @@ class MaterialRepository extends APIClient implements IMaterialRepository {
                 .toList(),
           );
     } catch (e) {
-      rethrow;
+      return [];
     }
   }
 
@@ -147,6 +147,20 @@ class MaterialRepository extends APIClient implements IMaterialRepository {
       return true;
     } catch (e) {
       rethrow;
+    }
+  }
+
+  @override
+  Future<List<MaterialChecklistModel>> getMaterialChecklist() async {
+    try {
+      return await colMaterials.where('obmID', isEqualTo: obmID).get().then(
+            (query) => query.docs
+                .map((doc) => MaterialChecklistModel.fromMap(
+                    doc.data() as Map<String, dynamic>))
+                .toList(),
+          );
+    } catch (e) {
+      return [];
     }
   }
 }

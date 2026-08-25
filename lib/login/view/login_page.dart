@@ -9,7 +9,7 @@ import 'package:flutter_verification_code/flutter_verification_code.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../core/constants.dart';
-import '../../home/home_page.dart';
+import '../../home/view/home_page.dart';
 import '../../widgets/alert_message.dart';
 import '../../widgets/alert_mult_message.dart';
 import '../../widgets/textfield_widget.dart';

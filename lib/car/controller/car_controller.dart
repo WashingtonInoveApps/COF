@@ -9,6 +9,7 @@ import 'package:mobx/mobx.dart';
 
 import '../../model/car_mapa_model.dart';
 import '../../model/car_model.dart';
+import '../../model/car_service_model.dart';
 import '../../model/car_status_model.dart';
 import '../../model/file_model.dart';
 import '../repository/car_repository.dart';
@@ -51,6 +52,9 @@ abstract class _CarControllerBase with Store {
   ObservableList<CarModel> cars = <CarModel>[].asObservable();
 
   @observable
+  ObservableList<CarServiceModel> services = <CarServiceModel>[].asObservable();
+
+  @observable
   ObservableList<ChecklistModel> checklistKMByMonth =
       <ChecklistModel>[].asObservable();
 
@@ -87,6 +91,25 @@ abstract class _CarControllerBase with Store {
   }
 
   @computed
+  List<CarServiceModel> get servicesSorts {
+    if (filter.isNotEmpty) {
+      final filtered = services
+          .where((e) =>
+              (e.problem.label.toLowerCase().contains(filter.toLowerCase()) ||
+                  (e.car?.prefix.toLowerCase().contains(filter.toLowerCase()) ??
+                      false) ||
+                  (e.local.toLowerCase().contains(filter.toLowerCase()))))
+          .toList();
+
+      final list = Core.paginate(list: filtered, page: page, limit: limit);
+      return List<CarServiceModel>.from(list);
+    } else {
+      final list = Core.paginate(list: services, page: page, limit: limit);
+      return List<CarServiceModel>.from(list);
+    }
+  }
+
+  @computed
   int get start => carsSorts.isEmpty ? 0 : ((page - 1) * limit) + 1;
 
   @computed
@@ -100,6 +123,20 @@ abstract class _CarControllerBase with Store {
   }
 
   @computed
+  int get startServices => servicesSorts.isEmpty ? 0 : ((page - 1) * limit) + 1;
+
+  @computed
+  int get endServices =>
+      servicesSorts.isEmpty ? 0 : start + servicesSorts.length - 1;
+
+  @computed
+  int get lengthServicesSortings {
+    if (filter.isEmpty) return services.length;
+
+    return servicesSorts.length;
+  }
+
+  @computed
   bool get btFinish => step == 2;
 
   Future<List<CarStatusModel>> getStatusCar({required String carID}) async {
@@ -110,8 +147,16 @@ abstract class _CarControllerBase with Store {
     return repository.listenStatusCarGeral(date: date);
   }
 
+  Stream<CarServiceModel> listenCarServicesByID({required String serviceID}) {
+    return repository.listenCarServicesByID(serviceID: serviceID);
+  }
+
   Stream<List<CarMapaModel>> listenMapas({required String carId}) {
     return repository.listenMapas(carId: carId);
+  }
+
+  Stream<List<CarServiceModel>> listenCarServices({required String obmID}) {
+    return repository.listenCarServices(obmID: obmID);
   }
 
   Future<List<ChecklistModel>> getCheckListByMonth(
@@ -121,6 +166,13 @@ abstract class _CarControllerBase with Store {
 
   @action
   void setLoading(bool value) => loading = value;
+
+  @action
+  void setCarServices(List<CarServiceModel> value) {
+    services
+      ..clear()
+      ..addAll(value);
+  }
 
   @action
   void processStep(bool value) {
@@ -231,30 +283,6 @@ abstract class _CarControllerBase with Store {
     }
   }
 
-  // @action
-  // Future<bool> copy({required CarModel car}) async {
-  //   try {
-  //     loading = true;
-  //     final result = await repository.copy(
-  //         car: car.copyWith(
-  //             prefix: '${car.prefix} COPIA',
-  //             km: 0,
-  //             arref: 0,
-  //             oil: 0,
-  //             state: StatusCar.waiting,
-  //             status: [],
-  //             changes: [],
-  //             mapas: []));
-
-  //     loading = false;
-
-  //     return result;
-  //   } catch (e) {
-  //     loading = false;
-  //     rethrow;
-  //   }
-  // }
-
   @action
   Future<bool> updateKMOil({
     required String id,
@@ -319,5 +347,33 @@ abstract class _CarControllerBase with Store {
 
     loading = false;
     return result;
+  }
+
+  @action
+  Future<void> saveService({required CarServiceModel service}) async {
+    try {
+      loading = true;
+      await repository.saveService(service: service);
+      loading = false;
+
+      return;
+    } catch (e) {
+      loading = false;
+      rethrow;
+    }
+  }
+
+  @action
+  Future<void> deleteService({required CarServiceModel service}) async {
+    try {
+      loading = true;
+      await repository.deleteService(service: service);
+      loading = false;
+
+      return;
+    } catch (e) {
+      loading = false;
+      rethrow;
+    }
   }
 }

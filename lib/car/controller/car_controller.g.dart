@@ -16,6 +16,13 @@ mixin _$CarController on _CarControllerBase, Store {
       (_$carsSortsComputed ??= Computed<List<CarModel>>(() => super.carsSorts,
               name: '_CarControllerBase.carsSorts'))
           .value;
+  Computed<List<CarServiceModel>>? _$servicesSortsComputed;
+
+  @override
+  List<CarServiceModel> get servicesSorts => (_$servicesSortsComputed ??=
+          Computed<List<CarServiceModel>>(() => super.servicesSorts,
+              name: '_CarControllerBase.servicesSorts'))
+      .value;
   Computed<int>? _$startComputed;
 
   @override
@@ -35,6 +42,27 @@ mixin _$CarController on _CarControllerBase, Store {
       (_$lengthSortingsComputed ??= Computed<int>(() => super.lengthSortings,
               name: '_CarControllerBase.lengthSortings'))
           .value;
+  Computed<int>? _$startServicesComputed;
+
+  @override
+  int get startServices =>
+      (_$startServicesComputed ??= Computed<int>(() => super.startServices,
+              name: '_CarControllerBase.startServices'))
+          .value;
+  Computed<int>? _$endServicesComputed;
+
+  @override
+  int get endServices =>
+      (_$endServicesComputed ??= Computed<int>(() => super.endServices,
+              name: '_CarControllerBase.endServices'))
+          .value;
+  Computed<int>? _$lengthServicesSortingsComputed;
+
+  @override
+  int get lengthServicesSortings => (_$lengthServicesSortingsComputed ??=
+          Computed<int>(() => super.lengthServicesSortings,
+              name: '_CarControllerBase.lengthServicesSortings'))
+      .value;
   Computed<bool>? _$btFinishComputed;
 
   @override
@@ -153,6 +181,22 @@ mixin _$CarController on _CarControllerBase, Store {
   set cars(ObservableList<CarModel> value) {
     _$carsAtom.reportWrite(value, super.cars, () {
       super.cars = value;
+    });
+  }
+
+  late final _$servicesAtom =
+      Atom(name: '_CarControllerBase.services', context: context);
+
+  @override
+  ObservableList<CarServiceModel> get services {
+    _$servicesAtom.reportRead();
+    return super.services;
+  }
+
+  @override
+  set services(ObservableList<CarServiceModel> value) {
+    _$servicesAtom.reportWrite(value, super.services, () {
+      super.services = value;
     });
   }
 
@@ -304,6 +348,24 @@ mixin _$CarController on _CarControllerBase, Store {
     return _$deleteMapaAsyncAction.run(() => super.deleteMapa(id: id));
   }
 
+  late final _$saveServiceAsyncAction =
+      AsyncAction('_CarControllerBase.saveService', context: context);
+
+  @override
+  Future<void> saveService({required CarServiceModel service}) {
+    return _$saveServiceAsyncAction
+        .run(() => super.saveService(service: service));
+  }
+
+  late final _$deleteServiceAsyncAction =
+      AsyncAction('_CarControllerBase.deleteService', context: context);
+
+  @override
+  Future<void> deleteService({required CarServiceModel service}) {
+    return _$deleteServiceAsyncAction
+        .run(() => super.deleteService(service: service));
+  }
+
   late final _$_CarControllerBaseActionController =
       ActionController(name: '_CarControllerBase', context: context);
 
@@ -313,6 +375,17 @@ mixin _$CarController on _CarControllerBase, Store {
         name: '_CarControllerBase.setLoading');
     try {
       return super.setLoading(value);
+    } finally {
+      _$_CarControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setCarServices(List<CarServiceModel> value) {
+    final _$actionInfo = _$_CarControllerBaseActionController.startAction(
+        name: '_CarControllerBase.setCarServices');
+    try {
+      return super.setCarServices(value);
     } finally {
       _$_CarControllerBaseActionController.endAction(_$actionInfo);
     }
@@ -416,14 +489,19 @@ fieldCarTypeVisible: ${fieldCarTypeVisible},
 filter: ${filter},
 referenceDateDashboard: ${referenceDateDashboard},
 cars: ${cars},
+services: ${services},
 checklistKMByMonth: ${checklistKMByMonth},
 limit: ${limit},
 page: ${page},
 statusGeral: ${statusGeral},
 carsSorts: ${carsSorts},
+servicesSorts: ${servicesSorts},
 start: ${start},
 end: ${end},
 lengthSortings: ${lengthSortings},
+startServices: ${startServices},
+endServices: ${endServices},
+lengthServicesSortings: ${lengthServicesSortings},
 btFinish: ${btFinish}
     ''';
   }

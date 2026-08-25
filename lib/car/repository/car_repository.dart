@@ -4,6 +4,7 @@ import 'package:bsu_control/car/repository/car_interface.dart';
 import 'package:bsu_control/core/api_client.dart';
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/model/car_changes_model.dart';
+import 'package:bsu_control/model/car_service_model.dart';
 import 'package:bsu_control/model/checklist_model.dart';
 import 'package:bsu_control/model/file_model.dart';
 
@@ -281,19 +282,6 @@ class CarRepository extends APIClient implements ICarRepository {
     }
   }
 
-  // @override
-  // Future<bool> copy({required CarModel car}) async {
-  //   try {
-  //     var doc = colCars.doc();
-  //     car.id = doc.id;
-
-  //     await doc.set(car.toMap());
-  //     return true;
-  //   } catch (e) {
-  //     rethrow;
-  //   }
-  // }
-
   @override
   Future<List<ChecklistModel>> getChecklistByMonth({
     required DateTime reference,
@@ -312,5 +300,72 @@ class CarRepository extends APIClient implements ICarRepository {
     } catch (e) {
       return [];
     }
+  }
+
+  @override
+  Stream<List<CarServiceModel>> listenCarServices({required String obmID}) {
+    return colCarServices.where('obmID', isEqualTo: obmID).snapshots().map((e) {
+      return e.docs.map((doc) {
+        return CarServiceModel.fromMap(doc.data() as Map<String, dynamic>);
+      }).toList();
+    });
+  }
+
+  @override
+  Future<void> saveService({required CarServiceModel service}) async {
+    try {
+      final doc = colCarServices.doc(service.id);
+      service.id = doc.id;
+
+      List<FileModel>? images;
+
+      if (service.images?.isNotEmpty ?? false) {
+        images = [];
+        for (final FileModel image in service.images!) {
+          if (image.data != null) {
+            final result = await saveFile(
+                pathStorage: Constants.pathServicesImages,
+                data: image.data!,
+                filename: service.car?.prefix.replaceAll(' ', '') ?? '_');
+
+            if (result == null) {
+              throw Exception('Falha ao salvar imagem do registro de serviço.');
+            }
+
+            images.add(result);
+          }
+        }
+      }
+
+      await doc.set(service.copyWith(images: images).toMap());
+      return;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> deleteService({required CarServiceModel service}) async {
+    try {
+      await colCarServices.doc(service.id).delete();
+
+      if (service.images?.isNotEmpty ?? false) {
+        for (FileModel image in service.images!) {
+          await deleteFile(path: image.path, filename: image.name);
+        }
+      }
+
+      return;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Stream<CarServiceModel> listenCarServicesByID({required String serviceID}) {
+    return colCarServices
+        .doc(serviceID)
+        .snapshots()
+        .map((e) => CarServiceModel.fromMap(e.data() as Map<String, dynamic>));
   }
 }

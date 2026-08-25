@@ -1,4 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:developer';
+
 import 'package:bsu_control/core/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
@@ -84,11 +86,12 @@ class _AppDataTableState<T> extends State<AppDataTable<T>> {
 
   @override
   Widget build(BuildContext context) {
-    final height = ((widget.limit > widget.data.length
+    final height = ((widget.limit > widget.data.length)
                 ? widget.data.length
                 : widget.limit) *
-            60.0) +
+            60.0 +
         65;
+
     return SizedBox(
       height: height,
       child: SfDataGrid(

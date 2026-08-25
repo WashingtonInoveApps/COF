@@ -4,8 +4,8 @@ import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/car/controller/car_controller.dart';
 import 'package:bsu_control/car/view/widgets/car_chats_problem_widget.dart';
 import 'package:bsu_control/core/constants.dart';
-import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/enum/car_enum.dart';
+import 'package:bsu_control/widgets/cars_available_today.dart';
 import 'package:bsu_control/main.dart';
 import 'package:bsu_control/model/car_model.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +16,6 @@ import 'package:month_picker_dialog/month_picker_dialog.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
 import '../../widgets/backgraund_page.dart';
-import '../../widgets/cars_chart_widget.dart';
 import '../../widgets/limit_table_widget.dart';
 import '../../widgets/pagination_widget.dart';
 import '../../widgets/table_widget.dart';
@@ -154,10 +153,9 @@ class _CarsPageState extends State<CarsPage> {
                             final cars = List<CarModel>.from(controller.cars);
                             final types = List<String>.from(app.carsTypes);
 
-                            return CarsChart(
+                            return CarsAvailabilityChart(
                               cars: cars,
-                              carsTypes: types,
-                              legends: false,
+                              checklists: app.checklistsOperationDay,
                             );
                           }),
                         ),
@@ -273,7 +271,6 @@ class _CarsPageState extends State<CarsPage> {
                         ),
                         Container(
                           width: double.infinity,
-                          height: Core.calculateTableHeight(cars.length),
                           constraints: const BoxConstraints(minHeight: 250),
                           child: AppDataTable<CarModel>(
                             limit: controller.limit,

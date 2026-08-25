@@ -39,4 +39,5 @@ class Constants {
   static const pathCarChangeImages = 'imagens/change';
   static const pathOthersImages = 'imagens/others';
   static const pathSignatureImages = 'imagens/signature';
+  static const pathServicesImages = 'imagens/services';
 }

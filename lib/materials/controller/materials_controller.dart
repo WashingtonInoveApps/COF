@@ -232,6 +232,11 @@ abstract class _MaterialsControllerBase with Store {
   }
 
   @action
+  Future<List<MaterialChecklistModel>> getMaterialChecklist() async {
+    return repository.getMaterialChecklist();
+  }
+
+  @action
   Future<void> saveMaterialChecklist({
     required MaterialChecklistModel material,
     required List<OtherChangeModel> others,

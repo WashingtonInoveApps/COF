@@ -78,8 +78,8 @@ class Core {
             AndroidUiSettings(),
             IOSUiSettings(),
             WebUiSettings(
-              context: context,
-            ),
+                context: context,
+                size: const CropperSize(width: 400, height: 400)),
           ],
         );
 

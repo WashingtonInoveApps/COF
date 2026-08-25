@@ -14,7 +14,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../enum/checklist_enum.dart';
-import '../../home/home_page.dart';
+import '../../home/view/home_page.dart';
 import '../../widgets/alert_message.dart';
 import '../../widgets/alert_mult_message.dart';
 import '../../widgets/backgraund_page.dart';

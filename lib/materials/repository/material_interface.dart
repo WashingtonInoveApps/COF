@@ -14,6 +14,8 @@ abstract class IMaterialRepository {
 
   Future<List<ItemModel>> getMaterialsWarehouse();
 
+  Future<List<MaterialChecklistModel>> getMaterialChecklist();
+
   Future<bool> saveMaterialChecklist({
     required MaterialChecklistModel material,
     required List<OtherChangeModel> others,

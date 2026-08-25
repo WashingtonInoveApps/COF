@@ -83,6 +83,15 @@ class CarModel {
         'ciaID': ciaID,
       };
 
+  Map<String, dynamic> toMapServiceResume() => {
+        "id": id,
+        "prefix": prefix,
+        "obmID": obmID,
+        'ciaID': ciaID,
+        'obm': obm?.toMapResume(),
+        'cia': cia?.toMapResume(),
+      };
+
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -123,9 +132,24 @@ class CarModel {
         images: [],
         status: [],
         cia: (map['cia'] != null) ? CiaModel.fromMap(map['cia']) : null,
-        obm: (map['obm'] != null) ? OBMModel.fromMap(map['obm']) : null,
+        obm: (map['obm'] != null) ? OBMModel.fromMapResume(map['obm']) : null,
         ciaID: map['ciaID'] ?? '',
         obmID: map['obmID']);
+  }
+
+  factory CarModel.fromMapServiceResume(Map<String, dynamic> map) {
+    return CarModel(
+      id: map['id'] ?? '',
+      prefix: map['prefix'] ?? '',
+      ciaID: map['ciaID'] ?? '',
+      obmID: map['obmID'],
+      cia: (map['cia'] != null) ? CiaModel.fromMap(map['cia']) : null,
+      obm: (map['obm'] != null) ? OBMModel.fromMapResume(map['obm']) : null,
+      itens: [],
+      changes: [],
+      status: [],
+      images: [],
+    );
   }
 
   factory CarModel.fromMap(Map<String, dynamic> map) {
@@ -139,7 +163,7 @@ class CarModel {
       ticket: map['ticket'] ?? '',
       obmID: map['obmID'] ?? '',
       cia: (map['cia'] != null) ? CiaModel.fromMap(map['cia']) : null,
-      obm: (map['obm'] != null) ? OBMModel.fromMap(map['obm']) : null,
+      obm: (map['obm'] != null) ? OBMModel.fromMapResume(map['obm']) : null,
       ciaID: map['ciaID'] ?? '',
       function: CarEnumCore.functionCarFromString(map['function'] as String),
       state: CarEnumCore.statusCarFromString(map['state'] as String),

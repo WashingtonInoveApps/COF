@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:ui';
 
 import 'package:bsu_control/app_controller.dart';
@@ -67,6 +68,7 @@ class _AppWidgetState extends State<AppWidget> {
     super.initState();
 
     carDispose = controller.listenCar.listen((result) {
+      log('Cars: ${result.length}');
       controller.setCars(result);
     });
 

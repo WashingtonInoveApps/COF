@@ -278,7 +278,7 @@ class _MaterialsDetailsPageState extends State<MaterialsDetailsPage> {
                                       builder: (context) =>
                                           MaterialChecklistRegisterPage(
                                             copied: true,
-                                            controller: controller,
+                                            // controller: controller,
                                             material: MaterialChecklistModel(
                                               user: app.user,
                                               obm: checklist.obm,
@@ -302,7 +302,7 @@ class _MaterialsDetailsPageState extends State<MaterialsDetailsPage> {
                           await Navigator.of(context).push(MaterialPageRoute(
                               builder: (context) =>
                                   MaterialChecklistRegisterPage(
-                                    controller: controller,
+                                    // controller: controller,
                                     material: checklist,
                                   )));
                         },

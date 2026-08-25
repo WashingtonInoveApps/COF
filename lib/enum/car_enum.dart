@@ -104,6 +104,39 @@ extension StateCarProblemsColor on StateCarProblems {
   }
 }
 
+extension StateCarProblemsIcon on StateCarProblems {
+  IconData get icon {
+    switch (this) {
+      case StateCarProblems.airconditioning:
+        return MdiIcons.airConditioner;
+
+      case StateCarProblems.electric:
+        return Icons.electric_bolt;
+
+      case StateCarProblems.mechanics:
+        return MdiIcons.tools;
+
+      case StateCarProblems.pneu:
+        return MdiIcons.tire;
+
+      case StateCarProblems.brake:
+        return MdiIcons.carBrakeAlert;
+
+      case StateCarProblems.cooling:
+        return MdiIcons.carCoolantLevel;
+
+      case StateCarProblems.engine:
+        return MdiIcons.engine;
+
+      case StateCarProblems.injection:
+        return MdiIcons.engineOutline;
+
+      case StateCarProblems.others:
+        return Icons.warning_amber_rounded;
+    }
+  }
+}
+
 extension CarStateColor on StatusCar {
   Color get color {
     switch (this) {
