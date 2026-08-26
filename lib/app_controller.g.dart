@@ -233,6 +233,38 @@ mixin _$AppController on _AppControllerBase, Store {
     });
   }
 
+  late final _$materialsAtom =
+      Atom(name: '_AppControllerBase.materials', context: context);
+
+  @override
+  List<MaterialChecklistModel> get materials {
+    _$materialsAtom.reportRead();
+    return super.materials;
+  }
+
+  @override
+  set materials(List<MaterialChecklistModel> value) {
+    _$materialsAtom.reportWrite(value, super.materials, () {
+      super.materials = value;
+    });
+  }
+
+  late final _$itensAtom =
+      Atom(name: '_AppControllerBase.itens', context: context);
+
+  @override
+  List<ItemModel> get itens {
+    _$itensAtom.reportRead();
+    return super.itens;
+  }
+
+  @override
+  set itens(List<ItemModel> value) {
+    _$itensAtom.reportWrite(value, super.itens, () {
+      super.itens = value;
+    });
+  }
+
   late final _$usersAtom =
       Atom(name: '_AppControllerBase.users', context: context);
 
@@ -267,6 +299,28 @@ mixin _$AppController on _AppControllerBase, Store {
 
   late final _$_AppControllerBaseActionController =
       ActionController(name: '_AppControllerBase', context: context);
+
+  @override
+  void setMaterials(List<MaterialChecklistModel> value) {
+    final _$actionInfo = _$_AppControllerBaseActionController.startAction(
+        name: '_AppControllerBase.setMaterials');
+    try {
+      return super.setMaterials(value);
+    } finally {
+      _$_AppControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setItens(List<ItemModel> value) {
+    final _$actionInfo = _$_AppControllerBaseActionController.startAction(
+        name: '_AppControllerBase.setItens');
+    try {
+      return super.setItens(value);
+    } finally {
+      _$_AppControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
 
   @override
   void processChecklist(
@@ -385,6 +439,8 @@ checklistUserMaterial: ${checklistUserMaterial},
 cars: ${cars},
 checklistsOperationDay: ${checklistsOperationDay},
 notifications: ${notifications},
+materials: ${materials},
+itens: ${itens},
 users: ${users},
 carsTypes: ${carsTypes},
 newRegisterVehicular: ${newRegisterVehicular},

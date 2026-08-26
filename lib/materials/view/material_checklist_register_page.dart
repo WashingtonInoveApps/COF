@@ -29,12 +29,10 @@ import '../../widgets/list_sections_widget.dart';
 class MaterialChecklistRegisterPage extends StatefulWidget {
   final bool copied;
   final MaterialChecklistModel? material;
-  // final MaterialsController controller;
 
   const MaterialChecklistRegisterPage({
     Key? key,
     this.material,
-    // required this.controller,
     this.copied = false,
   }) : super(key: key);
 
@@ -49,8 +47,8 @@ class _MaterialChecklistRegisterPageState
   late MaterialsController controller;
   late MaterialsRegisterController register;
 
-  List<ItemModel>? itens;
-  late List<MaterialChecklistModel> materials;
+  List<ItemModel> itens = [];
+  List<MaterialChecklistModel> materials = [];
 
   bool loading = true;
 
@@ -67,9 +65,11 @@ class _MaterialChecklistRegisterPageState
   }
 
   Future<void> initialization() async {
-    controller.setLoading(true);
     itens = await controller.getMaterialsWarehouse();
     materials = await controller.getMaterialChecklist();
+
+    log('Itens: ${itens.length}');
+    log('Materials: ${materials.length}');
 
     register = MaterialsRegisterController(
       obms: app.obms,
@@ -78,7 +78,7 @@ class _MaterialChecklistRegisterPageState
       checklists: materials,
     );
 
-    controller.setLoading(false);
+    return;
   }
 
   @override

@@ -177,6 +177,8 @@ class _ListSectionsWidgetState extends State<ListSectionsWidget> {
                                           builder: (context) => Center(
                                                 child: ItensSectionWidget(
                                                   item: item,
+                                                  itensMaterials:
+                                                      widget.itensMaterials,
                                                   ciaID: widget.ciaID,
                                                   obmID: widget.obmID,
                                                   onChange: (value) {
@@ -258,7 +260,7 @@ Widget changesListWidget({
                                   spacing: 5,
                                   children: [
                                     Row(
-                                      spacing: 5,
+                                      spacing: 10,
                                       children: [
                                         Expanded(
                                           child: Text(

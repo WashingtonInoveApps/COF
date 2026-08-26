@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:bsu_control/app_controller.dart';
 import 'package:bsu_control/car/controller/car_controller.dart';

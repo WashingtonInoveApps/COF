@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bsu_control/core/api_client.dart';
 import 'package:bsu_control/core/constants.dart';
 import 'package:bsu_control/model/file_model.dart';
@@ -82,6 +84,7 @@ class MaterialRepository extends APIClient implements IMaterialRepository {
                 .toList(),
           );
     } catch (e) {
+      log('Error Material Warehouse: ${e.toString()}');
       return [];
     }
   }
@@ -160,6 +163,7 @@ class MaterialRepository extends APIClient implements IMaterialRepository {
                 .toList(),
           );
     } catch (e) {
+      log('Error Material: ${e.toString()}');
       return [];
     }
   }

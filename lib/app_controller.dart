@@ -9,6 +9,8 @@ import 'package:bsu_control/enum/state_enum.dart';
 import 'package:bsu_control/model/app_model.dart';
 import 'package:bsu_control/model/car_model.dart';
 import 'package:bsu_control/model/config_model.dart';
+import 'package:bsu_control/model/item_model.dart';
+import 'package:bsu_control/model/material_checklist_model.dart';
 import 'package:bsu_control/model/obm_model.dart';
 import 'package:bsu_control/model/user_model.dart';
 import 'package:mobx/mobx.dart';
@@ -80,6 +82,13 @@ abstract class _AppControllerBase with Store {
   List<NotificationModel> notifications = <NotificationModel>[].asObservable();
 
   @observable
+  List<MaterialChecklistModel> materials =
+      <MaterialChecklistModel>[].asObservable();
+
+  @observable
+  List<ItemModel> itens = <ItemModel>[].asObservable();
+
+  @observable
   List<UserModel> users = <UserModel>[].asObservable();
 
   List<OBMModel> obms = <OBMModel>[];
@@ -143,6 +152,20 @@ abstract class _AppControllerBase with Store {
       list: result,
       userID: value.id!,
     );
+  }
+
+  @action
+  void setMaterials(List<MaterialChecklistModel> value) {
+    materials
+      ..clear()
+      ..addAll(value);
+  }
+
+  @action
+  void setItens(List<ItemModel> value) {
+    itens
+      ..clear()
+      ..addAll(value);
   }
 
   @action

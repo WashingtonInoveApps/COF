@@ -217,22 +217,13 @@ abstract class _MaterialsControllerBase with Store {
     page = 1;
   }
 
-  @action
-  Future<List<ItemModel>?> getMaterialsWarehouse() async {
-    try {
-      loading = true;
-      final result = repository.getMaterialsWarehouse();
-      loading = false;
-
-      return result;
-    } catch (e) {
-      loading = false;
-      return null;
-    }
+  Future<List<ItemModel>> getMaterialsWarehouse() async {
+    log('Material Warehouse');
+    return repository.getMaterialsWarehouse();
   }
 
-  @action
   Future<List<MaterialChecklistModel>> getMaterialChecklist() async {
+    log('Material');
     return repository.getMaterialChecklist();
   }
 

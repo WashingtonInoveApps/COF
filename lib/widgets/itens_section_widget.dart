@@ -46,7 +46,10 @@ class _ItensSectionWidgetState extends State<ItensSectionWidget> {
     super.initState();
 
     if (widget.itensMaterials != null) {
-      item = widget.itensMaterials?.cast<ItemModel?>().first ??
+      item = widget.itensMaterials?.cast<ItemModel?>().firstWhere(
+                (e) => e?.id == widget.item?.id,
+                orElse: () => null,
+              ) ??
           ItemModel(
             id: uid.v4(),
             description: '',

@@ -45,6 +45,7 @@ class ListItensViewWidget extends StatelessWidget {
                     children: category.itens
                         .map((item) {
                           return Row(
+                            spacing: 10,
                             children: [
                               Expanded(
                                   child: Text(
