@@ -58,7 +58,7 @@ class MaterialChecklistModel {
 
   factory MaterialChecklistModel.fromMap(Map<String, dynamic> map) {
     return MaterialChecklistModel(
-      id: map['id'] != null ? map['id'] as String : null,
+      id: map['id'],
       user: UserModel.fromMapResume(map['user'] as Map<String, dynamic>),
       obm: OBMModel.fromMapResume(map['obm'] as Map<String, dynamic>),
       team: map['team'] != null
@@ -67,9 +67,9 @@ class MaterialChecklistModel {
       cia: map['cia'] != null
           ? CiaModel.fromMapResume(map['cia'] as Map<String, dynamic>)
           : null,
-      ciaID: map['ciaID'] as String,
-      obmID: map['obmID'] as String,
-      teamID: map['teamID'] as String,
+      ciaID: map['ciaID'] ?? '',
+      obmID: map['obmID'] ?? '',
+      teamID: map['teamID'] ?? '',
       itens: map['itens'] != null
           ? List<SectionItensModel>.from(
               (map['itens'] as List).map<SectionItensModel?>(

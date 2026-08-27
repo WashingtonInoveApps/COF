@@ -27,56 +27,55 @@ class CheckListRepository extends APIClient implements ICheckListRepository {
 
       final others = List<OtherChangeModel>.from(checklist.others ?? []);
 
+      if (checklist.vehicular?.changes?.isNotEmpty ?? false) {
+        final prefix = checklist.prefix.replaceAll(' ', '');
+        for (final change in checklist.vehicular!.changes!) {
+          if (change.image?.data != null) {
+            final image = await saveFile(
+              pathStorage: '${Constants.pathCarChangeImages}/$prefix',
+              data: change.image!.data!,
+              filename: prefix,
+            );
+
+            if (image == null) {
+              throw Exception(
+                  'Falha ao salvar imagens das alterações do veículo.');
+            }
+
+            change.checklistID = checklist.id;
+            change.image = change.image?.copyWith(
+              name: image.name,
+              url: image.url,
+              path: image.path,
+            );
+          }
+        }
+      }
+
+      if (others.isNotEmpty) {
+        for (OtherChangeModel other in others) {
+          if (other.image.data != null) {
+            final image = await saveFile(
+              pathStorage: Constants.pathOthersImages,
+              data: other.image.data!,
+              filename: other.id,
+            );
+
+            if (image == null) {
+              throw Exception('Falha ao salvar imagem das outras alterações.');
+            }
+
+            other.checklistID = checklist.id ?? '';
+            other.image = other.image.copyWith(
+              name: image.name,
+              url: image.url,
+              path: image.path,
+            );
+          }
+        }
+      }
+
       await firebase!.runTransaction((trans) async {
-        if (checklist.vehicular?.changes?.isNotEmpty ?? false) {
-          final prefix = checklist.prefix.replaceAll(' ', '');
-          for (final change in checklist.vehicular!.changes!) {
-            if (change.image?.data != null) {
-              final image = await saveFile(
-                pathStorage: '${Constants.pathCarChangeImages}/$prefix',
-                data: change.image!.data!,
-                filename: prefix,
-              );
-
-              if (image == null) {
-                throw Exception(
-                    'Falha ao salvar imagens das alterações do veículo.');
-              }
-
-              change.checklistID = checklist.id;
-              change.image = change.image?.copyWith(
-                name: image.name,
-                url: image.url,
-                path: image.path,
-              );
-            }
-          }
-        }
-
-        if (others.isNotEmpty) {
-          for (OtherChangeModel other in others) {
-            if (other.image.data != null) {
-              final image = await saveFile(
-                pathStorage: Constants.pathOthersImages,
-                data: other.image.data!,
-                filename: other.id,
-              );
-
-              if (image == null) {
-                throw Exception(
-                    'Falha ao salvar imagem das outras alterações.');
-              }
-
-              other.checklistID = checklist.id ?? '';
-              other.image = other.image.copyWith(
-                name: image.name,
-                url: image.url,
-                path: image.path,
-              );
-            }
-          }
-        }
-
         if (checklist.type == ChecklistType.vehicular) {
           trans.update(
             colCars.doc(checklist.vehicular?.car.id),

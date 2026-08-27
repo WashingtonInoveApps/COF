@@ -333,6 +333,8 @@ class CarRepository extends APIClient implements ICarRepository {
             }
 
             images.add(result);
+          } else {
+            images.add(image);
           }
         }
       }

@@ -203,8 +203,8 @@ abstract class _ChecklistRegisterControllerBase with Store {
 
     List<String> ids = [];
 
-    for (final team in checklistTodays) {
-      if (team.id != null) ids.add(team.id!);
+    for (final checklist in checklistTodays) {
+      if (checklist.teamID.isNotEmpty) ids.add(checklist.teamID);
     }
 
     return obm?.team
@@ -403,7 +403,7 @@ abstract class _ChecklistRegisterControllerBase with Store {
   void setKMStart(String? value) {
     if (value == null) return;
 
-    startKM = int.parse(value);
+    startKM = int.tryParse(value) ?? 0;
   }
 
   @action

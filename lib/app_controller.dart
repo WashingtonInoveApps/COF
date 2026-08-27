@@ -189,20 +189,18 @@ abstract class _AppControllerBase with Store {
           orElse: () => null,
         );
 
-    if (material != null) {
-      if (_isNotActive(material)) return;
-
+    if (!_isNotActive(material)) {
       checklistUserMaterial = material;
     }
 
-    if (vehicular != null) {
-      if (_isNotActive(vehicular)) return;
-
+    if (!_isNotActive(vehicular)) {
       checklistUserVehicular = vehicular;
     }
   }
 
-  bool _isNotActive(ChecklistModel value) {
+  bool _isNotActive(ChecklistModel? value) {
+    if (value == null) return true;
+
     if (!value.enable) return true;
 
     if (DateTime.now().isAfter(

@@ -142,7 +142,8 @@ class ChecklistModel {
       enable: map['enable'] ?? false,
       user: UserModel.fromMapResume(map['user'] as Map<String, dynamic>),
       userSubstitute: map['userSubstitute'] != null
-          ? UserModel.fromMapResume(map['user'] as Map<String, dynamic>)
+          ? UserModel.fromMapResume(
+              map['userSubstitute'] as Map<String, dynamic>)
           : null,
       states: (map['states'] != null)
           ? List<StatesChecklist>.from(
@@ -158,8 +159,10 @@ class ChecklistModel {
       material: map['material'] != null
           ? ChecklistMaterialModel.fromMap(map['material'])
           : null,
-      supply: List<SupplyModel>.from(
-          map['supply']?.map((x) => SupplyModel.fromMap(x))),
+      supply: map['supply'] != null
+          ? List<SupplyModel>.from(
+              map['supply'].map((x) => SupplyModel.fromMap(x)))
+          : null,
     );
   }
 

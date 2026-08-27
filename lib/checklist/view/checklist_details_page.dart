@@ -529,7 +529,25 @@ class _ChecklistDetailsPageState extends State<ChecklistDetailsPage> {
                       Text(
                         'Serviço finalizado em ${Core.formatDate(checklist.dateFinish!, largeDayHour: true)}',
                         style: Constants.subtitleHint,
-                      )
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      if (checklist.userSubstitute != null)
+                        Column(
+                          children: [
+                            Core.boldFirstName(
+                              graduation: checklist.userSubstitute!.graduation,
+                              name: checklist.userSubstitute!.name,
+                              fullName: checklist.userSubstitute!.fullname,
+                              style: Constants.title,
+                            ),
+                            Text(
+                              'Substituto',
+                              style: Constants.subtitleHint,
+                            )
+                          ],
+                        ),
                     ],
                   ),
                 ),

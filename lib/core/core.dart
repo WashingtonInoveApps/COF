@@ -162,10 +162,22 @@ class Core {
     }
   }
 
-  static List<dynamic> paginate(
-      {required List<dynamic> list, required int page, required int limit}) {
-    final start = (page - 1) * limit;
-    final end = (start + limit) > list.length ? list.length : start + limit;
+  static List<T> paginate<T>({
+    required List<T> list,
+    required int page,
+    required int limit,
+  }) {
+    if (list.isEmpty) return [];
+
+    final safePage = page < 1 ? 1 : page;
+    final start = (safePage - 1) * limit;
+
+    if (start >= list.length) {
+      return [];
+    }
+
+    final end = (start + limit).clamp(0, list.length);
+
     return list.sublist(start, end);
   }
 
