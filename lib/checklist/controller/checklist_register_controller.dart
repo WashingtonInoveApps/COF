@@ -51,9 +51,11 @@ abstract class _ChecklistRegisterControllerBase with Store {
   }
 
   List<CarModel> get carsValidations {
-    final ids = checklistTodays.map((e) => e.carID).toList();
     final carsOBM = cars.where((e) => e.obmID == obm?.id).toList();
 
+    if (carsOBM.isEmpty) return [];
+
+    final ids = checklistTodays.map((e) => e.carID).toList();
     return carsOBM
         .where((e) =>
             (!ids.contains(e.id) || (init?.carID == e.id)) &&

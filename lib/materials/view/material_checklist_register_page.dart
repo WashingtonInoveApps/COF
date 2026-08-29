@@ -15,6 +15,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../core/core.dart';
 import '../../model/cia_model.dart';
 import '../../model/obm_model.dart';
 import '../../model/outher_changes_model.dart';
@@ -322,10 +323,15 @@ class _MaterialChecklistRegisterPageState
                       Center(
                         child: IconButton(
                             onPressed: () async {
+                              final data =
+                                  await Core.loadImage(context: context);
+
+                              if (data == null) return;
+
                               await showDialog(
                                   context: context,
                                   builder: (context) => ImageChangeWidget(
-                                        aspectRatio: null,
+                                        data: data,
                                         onSelect: (image, description) {
                                           register.addChange(
                                             OtherChangeModel(

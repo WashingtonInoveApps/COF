@@ -63,10 +63,13 @@ class _ImageViewChangeWidgetState extends State<ImageViewChangeWidget> {
                               imageUrl: widget.change.image?.url ?? '',
                               width: widthImage,
                               progressIndicatorBuilder:
-                                  (context, url, downloadProgress) => Center(
-                                child: LinearProgressIndicator(
-                                    color: Constants.primary,
-                                    value: downloadProgress.progress),
+                                  (context, url, downloadProgress) => SizedBox(
+                                width: double.infinity,
+                                child: Center(
+                                  child: LinearProgressIndicator(
+                                      color: Constants.primary,
+                                      value: downloadProgress.progress),
+                                ),
                               ),
                               errorWidget: (context, url, error) =>
                                   const Center(

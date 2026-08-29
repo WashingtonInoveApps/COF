@@ -156,6 +156,17 @@ class _ChecklistRegisterPageState extends State<ChecklistRegisterPage> {
                                             onPressedOK: () =>
                                                 Navigator.of(context).pop(),
                                           ));
+                                } else if ((widget.type ==
+                                        ChecklistType.vehicular) &&
+                                    register.carsValidations.isEmpty) {
+                                  await showDialog(
+                                      context: context,
+                                      builder: (context) => AlertMessage(
+                                            message:
+                                                'Ops ! Não foi localizado veículos para checklist nessa organização. Entre em contato com o administrador.',
+                                            onPressedOK: () =>
+                                                Navigator.of(context).pop(),
+                                          ));
                                 } else {
                                   controller.processStep(true);
                                 }

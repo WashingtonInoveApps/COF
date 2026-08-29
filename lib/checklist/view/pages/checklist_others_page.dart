@@ -1,4 +1,5 @@
 import 'package:bsu_control/core/constants.dart';
+import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/model/user_model.dart';
 import 'package:bsu_control/widgets/textfield_widget.dart';
 import 'package:flutter/material.dart';
@@ -77,10 +78,14 @@ class _CheckListOthersPageState extends State<CheckListOthersPage> {
           Center(
             child: IconButton(
                 onPressed: () async {
+                  final data = await Core.loadImage(context: context);
+
+                  if (data == null) return;
+
                   await showDialog(
                       context: context,
                       builder: (context) => ImageChangeWidget(
-                            aspectRatio: null,
+                            data: data,
                             onSelect: (image, description) {
                               controller.addOthersChange(
                                 OtherChangeModel(

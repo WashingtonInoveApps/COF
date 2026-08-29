@@ -221,7 +221,10 @@ abstract class _UserControllerBase with Store {
   void setCia(CiaModel? value) => cia = value;
 
   @action
-  void setOBM(OBMModel? value) => obm = value;
+  void setOBM(OBMModel? value) {
+    obm = value;
+    cia = null;
+  }
 
   @action
   Future<bool> save({required UserModel user}) async {

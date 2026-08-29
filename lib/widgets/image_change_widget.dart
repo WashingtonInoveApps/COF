@@ -2,22 +2,20 @@
 import 'dart:typed_data';
 
 import 'package:bsu_control/core/constants.dart';
-import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/model/file_model.dart';
 import 'package:flutter/material.dart';
-import 'package:image_cropper/image_cropper.dart';
 import 'package:uuid/uuid.dart';
 
 import 'textfield_widget.dart';
 
 class ImageChangeWidget extends StatefulWidget {
-  final CropAspectRatio? aspectRatio;
+  final Uint8List? data;
   final Function(FileModel image, String description) onSelect;
 
   const ImageChangeWidget({
     Key? key,
     required this.onSelect,
-    this.aspectRatio = const CropAspectRatio(ratioX: 3, ratioY: 2),
+    this.data,
   }) : super(key: key);
 
   @override
@@ -25,13 +23,13 @@ class ImageChangeWidget extends StatefulWidget {
 }
 
 class _ImageChangeWidgetState extends State<ImageChangeWidget> {
-  Uint8List? data;
   final controller = TextEditingController();
 
   double widthImage = 400;
 
   @override
   Widget build(BuildContext context) {
+    final Uint8List? data = widget.data;
     return AlertDialog(
       contentPadding: const EdgeInsets.all(10),
       content: ConstrainedBox(
@@ -42,48 +40,37 @@ class _ImageChangeWidgetState extends State<ImageChangeWidget> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              GestureDetector(
-                  onTap: () async {
-                    Core.pickerImage(
-                            context: context, aspectRatio: widget.aspectRatio)
-                        .then((result) {
-                      if (result != null) {
-                        data = result;
-                        setState(() {});
-                      }
-                    });
-                  },
-                  child: Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey.shade400),
-                        borderRadius: BorderRadius.circular(5),
-                        color: Colors.grey.shade200),
-                    child: data != null
-                        ? Image.memory(
-                            data!,
-                            width: widthImage,
-                            fit: BoxFit.cover,
-                            filterQuality: FilterQuality.high,
-                          )
-                        : Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: Column(
-                              spacing: 5,
-                              children: [
-                                const Icon(
-                                  Icons.image_not_supported,
-                                  size: 40,
-                                  color: Colors.grey,
-                                ),
-                                Text(
-                                  'Clique para adicionar imagem',
-                                  style: Constants.subtitleHint,
-                                ),
-                              ],
+              Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey.shade400),
+                    borderRadius: BorderRadius.circular(5),
+                    color: Colors.grey.shade200),
+                child: data != null
+                    ? Image.memory(
+                        data,
+                        width: widthImage,
+                        fit: BoxFit.cover,
+                        filterQuality: FilterQuality.high,
+                      )
+                    : Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Column(
+                          spacing: 5,
+                          children: [
+                            const Icon(
+                              Icons.image_not_supported,
+                              size: 40,
+                              color: Colors.grey,
                             ),
-                          ),
-                  )),
+                            Text(
+                              'Imagem Indisponível',
+                              style: Constants.subtitleHint,
+                            ),
+                          ],
+                        ),
+                      ),
+              ),
               const SizedBox(
                 height: 10.0,
               ),
@@ -107,7 +94,7 @@ class _ImageChangeWidgetState extends State<ImageChangeWidget> {
                                   name: '',
                                   url: '',
                                   path: '',
-                                  data: data!),
+                                  data: data),
                               controller.text);
                         }
 

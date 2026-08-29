@@ -26,7 +26,7 @@ import '../../widgets/pagination_widget.dart';
 import '../../widgets/textfield_widget.dart';
 import '../../widgets/cars_available_today.dart';
 
-const versionCodeSystem = 46;
+const versionCodeSystem = 47;
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -244,6 +244,15 @@ class _HomePageState extends State<HomePage> {
                                                               .orange.shade700,
                                                           onTap: () {
                                                             if (register) {
+                                                              app.setRouter(4);
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .pushReplacement(
+                                                                      MaterialPageRoute(
+                                                                          builder: (context) =>
+                                                                              const ChecklistRegisterPage(
+                                                                                type: ChecklistType.materials,
+                                                                              )));
                                                             } else {
                                                               Navigator.of(
                                                                       context)

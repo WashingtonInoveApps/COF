@@ -114,9 +114,10 @@ class _ChecklistFinishPageState extends State<ChecklistFinishPage> {
       }
     }
 
-    if (userSubstitute == null) {
-      messagesError.add('Selecione seu substituto antes de continuar.');
-    }
+    //Pode não haver substituto.
+    // if (userSubstitute == null) {
+    //   messagesError.add('Selecione seu substituto antes de continuar.');
+    // }
 
     if (signatureController.isEmpty) {
       messagesError.add('Insira sua assinatura antes de continuar.');

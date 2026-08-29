@@ -231,11 +231,16 @@ class _CarChangesWidgetState extends State<CarChangesWidget> {
                                             ));
                                   } else {
                                     if (widget.add) {
+                                      final data = await Core.loadImage(
+                                          context: context);
+
+                                      if (data == null) return;
+
                                       await showDialog(
                                           context: context,
                                           builder: (context) =>
                                               ImageChangeWidget(
-                                                aspectRatio: null,
+                                                data: data,
                                                 onSelect: (value, description) {
                                                   final change = CarChangeModel(
                                                     id: const Uuid().v4(),

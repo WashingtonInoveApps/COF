@@ -1,4 +1,5 @@
 import 'package:bsu_control/car/controller/car_register_controller.dart';
+import 'package:bsu_control/core/core.dart';
 import 'package:bsu_control/model/car_changes_model.dart';
 import 'package:bsu_control/widgets/list_sections_widget.dart';
 import 'package:bsu_control/core/constants.dart';
@@ -221,10 +222,14 @@ class _CarRegisterFunctionPageState extends State<CarRegisterFunctionPage> {
                 Center(
                     child: IconButton(
                         onPressed: () async {
+                          final data = await Core.loadImage(context: context);
+
+                          if (data == null) return;
+
                           await showDialog(
                               context: context,
                               builder: (context) => ImageChangeWidget(
-                                    aspectRatio: null,
+                                    data: data,
                                     onSelect: (image, description) {
                                       register.addOtherChange(
                                         OtherChangeModel(

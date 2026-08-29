@@ -1,6 +1,7 @@
 import 'dart:math';
-import 'dart:typed_data';
 
+import 'package:bsu_control/core/constants.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 // import 'package:image/image.dart' as img;
 import 'package:image_cropper/image_cropper.dart';
@@ -53,25 +54,100 @@ class Core {
     return '${hour.hour.toString().padLeft(2, '0')}:${hour.minute.toString().padLeft(2, '0')}';
   }
 
+  static Future<Uint8List?> loadImage({
+    required BuildContext context,
+  }) async {
+    Uint8List? data;
+
+    if (Core.isMobile) {
+      data = await showModalBottomSheet<Uint8List?>(
+        context: context,
+        backgroundColor: Colors.transparent,
+        builder: (_) {
+          return SafeArea(
+            child: Container(
+              constraints: const BoxConstraints(maxWidth: 500),
+              margin: const EdgeInsets.all(16),
+              padding: const EdgeInsets.symmetric(
+                vertical: 10,
+              ),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surface,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ListTile(
+                    leading: Icon(
+                      Icons.camera_alt,
+                      size: 25,
+                      color: Colors.grey.shade800,
+                    ),
+                    title: Text(
+                      'Tirar foto',
+                      style: Constants.title,
+                    ),
+                    onTap: () async {
+                      await Core.pickerImage(
+                              context: context,
+                              aspectRatio: null,
+                              source: ImageSource.camera)
+                          .then((result) {
+                        Navigator.of(context).pop(result);
+                      });
+                    },
+                  ),
+                  ListTile(
+                    leading: Icon(
+                      Icons.photo_library,
+                      size: 25,
+                      color: Colors.grey.shade800,
+                    ),
+                    title: Text(
+                      'Escolher da galeria',
+                      style: Constants.title,
+                    ),
+                    onTap: () async {
+                      await Core.pickerImage(
+                              context: context,
+                              aspectRatio: null,
+                              source: ImageSource.gallery)
+                          .then((result) {
+                        Navigator.of(context).pop(result);
+                      });
+                    },
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    } else {
+      data = await Core.pickerImage(
+          context: context, aspectRatio: null, source: ImageSource.gallery);
+    }
+
+    return data;
+  }
+
   static Future<Uint8List?> pickerImage({
     required BuildContext context,
     CropAspectRatio? aspectRatio,
+    ImageSource? source,
   }) async {
     try {
-      // final image = await ImagePicker()
-      //     .pickImage(source: ImageSource.gallery, imageQuality: 100);
-
       final image = await ImagePicker().pickImage(
-        source: ImageSource.gallery,
-        // imageQuality: 85,
+        source: source ?? ImageSource.gallery,
       );
 
       if (image != null) {
         final croppedFile = await ImageCropper().cropImage(
           sourcePath: image.path,
-          // compressFormat: ImageCompressFormat.png,
           compressFormat: ImageCompressFormat.jpg,
-          compressQuality: 85, maxWidth: 1600,
+          compressQuality: 85,
+          maxWidth: 1600,
           maxHeight: 1600,
           aspectRatio: aspectRatio,
           uiSettings: [
@@ -188,6 +264,15 @@ class Core {
 
   //   return false;
   // }
+
+  static bool get isMobile {
+    return defaultTargetPlatform == TargetPlatform.android ||
+        defaultTargetPlatform == TargetPlatform.iOS;
+  }
+
+  static bool get isMobileWeb {
+    return kIsWeb && isMobile;
+  }
 
   static double calculateTableHeight(int rows) {
     const rowHeight = 52.0;
