@@ -55,7 +55,14 @@ abstract class _ChecklistRegisterControllerBase with Store {
 
     if (carsOBM.isEmpty) return [];
 
-    final ids = checklistTodays.map((e) => e.carID).toList();
+    final checklistVehicular = checklistTodays
+        .where((e) => e.type == ChecklistType.vehicular)
+        .toList();
+
+    if (checklistVehicular.isEmpty) return carsOBM;
+
+    final ids = checklistVehicular.map((e) => e.carID).toList();
+
     return carsOBM
         .where((e) =>
             (!ids.contains(e.id) || (init?.carID == e.id)) &&
@@ -205,7 +212,11 @@ abstract class _ChecklistRegisterControllerBase with Store {
 
     List<String> ids = [];
 
-    for (final checklist in checklistTodays) {
+    final checklists = checklistTodays.where((e) => e.type == type).toList();
+
+    if (checklists.isEmpty) return obm?.team ?? [];
+
+    for (final checklist in checklists) {
       if (checklist.teamID.isNotEmpty) ids.add(checklist.teamID);
     }
 

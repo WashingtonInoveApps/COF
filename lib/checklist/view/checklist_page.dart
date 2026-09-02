@@ -210,7 +210,6 @@ class _ChecklistPageState extends State<ChecklistPage> {
                     : const Divider(),
                 SizedBox(
                   width: double.infinity,
-                  height: 450,
                   child: Observer(builder: (context) {
                     if (controller.loading) {
                       return const Center(child: LinearProgressIndicator());
@@ -232,18 +231,15 @@ class _ChecklistPageState extends State<ChecklistPage> {
                               'Exibindo ${controller.start} a ${controller.end} de ${controller.checklists.length} entradas',
                               style: Constants.subtitleHint,
                             ),
-                            Expanded(
-                              child: ChecklistTableWidget(
-                                list: List<ChecklistModel>.from(
-                                    controller.checklistsSort),
-                                limit: controller.limit,
-                                onDetails: (value) {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (context) =>
-                                          ChecklistDetailsPage(
-                                              checklist: value)));
-                                },
-                              ),
+                            ChecklistTableWidget(
+                              list: List<ChecklistModel>.from(
+                                  controller.checklistsSort),
+                              limit: controller.limit,
+                              onDetails: (value) {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) => ChecklistDetailsPage(
+                                        checklist: value)));
+                              },
                             ),
                             Row(
                               children: [

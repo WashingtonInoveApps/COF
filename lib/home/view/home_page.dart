@@ -26,7 +26,7 @@ import '../../widgets/pagination_widget.dart';
 import '../../widgets/textfield_widget.dart';
 import '../../widgets/cars_available_today.dart';
 
-const versionCodeSystem = 47;
+const versionCodeSystem = 48;
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -358,7 +358,6 @@ class _HomePageState extends State<HomePage> {
                         ),
                         SizedBox(
                           width: double.infinity,
-                          height: 450,
                           child: Observer(builder: (context) {
                             if (controller.loading) {
                               return const Center(
@@ -381,19 +380,17 @@ class _HomePageState extends State<HomePage> {
                                       'Exibindo 1 a ${controller.checklistPeriodSort.length} de ${controller.checklistsPeriod.length} entradas',
                                       style: Constants.subtitleHint,
                                     ),
-                                    Expanded(
-                                      child: ChecklistTableWidget(
-                                        list: List<ChecklistModel>.from(
-                                            controller.checklistPeriodSort),
-                                        limit: controller.limit,
-                                        onDetails: (value) {
-                                          Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      ChecklistDetailsPage(
-                                                          checklist: value)));
-                                        },
-                                      ),
+                                    ChecklistTableWidget(
+                                      list: List<ChecklistModel>.from(
+                                          controller.checklistPeriodSort),
+                                      limit: controller.limit,
+                                      onDetails: (value) {
+                                        Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    ChecklistDetailsPage(
+                                                        checklist: value)));
+                                      },
                                     ),
                                     SizedBox(
                                       width: double.infinity,

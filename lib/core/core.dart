@@ -274,10 +274,10 @@ class Core {
     return kIsWeb && isMobile;
   }
 
-  static double calculateTableHeight(int rows) {
-    const rowHeight = 52.0;
-    const headerHeight = 40.0;
+  // static double calculateTableHeight(int rows) {
+  //   const rowHeight = 52.0;
+  //   const headerHeight = 40.0;
 
-    return headerHeight + (rows * rowHeight);
-  }
+  //   return headerHeight + (rows * rowHeight);
+  // }
 }
